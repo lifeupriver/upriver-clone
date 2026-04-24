@@ -1,0 +1,44 @@
+name: Monthly QA
+
+on:
+  schedule:
+    # 00:00 UTC on the 1st of each month
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  monthly-qa:
+    runs-on: ubuntu-latest
+    env:
+      CLIENT_SLUG: ${{ vars.CLIENT_SLUG }}
+      PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+      FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install Upriver CLI
+        run: pnpm add -g @upriver/cli
+
+      - name: Run QA
+        run: |
+          upriver qa \
+            --slug "$CLIENT_SLUG" \
+            --mode production \
+            --url "$PRODUCTION_URL"

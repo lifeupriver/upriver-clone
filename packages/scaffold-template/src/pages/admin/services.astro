@@ -1,0 +1,50 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { supabaseAdmin } from '../../lib/supabase';
+
+interface Service {
+  id: string;
+  name: string;
+  summary: string;
+  price: string | null;
+  status: string;
+}
+
+let services: Service[] = [];
+let loadError: string | null = null;
+
+try {
+  const { data, error } = await supabaseAdmin.from('services').select('*').order('name');
+  if (error) throw error;
+  services = (data ?? []) as Service[];
+} catch (err) {
+  loadError = err instanceof Error ? err.message : String(err);
+}
+---
+
+<AdminLayout title="Services">
+  {loadError && (
+    <p class="mb-4 rounded-card border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+      Could not load services: {loadError}
+    </p>
+  )}
+
+  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    {services.length === 0 ? (
+      <p class="text-sm text-ink-500">No services defined yet.</p>
+    ) : (
+      services.map((s) => (
+        <article class="rounded-card border border-ink-200 bg-white p-5">
+          <header class="flex items-center justify-between">
+            <h3 class="font-semibold text-ink-900">{s.name}</h3>
+            <span class="text-xs text-ink-500">{s.status}</span>
+          </header>
+          <p class="mt-2 text-sm text-ink-700">{s.summary}</p>
+          {s.price && <div class="mt-3 text-sm font-medium text-brand-700">{s.price}</div>}
+        </article>
+      ))
+    )}
+  </div>
+</AdminLayout>

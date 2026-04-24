@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/astro/Hero.astro';
+import CTASection from '../components/astro/CTASection.astro';
+
+// Homepage placeholder — content is replaced by the `upriver clone` pass
+// using data from the discovered site and design brief.
+---
+
+<Layout title="Client — Home" description="Client homepage">
+  <Hero
+    headline="Headline goes here"
+    subhead="This template is populated by the clone pass from the discovered site content."
+    ctaLabel="Get in touch"
+    ctaHref="/contact"
+  />
+
+  <section class="mx-auto max-w-6xl px-6 py-16">
+    <h2 class="text-2xl font-semibold text-ink-900">What we do</h2>
+    <p class="mt-4 text-ink-700 max-w-2xl">
+      Service descriptions and supporting content are filled in by the clone
+      pass. Admin users can edit copy through the content admin.
+    </p>
+  </section>
+
+  <CTASection
+    headline="Ready to start?"
+    body="Tell us about your project and we'll get back to you within a business day."
+    ctaLabel="Contact us"
+    ctaHref="/contact"
+  />
+</Layout>

@@ -1,0 +1,47 @@
+name: Client Request
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  handle-client-request:
+    if: github.event.label.name == 'client-request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude Code Action
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          issue_number: ${{ github.event.issue.number }}
+          prompt: |
+            A client has submitted the GitHub issue referenced by
+            ISSUE_NUMBER=${{ github.event.issue.number }} with the label
+            `client-request`. Do the following:
+
+              1. Read the issue title and body carefully.
+              2. Implement the smallest, safest change that fulfils the
+                 request. Do not refactor unrelated code.
+              3. Append a one-line entry to CHANGELOG.md under a
+                 `## Unreleased` section with today's date, a one-sentence
+                 summary of what changed, and a link back to the issue.
+              4. Open a DRAFT pull request from a new branch named
+                 `client-request/${{ github.event.issue.number }}-<short-slug>`.
+                 Target `main`. The PR body must link the issue with
+                 `Closes #${{ github.event.issue.number }}` and include a
+                 short test plan.
+              5. If the request is ambiguous or risky, do not implement;
+                 instead, comment on the issue with clarifying questions
+                 and stop.

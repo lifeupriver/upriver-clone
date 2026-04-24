@@ -1,0 +1,28 @@
+---
+interface Props {
+  quote: string;
+  author: string;
+  role?: string;
+  company?: string;
+  avatar?: string;
+}
+
+const { quote, author, role, company, avatar } = Astro.props;
+---
+
+<figure class="bg-white border border-ink-200 rounded-card p-6 shadow-sm">
+  <blockquote class="text-ink-700 italic">"{quote}"</blockquote>
+  <figcaption class="mt-4 flex items-center gap-3">
+    {avatar && (
+      <img src={avatar} alt={author} class="h-10 w-10 rounded-full object-cover" />
+    )}
+    <div>
+      <div class="font-medium text-ink-900">{author}</div>
+      {(role || company) && (
+        <div class="text-sm text-ink-500">
+          {role}{role && company ? ', ' : ''}{company}
+        </div>
+      )}
+    </div>
+  </figcaption>
+</figure>

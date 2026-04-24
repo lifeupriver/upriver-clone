@@ -1,0 +1,23 @@
+---
+interface Props {
+  headline: string;
+  body?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const { headline, body, ctaLabel = 'Get started', ctaHref = '/contact' } = Astro.props;
+---
+
+<section class="bg-brand-900 text-white">
+  <div class="mx-auto max-w-4xl px-6 py-16 text-center">
+    <h2 class="text-3xl font-semibold tracking-tight">{headline}</h2>
+    {body && <p class="mt-4 text-brand-100">{body}</p>}
+    <a
+      href={ctaHref}
+      class="mt-8 inline-block bg-white text-brand-700 px-6 py-3 rounded-button font-medium hover:bg-brand-50"
+    >
+      {ctaLabel}
+    </a>
+  </div>
+</section>
