@@ -2,6 +2,7 @@
 export * from './types/client-config.js';
 export * from './types/firecrawl.js';
 export * from './types/audit.js';
+export * from './types/audit-package.js';
 export * from './types/extraction-schemas.js';
 
 // Firecrawl
