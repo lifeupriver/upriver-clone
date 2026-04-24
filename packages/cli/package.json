@@ -1,0 +1,37 @@
+{
+  "name": "@upriver/cli",
+  "version": "0.1.0",
+  "description": "Upriver CLI — website audit and rebuild tool",
+  "type": "module",
+  "bin": {
+    "upriver": "./bin/run.js"
+  },
+  "oclif": {
+    "bin": "upriver",
+    "dirname": "upriver",
+    "commands": "./dist/commands",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-not-found"
+    ],
+    "topicSeparator": " "
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rm -rf dist",
+    "prepack": "pnpm run build"
+  },
+  "dependencies": {
+    "@oclif/core": "^3.0.0",
+    "@oclif/plugin-help": "^6.0.0",
+    "@oclif/plugin-not-found": "^3.0.0",
+    "@upriver/core": "workspace:*",
+    "yaml": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  }
+}
