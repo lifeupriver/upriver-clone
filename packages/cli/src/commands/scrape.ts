@@ -486,8 +486,8 @@ function buildPageRecord(
   const allLinks = result.links ?? [];
   let baseHost = '';
   try { baseHost = new URL(pageUrl).hostname; } catch { /* ignore */ }
-  const internal = allLinks.filter((l) => { try { return new URL(l.href).hostname === baseHost; } catch { return l.href.startsWith('/'); } }).map((l) => l.href);
-  const external = allLinks.filter((l) => { try { return new URL(l.href).hostname !== baseHost; } catch { return false; } }).map((l) => l.href);
+  const internal = allLinks.filter((l) => { if (!l?.href) return false; try { return new URL(l.href).hostname === baseHost; } catch { return l.href.startsWith('/'); } }).map((l) => l.href);
+  const external = allLinks.filter((l) => { if (!l?.href) return false; try { return new URL(l.href).hostname !== baseHost; } catch { return false; } }).map((l) => l.href);
 
   return {
     url: pageUrl,
