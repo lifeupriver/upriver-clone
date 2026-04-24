@@ -1,0 +1,38 @@
+@import 'tailwindcss';
+
+/* Design tokens — overridden per client by `upriver scaffold` from the design brief. */
+@theme {
+  --color-brand-50:  #f5f9ff;
+  --color-brand-100: #e6f0ff;
+  --color-brand-200: #c2d9ff;
+  --color-brand-300: #8fb8ff;
+  --color-brand-400: #5a8fff;
+  --color-brand-500: #2f6bff;
+  --color-brand-600: #1f4fd8;
+  --color-brand-700: #183ea8;
+  --color-brand-800: #122f80;
+  --color-brand-900: #0c2058;
+
+  --color-ink-50:  #f8fafc;
+  --color-ink-100: #eef2f6;
+  --color-ink-200: #d9e0e8;
+  --color-ink-500: #64748b;
+  --color-ink-700: #334155;
+  --color-ink-900: #0f172a;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 0.75rem;
+  --radius-button: 0.5rem;
+}
+
+html {
+  font-family: var(--font-sans);
+  color: var(--color-ink-900);
+  background: #ffffff;
+}
+
+body {
+  min-height: 100vh;
+}

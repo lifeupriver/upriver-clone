@@ -1,0 +1,23 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../layouts/AdminLayout.astro';
+
+const checks = [
+  { label: 'Database connection', value: 'unknown' },
+  { label: 'Last backup', value: 'unknown' },
+  { label: 'Deploy status', value: 'unknown' },
+  { label: 'Error rate (24h)', value: 'unknown' },
+];
+---
+
+<AdminLayout title="Health">
+  <div class="grid gap-4 md:grid-cols-2">
+    {checks.map((c) => (
+      <div class="rounded-card border border-ink-200 bg-white p-5">
+        <div class="text-sm text-ink-500">{c.label}</div>
+        <div class="mt-2 text-lg font-medium text-ink-900">{c.value}</div>
+      </div>
+    ))}
+  </div>
+</AdminLayout>

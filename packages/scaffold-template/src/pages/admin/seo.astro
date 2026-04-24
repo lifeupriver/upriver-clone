@@ -1,0 +1,27 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../layouts/AdminLayout.astro';
+
+const checks = [
+  { label: 'Sitemap submitted', status: 'pending' },
+  { label: 'robots.txt', status: 'pending' },
+  { label: 'Open Graph tags', status: 'pending' },
+  { label: 'Schema.org markup', status: 'pending' },
+  { label: 'Core Web Vitals', status: 'pending' },
+];
+---
+
+<AdminLayout title="SEO">
+  <p class="text-sm text-ink-500 mb-4">
+    Populated by the SEO audit pass. Run <code>upriver qa --slug [slug]</code> to refresh.
+  </p>
+  <ul class="divide-y divide-ink-200 rounded-card border border-ink-200 bg-white">
+    {checks.map((c) => (
+      <li class="px-5 py-3 flex items-center justify-between">
+        <span class="text-sm text-ink-900">{c.label}</span>
+        <span class="text-xs text-ink-500">{c.status}</span>
+      </li>
+    ))}
+  </ul>
+</AdminLayout>

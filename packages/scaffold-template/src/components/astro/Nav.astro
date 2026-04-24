@@ -1,0 +1,27 @@
+---
+// Primary site navigation. The `upriver scaffold` command replaces this
+// component's `navItems` array from the discovered site map before the
+// template is written into the client repo.
+const navItems: { href: string; label: string }[] = [
+  { href: '/', label: 'Home' },
+];
+---
+
+<header class="border-b border-ink-200 bg-white">
+  <div class="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
+    <a href="/" class="text-lg font-semibold text-ink-900">Client</a>
+    <nav class="flex items-center gap-6">
+      {navItems.map((item) => (
+        <a href={item.href} class="text-sm text-ink-700 hover:text-brand-600">
+          {item.label}
+        </a>
+      ))}
+      <a
+        href="/contact"
+        class="text-sm bg-brand-600 text-white px-4 py-2 rounded-button hover:bg-brand-700"
+      >
+        Contact
+      </a>
+    </nav>
+  </div>
+</header>

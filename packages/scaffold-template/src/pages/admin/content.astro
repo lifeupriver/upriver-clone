@@ -1,0 +1,37 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getCollection } from 'astro:content';
+
+const pages = await getCollection('pages').catch(() => []);
+const testimonials = await getCollection('testimonials').catch(() => []);
+const faqs = await getCollection('faqs').catch(() => []);
+const team = await getCollection('team').catch(() => []);
+---
+
+<AdminLayout title="Content">
+  <p class="text-sm text-ink-500 mb-4">
+    Entries live in <code>src/content/</code> and are edited via PRs. Use the
+    change-request form to propose content edits.
+  </p>
+
+  <div class="grid gap-4 md:grid-cols-4">
+    <div class="rounded-card border border-ink-200 bg-white p-5">
+      <div class="text-sm text-ink-500">Pages</div>
+      <div class="mt-2 text-2xl font-semibold text-ink-900">{pages.length}</div>
+    </div>
+    <div class="rounded-card border border-ink-200 bg-white p-5">
+      <div class="text-sm text-ink-500">Testimonials</div>
+      <div class="mt-2 text-2xl font-semibold text-ink-900">{testimonials.length}</div>
+    </div>
+    <div class="rounded-card border border-ink-200 bg-white p-5">
+      <div class="text-sm text-ink-500">FAQs</div>
+      <div class="mt-2 text-2xl font-semibold text-ink-900">{faqs.length}</div>
+    </div>
+    <div class="rounded-card border border-ink-200 bg-white p-5">
+      <div class="text-sm text-ink-500">Team</div>
+      <div class="mt-2 text-2xl font-semibold text-ink-900">{team.length}</div>
+    </div>
+  </div>
+</AdminLayout>

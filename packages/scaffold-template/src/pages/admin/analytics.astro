@@ -1,0 +1,28 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../layouts/AdminLayout.astro';
+
+const cards = [
+  { label: 'Sessions (30d)', value: '—' },
+  { label: 'Pageviews (30d)', value: '—' },
+  { label: 'Conversion rate', value: '—' },
+  { label: 'Top source', value: '—' },
+];
+---
+
+<AdminLayout title="Analytics">
+  <p class="text-sm text-ink-500 mb-4">
+    Pulled from Google Analytics via <code>@google-analytics/data</code>.
+    Wire up GA4 property ID in <code>/admin/settings</code>.
+  </p>
+
+  <div class="grid gap-4 md:grid-cols-4">
+    {cards.map((c) => (
+      <div class="rounded-card border border-ink-200 bg-white p-5">
+        <div class="text-sm text-ink-500">{c.label}</div>
+        <div class="mt-2 text-2xl font-semibold text-ink-900">{c.value}</div>
+      </div>
+    ))}
+  </div>
+</AdminLayout>

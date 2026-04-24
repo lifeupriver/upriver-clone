@@ -1,0 +1,29 @@
+---
+interface Props {
+  headline: string;
+  subhead?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const { headline, subhead, ctaLabel = 'Get in touch', ctaHref = '/contact' } = Astro.props;
+---
+
+<section class="bg-gradient-to-b from-brand-50 to-white">
+  <div class="mx-auto max-w-6xl px-6 py-20 text-center">
+    <h1 class="text-4xl md:text-5xl font-display font-semibold text-ink-900 tracking-tight">
+      {headline}
+    </h1>
+    {subhead && (
+      <p class="mt-6 text-lg text-ink-700 max-w-2xl mx-auto">{subhead}</p>
+    )}
+    <div class="mt-8">
+      <a
+        href={ctaHref}
+        class="inline-block bg-brand-600 text-white px-6 py-3 rounded-button font-medium hover:bg-brand-700"
+      >
+        {ctaLabel}
+      </a>
+    </div>
+  </div>
+</section>

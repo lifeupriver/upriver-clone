@@ -1,0 +1,57 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { supabaseAdmin } from '../../lib/supabase';
+
+interface Review {
+  id: string;
+  created_at: string;
+  author: string;
+  rating: number;
+  body: string;
+  status: string;
+}
+
+let reviews: Review[] = [];
+let loadError: string | null = null;
+
+try {
+  const { data, error } = await supabaseAdmin
+    .from('reviews')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(50);
+  if (error) throw error;
+  reviews = (data ?? []) as Review[];
+} catch (err) {
+  loadError = err instanceof Error ? err.message : String(err);
+}
+---
+
+<AdminLayout title="Reviews">
+  {loadError && (
+    <p class="mb-4 rounded-card border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+      Could not load reviews: {loadError}
+    </p>
+  )}
+
+  <div class="grid gap-4 md:grid-cols-2">
+    {reviews.length === 0 ? (
+      <p class="text-sm text-ink-500">No reviews yet.</p>
+    ) : (
+      reviews.map((r) => (
+        <article class="rounded-card border border-ink-200 bg-white p-4">
+          <header class="flex items-center justify-between">
+            <div class="font-medium text-ink-900">{r.author}</div>
+            <div class="text-sm text-ink-500">{'★'.repeat(r.rating)}{'☆'.repeat(Math.max(0, 5 - r.rating))}</div>
+          </header>
+          <p class="mt-2 text-sm text-ink-700">{r.body}</p>
+          <footer class="mt-2 text-xs text-ink-500">
+            {new Date(r.created_at).toLocaleDateString()} — {r.status}
+          </footer>
+        </article>
+      ))
+    )}
+  </div>
+</AdminLayout>
