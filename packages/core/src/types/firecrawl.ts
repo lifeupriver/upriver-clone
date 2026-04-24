@@ -93,6 +93,8 @@ export interface FirecrawlScrapeResult {
     ogDescription?: string;
     ogImage?: string;
     canonical?: string;
+    sourceURL?: string; // Firecrawl sets the page URL here in batch/crawl results
+    url?: string;
   };
 }
 
