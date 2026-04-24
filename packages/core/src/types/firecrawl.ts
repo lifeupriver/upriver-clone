@@ -110,16 +110,19 @@ export interface FirecrawlCrawlStatus {
   data?: FirecrawlScrapeResult[];
 }
 
+// Valid formats per Firecrawl v1 API
 export type ScrapeFormat =
   | 'markdown'
   | 'html'
   | 'rawHtml'
   | 'screenshot'
+  | 'screenshot@fullPage'
   | 'links'
-  | 'images'
   | 'branding'
+  | 'extract'
   | 'json'
-  | 'summary';
+  | 'summary'
+  | 'changeTracking';
 
 export interface ScrapeOptions {
   formats: ScrapeFormat[];
