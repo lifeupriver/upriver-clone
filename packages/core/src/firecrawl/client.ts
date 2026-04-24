@@ -142,6 +142,13 @@ export class FirecrawlClient {
       results = await this.pollBatchJob(initial.id);
     }
 
+    // Normalize URL: Firecrawl sometimes puts it in metadata.sourceURL or metadata.url
+    for (const r of results) {
+      if (!r.url) {
+        r.url = r.metadata?.sourceURL ?? r.metadata?.url ?? '';
+      }
+    }
+
     const credits = this.estimateScrapeCredits(options) * urls.length;
     this.logCredit('firecrawl_batch', credits, `pages=${urls.length} formats=${options.formats.join(',')}`);
 

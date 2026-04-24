@@ -101,13 +101,26 @@ export default class Discover extends BaseCommand {
       this.log('  Resuming — content-inventory.json already exists, skipping scrape.');
     } else {
       try {
-        const results = await fc.batchScrape(urls, {
-          formats: ['markdown'],
-          onlyMainContent: true,
-        });
+        let done = 0;
+        const results = await fc.batchScrape(
+          urls,
+          { formats: ['markdown'], onlyMainContent: true },
+          async (r) => {
+            done++;
+            process.stdout.write(`\r  Scraped ${done}/${urls.length} pages...`);
+            const page = this.pageFromScrape(r);
+            if (page.url) pages.push(page);
+          },
+        );
 
-        pages = results.map((r) => this.pageFromScrape(r));
+        // Fallback: if onPage wasn't called (synchronous response), map results now
+        if (pages.length === 0) {
+          pages = results
+            .map((r) => this.pageFromScrape(r))
+            .filter((p) => p.url);
+        }
 
+        process.stdout.write('\n');
         writeFileSync(contentInventoryPath, JSON.stringify({ slug, pages, generated_at: new Date().toISOString() }, null, 2), 'utf8');
         this.log(`  Content inventory written: ${pages.length} pages`);
 
@@ -168,13 +181,14 @@ export default class Discover extends BaseCommand {
   }
 
   private pageFromScrape(r: FirecrawlScrapeResult): ContentInventoryPage {
+    const url = r.url || r.metadata?.sourceURL || r.metadata?.url || '';
     const title = r.metadata?.title ?? '';
     const description = r.metadata?.description ?? '';
     const wordCount = r.markdown ? r.markdown.split(/\s+/).filter(Boolean).length : 0;
-    const rawSlug = r.url.replace(/https?:\/\/[^/]+/, '').replace(/\/$/, '') || '/';
+    const rawSlug = url ? url.replace(/https?:\/\/[^/]+/, '').replace(/\/$/, '') || '/' : '/';
 
     return {
-      url: r.url,
+      url,
       slug: rawSlug,
       title,
       description,
