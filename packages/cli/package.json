@@ -27,6 +27,7 @@
     "@oclif/core": "^3.0.0",
     "@oclif/plugin-help": "^6.0.0",
     "@oclif/plugin-not-found": "^3.0.0",
+    "@upriver/audit-passes": "workspace:*",
     "@upriver/core": "workspace:*",
     "dotenv": "^16.0.0",
     "yaml": "^2.4.0"

@@ -15,6 +15,19 @@ importers:
         specifier: ^5.4.0
         version: 5.9.3
 
+  packages/audit-passes:
+    dependencies:
+      '@upriver/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.39
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
+
   packages/cli:
     dependencies:
       '@oclif/core':
@@ -26,6 +39,9 @@ importers:
       '@oclif/plugin-not-found':
         specifier: ^3.0.0
         version: 3.2.80(@types/node@20.19.39)
+      '@upriver/audit-passes':
+        specifier: workspace:*
+        version: link:../audit-passes
       '@upriver/core':
         specifier: workspace:*
         version: link:../core
