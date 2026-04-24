@@ -186,9 +186,15 @@ function sortByPriority(a: AuditFinding, b: AuditFinding): number {
   return (order[a.priority] ?? 9) - (order[b.priority] ?? 9);
 }
 
+function toStringArray(v: unknown): string[] {
+  if (Array.isArray(v)) return v.filter((x): x is string => typeof x === 'string');
+  if (typeof v === 'string') return v.split(/[,;]/).map((s) => s.trim()).filter(Boolean);
+  return [];
+}
+
 function synthesizeDesignSystem(profile: AuditPackage['brandingProfile']): DesignSystem {
   const colors = (profile.colors ?? {}) as Record<string, string>;
-  const fonts = profile.fonts ?? [];
+  const fonts = toStringArray(profile.fonts);
   const typography = profile.typography ?? {};
   const fontFamilies = typography.fontFamilies ?? {};
   const fontSizes = typography.fontSizes ?? {};
@@ -229,7 +235,7 @@ function synthesizeDesignSystem(profile: AuditPackage['brandingProfile']): Desig
     logo: profile.logo ?? profile.images?.logo ?? '',
     favicon: profile.images?.favicon ?? '',
     colorScheme: profile.colorScheme ?? 'light',
-    personality: profile.personality ?? [],
+    personality: toStringArray(profile.personality),
   };
 }
 
