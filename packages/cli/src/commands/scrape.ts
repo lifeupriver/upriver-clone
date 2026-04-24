@@ -246,7 +246,7 @@ export default class Scrape extends BaseCommand {
     await fc.batchScrape(
       urls,
       {
-        formats: ['markdown', 'rawHtml', 'screenshot', 'images', 'links', 'summary'],
+        formats: ['markdown', 'rawHtml', 'screenshot', 'links', 'summary'],
         onlyMainContent: false,
         screenshot: { fullPage: true, quality: 85, viewport: { width: 1440, height: 900 } },
       },
@@ -268,12 +268,11 @@ export default class Scrape extends BaseCommand {
           assetManifest.push({ url: result.screenshot!, localPath: screenshotLocal, type: 'screenshot-desktop' });
         }
 
-        // Download images
-        if (result.images) {
-          for (const imgUrl of result.images.slice(0, 20)) {
-            const local = await downloadImage(imgUrl, join(dir, 'assets/images'));
-            if (local) assetManifest.push({ url: imgUrl, localPath: local, type: 'image' });
-          }
+        // Extract image URLs from rawHtml and download
+        const imgUrls = extractImageUrls(result.rawHtml ?? '', pageUrl);
+        for (const imgUrl of imgUrls.slice(0, 20)) {
+          const local = await downloadImage(imgUrl, join(dir, 'assets/images'));
+          if (local) assetManifest.push({ url: imgUrl, localPath: local, type: 'image' });
         }
 
         // Save rawHtml to disk
@@ -284,7 +283,7 @@ export default class Scrape extends BaseCommand {
         }
 
         // Write initial page record (will be updated with JSON extraction)
-        const record = buildPageRecord(result, pageUrl, screenshotLocal, null, rawHtmlPath);
+        const record = buildPageRecord(result, pageUrl, screenshotLocal, null, rawHtmlPath, imgUrls);
         writeFileSync(
           join(dir, 'pages', `${urlToSlug(pageUrl)}.json`),
           JSON.stringify(record, null, 2),
@@ -479,6 +478,7 @@ function buildPageRecord(
   desktopScreenshot: string | null,
   mobileScreenshot: string | null,
   rawHtmlPath: string | null,
+  images: string[] = [],
 ): PageRecord {
   const md = result.markdown ?? '';
   const headings = extractHeadings(md);
@@ -506,7 +506,7 @@ function buildPageRecord(
       headings,
     },
     links: { internal, external },
-    images: result.images ?? [],
+    images,
     screenshots: { desktop: desktopScreenshot, mobile: mobileScreenshot },
     extracted: {
       ctaButtons: [],
@@ -532,6 +532,25 @@ function extractHeadings(markdown: string): Array<{ level: number; text: string 
     }
   }
   return headings;
+}
+
+function extractImageUrls(rawHtml: string, pageUrl: string): string[] {
+  const urls: string[] = [];
+  const seen = new Set<string>();
+  const pattern = /(?:src|data-src|srcset)=["']([^"']+\.(?:jpg|jpeg|png|gif|webp|svg|avif)[^"']*)/gi;
+  let m: RegExpExecArray | null;
+  let base = '';
+  try { base = new URL(pageUrl).origin; } catch { /* ignore */ }
+
+  while ((m = pattern.exec(rawHtml)) !== null) {
+    let u = m[1]?.split(' ')[0]?.trim() ?? '';
+    if (!u || u.startsWith('data:')) continue;
+    if (u.startsWith('//')) u = 'https:' + u;
+    else if (u.startsWith('/')) u = base + u;
+    else if (!u.startsWith('http')) continue;
+    if (!seen.has(u)) { seen.add(u); urls.push(u); }
+  }
+  return urls;
 }
 
 async function downloadScreenshot(
