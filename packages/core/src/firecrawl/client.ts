@@ -35,7 +35,8 @@ export class FirecrawlClient {
     method: 'GET' | 'POST',
     body?: unknown,
   ): Promise<T> {
-    const res = await fetch(`${FIRECRAWL_BASE_URL}${path}`, {
+    const url = path.startsWith('http') ? path : `${FIRECRAWL_BASE_URL}${path}`;
+    const res = await fetch(url, {
       method,
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
