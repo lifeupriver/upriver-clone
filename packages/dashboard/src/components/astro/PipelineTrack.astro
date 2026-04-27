@@ -1,0 +1,101 @@
+---
+import { PIPELINE_STAGES, stageIndex, type PipelineStage } from '@/lib/pipeline';
+
+export interface Props {
+  currentStage: PipelineStage;
+}
+
+const { currentStage } = Astro.props;
+const currentIdx = stageIndex(currentStage);
+---
+
+<div class="pipeline-track">
+  {PIPELINE_STAGES.map((item, idx) => {
+    const isComplete = idx < currentIdx;
+    const isActive   = idx === currentIdx;
+    const isPending  = idx > currentIdx;
+    return (
+      <div class="pipeline-step">
+        <div class="step-connector" />
+        <div class:list={['step-dot', { complete: isComplete, active: isActive, pending: isPending }]}>
+          {isComplete && (
+            <svg width="8" height="8" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 6l3 3 5-5"/>
+            </svg>
+          )}
+          {isActive && <span class="status-dot" />}
+        </div>
+        <span class:list={['step-label', { complete: isComplete, active: isActive, pending: isPending }]}>
+          {item.label}
+        </span>
+      </div>
+    );
+  })}
+</div>
+
+<style>
+  .pipeline-track {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .pipeline-step {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    position: relative;
+  }
+
+  .step-connector {
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    bottom: -50%;
+    width: 1px;
+    background: var(--border);
+    z-index: 0;
+  }
+
+  .pipeline-step:last-child .step-connector { display: none; }
+
+  .step-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+
+  .step-dot.complete {
+    background: var(--success);
+    color: #fff;
+  }
+
+  .step-dot.active {
+    background: var(--accent-10);
+    border: 1px solid var(--accent-30);
+  }
+
+  .step-dot.pending {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+  }
+
+  .step-label {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: var(--fs-xxs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.55rem 0;
+  }
+
+  .step-label.complete { color: var(--success); }
+  .step-label.active   { color: var(--text-heading); }
+  .step-label.pending  { color: var(--text-muted); }
+</style>

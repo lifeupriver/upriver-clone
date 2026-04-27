@@ -1,0 +1,73 @@
+---
+import DeliverableLayout from '@/layouts/DeliverableLayout.astro';
+import MarkdownDoc from '@/components/astro/MarkdownDoc.astro';
+import { readClientConfig, readMarkdownFile, clientExists } from '@/lib/fs-reader';
+
+const { slug } = Astro.params;
+
+if (!slug || !clientExists(slug)) {
+  return Astro.redirect('/clients');
+}
+
+const config = readClientConfig(slug)!;
+const content = readMarkdownFile(slug, 'claude-design-brief.md');
+
+if (!content) {
+  return Astro.redirect(`/clients/${slug}/design-brief`);
+}
+---
+
+<DeliverableLayout
+  title={`${config.name} — Design Brief`}
+  clientName={config.name}
+  docType="Design Brief"
+  slug={slug}
+>
+  <!-- Cover -->
+  <div class="cover">
+    <div class="cover-logo">
+      <svg width="32" height="30" viewBox="0 0 40 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Upriver">
+        <path d="M20 2 L38 34 H22 L20 28 L18 34 H2 Z" stroke="#F1551A" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
+        <path d="M12 34 L20 14 L28 34" stroke="#F1551A" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span class="cover-brand">Upriver Consulting</span>
+    </div>
+    <div>
+      <span class="eyebrow">Design Brief</span>
+      <h1 class="cover-title">{config.name}</h1>
+    </div>
+  </div>
+
+  <!-- Brief content -->
+  <MarkdownDoc content={content} />
+</DeliverableLayout>
+
+<style>
+  .cover {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cover-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  .cover-brand {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    color: var(--text-heading);
+    font-size: 0.9rem;
+  }
+
+  .cover-title {
+    font-size: 2.5rem;
+    letter-spacing: -0.02em;
+    margin: 0.25rem 0 0;
+  }
+</style>

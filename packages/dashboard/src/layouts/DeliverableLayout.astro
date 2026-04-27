@@ -1,0 +1,132 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  clientName: string;
+  docType: string;
+  slug: string;
+  generatedAt?: string;
+}
+
+const { title, clientName, docType, slug, generatedAt } = Astro.props;
+const date = generatedAt
+  ? new Date(generatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{clientName} — {docType}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div class="deliverable-shell">
+      <header class="deliverable-header no-print">
+        <a href={`/clients/${slug}`} class="back-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 12H5M12 5l-7 7 7 7"/>
+          </svg>
+          Back to {clientName}
+        </a>
+        <span class="eyebrow">{docType}</span>
+        <button
+          onclick="window.print()"
+          class="print-btn"
+        >
+          Save as PDF
+        </button>
+      </header>
+
+      <article class="deliverable-body">
+        <slot />
+      </article>
+
+      <footer class="deliverable-footer">
+        <svg width="18" height="16" viewBox="0 0 40 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M20 2 L38 34 H22 L20 28 L18 34 H2 Z" stroke="#F1551A" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
+          <path d="M12 34 L20 14 L28 34" stroke="#F1551A" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <span>Prepared by <strong>Upriver Consulting</strong> &mdash; {date}</span>
+      </footer>
+    </div>
+  </body>
+</html>
+
+<style>
+  .deliverable-shell {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+  }
+
+  .deliverable-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .back-link:hover { color: var(--accent); }
+
+  .deliverable-header .eyebrow { margin-left: auto; }
+
+  .print-btn {
+    padding: 0.4rem 0.9rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: var(--shadow-btn-primary);
+    transition: background var(--dur-fast) var(--ease-out);
+  }
+
+  .print-btn:hover { background: var(--accent-hover); }
+  .print-btn:active { transform: translateY(2px); box-shadow: none; }
+
+  .deliverable-body { margin-bottom: 4rem; }
+
+  .deliverable-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+  }
+
+  .deliverable-footer strong { color: var(--text-body); }
+
+  @media print {
+    .no-print { display: none !important; }
+
+    body { background: white; color: #111; }
+
+    .deliverable-shell { max-width: 100%; padding: 0; }
+
+    .deliverable-footer { border-top-color: #ccc; color: #555; }
+  }
+</style>

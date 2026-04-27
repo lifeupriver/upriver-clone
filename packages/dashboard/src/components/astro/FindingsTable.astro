@@ -1,0 +1,65 @@
+---
+import type { AuditFinding } from '@upriver/core';
+
+export interface Props {
+  findings: AuditFinding[];
+  limit?: number;
+  showDimension?: boolean;
+}
+
+const { findings, limit, showDimension = true } = Astro.props;
+
+const priorityClass: Record<string, string> = {
+  p0: 'pill-accent',
+  p1: 'pill-muted',
+  p2: 'pill-ghost',
+};
+
+const displayed = limit ? findings.slice(0, limit) : findings;
+---
+
+{displayed.length === 0 ? (
+  <p style="color: var(--text-muted); font-size: var(--fs-sm);">No findings.</p>
+) : (
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Priority</th>
+          {showDimension && <th>Dimension</th>}
+          <th>Finding</th>
+          <th>Effort</th>
+        </tr>
+      </thead>
+      <tbody>
+        {displayed.map(f => (
+          <tr>
+            <td>
+              <span class:list={['pill', priorityClass[f.priority] ?? 'pill-muted']}>
+                {f.priority.toUpperCase()}
+              </span>
+            </td>
+            {showDimension && (
+              <td>
+                <span class="eyebrow" style="font-size: 0.7rem;">{f.dimension}</span>
+              </td>
+            )}
+            <td style="color: var(--text-heading);">{f.title}</td>
+            <td>
+              <span class="pill pill-ghost">{f.effort}</span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
+<style>
+  .table-wrap {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+</style>
