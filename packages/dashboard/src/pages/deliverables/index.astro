@@ -1,0 +1,128 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import { listClients } from '@/lib/fs-reader';
+
+const clients = listClients().filter(c => c.hasDesignBrief || c.overallScore !== null);
+---
+
+<DashboardLayout title="Deliverables" section="deliverables">
+  <div class="page-header">
+    <span class="eyebrow">Export</span>
+    <h1>Deliverables</h1>
+    <p class="subtitle">Client-facing reports ready to export as PDF</p>
+  </div>
+
+  {clients.length === 0 ? (
+    <div class="empty-state">
+      <p>No exportable deliverables yet. Complete the audit and design brief stages first.</p>
+    </div>
+  ) : (
+    <div class="deliverable-grid">
+      {clients.map(c => (
+        <div class="card deliverable-card">
+          <div class="dc-header">
+            <span class="eyebrow">{c.pipelineStage}</span>
+            <h3>{c.config.name}</h3>
+            <p class="mono dc-url">{c.config.url}</p>
+          </div>
+          <div class="dc-links">
+            {c.overallScore !== null && (
+              <a href={`/deliverables/${c.config.slug}/audit-report`} class="dc-link">
+                <span>Audit Report</span>
+                <span class="score-num dc-score">{c.overallScore}</span>
+              </a>
+            )}
+            {c.hasDesignBrief && (
+              <a href={`/deliverables/${c.config.slug}/design-brief`} class="dc-link">
+                <span>Design Brief</span>
+                <span class="dc-arrow">→</span>
+              </a>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</DashboardLayout>
+
+<style>
+  .page-header {
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 { margin: 0.25rem 0 0.375rem; }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    margin: 0;
+  }
+
+  .deliverable-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .deliverable-card {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .dc-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .dc-url {
+    color: var(--text-muted);
+    font-size: var(--fs-xs);
+    margin: 0;
+  }
+
+  .dc-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: auto;
+  }
+
+  .dc-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.875rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .dc-link:hover {
+    color: var(--accent);
+    border-color: var(--accent-20);
+  }
+
+  .dc-score { font-size: 1rem; }
+
+  .dc-arrow { font-size: 1rem; }
+
+  .empty-state {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 3rem;
+    text-align: center;
+    color: var(--text-muted);
+  }
+</style>

@@ -1,0 +1,117 @@
+---
+import type { AuditFinding } from '@upriver/core';
+
+export interface Props {
+  finding: AuditFinding;
+}
+
+const { finding } = Astro.props;
+
+const priorityClass: Record<string, string> = {
+  p0: 'pill-accent',
+  p1: 'pill-muted',
+  p2: 'pill-ghost',
+};
+
+const effortClass: Record<string, string> = {
+  light:  'pill-ghost',
+  medium: 'pill-ghost',
+  heavy:  'pill-ghost',
+};
+
+const priorityLabel: Record<string, string> = { p0: 'P0', p1: 'P1', p2: 'P2' };
+const effortLabel:   Record<string, string>  = { light: 'Light', medium: 'Medium', heavy: 'Heavy' };
+---
+
+<div class="finding-card card" id={finding.id}>
+  <div class="finding-meta">
+    <span class:list={['pill', priorityClass[finding.priority] ?? 'pill-muted']}>
+      {priorityLabel[finding.priority] ?? finding.priority}
+    </span>
+    <span class:list={['pill', effortClass[finding.effort] ?? 'pill-ghost']}>
+      {effortLabel[finding.effort] ?? finding.effort}
+    </span>
+    <span class="eyebrow dim-label">{finding.dimension}</span>
+  </div>
+
+  <h3 class="finding-title">{finding.title}</h3>
+  <p class="finding-desc">{finding.description}</p>
+
+  {finding.why_it_matters && (
+    <p class="finding-why">{finding.why_it_matters}</p>
+  )}
+
+  {finding.recommendation && (
+    <div class="quote-block finding-rec">
+      <strong style="color: var(--text-heading); display: block; margin-bottom: 0.3rem; font-family: var(--font-heading); font-size: var(--fs-xs); letter-spacing: 0.06em; text-transform: uppercase;">Recommendation</strong>
+      {finding.recommendation}
+    </div>
+  )}
+
+  {(finding.evidence || finding.page) && (
+    <div class="finding-evidence">
+      {finding.page && (
+        <span class="mono" style="color: var(--text-muted); font-size: var(--fs-xs)">
+          Page: {finding.page}
+        </span>
+      )}
+      {finding.evidence && (
+        <span class="mono" style="color: var(--text-muted); font-size: var(--fs-xs)">
+          {finding.evidence}
+        </span>
+      )}
+    </div>
+  )}
+</div>
+
+<style>
+  .finding-card {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .finding-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .dim-label {
+    margin-left: auto;
+    font-size: 0.7rem;
+  }
+
+  .finding-title {
+    font-size: var(--fs-h3-sm);
+    line-height: 1.3;
+  }
+
+  .finding-desc {
+    color: var(--text-body);
+    font-size: var(--fs-sm);
+    line-height: 1.65;
+  }
+
+  .finding-why {
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    font-style: italic;
+  }
+
+  .finding-rec {
+    margin-top: 0.25rem;
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+  }
+
+  .finding-evidence {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+  }
+</style>

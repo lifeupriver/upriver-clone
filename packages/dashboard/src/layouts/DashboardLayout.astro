@@ -1,0 +1,121 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  /** Highlight a nav section: 'clients' | 'deliverables' */
+  section?: string;
+}
+
+const { title, section = 'clients' } = Astro.props;
+const currentPath = Astro.url.pathname;
+
+const nav = [
+  { href: '/clients', label: 'Clients', section: 'clients' },
+  { href: '/deliverables', label: 'Deliverables', section: 'deliverables' },
+];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} — Upriver Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div class="shell">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <a href="/clients" class="brand">
+          <svg width="22" height="20" viewBox="0 0 40 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M20 2 L38 34 H22 L20 28 L18 34 H2 Z" stroke="#F1551A" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
+            <path d="M12 34 L20 14 L28 34" stroke="#F1551A" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
+          </svg>
+          <span class="brand-name">Upriver</span>
+        </a>
+
+        <nav class="sidebar-nav">
+          <span class="eyebrow nav-section-label">Navigation</span>
+          {nav.map(item => (
+            <a
+              href={item.href}
+              class:list={['nav-link', { active: currentPath.startsWith(item.href) }]}
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
+        <div class="sidebar-footer">
+          <span class="mono" style="font-size: var(--fs-xs); color: var(--text-muted);">v0.1.0</span>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <main class="main">
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>
+
+<style>
+  .shell {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--bg-primary-deep);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 1.25rem 1.25rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .brand-name {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--text-heading);
+    letter-spacing: -0.01em;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 0 0.5rem;
+    gap: 0.125rem;
+  }
+
+  .nav-section-label {
+    padding: 0 1.25rem 0.5rem;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .main {
+    flex: 1;
+    min-width: 0;
+    padding: 2rem 2.5rem;
+    max-width: 1400px;
+  }
+</style>

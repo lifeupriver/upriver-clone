@@ -1,0 +1,30 @@
+---
+import DimensionScoreCard from './DimensionScoreCard.astro';
+import type { AuditPassResult } from '@upriver/core';
+
+export interface Props {
+  passes: AuditPassResult[];
+  slug?: string;
+}
+
+const { passes, slug } = Astro.props;
+---
+
+<div class="score-strip">
+  {passes.map(pass => (
+    <DimensionScoreCard
+      dimension={pass.dimension}
+      score={pass.score}
+      findingsCount={pass.findings.length}
+      href={slug ? `/clients/${slug}/audit#${pass.dimension}` : undefined}
+    />
+  ))}
+</div>
+
+<style>
+  .score-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 0.75rem;
+  }
+</style>

@@ -4,6 +4,7 @@ dist/
 .env.*
 !.env.example
 clients/
+!packages/dashboard/src/pages/clients/
 *.log
 .DS_Store
 *.tsbuildinfo
