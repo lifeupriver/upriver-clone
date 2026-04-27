@@ -13,7 +13,8 @@
     "typecheck": "pnpm -r run typecheck",
     "lint": "pnpm -r run lint",
     "test": "pnpm -r run test",
-    "clean": "pnpm -r run clean"
+    "clean": "pnpm -r run clean",
+    "validate": "node scripts/validate.mjs"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
