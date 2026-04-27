@@ -1,0 +1,88 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import MarkdownDoc from '@/components/astro/MarkdownDoc.astro';
+import { readClientConfig, readMarkdownFile, clientExists } from '@/lib/fs-reader';
+
+const { slug } = Astro.params;
+
+if (!slug || !clientExists(slug)) {
+  return Astro.redirect('/clients');
+}
+
+const config = readClientConfig(slug)!;
+const content = readMarkdownFile(slug, 'launch-checklist.md');
+---
+
+<DashboardLayout title={`${config.name} — Launch Checklist`} section="clients">
+  <div class="breadcrumb">
+    <a href="/clients" class="bc-link">Clients</a>
+    <span class="bc-sep">/</span>
+    <a href={`/clients/${slug}`} class="bc-link">{config.name}</a>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">Launch Checklist</span>
+  </div>
+
+  <div class="doc-header">
+    <div>
+      <span class="eyebrow">Launch Checklist</span>
+      <h1>{config.name}</h1>
+    </div>
+  </div>
+
+  {content ? (
+    <MarkdownDoc content={content} />
+  ) : (
+    <div class="empty">
+      <p>No launch checklist yet. Run <code>upriver launch-checklist {slug}</code> to generate it.</p>
+    </div>
+  )}
+</DashboardLayout>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: var(--fs-xs);
+  }
+
+  .bc-link {
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .bc-link:hover { color: var(--accent); }
+  .bc-sep { color: var(--border); }
+
+  .bc-current {
+    color: var(--text-body);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .doc-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .doc-header h1 { margin: 0.25rem 0 0; }
+
+  .empty {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    text-align: center;
+    color: var(--text-muted);
+  }
+
+  .empty code { font-family: var(--font-mono); color: var(--accent); }
+</style>

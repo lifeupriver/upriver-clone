@@ -1,0 +1,349 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import PipelineTrack from '@/components/astro/PipelineTrack.astro';
+import ScoreStrip from '@/components/astro/ScoreStrip.astro';
+import FindingsTable from '@/components/astro/FindingsTable.astro';
+import { readClientConfig, readAuditPasses, readAuditSummary, clientExists } from '@/lib/fs-reader';
+import { detectStage } from '@/lib/pipeline';
+
+const { slug } = Astro.params;
+
+if (!slug || !clientExists(slug)) {
+  return Astro.redirect('/clients');
+}
+
+const config = readClientConfig(slug)!;
+const passes = readAuditPasses(slug);
+const summary = readAuditSummary(slug);
+const stage = detectStage(slug);
+
+const allFindings = passes.flatMap(p => p.findings);
+const p0Findings  = allFindings.filter(f => f.priority === 'p0');
+
+const created = new Date(config.created_at).toLocaleDateString('en-US', {
+  month: 'long', day: 'numeric', year: 'numeric'
+});
+---
+
+<DashboardLayout title={config.name} section="clients">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a href="/clients" class="bc-link">Clients</a>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">{config.name}</span>
+  </div>
+
+  <!-- Client header -->
+  <div class="client-header">
+    <div>
+      <span class="eyebrow">Client</span>
+      <h1>{config.name}</h1>
+      <a href={config.url} target="_blank" rel="noopener" class="client-url">
+        {config.url}
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align: middle; margin-left: 0.25rem;">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+      </a>
+    </div>
+    <div class="header-pills">
+      {config.platform && config.platform !== 'unknown' && (
+        <span class="pill pill-ghost">{config.platform}</span>
+      )}
+      {summary && (
+        <span class="overall-score score-num">{summary.overall}</span>
+      )}
+    </div>
+  </div>
+
+  <!-- Two-column layout -->
+  <div class="client-body">
+    <!-- Left: Meta + Pipeline -->
+    <aside class="client-aside">
+      <!-- Meta card -->
+      <div class="card meta-card">
+        <span class="eyebrow" style="margin-bottom: 0.75rem; display: block;">Details</span>
+        <dl class="meta-list">
+          <dt>Slug</dt>
+          <dd class="mono">{config.slug}</dd>
+          <dt>Created</dt>
+          <dd>{created}</dd>
+          {config.github_repo && (
+            <>
+              <dt>GitHub</dt>
+              <dd>
+                <a href={`https://github.com/${config.github_repo}`} target="_blank" rel="noopener" class="meta-link">
+                  {config.github_repo}
+                </a>
+              </dd>
+            </>
+          )}
+          {config.vercel_preview_url && (
+            <>
+              <dt>Preview</dt>
+              <dd>
+                <a href={config.vercel_preview_url} target="_blank" rel="noopener" class="meta-link">
+                  Open preview
+                </a>
+              </dd>
+            </>
+          )}
+        </dl>
+      </div>
+
+      <!-- Pipeline -->
+      <div class="card pipeline-card">
+        <span class="eyebrow" style="margin-bottom: 1rem; display: block;">Pipeline</span>
+        <PipelineTrack currentStage={stage} />
+      </div>
+
+      <!-- Quick nav -->
+      <div class="quick-nav">
+        <a href={`/clients/${slug}/audit`} class:list={['quick-link', { disabled: passes.length === 0 }]}>
+          Audit Report
+        </a>
+        <a href={`/clients/${slug}/design-brief`} class="quick-link">Design Brief</a>
+        <a href={`/clients/${slug}/qa`} class="quick-link">QA Report</a>
+        <a href={`/clients/${slug}/launch-checklist`} class="quick-link">Launch Checklist</a>
+        <a href={`/deliverables/${slug}/audit-report`} class="quick-link quick-link-accent">
+          Export Audit
+        </a>
+        <a href={`/deliverables/${slug}/design-brief`} class="quick-link quick-link-accent">
+          Export Brief
+        </a>
+      </div>
+    </aside>
+
+    <!-- Right: Scores + Findings -->
+    <div class="client-main">
+      {passes.length > 0 ? (
+        <>
+          <section class="section">
+            <div class="section-header">
+              <h3>Audit Scores</h3>
+              {summary && (
+                <span class="mono" style="color: var(--text-muted); font-size: var(--fs-sm);">
+                  Overall: <span class="score-num" style="font-size: 1.25rem;">{summary.overall}</span>
+                </span>
+              )}
+            </div>
+            <ScoreStrip passes={passes} slug={slug} />
+          </section>
+
+          {p0Findings.length > 0 && (
+            <section class="section">
+              <div class="section-header">
+                <h3>Critical Findings</h3>
+                <a href={`/clients/${slug}/audit`} class="see-all">See all →</a>
+              </div>
+              <FindingsTable findings={p0Findings} limit={5} />
+            </section>
+          )}
+        </>
+      ) : (
+        <div class="no-audit">
+          <p>No audit data yet. Run <code>upriver audit {slug}</code> to generate scores.</p>
+        </div>
+      )}
+    </div>
+  </div>
+</DashboardLayout>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: var(--fs-xs);
+  }
+
+  .bc-link {
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .bc-link:hover { color: var(--accent); }
+
+  .bc-sep { color: var(--border); }
+
+  .bc-current {
+    color: var(--text-body);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .client-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .client-header h1 {
+    margin: 0.25rem 0 0.375rem;
+  }
+
+  .client-url {
+    color: var(--accent);
+    font-size: var(--fs-sm);
+    font-family: var(--font-mono);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .client-url:hover { color: var(--accent-hover); }
+
+  .header-pills {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .overall-score { font-size: 2.5rem; }
+
+  .client-body {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .client-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .meta-card, .pipeline-card {
+    padding: 1.25rem;
+  }
+
+  .meta-list {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.25rem 0.75rem;
+    margin: 0;
+  }
+
+  .meta-list dt {
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    align-self: center;
+  }
+
+  .meta-list dd {
+    margin: 0;
+    color: var(--text-body);
+    font-size: var(--fs-sm);
+    word-break: break-all;
+    align-self: center;
+  }
+
+  .meta-link {
+    color: var(--accent);
+    font-size: var(--fs-sm);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .meta-link:hover { color: var(--accent-hover); }
+
+  .quick-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .quick-link {
+    padding: 0.5rem 0.875rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .quick-link:hover {
+    color: var(--text-body);
+    border-color: var(--border-input);
+  }
+
+  .quick-link-accent {
+    color: var(--accent);
+    border-color: var(--accent-20);
+    background: var(--accent-05);
+  }
+
+  .quick-link-accent:hover {
+    color: var(--accent-hover);
+    border-color: var(--accent-30);
+  }
+
+  .quick-link.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .client-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .see-all {
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .see-all:hover { color: var(--accent-hover); }
+
+  .no-audit {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    text-align: center;
+    color: var(--text-muted);
+  }
+
+  .no-audit code {
+    font-family: var(--font-mono);
+    color: var(--accent);
+  }
+</style>
