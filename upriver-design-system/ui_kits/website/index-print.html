@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Upriver Consulting — Website UI Kit (Print)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="stylesheet" href="../../colors_and_type.css"/>
+<link rel="icon" href="../../assets/icon.svg"/>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  body { margin: 0; background: #1A1412; }
+  [data-screen-label] { scroll-margin-top: 80px; }
+  .kit-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .kit-section { padding: 80px 0; border-top: 1px solid rgba(68,56,40,0.5); }
+  @media (min-width: 768px) { .kit-section { padding: 96px 0; } }
+  .icon-stroke { stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+  .icon-stroke-bold { stroke-width: 2.5; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-heading); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; font-size: 14px; border: none; text-decoration: none; }
+  .btn-primary { background: linear-gradient(to bottom, #FF6B35, #F1551A); color: #1A1412; padding: 12px 28px; border-radius: 8px; box-shadow: 0 4px 0 #9e2b03, 0 10px 16px rgba(241,85,26,0.25); }
+  .btn-secondary { background: #271E18; border: 1px solid #443828; color: #F1EAE4; padding: 12px 28px; border-radius: 8px; box-shadow: 0 4px 0 #1A1412, 0 8px 12px rgba(0,0,0,0.3); }
+
+  .up-card { background: #271E18; border: 1px solid #443828; border-radius: 12px; padding: 32px; }
+
+  .up-pill { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 6px; font-family: var(--font-heading); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; background: rgba(241,85,26,0.1); color: #F1551A; border: 1px solid rgba(241,85,26,0.2); }
+  .up-pill-hero { border-radius: 9999px; padding: 6px 16px; border-color: rgba(241,85,26,0.3); background: #271E18; color: #9A8E83; }
+
+  .quote-block { background: #271E18; border-left: 4px solid #F1551A; border-radius: 0 16px 16px 0; padding: 40px; position: relative; overflow: hidden; }
+  .quote-block::before { content: ""; position: absolute; top: -120px; right: -60px; width: 280px; height: 280px; background: #F1551A; opacity: 0.05; border-radius: 9999px; filter: blur(60px); pointer-events: none; }
+  .quote-block > * { position: relative; z-index: 1; }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 800px 400px at 50% 20%, rgba(241,85,26,0.08), transparent 60%),
+      radial-gradient(ellipse 600px 300px at 80% 100%, rgba(241,85,26,0.06), transparent 60%),
+      linear-gradient(180deg, #1A1412 0%, #0a0807 50%, #1A1412 100%);
+    overflow: hidden;
+  }
+  .hero-bg::after {
+    content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(241,85,26,0.4), transparent);
+  }
+
+  .pinging { position: relative; display: inline-flex; width: 12px; height: 12px; }
+  .pinging::after { content: ""; position: absolute; inset: 0; border-radius: 9999px; background: #F1551A; }
+
+  .nav-link { font-family: var(--font-heading); font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: #BFB5AA; text-decoration: none; }
+  .nav-link.active { color: #F1551A; }
+  .nav-link.highlight { color: rgba(241,85,26,0.8); }
+
+  .service-icon {
+    width: 64px; height: 64px; border-radius: 16px;
+    background: #1A1412; border: 1px solid #443828;
+    display: flex; align-items: center; justify-content: center;
+    color: #F1551A; margin-bottom: 20px;
+  }
+
+  .input {
+    width: 100%; background: #1A1412; border: 1px solid #4D4038; border-radius: 4px;
+    color: #F1EAE4; padding: 10px 14px; font-family: var(--font-body); font-size: 15px;
+  }
+  .input::placeholder { color: #9A8E83; }
+
+  .form-label { display: block; font-family: var(--font-heading); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #F1EAE4; font-weight: 500; margin-bottom: 6px; }
+
+  .stat-num { font-family: var(--font-heading); color: #F1551A; font-size: 64px; font-weight: 500; line-height: 1; }
+
+  .footer-link { color: #BFB5AA; text-decoration: none; font-size: 14px; }
+
+  .up-navbar {
+    position: static;
+    background: rgba(26,20,18,0.95);
+    border-bottom: 1px solid #443828;
+  }
+
+  /* ---- Print-specific ---- */
+  .page {
+    width: 100%;
+    break-after: page;
+    page-break-after: always;
+    break-inside: avoid;
+    padding-bottom: 64px;
+  }
+  .page:last-child { break-after: auto; page-break-after: auto; }
+
+  .screen-header {
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid rgba(68,56,40,0.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    color: #9A8E83;
+    font-family: var(--font-heading);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .screen-header .label { color: #F1551A; }
+
+  @page { size: 1280px 1800px; margin: 0; }
+
+  @media print {
+    html, body { background: #1A1412 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { margin: 0 !important; }
+    .up-navbar { position: static !important; }
+    .hero-section { min-height: 0 !important; padding: 80px 0 !important; }
+    .kit-section { padding: 64px 0 !important; }
+    .page { break-after: page; page-break-after: always; }
+    .page:last-child { break-after: auto; page-break-after: auto; }
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const ArrowRight = (p) => <svg width={p.size||18} height={p.size||18} viewBox="0 0 24 24" className={`icon-stroke ${p.bold?'icon-stroke-bold':''} ${p.className||''}`}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>;
+const ChevronRight = (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 24 24" className={`icon-stroke ${p.className||''}`}><path d="m9 18 6-6-6-6"/></svg>;
+const Check = (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 24 24" className={`icon-stroke icon-stroke-bold ${p.className||''}`} style={{color:'#F1551A'}}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>;
+const IconBrain = () => <svg width={28} height={28} viewBox="0 0 24 24" className="icon-stroke"><path d="M9.5 2A2.5 2.5 0 0 0 7 4.5v.5a2.5 2.5 0 0 0-2 4.2A2.5 2.5 0 0 0 5 14a2.5 2.5 0 0 0 2 4.5v.5A2.5 2.5 0 0 0 9.5 22a2.5 2.5 0 0 0 2.5-2.5V4.5A2.5 2.5 0 0 0 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 1 17 4.5v.5a2.5 2.5 0 0 1 2 4.2 2.5 2.5 0 0 1 0 4.8 2.5 2.5 0 0 1-2 4.5v.5a2.5 2.5 0 0 1-2.5 2.5"/></svg>;
+const IconCamera = () => <svg width={28} height={28} viewBox="0 0 24 24" className="icon-stroke"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3"/></svg>;
+const IconChart = () => <svg width={28} height={28} viewBox="0 0 24 24" className="icon-stroke"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>;
+const IconMail = () => <svg width={28} height={28} viewBox="0 0 24 24" className="icon-stroke"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>;
+const IconStar = () => <svg width={28} height={28} viewBox="0 0 24 24" className="icon-stroke"><polygon points="12 2 15 9 22 10 17 15 18 22 12 19 6 22 7 15 2 10 9 9 12 2"/></svg>;
+const IconMonitor = () => <svg width={28} height={28} viewBox="0 0 24 24" className="icon-stroke"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>;
+const IconInstagram = () => <svg width={20} height={20} viewBox="0 0 24 24" className="icon-stroke"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>;
+const IconYouTube = () => <svg width={20} height={20} viewBox="0 0 24 24" className="icon-stroke"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.13C5.12 19.56 12 19.56 12 19.56s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.43z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor" stroke="none"/></svg>;
+
+function Navbar({ current }) {
+  const links = [
+    { id: 'home', label: 'Home' },
+    { id: 'services', label: 'Services' },
+    { id: 'how', label: 'How It Works' },
+    { id: 'venues', label: 'For Venues' },
+    { id: 'audit', label: 'Free Audit', highlight: true },
+    { id: 'contact', label: 'Contact' },
+  ];
+  return (
+    <nav className="up-navbar">
+      <div className="kit-container" style={{display:'flex',alignItems:'center',justifyContent:'space-between',height:72}}>
+        <span style={{fontFamily:'var(--font-heading)',color:'#F1EAE4',fontWeight:500,fontSize:22,textTransform:'uppercase',letterSpacing:'0.2em'}}>Upriver</span>
+        <div style={{display:'flex',alignItems:'center',gap:32}}>
+          {links.map(l => (
+            <span key={l.id} className={`nav-link ${current===l.id?'active':''} ${l.highlight?'highlight':''}`}>{l.label}</span>
+          ))}
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+function ScreenHeader({ num, name }) {
+  return (
+    <div className="screen-header">
+      <span><span className="label">{num}</span> &nbsp; {name}</span>
+      <span>Upriver Consulting · Website UI Kit</span>
+    </div>
+  );
+}
+
+function Hero() {
+  return (
+    <section data-screen-label="01 Hero" className="hero-section" style={{position:'relative',padding:'80px 0',display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <div className="hero-bg"/>
+      <div className="kit-container" style={{position:'relative',zIndex:1,textAlign:'center',padding:'64px 24px'}}>
+        <div>
+          <div className="up-pill up-pill-hero" style={{marginBottom:32}}>
+            <span className="pinging"/>
+            <span>Accepting New Clients</span>
+          </div>
+        </div>
+        <h1 style={{maxWidth:920,margin:'0 auto 24px'}}>The Photographer Who Builds Your AI Systems</h1>
+        <p style={{maxWidth:720,margin:'0 auto 40px',color:'#BFB5AA',fontSize:'1.25rem',lineHeight:1.7}}>
+          Hudson Valley based small business owner for 25 years. Working photographer and filmmaker. Former Apple Creative. One person who can audit your sales process, set up the AI, write the prompts, shoot the video, and train your team.
+        </p>
+        <div style={{display:'flex',gap:20,justifyContent:'center',marginBottom:40,flexWrap:'wrap'}}>
+          <span className="btn btn-primary">Get a Free 60-Second Audit <ArrowRight bold/></span>
+          <span className="btn btn-secondary">Wedding Venue? Start Here</span>
+        </div>
+        <div style={{display:'flex',gap:12,justifyContent:'center',flexWrap:'wrap'}}>
+          {['25 years in business','Former Apple Creative','Hudson Valley based'].map(t => (
+            <span key={t} style={{display:'inline-flex',alignItems:'center',gap:8,background:'#271E18',padding:'8px 16px',borderRadius:6,border:'1px solid #443828',color:'#9A8E83',fontFamily:'var(--font-heading)',fontSize:12,textTransform:'uppercase',letterSpacing:'0.1em'}}>
+              <Check size={14}/> {t}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StatStrip() {
+  const stats = [
+    { n: '25+', l: 'Years in Business' },
+    { n: '2', l: 'Years Building AI' },
+    { n: '10+', l: 'Hours Saved Weekly' },
+  ];
+  return (
+    <section style={{padding:'64px 0',background:'#0a0807',borderTop:'1px solid rgba(68,56,40,0.5)'}}>
+      <div className="kit-container" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:24}}>
+        {stats.map(s => (
+          <div key={s.l} style={{textAlign:'center'}}>
+            <div className="stat-num">{s.n}</div>
+            <div style={{color:'#BFB5AA',marginTop:8,fontSize:14}}>{s.l}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ServicesGrid() {
+  const services = [
+    { icon: <IconBrain/>, title: 'AI Foundation', desc: "Audit, set up, and train AI in your voice. You keep everything I build." },
+    { icon: <IconMail/>, title: 'Inquiry Response', desc: "AI that replies to leads like you would. Trained on your actual FAQ, your tone." },
+    { icon: <IconStar/>, title: 'Review Response', desc: "Never leave a review sitting for three weeks again. Drafts reviewed, then sent." },
+    { icon: <IconChart/>, title: 'AI Search Visibility', desc: "Show up when someone asks ChatGPT or Claude about your kind of business." },
+    { icon: <IconCamera/>, title: 'Video Production', desc: "Business intro, half-day, brand documentary. 25 years behind the camera." },
+    { icon: <IconMonitor/>, title: 'Monthly Content Partner', desc: "One shoot per month. Social stops being sporadic, starts being a system." },
+  ];
+  return (
+    <section data-screen-label="02 Services" className="kit-section">
+      <div className="kit-container">
+        <h2 style={{marginBottom:16}}>What I Do</h2>
+        <p style={{color:'#BFB5AA',maxWidth:680,marginBottom:48,fontSize:18}}>Consulting and content production from the same person. Audit on one side, real creative output on the other.</p>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:24}}>
+          {services.map(s => (
+            <div key={s.title} className="up-card" style={{position:'relative',breakInside:'avoid'}}>
+              <div className="service-icon">{s.icon}</div>
+              <h3 style={{marginBottom:12}}>{s.title}</h3>
+              <p style={{color:'#BFB5AA',marginBottom:24,fontSize:16,lineHeight:1.6}}>{s.desc}</p>
+              <div style={{display:'inline-flex',alignItems:'center',gap:8,color:'#F1EAE4',fontFamily:'var(--font-heading)',textTransform:'uppercase',letterSpacing:'0.08em',fontSize:13,fontWeight:500}}>
+                Explore service
+                <ChevronRight style={{color:'#F1551A'}}/>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HonestAI() {
+  const cards = [
+    { t: 'Worried about AI slop?', d: "Same. That's the whole reason I build custom systems instead of handing you a generic ChatGPT login. Everything gets trained on your voice, your FAQ, your standards." },
+    { t: 'Privacy or energy concerns?', d: "We can run models locally on your own machine. Your data never leaves the room. Slower than Claude, but for a lot of tasks more than enough." },
+    { t: "Can't keep up with the changes?", d: "Nobody can. This stuff changes literally every few days. That's the reason to hire someone whose job is staying on top of it." },
+    { t: 'Tired of paying for a dozen SaaS tools?', d: "Same. A custom setup you own outright usually costs less in a year than what you're paying monthly for tools you barely use." },
+  ];
+  return (
+    <section data-screen-label="03 Honest AI" className="kit-section">
+      <div className="kit-container">
+        <h2 style={{marginBottom:16}}>An Honest Take on AI</h2>
+        <p style={{color:'#BFB5AA',maxWidth:760,marginBottom:48,fontSize:18}}>
+          AI has real problems. The output is often slop that makes businesses look unprofessional. I see my job as helping people get ready for what's coming, not selling them a fantasy.
+        </p>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:24,marginBottom:48}}>
+          {cards.map(c => (
+            <div key={c.t} className="up-card" style={{borderRadius:16,breakInside:'avoid'}}>
+              <h3 style={{marginBottom:12,fontSize:20}}>{c.t}</h3>
+              <p style={{color:'#BFB5AA'}}>{c.d}</p>
+            </div>
+          ))}
+        </div>
+        <div className="quote-block" style={{breakInside:'avoid'}}>
+          <h3 style={{fontSize:28,marginBottom:20}}>Not just for big companies with big budgets</h3>
+          <p style={{color:'#BFB5AA',marginBottom:16}}>
+            Every other AI consultant wants six-figure retainers from enterprise clients. I'm a solopreneur myself. 25 years of running my own small business. If you're a one-person shop, I'd love to help you build something that gives you back your evenings.
+          </p>
+          <p style={{color:'#BFB5AA'}}>
+            And if you have a team, the goal isn't to replace your admins. It's to free them from the grinding computer work so they can focus on the human parts of their jobs.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ThreeWays() {
+  const options = [
+    { id: 1, tag: 'Fastest', primary: true, title: 'Free 60-Second Audit', desc: 'Answer 8 questions. Claude reads your site and generates a specific action plan with quick wins and gaps.', cta: 'Start the Audit' },
+    { id: 2, tag: '20 minutes', title: 'Discovery Call', desc: "Book a time on my calendar. We'll talk about your business and whether any of this would actually help.", cta: 'Book a Call' },
+    { id: 3, tag: 'No commitment', title: 'Just Send a Note', desc: 'Email, phone, or a quick contact form. I read every message myself.', cta: 'Get in Touch' },
+  ];
+  return (
+    <section data-screen-label="04 Three Ways" className="kit-section" style={{background:'#271E18',borderTop:'1px solid rgba(68,56,40,0.5)'}}>
+      <div className="kit-container">
+        <h2 style={{marginBottom:16}}>Three Ways to Start</h2>
+        <p style={{color:'#BFB5AA',maxWidth:680,marginBottom:40,fontSize:18}}>Select an option below. All three are free, and there's no sales pressure on any of them.</p>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:24}}>
+          {options.map(o => (
+            <div key={o.id} style={{
+              position:'relative',borderRadius:16,padding:32,
+              background:'#1A1412',
+              border:`2px solid ${o.primary ? 'rgba(241,85,26,0.5)' : '#443828'}`,
+              breakInside:'avoid',
+            }}>
+              <div style={{position:'absolute',top:24,right:24,width:24,height:24,borderRadius:9999,border:`2px solid #443828`}}/>
+              <span className="up-pill" style={{marginBottom:24,background:o.primary?'rgba(241,85,26,0.2)':'#271E18',color:o.primary?'#F1551A':'#F1EAE4',borderColor:o.primary?'rgba(241,85,26,0.3)':'#443828'}}>{o.tag}</span>
+              <h3 style={{fontSize:22,marginBottom:12}}>{o.title}</h3>
+              <p style={{color:'#BFB5AA',fontSize:14,marginBottom:24,minHeight:80}}>{o.desc}</p>
+              <span className={o.primary ? 'btn btn-primary' : 'btn btn-secondary'} style={{width:'100%'}}>{o.cta}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AuditScreen() {
+  return (
+    <section data-screen-label="05 Audit" className="kit-section">
+      <div className="kit-container" style={{maxWidth:720}}>
+        <span className="up-pill" style={{marginBottom:24}}>Free 60-Second Audit</span>
+        <h1 style={{fontSize:48,marginBottom:32}}>What's your business, in one sentence?</h1>
+        <textarea className="input" rows={4} placeholder="e.g. Wedding venue in the Hudson Valley, 80-guest capacity." style={{resize:'vertical',marginBottom:24}}/>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:64}}>
+          <span style={{color:'#9A8E83',fontFamily:'var(--font-heading)',fontSize:12,textTransform:'uppercase',letterSpacing:'0.1em'}}>Question 1 of 3</span>
+          <span className="btn btn-primary">Next <ArrowRight bold/></span>
+        </div>
+
+        <div className="quote-block" style={{breakInside:'avoid'}}>
+          <h2 style={{marginBottom:16}}>Your Plan</h2>
+          <h3 style={{fontSize:28,marginBottom:20}}>Three things to try first</h3>
+          <ol style={{color:'#BFB5AA',paddingLeft:20,lineHeight:1.8}}>
+            <li>Set up an AI inquiry draft in HoneyBook. Pulls from your FAQ. You hit send.</li>
+            <li>Add a weekly review-response block, 30 minutes, AI-drafted.</li>
+            <li>One half-day shoot in the next 60 days. 8-12 clips for everything else.</li>
+          </ol>
+          <div style={{marginTop:32,display:'flex',gap:16,flexWrap:'wrap'}}>
+            <span className="btn btn-primary">Book a Discovery Call <ArrowRight bold/></span>
+            <span className="btn btn-secondary">Start Over</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ContactScreen() {
+  const types = ['Wedding Venue','Hotel/Restaurant/Hospitality','Contractor/Home Services','Professional Services/Consulting','Education','Retail/E-commerce','Other'];
+  return (
+    <section data-screen-label="06 Contact" className="kit-section">
+      <div className="kit-container" style={{maxWidth:880}}>
+        <h2 style={{marginBottom:16}}>Get in Touch</h2>
+        <h1 style={{fontSize:48,marginBottom:24}}>Tell me what you're working on.</h1>
+        <p style={{color:'#BFB5AA',fontSize:18,marginBottom:40,maxWidth:620}}>I read every message myself. Response within 24 hours.</p>
+        <div className="up-card" style={{padding:40,breakInside:'avoid'}}>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:20}}>
+            <div><label className="form-label">Name *</label><input className="input" placeholder="Your name"/></div>
+            <div><label className="form-label">Email *</label><input className="input" type="email" placeholder="you@example.com"/></div>
+            <div><label className="form-label">Phone</label><input className="input" placeholder="845-555-0123"/></div>
+            <div><label className="form-label">Business Name *</label><input className="input" placeholder="Your business"/></div>
+            <div style={{gridColumn:'1 / -1'}}>
+              <label className="form-label">Business Type *</label>
+              <select className="input" defaultValue="">
+                <option value="">Select your business type</option>
+                {types.map(t => <option key={t}>{t}</option>)}
+              </select>
+            </div>
+            <div style={{gridColumn:'1 / -1'}}>
+              <label className="form-label">Message</label>
+              <textarea className="input" rows={4} placeholder="Tell me about your business and what you're looking for..."/>
+            </div>
+          </div>
+          <span className="btn btn-primary">Get in Touch <ArrowRight bold/></span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function VenuesScreen() {
+  return (
+    <>
+      <section data-screen-label="07 Venues" className="kit-section" style={{paddingTop:80}}>
+        <div className="kit-container">
+          <span className="up-pill" style={{marginBottom:24}}>For Wedding Venues</span>
+          <h1 style={{marginBottom:24,maxWidth:900}}>AI and content for venues that book themselves.</h1>
+          <p style={{color:'#BFB5AA',fontSize:20,maxWidth:720,marginBottom:40}}>
+            Inquiry response that sounds like you wrote it. Review responses that actually go out. Video content that fills your Instagram for six months.
+          </p>
+          <div style={{display:'flex',gap:16,flexWrap:'wrap',marginBottom:64}}>
+            <span className="btn btn-primary">Free 60-Second Audit <ArrowRight bold/></span>
+            <span className="btn btn-secondary">Book a Call</span>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:24}}>
+            {[
+              { t: 'Inquiry Response', p: 'from $2,000', d: 'Trained on your actual FAQ. Drafts reviewed in the morning, sent by you.' },
+              { t: 'Review Response', p: 'from $500/mo', d: 'A weekly 30-minute block. AI drafts, you approve, they go out.' },
+              { t: 'Half-Day Content', p: 'from $2,000', d: '3-4 hours on-site. 8-12 clips and 15-20 edited photos.' },
+              { t: 'Brand Documentary', p: 'from $4,000', d: 'A full day. Time-lapse, interviews, cinematic detail shots.' },
+            ].map(s => (
+              <div key={s.t} className="up-card" style={{breakInside:'avoid'}}>
+                <h3 style={{marginBottom:8}}>{s.t}</h3>
+                <div className="price-mono" style={{fontSize:22,marginBottom:16,fontFamily:'var(--font-mono)',color:'#F1551A'}}>{s.p}</div>
+                <p style={{color:'#BFB5AA',fontSize:15}}>{s.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function HowItWorksScreen() {
+  const steps = [
+    { n: '01', t: 'Audit', d: 'Free 60-second audit or discovery call. I figure out whether any of this would actually help you.' },
+    { n: '02', t: 'Plan', d: "I write up what I'd do. Specific tools, specific outcomes, specific prices. You decide if you want any of it." },
+    { n: '03', t: 'Build', d: "I set it up in your voice. AI trained on your FAQ. Video shot on a morning that fits your schedule." },
+    { n: '04', t: 'Train', d: "I walk you and your team through it. Written handoff. You keep everything I build." },
+  ];
+  return (
+    <section data-screen-label="08 How It Works" className="kit-section">
+      <div className="kit-container">
+        <span className="up-pill" style={{marginBottom:24}}>Process</span>
+        <h1 style={{marginBottom:24,maxWidth:720}}>Four steps. No surprises.</h1>
+        <p style={{color:'#BFB5AA',fontSize:18,maxWidth:680,marginBottom:48}}>
+          Most engagements run 2-6 weeks. You'll know the timeline before we start.
+        </p>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:24}}>
+          {steps.map(s => (
+            <div key={s.n} className="up-card" style={{breakInside:'avoid'}}>
+              <div style={{fontFamily:'var(--font-mono)',color:'#F1551A',fontSize:28,marginBottom:12}}>{s.n}</div>
+              <h3 style={{marginBottom:12}}>{s.t}</h3>
+              <p style={{color:'#BFB5AA',fontSize:15}}>{s.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  const cols = [
+    { h: 'Services', links: ['AI Foundation','Inquiry Response','Review Response','AI Search','Video Production'] },
+    { h: 'About', links: ['Team','How It Works','Why Claude','For Wedding Venues'] },
+    { h: 'Try It', links: ['Free 60-Second Audit','Live AI Demos','Learn','FAQ'] },
+    { h: 'Contact', links: ['Get in Touch','Book a Call','joshua@upriverhv.com','845-335-8688'] },
+  ];
+  return (
+    <footer style={{background:'#1A1412',borderTop:'1px solid #443828',paddingTop:48,paddingBottom:48}}>
+      <div className="kit-container">
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr 1fr',gap:40}}>
+          <div>
+            <div style={{fontFamily:'var(--font-heading)',color:'#F1EAE4',fontSize:18,textTransform:'uppercase',letterSpacing:'0.2em',fontWeight:500}}>Joshua Brown</div>
+            <p style={{color:'#9A8E83',fontSize:14,marginTop:8,marginBottom:16}}>AI + Content Consulting for Businesses</p>
+            <div style={{display:'flex',gap:16,color:'#9A8E83'}}>
+              <IconInstagram/><IconYouTube/>
+            </div>
+          </div>
+          {cols.map(c => (
+            <div key={c.h}>
+              <h3 style={{fontFamily:'var(--font-heading)',color:'#F1EAE4',fontSize:13,textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:16,fontWeight:500}}>{c.h}</h3>
+              <ul style={{listStyle:'none',padding:0,margin:0,display:'flex',flexDirection:'column',gap:10}}>
+                {c.links.map(l => <li key={l}><span className="footer-link">{l}</span></li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <div style={{marginTop:40,paddingTop:32,borderTop:'1px solid #443828',display:'flex',justifyContent:'space-between',color:'#9A8E83',fontSize:14}}>
+          <span>© 2026 Joshua Brown. All rights reserved.</span>
+          <span className="footer-link">joshuabrownphotography.com</span>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function Page({ num, name, current, children }) {
+  return (
+    <div className="page">
+      <ScreenHeader num={num} name={name}/>
+      <Navbar current={current}/>
+      {children}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <>
+      <Page num="01" name="Home" current="home">
+        <Hero/>
+        <StatStrip/>
+        <ServicesGrid/>
+        <HonestAI/>
+        <ThreeWays/>
+        <Footer/>
+      </Page>
+      <Page num="02" name="Services" current="services">
+        <div style={{height:24}}/>
+        <ServicesGrid/>
+        <Footer/>
+      </Page>
+      <Page num="03" name="How It Works" current="how">
+        <HowItWorksScreen/>
+        <Footer/>
+      </Page>
+      <Page num="04" name="For Venues" current="venues">
+        <VenuesScreen/>
+        <Footer/>
+      </Page>
+      <Page num="05" name="Free Audit" current="audit">
+        <AuditScreen/>
+        <Footer/>
+      </Page>
+      <Page num="06" name="Contact" current="contact">
+        <ContactScreen/>
+        <Footer/>
+      </Page>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+
+// Auto-print once fonts + JSX are ready
+(async () => {
+  try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) {}
+  await new Promise(r => setTimeout(r, 800));
+  window.print();
+})();
+</script>
+</body>
+</html>
+</content>
