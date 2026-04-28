@@ -25,7 +25,11 @@ export type AuditDimension =
   | 'schema'
   | 'aeo'
   | 'competitors'
-  | 'local';
+  | 'local'
+  | 'web-quality'
+  | 'core-web-vitals'
+  | 'accessibility'
+  | 'audit-website';
 
 export interface AuditPassResult {
   dimension: AuditDimension;
