@@ -24,6 +24,9 @@ import {
   runAuditWebsite,
   runAccessibilityDeep,
   runCoreWebVitalsDeep,
+  runAnalyticsTracking,
+  runTrustSignals,
+  runCrossBrowser,
 } from '../deep-audit/index.js';
 
 type PassFn = (slug: string, clientDir: string) => Promise<AuditPassResult>;
@@ -166,6 +169,21 @@ export default class Audit extends BaseCommand {
           name: 'core-web-vitals',
           gate: Boolean(anthropic) && preflight.skills.coreWebVitals,
           fn: () => runCoreWebVitalsDeep(slug, dir, { anthropic: anthropic!, log }),
+        },
+        {
+          name: 'analytics-tracking',
+          gate: preflight.available.playwrightBrowsers,
+          fn: () => runAnalyticsTracking(slug, dir, { log }),
+        },
+        {
+          name: 'trust-signals',
+          gate: Boolean(anthropic),
+          fn: () => runTrustSignals(slug, dir, { anthropic: anthropic!, log }),
+        },
+        {
+          name: 'cross-browser',
+          gate: preflight.available.playwrightBrowsers,
+          fn: () => runCrossBrowser(slug, dir, { log }),
         },
       ];
 

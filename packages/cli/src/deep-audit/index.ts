@@ -5,3 +5,6 @@ export { runWebQuality } from './passes/web-quality.js';
 export { runAuditWebsite } from './passes/audit-website.js';
 export { runAccessibilityDeep } from './passes/accessibility-deep.js';
 export { runCoreWebVitalsDeep } from './passes/cwv-deep.js';
+export { runAnalyticsTracking } from './passes/analytics-tracking.js';
+export { runTrustSignals } from './passes/trust-signals.js';
+export { runCrossBrowser } from './passes/cross-browser.js';

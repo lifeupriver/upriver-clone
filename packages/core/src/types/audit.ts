@@ -29,7 +29,10 @@ export type AuditDimension =
   | 'web-quality'
   | 'core-web-vitals'
   | 'accessibility'
-  | 'audit-website';
+  | 'audit-website'
+  | 'analytics'
+  | 'cross-browser'
+  | 'trust-signals';
 
 export interface AuditPassResult {
   dimension: AuditDimension;

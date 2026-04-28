@@ -92,17 +92,19 @@ Page being audited:
 
 ${pageContext}
 
-${page.screenshots.desktop ? 'A screenshot of the page is attached.' : ''}
+${page.screenshots.desktop || page.screenshots.mobile ? 'Desktop and mobile screenshots are attached if available.' : ''}
 
 ${findingsRequestPrompt(opts.dimension)}`;
 
   const userContent: Array<Anthropic.ImageBlockParam | Anthropic.TextBlockParam> = [];
-  if (page.screenshots.desktop && existsSync(page.screenshots.desktop)) {
-    const data = readFileSync(page.screenshots.desktop).toString('base64');
-    userContent.push({
-      type: 'image',
-      source: { type: 'base64', media_type: 'image/png', data },
-    });
+  for (const path of [page.screenshots.desktop, page.screenshots.mobile]) {
+    if (path && existsSync(path)) {
+      const data = readFileSync(path).toString('base64');
+      userContent.push({
+        type: 'image',
+        source: { type: 'base64', media_type: 'image/png', data },
+      });
+    }
   }
   userContent.push({ type: 'text', text: userPrompt });
 
