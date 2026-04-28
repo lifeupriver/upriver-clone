@@ -8,6 +8,12 @@ import { BaseCommand } from '../base-command.js';
 import type { AuditPackage, ClientConfig, SitePage } from '@upriver/core';
 import { loadAuditPackage, resolveScaffoldPaths } from '../scaffold/template-writer.js';
 import { verifyClonePage } from '../clone/verify.js';
+import {
+  buildAssetIndex,
+  rewriteContent,
+  DEFAULT_CDN_HOSTS,
+  type RewriteOptions,
+} from '../clone/rewrite-links.js';
 
 const CLAUDE_BIN = process.env['CLAUDE_BIN'] || 'claude';
 
@@ -185,6 +191,18 @@ export default class Clone extends BaseCommand {
         }
       }
 
+      // Deterministic finalize: rewrite client-domain hrefs to local routes
+      // and CDN image URLs to local /images/. Idempotent — runs after both
+      // the initial agent pass and any verify-loop edits.
+      runFinalizeRewrite({
+        page,
+        slug,
+        clientDir,
+        workCwd,
+        pkg,
+        log: (m) => this.log(m),
+      });
+
       let prUrl: string | undefined;
       if (openPr) {
         prUrl = await openDraftPr(workCwd, branch, page);
@@ -274,6 +292,14 @@ function buildAgentPrompt(args: {
   const localLogos = findLocalLogos(clientDir);
   const clientLogos = findClientLogos(resolve(clientDir, '..', '..', 'clients', slug, 'repo'));
   const localLogosBlock = formatLogosBlock(clientLogos, localLogos);
+  const localRoutes = pkg.siteStructure.pages
+    .filter((p) => p.statusCode < 400 && isCloneWorthy(canonicalPagePath(p), p.url))
+    .map((p) => canonicalPagePath(p))
+    .filter((r, i, arr) => arr.indexOf(r) === i)
+    .sort()
+    .map((r) => `  - \`${r}\``)
+    .join('\n');
+  const clientDomain = stripScheme(pkg.meta.siteUrl);
 
   return `You are producing a 1:1 visual replica of the page \`${path}\` from ${pkg.meta.clientName}'s live site as an Astro page. Pixel-level fidelity is the goal. **Do not redesign, rewrite, or "improve" anything.** Brand voice and copy rewrites happen in a separate downstream pass — not here.
 
@@ -316,7 +342,13 @@ Edit \`${pageFile}\` (create if missing). Match the screenshot's layout — sect
   <Carousel slides={slides} autoplayMs={6000} className="h-screen min-h-[480px]" />
   \`\`\`
   Pull every slide image from the rawhtml in source order. Static-rendering only the first slide loses fidelity.
-- **Images**: prefer local files at \`/images/<filename>\` (already copied to \`public/images/\` by scaffold) over remote CDN URLs. Especially for logos — see "Local logos available" below. For non-logo content imagery, the CDN URLs from rawhtml are fine.
+- **Images**: prefer local files at \`/images/<filename>\` (already copied to \`public/images/\` by scaffold) over remote CDN URLs. Especially for logos — see "Local logos available" below.
+- **Internal links MUST use local paths.** All \`href="..."\` to pages on \`${clientDomain}\` (or any subdomain) must be rewritten to root-relative paths. \`href="https://${clientDomain}/lodging"\` → \`href="/lodging"\`. The CLI runs a deterministic rewrite pass after you finish that catches anything missed, so don't worry about being exhaustive — but doing it correctly first means fewer downstream surprises and a cleaner diff.
+
+### Local routes available — use these for any internal hrefs
+${localRoutes}
+
+External links (other domains) stay external. \`mailto:\` and \`tel:\` links stay as-is.
 
 ### Local logos available (prefer these over CDN URLs)
 ${localLogosBlock}
@@ -566,4 +598,58 @@ function normalizePath(p: string): string {
 function shellQuote(s: string): string {
   if (!/[^\w@%+=:,./-]/.test(s)) return s;
   return `'${s.replace(/'/g, "'\\''")}'`;
+}
+
+function stripScheme(url: string | undefined): string {
+  if (!url) return '';
+  return url.replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/$/, '');
+}
+
+interface FinalizeRewriteArgs {
+  page: SitePage;
+  slug: string;
+  clientDir: string;
+  workCwd: string;
+  pkg: AuditPackage;
+  log: (msg: string) => void;
+}
+
+function runFinalizeRewrite(args: FinalizeRewriteArgs): void {
+  const { page, clientDir, workCwd, pkg, log } = args;
+  const path = canonicalPagePath(page);
+  const pageFile = path === '/' ? 'src/pages/index.astro' : `src/pages${path}.astro`;
+  const absPath = join(workCwd, pageFile);
+  const manifestPath = resolve(clientDir, 'asset-manifest.json');
+  if (!existsSync(absPath) || !existsSync(manifestPath)) return;
+
+  const clientDomain = stripScheme(pkg.meta.siteUrl);
+  if (!clientDomain) return;
+
+  try {
+    const { imageManifest, filenameToLocal } = buildAssetIndex(manifestPath);
+    const opts: RewriteOptions = {
+      clientDomain,
+      cdnHosts: DEFAULT_CDN_HOSTS,
+      imageManifest,
+      filenameToLocal,
+    };
+    const original = readFileSync(absPath, 'utf-8');
+    const { content: rewritten, report } = rewriteContent(original, opts);
+    if (report.totalChanges === 0) return;
+    writeFileSync(absPath, rewritten, 'utf-8');
+    log(
+      `  finalize: ${report.internalLinksRewritten} links, ${report.cdnImagesRewritten} CDN images rewritten`,
+    );
+    try {
+      execSync('git add -A', { cwd: workCwd, stdio: 'pipe' });
+      execSync(
+        `git commit -m ${shellQuote(`clone(${page.slug || '/'}): finalize — rewrite local URLs`)}`,
+        { cwd: workCwd, stdio: 'pipe' },
+      );
+    } catch {
+      // nothing to commit
+    }
+  } catch (err) {
+    log(`  finalize: skipped (${(err as Error).message})`);
+  }
 }
