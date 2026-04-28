@@ -85,10 +85,22 @@ export function rewriteContent(input: string, opts: RewriteOptions): RewriteResu
   );
   let result = input.replace(domainPattern, (_match, path: string, tail: string) => {
     report.internalLinksRewritten++;
-    const p = path || '';
+    const p = flattenPath(path || '');
     const t = tail || '';
     if (!p && !t) return '/';
     return p + t;
+  });
+
+  // 1b. Flatten nested href paths to match the cloned Astro file slugs.
+  //     `href="/the-greenhouses/lodging"` -> `href="/the-greenhouses-lodging"`.
+  //     Preserves any `?query` and `#fragment` suffix.
+  //     Skips `/api/` and `/admin/` (legitimate nested routes).
+  const nestedHrefRe = /\bhref="\/([a-z0-9][a-z0-9-]*\/[a-z0-9][a-z0-9/-]*)([?#][^"]*)?"/gi;
+  result = result.replace(nestedHrefRe, (match, p, tail) => {
+    const path = String(p);
+    if (path.startsWith('api/') || path.startsWith('admin/')) return match;
+    report.internalLinksRewritten++;
+    return `href="/${path.replace(/\//g, '-')}${tail || ''}"`;
   });
 
   // 2. Rewrite Squarespace CDN image URLs to /images/<localFilename>.
@@ -185,3 +197,17 @@ export const DEFAULT_CDN_HOSTS = [
   'static1.squarespace.com',
   'assets.squarespace.com',
 ];
+
+/**
+ * Convert a Squarespace-style nested path (`/the-greenhouses/lodging`) to the
+ * flat slug used by the cloned Astro site (`/the-greenhouses-lodging`). The
+ * scaffold/clone pipeline derives one .astro file per leaf URL with `/` joined
+ * by `-`, so internal hrefs need to match that convention.
+ */
+function flattenPath(path: string): string {
+  if (!path || path === '/') return path;
+  const trimmed = path.replace(/^\/+/, '').replace(/\/+$/, '');
+  if (!trimmed) return '/';
+  if (!trimmed.includes('/')) return `/${trimmed}`;
+  return `/${trimmed.replace(/\//g, '-')}`;
+}
