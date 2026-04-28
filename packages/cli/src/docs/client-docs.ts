@@ -134,22 +134,36 @@ ${executiveSummary}
 `;
 }
 
+function dropBannedFromKeywords(keywords: string[], banned: string[]): string[] {
+  // Drop any keyword whose normalized form contains a banned word as a whole token.
+  // This prevents contradictions like keywords="unforgettable moments" + banned="unforgettable".
+  const bannedTokens = banned.map((b) => b.toLowerCase().trim()).filter(Boolean);
+  return keywords.filter((k) => {
+    const tokens = k.toLowerCase().split(/[\s,/-]+/).filter(Boolean);
+    return !tokens.some((t) => bannedTokens.includes(t));
+  });
+}
+
 export function buildClientClaudeMd(pkg: AuditPackage): string {
   const { meta, brandVoiceDraft } = pkg;
+  const rawKeywords = brandVoiceDraft.keywords ?? [];
+  const banned = brandVoiceDraft.bannedWords ?? [];
+  const cleanKeywords = dropBannedFromKeywords(rawKeywords, banned);
+
   return `# CLAUDE.md — ${meta.clientName}
 
 GitHub repo: lifeupriver/${meta.clientSlug}
 
 ## What this site is
-${meta.clientName} (${meta.siteUrl}). See \`docs/brand-voice-guide.md\` for full context. Audit summary lives in \`../audit-package.json\`.
+${meta.clientName} (${meta.siteUrl}). See \`../docs/brand-voice-guide.md\` for full context. Audit summary lives in \`../audit-package.json\`.
 
 ## Brand voice rules
 - Tone: ${brandVoiceDraft.tone || 'TBD'}
 - Voice characteristics: ${(brandVoiceDraft.voiceCharacteristics ?? []).join(', ') || 'TBD'}
-- Words to use: ${(brandVoiceDraft.keywords ?? []).slice(0, 8).join(', ') || 'TBD'}
-- Words to avoid: ${(brandVoiceDraft.bannedWords ?? []).slice(0, 8).join(', ') || 'TBD'}
+- Words to use: ${cleanKeywords.slice(0, 8).join(', ') || 'TBD'}
+- Words to avoid: ${banned.slice(0, 8).join(', ') || 'TBD'}
 
-Always defer to \`docs/brand-voice-guide.md\` when these conflict.
+Always defer to \`../docs/brand-voice-guide.md\` when these conflict. Brand context (audience, offer, conversion goals) lives in \`.agents/product-marketing-context.md\` — auto-loaded by the copywriting and copy-editing skills.
 
 ## Component inventory
 TBD — populated post-scaffold by \`upriver scaffold ${meta.clientSlug}\`.

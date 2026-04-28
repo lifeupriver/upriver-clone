@@ -1,0 +1,174 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import { readClientConfig, clientExists } from '@/lib/fs-reader';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
+const { slug } = Astro.params;
+
+if (!slug || !clientExists(slug)) {
+  return Astro.redirect('/clients');
+}
+
+const config = readClientConfig(slug)!;
+const port = config.dev_port ?? 4322;
+const previewUrl = `http://localhost:${port}/`;
+
+const repoPath = join(process.env.UPRIVER_CLIENTS_DIR ?? './clients', slug, 'repo');
+const repoExists = existsSync(repoPath);
+
+// Probe whether the dev server is up. Astro pages render server-side, so this
+// happens at request time. Short timeout — we don't want to stall the page.
+let serverUp = false;
+if (repoExists) {
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 800);
+    const res = await fetch(previewUrl, { signal: ctrl.signal });
+    clearTimeout(t);
+    serverUp = res.ok;
+  } catch {
+    serverUp = false;
+  }
+}
+
+const startCmd = `cd clients/${slug}/repo && pnpm dev --port ${port} --host`;
+---
+
+<DashboardLayout title={`${config.name} — Site Preview`} section="clients">
+  <div class="breadcrumb">
+    <a href="/clients" class="bc-link">Clients</a>
+    <span class="bc-sep">/</span>
+    <a href={`/clients/${slug}`} class="bc-link">{config.name}</a>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">Site Preview</span>
+  </div>
+
+  <div class="doc-header">
+    <div>
+      <span class="eyebrow">Site Preview</span>
+      <h1>{config.name}</h1>
+      <p class="subtitle">
+        Cloned site at <a href={previewUrl} target="_blank" rel="noopener" class="meta-link mono">{previewUrl}</a>
+        {serverUp ? <span class="dot dot-on">live</span> : <span class="dot dot-off">offline</span>}
+      </p>
+    </div>
+    <div class="actions">
+      {serverUp && (
+        <a href={previewUrl} target="_blank" rel="noopener" class="action-btn">
+          Open in new tab
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      )}
+    </div>
+  </div>
+
+  {!repoExists ? (
+    <div class="empty">
+      <p>No scaffolded repo at <code class="mono">{repoPath}</code>. Run <code class="mono">upriver scaffold {slug}</code>.</p>
+    </div>
+  ) : !serverUp ? (
+    <div class="empty">
+      <p><strong>Dev server isn't running.</strong></p>
+      <p style="margin-top: 0.5rem;">Start it from a terminal:</p>
+      <pre class="cmd"><code>{startCmd}</code></pre>
+      <p class="hint">Then refresh this page. Configure the port in <code class="mono">clients/{slug}/client-config.yaml</code> via <code class="mono">dev_port</code>.</p>
+    </div>
+  ) : (
+    <iframe src={previewUrl} title={`${config.name} cloned site`} class="site-frame" loading="eager" />
+  )}
+</DashboardLayout>
+
+<style>
+  .breadcrumb { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; font-size: var(--fs-xs); }
+  .bc-link { color: var(--text-muted); font-family: var(--font-heading); font-size: var(--fs-xs); letter-spacing: 0.06em; text-transform: uppercase; transition: color var(--dur-fast) var(--ease-out); }
+  .bc-link:hover { color: var(--accent); }
+  .bc-sep { color: var(--border); }
+  .bc-current { color: var(--text-body); font-family: var(--font-heading); font-size: var(--fs-xs); letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .doc-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .doc-header h1 { margin: 0.25rem 0 0; }
+  .subtitle { margin: 0.5rem 0 0; color: var(--text-muted); font-size: var(--fs-sm); display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+
+  .meta-link { color: var(--accent); }
+  .meta-link:hover { text-decoration: underline; }
+
+  .dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-heading);
+    font-size: var(--fs-2xs, 0.7rem);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+  .dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+  .dot-on { color: #10b981; border-color: #10b981; }
+  .dot-on::before { background: #10b981; box-shadow: 0 0 8px #10b981; }
+  .dot-off { color: var(--text-muted); }
+  .dot-off::before { background: var(--text-muted); }
+
+  .actions { display: flex; gap: 0.75rem; }
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.9rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 6px);
+    color: var(--text-body);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+  }
+  .action-btn:hover { background: var(--bg-card); border-color: var(--accent); }
+
+  .site-frame {
+    width: 100%;
+    height: calc(100vh - 220px);
+    min-height: 600px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: white;
+  }
+
+  .empty {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    color: var(--text-muted);
+  }
+  .empty code, .empty .mono { font-family: var(--font-mono); color: var(--accent); }
+  .empty .cmd {
+    margin: 0.75rem 0 0;
+    padding: 0.85rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 6px);
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    color: var(--text-body);
+    overflow-x: auto;
+  }
+  .empty .hint { margin-top: 1rem; font-size: var(--fs-xs); }
+</style>

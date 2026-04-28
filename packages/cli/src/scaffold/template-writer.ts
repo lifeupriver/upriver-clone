@@ -15,6 +15,10 @@ import type {
   SitePage,
   SiteStructure,
 } from '@upriver/core';
+import type { ClientFontFace } from './client-assets.js';
+
+export { copyClientAssets } from './client-assets.js';
+export type { ClientAssetsManifest, ClientFontFace, ClientLogo } from './client-assets.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -74,15 +78,105 @@ export function applyDesignTokens(
   repoDir: string,
   designSystem: DesignSystem,
   rawTokens: Record<string, unknown> | null,
+  clientFonts: ClientFontFace[] = [],
 ): void {
   const cssPath = join(repoDir, 'src', 'styles', 'global.css');
-  const css = renderGlobalCss(designSystem, rawTokens);
+  const css = renderGlobalCss(designSystem, rawTokens, clientFonts);
   writeFileSync(cssPath, css, 'utf8');
+}
+
+// Map commercial / proprietary fonts to free Google Fonts substitutes that are
+// visually similar. The clone agent gets a font-family declaration with the
+// substitute name + an @import that actually loads the font, so headings and
+// body don't fall back to system-ui.
+//
+// Match is case-insensitive substring on the font's name. Add entries as new
+// fonts appear in client design tokens.
+interface FontMapping {
+  google: string; // Google Fonts family name
+  weights: string; // url querystring fragment after wght@
+  italics?: string; // optional ital@0,1;wght@... fragment
+}
+
+const FONT_SUBSTITUTES: Array<[string, FontMapping]> = [
+  ['brandon grotesque', { google: 'Mulish', weights: '300;400;500;700;800', italics: 'ital,wght@0,300..800;1,300..800' }],
+  ['freight sans', { google: 'Source Sans 3', weights: '300;400;500;600;700' }],
+  ['gastromond', { google: 'Crimson Pro', weights: '400;500;600', italics: 'ital,wght@0,400..600;1,400..600' }],
+  ['futura pt', { google: 'Jost', weights: '300;400;500;600;700' }],
+  ['futura', { google: 'Jost', weights: '300;400;500;600;700' }],
+  ['bebas neue', { google: 'Bebas Neue', weights: '400' }],
+  ['halis', { google: 'Mulish', weights: '300;400;500;600;700' }],
+  ['playfair', { google: 'Playfair Display', weights: '400;500;600;700', italics: 'ital,wght@0,400..700;1,400..700' }],
+  ['proxima nova', { google: 'Mulish', weights: '300;400;500;600;700;800' }],
+  ['avenir', { google: 'Nunito Sans', weights: '300;400;600;700' }],
+  ['inter', { google: 'Inter', weights: '300;400;500;600;700' }],
+  ['montserrat', { google: 'Montserrat', weights: '300;400;500;600;700' }],
+  ['lato', { google: 'Lato', weights: '300;400;700' }],
+  ['poppins', { google: 'Poppins', weights: '300;400;500;600;700' }],
+];
+
+function resolveFont(
+  rawName: string,
+  clientFonts: ClientFontFace[] = [],
+): { displayName: string; importUrl: string | null; clientProvided: boolean } {
+  if (!rawName) return { displayName: 'Inter', importUrl: googleFontsUrl('Inter', '400;500;600;700'), clientProvided: false };
+
+  // Real client-provided fonts win — token-based match. Avoids "Brand" matching
+  // "Brandon Grotesque" (substring match would have); resilient to mangled names
+  // like Squarespace's "Halis Rmedium" → real "Halis Rounded Medium" via shared
+  // distinctive token "halis". Pick the family with the most matching tokens;
+  // tie-break to the closer-length match.
+  const lowerName = rawName.toLowerCase().trim();
+  const lookupTokens = tokenize(lowerName);
+  const ranked = clientFonts
+    .map((f) => {
+      const familyTokens = tokenize(f.family);
+      const exactEq = f.family.toLowerCase() === lowerName ? 1 : 0;
+      const overlap = familyTokens.filter((t) => lookupTokens.includes(t)).length;
+      return { f, exactEq, overlap, lengthDelta: Math.abs(f.family.length - rawName.length) };
+    })
+    .filter((r) => r.overlap > 0 || r.exactEq === 1)
+    .sort((a, b) => {
+      if (a.exactEq !== b.exactEq) return b.exactEq - a.exactEq;
+      if (a.overlap !== b.overlap) return b.overlap - a.overlap;
+      return a.lengthDelta - b.lengthDelta;
+    });
+  if (ranked.length > 0) {
+    return { displayName: ranked[0]!.f.family, importUrl: null, clientProvided: true };
+  }
+
+  for (const [pattern, sub] of FONT_SUBSTITUTES) {
+    if (lowerName.includes(pattern)) {
+      const url = sub.italics
+        ? `https://fonts.googleapis.com/css2?family=${sub.google.replace(/ /g, '+')}:${sub.italics}&display=swap`
+        : googleFontsUrl(sub.google, sub.weights);
+      return { displayName: sub.google, importUrl: url, clientProvided: false };
+    }
+  }
+  // Unknown font — try Google Fonts directly with the original name (may 404, that's fine — falls back to system).
+  return {
+    displayName: rawName,
+    importUrl: googleFontsUrl(rawName, '400;500;600;700'),
+    clientProvided: false,
+  };
+}
+
+function googleFontsUrl(family: string, weights: string): string {
+  return `https://fonts.googleapis.com/css2?family=${family.replace(/ /g, '+')}:wght@${weights}&display=swap`;
+}
+
+function tokenize(s: string): string[] {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9 _-]+/g, ' ')
+    .split(/[\s_-]+/)
+    .filter((t) => t.length >= 3);
 }
 
 function renderGlobalCss(
   ds: DesignSystem,
   raw: Record<string, unknown> | null,
+  clientFonts: ClientFontFace[] = [],
 ): string {
   const colors = { ...ds.colors };
   // raw firecrawl tokens can carry extras (link, success, warning, error)
@@ -99,8 +193,49 @@ function renderGlobalCss(
 
   const radiusCard = ds.spacing.borderRadius || '0.75rem';
   const radiusButton = inferButtonRadius(raw) || '0.5rem';
-  const headingFont = quoteFont(ds.typography.headingFont || 'Inter');
-  const bodyFont = quoteFont(ds.typography.bodyFont || 'Inter');
+
+  // Prefer raw fonts[] with role=heading/body (often more accurate than the
+  // audit's designSystem.typography, which can pick up CSS-variable names that
+  // aren't actually rendered).
+  const rawFontByRole = collectFontsByRole(raw);
+  const headingName = rawFontByRole.heading ?? ds.typography.headingFont ?? 'Inter';
+  const bodyName = rawFontByRole.body ?? ds.typography.bodyFont ?? 'Inter';
+
+  const headingResolved = resolveFont(headingName, clientFonts);
+  const bodyResolved = resolveFont(bodyName, clientFonts);
+  const headingFont = quoteFont(headingResolved.displayName);
+  const bodyFont = quoteFont(bodyResolved.displayName);
+
+  // Dedupe @imports (heading and body might map to same Google family) — only
+  // emit when the font is NOT client-provided.
+  const importUrls = new Set<string>();
+  if (headingResolved.importUrl) importUrls.add(headingResolved.importUrl);
+  if (bodyResolved.importUrl) importUrls.add(bodyResolved.importUrl);
+
+  // Pick up additional fonts from raw firecrawl tokens — but skip any that
+  // already match a client-provided font (that family is local).
+  const extraFonts = collectExtraFonts(raw);
+  for (const f of extraFonts) {
+    const r = resolveFont(f, clientFonts);
+    if (r.importUrl) importUrls.add(r.importUrl);
+  }
+
+  const importLines = [...importUrls].map((u) => `@import url('${u}');`).join('\n');
+
+  // Emit @font-face for every client-provided font file.
+  const fontFaceLines: string[] = [];
+  for (const f of clientFonts) {
+    fontFaceLines.push(
+      `@font-face {\n` +
+        `  font-family: '${f.family}';\n` +
+        `  font-style: ${f.style};\n` +
+        `  font-weight: ${f.weight};\n` +
+        `  font-display: swap;\n` +
+        `  src: url('${f.src}') format('${f.format}');\n` +
+        `}`,
+    );
+  }
+  const fontFaceBlock = fontFaceLines.join('\n');
 
   const customColorVars: string[] = [];
   for (const [name, value] of Object.entries(colors)) {
@@ -109,9 +244,15 @@ function renderGlobalCss(
     customColorVars.push(`  --color-${cssSafe(name)}: ${value};`);
   }
 
-  return `@import 'tailwindcss';
+  return `${importLines}
+@import 'tailwindcss';
 
-/* Design tokens — generated by \`upriver scaffold\` from clients/<slug>/design-tokens.json. */
+${fontFaceBlock}
+
+/* Design tokens — generated by \`upriver scaffold\` from clients/<slug>/design-tokens.json.
+ * Real client-provided webfonts (above @font-face blocks) take precedence over
+ * Google Fonts substitutes (@import lines). See packages/cli/src/scaffold/
+ * client-assets.ts and FONT_SUBSTITUTES in template-writer.ts. */
 @theme {
   --color-brand-50:  ${brandScale[50]};
   --color-brand-100: ${brandScale[100]};
@@ -162,6 +303,36 @@ function inferButtonRadius(raw: Record<string, unknown> | null): string | null {
   if (!raw) return null;
   const components = raw['components'] as { buttonPrimary?: { borderRadius?: string } } | undefined;
   return components?.buttonPrimary?.borderRadius ?? null;
+}
+
+function collectExtraFonts(raw: Record<string, unknown> | null): string[] {
+  if (!raw) return [];
+  const out: string[] = [];
+  const t = raw['typography'] as
+    | { fontFamilies?: Record<string, string>; fonts?: Array<{ family?: string }> }
+    | undefined;
+  if (t?.fontFamilies) {
+    for (const v of Object.values(t.fontFamilies)) if (typeof v === 'string') out.push(v);
+  }
+  const fonts = raw['fonts'] as Array<{ family?: string }> | undefined;
+  if (Array.isArray(fonts)) {
+    for (const f of fonts) if (f?.family) out.push(f.family);
+  }
+  return out;
+}
+
+function collectFontsByRole(raw: Record<string, unknown> | null): { heading?: string; body?: string } {
+  if (!raw) return {};
+  const fonts = raw['fonts'] as Array<{ family?: string; role?: string }> | undefined;
+  if (!Array.isArray(fonts)) return {};
+  const out: { heading?: string; body?: string } = {};
+  for (const f of fonts) {
+    if (!f?.family || !f.role) continue;
+    const role = f.role.toLowerCase();
+    if ((role === 'heading' || role === 'display') && !out.heading) out.heading = f.family;
+    if ((role === 'body' || role === 'paragraph' || role === 'primary') && !out.body) out.body = f.family;
+  }
+  return out;
 }
 
 function quoteFont(font: string): string {
@@ -269,28 +440,78 @@ ${itemsLiteral}
   writeFileSync(navPath, content, 'utf8');
 }
 
+// Auth/transactional/system paths and patterns that should never land in nav.
+const NAV_BLOCKLIST = new Set([
+  '/404', '/500', '/403',
+  '/cart', '/checkout', '/order', '/orders',
+  '/login', '/log-in', '/signin', '/sign-in',
+  '/signup', '/sign-up', '/register',
+  '/logout', '/log-out', '/signout', '/sign-out',
+  '/forgetpassword', '/forgot-password', '/reset-password',
+  '/account', '/profile', '/settings',
+  '/sitemap', '/sitemap.xml', '/sitemap-xml',
+  '/robots.txt',
+  '/search',
+  '/terms', '/terms-of-service', '/privacy', '/privacy-policy',
+]);
+
+function isNavWorthy(href: string, pageUrl?: string): boolean {
+  // Exclude pages on app/auth subdomains entirely (e.g., https://app.example.com/login)
+  if (pageUrl) {
+    try {
+      const u = new URL(pageUrl);
+      if (/^(app|auth|account|admin|portal|api)\./i.test(u.hostname)) return false;
+    } catch {
+      /* ignore */
+    }
+  }
+  const path = href.toLowerCase();
+  if (NAV_BLOCKLIST.has(path)) return false;
+  if (path.startsWith('/admin/') || path.startsWith('/api/')) return false;
+  // Exclude obvious system/util paths by suffix or fragment-like names
+  if (/-(nav|sitemap|footer)$/.test(path)) return false;
+  return true;
+}
+
 function navigationItems(structure: SiteStructure): Array<{ href: string; label: string }> {
   const primary = structure.navigation?.primary ?? [];
   if (primary.length > 0) {
-    return primary.map((p) => ({ href: ensureLeadingSlash(p.href), label: p.label }));
+    return primary
+      .map((p) => ({ href: ensureLeadingSlash(p.href), label: p.label }))
+      .filter((i) => isNavWorthy(i.href));
   }
-  // Fallback: derive from pages, top 6 by URL depth, excluding root
+  // Fallback: derive from pages, prefer shallow paths, exclude system/auth pages
   const seen = new Set<string>();
   const items: Array<{ href: string; label: string }> = [];
-  for (const page of structure.pages) {
+  // Sort by depth (fewer slashes first) so top-level paths win
+  const sorted = [...structure.pages].sort((a, b) => {
+    const da = (a.slug || '').split('/').filter(Boolean).length;
+    const db = (b.slug || '').split('/').filter(Boolean).length;
+    return da - db;
+  });
+  for (const page of sorted) {
     const slug = page.slug || '/';
     const href = ensureLeadingSlash(slug);
     if (seen.has(href)) continue;
     seen.add(href);
-    if (href === '/') {
-      items.push({ href: '/', label: 'Home' });
+    if (href === '/' || isHomeSlug(slug)) {
+      if (!seen.has('/')) {
+        items.push({ href: '/', label: 'Home' });
+        seen.add('/');
+      }
       continue;
     }
+    if (!isNavWorthy(href, page.url)) continue;
     items.push({ href, label: page.title?.split(' | ')[0]?.split(' - ')[0]?.trim() || labelFromHref(href) });
     if (items.length >= 7) break;
   }
   if (items.length === 0) items.push({ href: '/', label: 'Home' });
   return items;
+}
+
+function isHomeSlug(slug: string): boolean {
+  const s = slug.toLowerCase().replace(/^\/+|\/+$/g, '');
+  return s === '' || s === 'home' || s === 'index';
 }
 
 function labelFromHref(href: string): string {

@@ -24,13 +24,14 @@
     "prepack": "pnpm run build"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.0",
     "@oclif/core": "^3.0.0",
     "@oclif/plugin-help": "^6.0.0",
     "@oclif/plugin-not-found": "^3.0.0",
-    "@anthropic-ai/sdk": "^0.30.0",
     "@upriver/audit-passes": "workspace:*",
     "@upriver/core": "workspace:*",
     "dotenv": "^16.0.0",
+    "playwright": "^1.59.1",
     "yaml": "^2.4.0"
   },
   "devDependencies": {

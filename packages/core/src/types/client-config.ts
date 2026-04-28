@@ -14,4 +14,5 @@ export interface ClientConfig {
   vercel_preview_url?: string;
   github_repo?: string;
   supabase_project_ref?: string;
+  dev_port?: number;
 }

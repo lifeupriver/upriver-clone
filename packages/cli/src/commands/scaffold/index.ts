@@ -5,6 +5,7 @@ import { updateClientConfig } from '@upriver/core';
 import { buildClientClaudeMd, buildProductMarketingContext } from '../../docs/client-docs.js';
 import {
   applyDesignTokens,
+  copyClientAssets,
   copyImages,
   copyTemplate,
   ensureClaudeMd,
@@ -46,31 +47,45 @@ export default class Scaffold extends BaseCommand {
     const tokens = loadDesignTokens(clientDir);
     const pages = loadPageRecords(clientDir);
 
-    this.log('  [1/8] Copying scaffold template...');
+    this.log('  [1/9] Copying scaffold template...');
     copyTemplate(templateDir, repoDir);
 
-    this.log('  [2/8] Applying design tokens...');
-    applyDesignTokens(repoDir, pkg.designSystem, tokens);
+    this.log('  [2/9] Importing client-provided fonts and logos...');
+    const clientAssets = copyClientAssets(clientDir, repoDir);
+    if (clientAssets.fonts.length > 0) {
+      const families = [...new Set(clientAssets.fonts.map((f) => f.family))];
+      this.log(`         Fonts: ${families.join(', ')} (${clientAssets.fonts.length} face(s))`);
+    }
+    if (clientAssets.logos.length > 0) {
+      const brands = [...new Set(clientAssets.logos.map((l) => l.brand))];
+      this.log(`         Logos: ${brands.join(', ')} (${clientAssets.logos.length} file(s))`);
+    }
+    if (clientAssets.fonts.length === 0 && clientAssets.logos.length === 0) {
+      this.log(`         No client assets in ${clientDir}/assets/from client/ — falling back to substitutes.`);
+    }
 
-    this.log('  [3/8] Generating navigation...');
+    this.log('  [3/9] Applying design tokens...');
+    applyDesignTokens(repoDir, pkg.designSystem, tokens, clientAssets.fonts);
+
+    this.log('  [4/9] Generating navigation...');
     generateNav(repoDir, pkg.siteStructure, pkg.meta.clientName);
 
-    this.log('  [4/8] Seeding page collection...');
+    this.log('  [5/9] Seeding page collection...');
     const pagesWritten = seedPages(repoDir, pages, pkg.siteStructure.pages);
 
-    this.log('  [5/8] Seeding testimonials, FAQs, team...');
+    this.log('  [6/9] Seeding testimonials, FAQs, team...');
     const tCount = seedTestimonials(repoDir, pkg.contentInventory);
     const fCount = seedFaqs(repoDir, pkg.contentInventory);
     const mCount = seedTeam(repoDir, pkg.contentInventory);
 
-    this.log('  [6/8] Copying images...');
+    this.log('  [7/9] Copying images...');
     const imgCount = copyImages(clientDir, repoDir);
 
-    this.log('  [7/8] Writing CLAUDE.md and product-marketing-context...');
+    this.log('  [8/9] Writing CLAUDE.md and product-marketing-context...');
     ensureClaudeMd(repoDir, pkg, buildClientClaudeMd);
     ensureProductMarketingContext(repoDir, pkg, buildProductMarketingContext);
 
-    this.log('  [8/8] Writing CHANGELOG.md...');
+    this.log('  [9/9] Writing CHANGELOG.md...');
     writeChangelog(repoDir, pkg);
 
     if (flags['supabase-project-ref']) {

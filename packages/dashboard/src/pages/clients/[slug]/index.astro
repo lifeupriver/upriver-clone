@@ -103,7 +103,10 @@ const created = new Date(config.created_at).toLocaleDateString('en-US', {
         <a href={`/clients/${slug}/audit`} class:list={['quick-link', { disabled: passes.length === 0 }]}>
           Audit Report
         </a>
+        <a href={`/clients/${slug}/voice`} class="quick-link">Brand Voice</a>
         <a href={`/clients/${slug}/design-brief`} class="quick-link">Design Brief</a>
+        <a href={`/clients/${slug}/site`} class="quick-link">Site Preview</a>
+        <a href={`/clients/${slug}/fixes`} class="quick-link">Fixes Plan</a>
         <a href={`/clients/${slug}/qa`} class="quick-link">QA Report</a>
         <a href={`/clients/${slug}/launch-checklist`} class="quick-link">Launch Checklist</a>
         <a href={`/deliverables/${slug}/audit-report`} class="quick-link quick-link-accent">

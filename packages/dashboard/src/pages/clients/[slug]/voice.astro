@@ -1,0 +1,77 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import MarkdownDoc from '@/components/astro/MarkdownDoc.astro';
+import { readClientConfig, readMarkdownFile, clientExists } from '@/lib/fs-reader';
+
+const { slug } = Astro.params;
+
+if (!slug || !clientExists(slug)) {
+  return Astro.redirect('/clients');
+}
+
+const config = readClientConfig(slug)!;
+const voice = readMarkdownFile(slug, 'docs/brand-voice-guide.md');
+const faqs = readMarkdownFile(slug, 'docs/faq-bank.md');
+const overrides = readMarkdownFile(slug, 'docs/aesthetic-overrides.md');
+const assets = readMarkdownFile(slug, 'docs/asset-gaps.md');
+
+const tabs = [
+  { id: 'voice', label: 'Brand Voice', content: voice },
+  { id: 'faqs', label: 'FAQ Bank', content: faqs },
+  { id: 'overrides', label: 'Overrides', content: overrides },
+  { id: 'assets', label: 'Asset Gaps', content: assets },
+].filter(t => t.content !== null);
+---
+
+<DashboardLayout title={`${config.name} — Brand Voice`} section="clients">
+  <div class="breadcrumb">
+    <a href="/clients" class="bc-link">Clients</a>
+    <span class="bc-sep">/</span>
+    <a href={`/clients/${slug}`} class="bc-link">{config.name}</a>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">Brand Voice</span>
+  </div>
+
+  <div class="doc-header">
+    <div>
+      <span class="eyebrow">Brand & Interview Synthesis</span>
+      <h1>{config.name}</h1>
+    </div>
+  </div>
+
+  {tabs.length === 0 ? (
+    <div class="empty">
+      <p>No interview synthesis yet. Run <code>upriver process-interview {slug} --transcript &lt;path&gt;</code>.</p>
+    </div>
+  ) : (
+    <>
+      <nav class="tabs">
+        {tabs.map((tab, i) => (
+          <a href={`#${tab.id}`} class={`tab ${i === 0 ? 'tab-active' : ''}`}>{tab.label}</a>
+        ))}
+      </nav>
+      {tabs.map((tab) => (
+        <section id={tab.id} class="tab-section">
+          <MarkdownDoc content={tab.content!} />
+        </section>
+      ))}
+    </>
+  )}
+</DashboardLayout>
+
+<style>
+  .breadcrumb { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; font-size: var(--fs-xs); }
+  .bc-link { color: var(--text-muted); font-family: var(--font-heading); font-size: var(--fs-xs); letter-spacing: 0.06em; text-transform: uppercase; transition: color var(--dur-fast) var(--ease-out); }
+  .bc-link:hover { color: var(--accent); }
+  .bc-sep { color: var(--border); }
+  .bc-current { color: var(--text-body); font-family: var(--font-heading); font-size: var(--fs-xs); letter-spacing: 0.06em; text-transform: uppercase; }
+  .doc-header { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .doc-header h1 { margin: 0.25rem 0 0; }
+  .empty { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2.5rem; text-align: center; color: var(--text-muted); }
+  .empty code { font-family: var(--font-mono); color: var(--accent); }
+  .tabs { display: flex; gap: 0.25rem; padding: 0.25rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 2rem; flex-wrap: wrap; }
+  .tab { padding: 0.6rem 1rem; font-family: var(--font-heading); font-size: var(--fs-xs); letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); border-radius: calc(var(--radius-lg) - 4px); transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out); }
+  .tab:hover { background: var(--bg-card); color: var(--text-body); }
+  .tab-section { margin-bottom: 4rem; padding-top: 1rem; }
+  .tab-section + .tab-section { padding-top: 2.5rem; border-top: 1px solid var(--border); }
+</style>

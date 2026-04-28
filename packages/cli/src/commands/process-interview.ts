@@ -14,7 +14,7 @@ import type { AuditPackage, FirecrawlScrapeResult } from '@upriver/core';
 const MODEL = 'claude-opus-4-7';
 const INPUT_BUDGET_TOKENS = 30_000;
 const INPUT_BUDGET_CHARS = INPUT_BUDGET_TOKENS * 4; // rough tokens→chars estimate
-const MAX_TOKENS = 16000;
+const MAX_TOKENS_PER_DOC = 6000;
 const SKILL_PATH = '.agents/skills/customer-research/SKILL.md';
 
 interface InterviewSynthesis {
@@ -206,11 +206,84 @@ interface SynthesizeArgs {
   cmd: BaseCommand;
 }
 
+interface DocSpec {
+  key: keyof InterviewSynthesis;
+  label: string;
+  brief: (clientName: string) => string;
+}
+
+const DOC_SPECS: DocSpec[] = [
+  {
+    key: 'brandVoiceGuide',
+    label: 'Brand Voice Guide',
+    brief: (name) => `Write \`brand-voice-guide.md\` for ${name}. Required sections (in this order, as markdown headings):
+
+- # Brand Voice Guide — ${name}
+- ## Voice in three words (3 words pulled from the client's transcript phrasing)
+- ## What the brand sounds like now (verbatim quotes from current site / transcript)
+- ## What it should sound like (3-5 rewritten samples in the client's actual vocabulary)
+- ## Tone guidelines (5-7 bullets, each grounded in a transcript quote with attribution like "(interview)")
+- ## Word choices: ### Use (8-12 from client's vocab) and ### Avoid (8-12 banned with reasons)
+- ## Sample headlines (10) in the synthesized voice
+- ## Voice do's and don'ts (5 each, with concrete before/after examples)
+- ## Audience profile (JTBD framing pulled from transcript)
+- ## Content type guidance (homepage hero, inquiry form, email auto-reply, Instagram caption, FAQ entry)
+- ## Money quotes bank (8-12 verbatim quotes, each tagged with source)
+- ## Confidence notes (label voice claims High / Medium / Low)`,
+  },
+  {
+    key: 'faqBank',
+    label: 'FAQ Bank',
+    brief: (name) => `Write \`faq-bank.md\` for ${name}. Produce 50-100 Q&As written in the client's voice. Group under headings (e.g., Planning & Booking, Pricing & Packages, The Space & Logistics, Vendors & Catering, Day-Of Experience, After the Event, etc.). Answer the questions the AEO findings flagged as missing, plus the objections the mined reviews surface. For every Q&A:
+- Question phrased the way a prospect would actually phrase it
+- Answer in the client's voice — specific, not corporate — keep under 120 words
+- If an answer pulls a verbatim phrase from the transcript, keep it verbatim
+Start with: \`# FAQ Bank — ${name}\`.`,
+  },
+  {
+    key: 'aestheticOverrides',
+    label: 'Aesthetic & Strategic Overrides',
+    brief: (name) => `Write \`aesthetic-overrides.md\` for ${name}. Every audit finding the client explicitly wants to override or soften, based on the transcript. Format each as:
+- **Audit said**: (paraphrase the finding)
+- **Client says**: (verbatim quote from transcript if possible)
+- **Decision**: override / soften / accept-as-is
+- **Reasoning**: why the client's call wins here (their business context)
+- **Rebuild implication**: what we do differently because of this
+Only include items the transcript actually addresses. If the client didn't push back on a finding, don't list it. Start with: \`# Aesthetic & Strategic Overrides — ${name}\`.`,
+  },
+  {
+    key: 'assetGaps',
+    label: 'Asset Gaps',
+    brief: (name) => `Write \`asset-gaps.md\` for ${name}. Two sections:
+1. **Needed shots/clips** — derived from the audit's missing pages and content gaps, refined by what the client said they have / don't have in the interview. Each item: what to shoot, where, approximate count, priority.
+2. **Client has but hasn't shared** — things the transcript implies exist (past photos, testimonial videos, press mentions) that need to be gathered.
+Start with: \`# Asset Gaps — ${name}\`.`,
+  },
+  {
+    key: 'productMarketingContext',
+    label: 'Product Marketing Context',
+    brief: (name) => `Write a richer \`product-marketing-context.md\` for ${name}. Required sections:
+- # Product Marketing Context: ${name}
+- ## What we do (1 paragraph grounded in the transcript)
+- ## Target audience (JTBD framing: functional, emotional, social)
+- ## Trigger events (what sends a customer looking for this)
+- ## Top pains customers voice (verbatim from reviews/transcript, with source tags)
+- ## Desired outcomes (what success looks like to the customer, in their words)
+- ## Key differentiators (what the client believes — pulled from transcript)
+- ## Tone and voice summary (one paragraph pointing to brand-voice-guide.md for detail)
+- ## Primary conversion goal and funnel flow (confirmed in interview)
+- ## Key offers and pricing posture (what they will/won't publish)
+- ## Proof points (money quotes from reviews + transcript)
+- ## Competitors and alternatives considered (from reviews / transcript)
+- ## Common objections and how the client answers them
+- ## Gaps still to resolve (things the transcript didn't settle)`,
+  },
+];
+
 async function synthesizeInterview(args: SynthesizeArgs): Promise<InterviewSynthesis> {
   const { anthropic, slug, pkg, transcript, minedReviews, skillGuidance, cmd } = args;
-
   const auditSummary = summarizeAuditForPrompt(pkg);
-  const prompt = buildSynthesisPrompt({
+  const sharedContext = buildSharedContext({
     clientName: pkg.meta.clientName,
     siteUrl: pkg.meta.siteUrl,
     auditSummary,
@@ -219,19 +292,64 @@ async function synthesizeInterview(args: SynthesizeArgs): Promise<InterviewSynth
     skillGuidance,
   });
 
-  // Guardrail: keep prompt under the declared 30K-token input budget.
-  const trimmed = prompt.length > INPUT_BUDGET_CHARS
-    ? prompt.slice(0, INPUT_BUDGET_CHARS)
-    : prompt;
+  const debugDir = join(clientDir(slug), 'process-interview-debug');
+  const result: Partial<InterviewSynthesis> = {};
+
+  for (const [i, spec] of DOC_SPECS.entries()) {
+    cmd.log(`      [${i + 1}/${DOC_SPECS.length}] ${spec.label}...`);
+    const md = await callOneDoc({
+      anthropic,
+      slug,
+      sharedContext,
+      spec,
+      clientName: pkg.meta.clientName,
+      cmd,
+      debugDir,
+    });
+    result[spec.key] = md;
+  }
+
+  return result as InterviewSynthesis;
+}
+
+interface CallOneDocArgs {
+  anthropic: Anthropic;
+  slug: string;
+  sharedContext: string;
+  spec: DocSpec;
+  clientName: string;
+  cmd: BaseCommand;
+  debugDir: string;
+}
+
+async function callOneDoc(args: CallOneDocArgs): Promise<string> {
+  const { anthropic, slug, sharedContext, spec, clientName, cmd, debugDir } = args;
+  const prompt = `${sharedContext}
+
+---
+
+# Your task: produce ONE markdown document
+
+${spec.brief(clientName)}
+
+## Hard rules
+- Output ONLY the markdown for this single document. No preamble, no explanation, no fenced code block wrapping the output, no JSON.
+- Tag every claim about customer voice to a transcript line or a mined review with a source marker like (interview), (Google review), (WeddingWire), (The Knot).
+- Prefer verbatim quotes over paraphrase whenever possible.
+- If a theme only appears in one source, label it Low confidence per the customer-research skill's guardrails.
+- Do not invent reviews or quotes. If mined reviews are empty, say so and lean on the transcript only.
+- Begin your response with the document's first heading. End your response when the document ends. No trailing notes.`;
+
+  const trimmed = prompt.length > INPUT_BUDGET_CHARS ? prompt.slice(0, INPUT_BUDGET_CHARS) : prompt;
   if (trimmed.length < prompt.length) {
     cmd.warn(
-      `Synthesis prompt trimmed from ${prompt.length} to ${trimmed.length} chars to stay under the 30K-token budget.`,
+      `${spec.label} prompt trimmed from ${prompt.length} to ${trimmed.length} chars to stay under the 30K-token budget.`,
     );
   }
 
   const resp = await anthropic.messages.create({
     model: MODEL,
-    max_tokens: MAX_TOKENS,
+    max_tokens: MAX_TOKENS_PER_DOC,
     messages: [{ role: 'user', content: trimmed }],
   });
 
@@ -245,36 +363,24 @@ async function synthesizeInterview(args: SynthesizeArgs): Promise<InterviewSynth
   });
 
   const block = resp.content.find((b) => b.type === 'text');
-  if (!block || block.type !== 'text') {
-    throw new Error('Claude returned no text content');
+  if (!block || block.type !== 'text' || !block.text.trim()) {
+    mkdirSync(debugDir, { recursive: true });
+    writeFileSync(
+      join(debugDir, `${spec.key}.raw.json`),
+      JSON.stringify({ usage: resp.usage, content: resp.content, stop_reason: resp.stop_reason }, null, 2),
+      'utf8',
+    );
+    throw new Error(
+      `${spec.label}: model returned no usable text. Raw response saved to ${debugDir}/${spec.key}.raw.json`,
+    );
   }
-  return parseSynthesis(block.text);
-}
 
-function parseSynthesis(text: string): InterviewSynthesis {
-  const cleaned = text
-    .replace(/^```(?:json)?\s*/i, '')
-    .replace(/\s*```\s*$/, '')
+  // Clean any incidental fence wrapping the model added despite the rule.
+  const text = block.text
+    .replace(/^```(?:markdown|md)?\s*\n/i, '')
+    .replace(/\n```\s*$/, '')
     .trim();
-  const first = cleaned.indexOf('{');
-  const last = cleaned.lastIndexOf('}');
-  if (first < 0 || last < 0) {
-    throw new Error('Synthesis response did not contain a JSON object');
-  }
-  const parsed = JSON.parse(cleaned.slice(first, last + 1)) as Partial<InterviewSynthesis>;
-  const required: Array<keyof InterviewSynthesis> = [
-    'brandVoiceGuide',
-    'faqBank',
-    'aestheticOverrides',
-    'assetGaps',
-    'productMarketingContext',
-  ];
-  for (const key of required) {
-    if (typeof parsed[key] !== 'string' || !parsed[key]) {
-      throw new Error(`Synthesis response missing "${key}"`);
-    }
-  }
-  return parsed as InterviewSynthesis;
+  return text;
 }
 
 function summarizeAuditForPrompt(pkg: AuditPackage): string {
@@ -320,10 +426,10 @@ interface PromptArgs {
   skillGuidance: string;
 }
 
-function buildSynthesisPrompt(args: PromptArgs): string {
+function buildSharedContext(args: PromptArgs): string {
   const { clientName, siteUrl, auditSummary, transcript, minedReviews, skillGuidance } = args;
 
-  return `You are synthesizing a client interview transcript plus mined public reviews into the finished voice-of-customer and brand documents that will drive a website rebuild.
+  return `You are synthesizing a client interview transcript plus mined public reviews into voice-of-customer and brand documents for a website rebuild.
 
 Follow the framework defined in the customer-research skill below. Use its extraction template (jobs to be done, pains, trigger events, desired outcomes, vocabulary, alternatives) on the transcript AND on the mined reviews. Cluster themes, apply frequency × intensity scoring, flag confidence levels, and surface money quotes. Do NOT invent a parallel framework.
 
@@ -341,79 +447,5 @@ ${auditSummary}
 ${minedReviews}
 
 # Interview transcript (primary source — the client's own words)
-${transcript}
-
----
-
-# Your task
-
-Produce five markdown deliverables. Return them in a single JSON object. No prose outside the JSON, no markdown fences around the object itself.
-
-Required JSON shape (each value is a markdown string):
-
-{
-  "brandVoiceGuide": "# Brand Voice Guide — ${clientName}\\n...",
-  "faqBank": "# FAQ Bank — ${clientName}\\n...",
-  "aestheticOverrides": "# Aesthetic & Strategic Overrides — ${clientName}\\n...",
-  "assetGaps": "# Asset Gaps — ${clientName}\\n...",
-  "productMarketingContext": "# Product Marketing Context: ${clientName}\\n..."
-}
-
-## brandVoiceGuide (richer than the auto-drafted version)
-Required sections:
-- Voice in three words (pulled from how the client actually talks in the transcript)
-- What the brand sounds like now (verbatim from transcript + reviews)
-- What it should sound like (rewritten samples using the client's actual vocabulary)
-- Tone guidelines — grounded in specific transcript quotes with attribution like "(interview)" or "(Google review)"
-- Word choices: Use / Avoid (each sourced from the transcript or reviews)
-- Sample headlines (10) — written in the synthesized voice
-- Voice do's and don'ts (5 each) with concrete before/after examples
-- Audience profile (pulled from JTBD + trigger events from the research)
-- Content type guidance (homepage hero, inquiry form, email auto-reply, Instagram caption, FAQ entry)
-- Money quotes bank: 8-12 verbatim quotes, each tagged with source and the theme they represent
-- Confidence notes: flag any voice claim as High/Medium/Low per the skill's guardrails
-
-## faqBank
-50-100 Q&As written in the client's voice. Answer the questions the AEO findings flagged as missing, plus the objections the mined reviews surface. Group under headings (Planning & Booking, Pricing & Packages, The Space & Logistics, Vendors & Catering, Day-Of Experience, After the Event, etc.). For every Q&A:
-- Question in how a prospect would actually phrase it (prefer review/transcript phrasing)
-- Answer in the client's voice — specific, not corporate — keep under 120 words
-- If an answer pulls a verbatim phrase from the transcript, keep it verbatim
-
-## aestheticOverrides
-Every audit finding the client explicitly wants to override or soften, based on the transcript. Format each as:
-- **Audit said**: (paraphrase the finding)
-- **Client says**: (verbatim quote from transcript if possible)
-- **Decision**: override / soften / accept-as-is
-- **Reasoning**: why the client's call wins here (their business context)
-- **Rebuild implication**: what we do differently because of this
-Only include items the transcript actually addresses. If the client didn't push back on a finding, don't list it.
-
-## assetGaps
-Photo, video, and brand-file needs. Two sections:
-1. **Needed shots/clips** — derived from the audit's missing pages and content gaps, refined by what the client said they have / don't have in the interview. Each item: what to shoot, where, approximate count, priority.
-2. **Client has but hasn't shared** — things the transcript implies exist (past photos, testimonial videos, press mentions) that need to be gathered.
-
-## productMarketingContext
-A richer replacement for the auto-generated .agents/product-marketing-context.md. Required sections:
-- What we do (1 paragraph grounded in the transcript)
-- Target audience (JTBD framing: functional, emotional, social)
-- Trigger events (what sends a couple looking for this venue)
-- Top pains customers voice (verbatim from reviews/transcript, with source tags)
-- Desired outcomes (what success looks like to the customer, in their words)
-- Key differentiators (what the client believes — pulled from transcript)
-- Tone and voice summary (one paragraph pointing to brand-voice-guide.md for detail)
-- Primary conversion goal and funnel flow (confirmed in interview)
-- Key offers and pricing posture (what they will/won't publish)
-- Proof points (money quotes from reviews + transcript)
-- Competitors and alternatives considered (from reviews / transcript)
-- Common objections and how the client answers them
-- Gaps still to resolve (things the transcript didn't settle)
-
-Hard rules:
-- Every claim about customer voice must be traceable to a transcript line or a mined review. Tag sources inline: (interview), (Google), (WeddingWire), (The Knot).
-- Prefer verbatim quotes over paraphrase whenever possible.
-- If a theme only appears in one source, label it Low confidence per the skill.
-- Do not invent reviews or quotes. If mined reviews are empty, say so and lean on the transcript, but never fabricate.
-- Keep each markdown document self-contained — no "see above" references between them.
-- Output ONLY the JSON object described. No preamble, no explanation, no trailing notes.`;
+${transcript}`;
 }

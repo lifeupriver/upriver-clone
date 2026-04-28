@@ -1,5 +1,5 @@
 import { spawn, execSync } from 'node:child_process';
-import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { Args, Flags } from '@oclif/core';
 import { BaseCommand } from '../../base-command.js';
@@ -265,8 +265,9 @@ ${skillBlock}
 2. Read only the files needed to make the change. If the finding references affected pages, start there.
 3. Make the change. Use existing design tokens from \`src/styles/global.css\` (\`brand-*\`, \`ink-*\`, \`font-display\`, \`font-sans\`, \`radius-button\`, \`radius-card\`) — never introduce hardcoded hex colors.
 4. Reuse existing components in \`src/components/astro/\` (Hero, CTASection, TestimonialCard, Footer, Nav, ContactForm) before adding new ones.
-5. Append an entry to \`CHANGELOG.md\` under \`## [Unreleased]\` describing what you changed and referencing \`${finding.id}\`. The CLI appends a one-line marker after you finish; your bullets go above that.
-6. Verify the build: run \`pnpm install --silent\` once if \`node_modules\` is missing, then \`pnpm build\` (or \`pnpm exec astro check\` if the full build fails for environment reasons). The change must compile.
+5. Verify the build: run \`pnpm install --silent\` once if \`node_modules\` is missing, then \`pnpm build\` (or \`pnpm exec astro check\` if the full build fails for environment reasons). The change must compile.
+
+> The CLI writes a CHANGELOG fragment to \`CHANGELOG.d/fix-${finding.id.toLowerCase()}.md\` after you finish — you do not need to edit \`CHANGELOG.md\`.
 
 ## Constraints
 - Do not edit files outside \`src/\`, \`public/\`, \`CHANGELOG.md\`, \`src/content/\`.
@@ -332,20 +333,14 @@ function createWorktree(repoDir: string, branch: string): string {
 }
 
 function appendChangelogEntry(repoDir: string, finding: AuditFinding): void {
-  const path = join(repoDir, 'CHANGELOG.md');
+  // Per-branch fragment file: avoids merge conflicts when parallel worktrees
+  // each append to [Unreleased] in CHANGELOG.md. Run `pnpm changelog:assemble`
+  // (or merge to main and run it there) to flush fragments into CHANGELOG.md.
+  const fragDir = join(repoDir, 'CHANGELOG.d');
+  mkdirSync(fragDir, { recursive: true });
   const date = new Date().toISOString().slice(0, 10);
-  const line = `- ${date} fix(${finding.dimension}): \`${finding.id}\` — ${finding.title}`;
-  if (!existsSync(path)) {
-    writeFileSync(path, `# Changelog\n\n## [Unreleased]\n${line}\n`, 'utf8');
-    return;
-  }
-  const text = readFileSync(path, 'utf8');
-  if (text.includes('## [Unreleased]')) {
-    const updated = text.replace(/## \[Unreleased\][^\n]*\n/, (m) => `${m}${line}\n`);
-    writeFileSync(path, updated, 'utf8');
-  } else {
-    appendFileSync(path, `\n## [Unreleased]\n${line}\n`, 'utf8');
-  }
+  const line = `- ${date} fix(${finding.dimension}): \`${finding.id}\` — ${finding.title}\n`;
+  writeFileSync(join(fragDir, `fix-${finding.id.toLowerCase()}.md`), line, 'utf8');
 }
 
 async function openDraftPr(

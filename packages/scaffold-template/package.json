@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "typecheck": "astro check",
-    "clean": "rm -rf dist .astro node_modules/.astro"
+    "clean": "rm -rf dist .astro node_modules/.astro",
+    "changelog:assemble": "node scripts/assemble-changelog.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.0",
