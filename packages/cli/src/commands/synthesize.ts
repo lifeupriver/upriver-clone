@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { existsSync, readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { Args } from '@oclif/core';
+import { Args, Flags } from '@oclif/core';
 import { BaseCommand } from '../base-command.js';
 import { clientDir, readClientConfig } from '@upriver/core';
 import type {
@@ -38,8 +38,15 @@ export default class Synthesize extends BaseCommand {
     slug: Args.string({ description: 'Client slug', required: true }),
   };
 
+  static override flags = {
+    force: Flags.boolean({
+      description: 'Re-synthesize even if audit-package.json already exists',
+      default: false,
+    }),
+  };
+
   async run(): Promise<void> {
-    const { args } = await this.parse(Synthesize);
+    const { args, flags } = await this.parse(Synthesize);
     const { slug } = args;
     const apiKey = this.requireEnv('ANTHROPIC_API_KEY');
 
@@ -51,6 +58,9 @@ export default class Synthesize extends BaseCommand {
     if (!existsSync(auditDir)) {
       this.error(`No audit/ directory at ${auditDir}. Run "upriver audit ${slug}" first.`);
     }
+
+    const pkgPath = join(dir, 'audit-package.json');
+    if (this.skipIfExists('audit-package.json', pkgPath, { force: flags.force })) return;
 
     this.log(`\nSynthesizing audit-package.json for "${slug}"...`);
 
@@ -158,7 +168,6 @@ export default class Synthesize extends BaseCommand {
       impactMetrics,
     };
 
-    const pkgPath = join(dir, 'audit-package.json');
     writeFileSync(pkgPath, JSON.stringify(auditPackage, null, 2), 'utf8');
     this.log(`\n  Wrote ${pkgPath}`);
 

@@ -66,6 +66,10 @@ export default class ReportBuild extends BaseCommand {
       description: 'Upload the export to remote storage (not yet wired)',
       default: false,
     }),
+    force: Flags.boolean({
+      description: 'Rebuild the static report even if report-static/index.html already exists',
+      default: false,
+    }),
   };
 
   async run(): Promise<void> {
@@ -93,79 +97,93 @@ export default class ReportBuild extends BaseCommand {
     const reportStaticDir = join(clientPath, 'report-static');
     mkdirSync(reportStaticDir, { recursive: true });
 
-    // c. Boot SSR dashboard, fetch each route, rewrite, and write to disk.
-    await withDashboardServer(
-      {
-        port: flags.port,
-        clientsDir: clientsBase,
-        rebuild: flags.rebuild,
-        log: (msg) => this.log(msg),
-      },
-      async (baseUrl) => {
-        const captured = new Map<string, string>();
-        for (const { route, filename } of ROUTES) {
-          const url = `${baseUrl}/deliverables/${slug}${route}`;
-          const res = await fetch(url);
-          if (!res.ok) {
-            throw new Error(
-              `Fetch failed for ${url}: HTTP ${res.status} ${res.statusText}`,
-            );
+    const indexPath = join(reportStaticDir, 'index.html');
+    const skipBuild = this.skipIfExists('report-static/index.html', indexPath, {
+      force: flags.force,
+    });
+
+    // If the static export already exists and we're not also uploading, bail out before
+    // spawning the dashboard. When --upload is also passed, fall through to the upload
+    // stub so users can re-run cheaply once a hosted upload is wired.
+    if (skipBuild && !flags.upload) return;
+
+    if (!skipBuild) {
+      // c. Boot SSR dashboard, fetch each route, rewrite, and write to disk.
+      await withDashboardServer(
+        {
+          port: flags.port,
+          clientsDir: clientsBase,
+          rebuild: flags.rebuild,
+          log: (msg) => this.log(msg),
+        },
+        async (baseUrl) => {
+          const captured = new Map<string, string>();
+          for (const { route, filename } of ROUTES) {
+            const url = `${baseUrl}/deliverables/${slug}${route}`;
+            const res = await fetch(url);
+            if (!res.ok) {
+              throw new Error(
+                `Fetch failed for ${url}: HTTP ${res.status} ${res.statusText}`,
+              );
+            }
+            const html = await res.text();
+            captured.set(filename, html);
+            this.log(`[report] Captured ${url} → ${filename}`);
           }
-          const html = await res.text();
-          captured.set(filename, html);
-          this.log(`[report] Captured ${url} → ${filename}`);
-        }
 
-        const seenUnrewritten = new Set<string>();
-        for (const { filename } of ROUTES) {
-          const raw = captured.get(filename);
-          if (raw === undefined) continue;
-          const rewritten = rewriteHtml(raw, slug, (path) => {
-            if (seenUnrewritten.has(path)) return;
-            seenUnrewritten.add(path);
-            this.warn(`Unrewritten absolute path encountered: ${path}`);
-          });
-          writeFileSync(join(reportStaticDir, filename), rewritten, 'utf8');
-        }
-      },
-    );
+          const seenUnrewritten = new Set<string>();
+          for (const { filename } of ROUTES) {
+            const raw = captured.get(filename);
+            if (raw === undefined) continue;
+            const rewritten = rewriteHtml(raw, slug, (path) => {
+              if (seenUnrewritten.has(path)) return;
+              seenUnrewritten.add(path);
+              this.warn(`Unrewritten absolute path encountered: ${path}`);
+            });
+            writeFileSync(join(reportStaticDir, filename), rewritten, 'utf8');
+          }
+        },
+      );
 
-    // d. Copy `_astro` client bundle.
-    const astroSrc = join(dashboardDir, 'dist', 'client', '_astro');
-    const astroDst = join(reportStaticDir, '_astro');
-    if (existsSync(astroSrc)) {
-      cpSync(astroSrc, astroDst, { recursive: true });
-      this.log(`[report] Copied ${astroSrc} → ${astroDst}`);
-    } else {
-      this.warn(
-        `Expected client asset dir not found: ${astroSrc}. Report may be unstyled.`,
+      // d. Copy `_astro` client bundle.
+      const astroSrc = join(dashboardDir, 'dist', 'client', '_astro');
+      const astroDst = join(reportStaticDir, '_astro');
+      if (existsSync(astroSrc)) {
+        cpSync(astroSrc, astroDst, { recursive: true });
+        this.log(`[report] Copied ${astroSrc} → ${astroDst}`);
+      } else {
+        this.warn(
+          `Expected client asset dir not found: ${astroSrc}. Report may be unstyled.`,
+        );
+      }
+
+      // e. Favicon (best-effort).
+      const faviconSrc = join(dashboardDir, 'dist', 'client', 'favicon.svg');
+      if (existsSync(faviconSrc)) {
+        cpSync(faviconSrc, join(reportStaticDir, 'favicon.svg'));
+      }
+
+      // f. Screenshots (best-effort).
+      const screenshotsSrc = join(clientPath, 'screenshots');
+      if (existsSync(screenshotsSrc)) {
+        cpSync(screenshotsSrc, join(reportStaticDir, 'screenshots'), {
+          recursive: true,
+        });
+        this.log(`[report] Copied ${screenshotsSrc} → screenshots/`);
+      }
+
+      // g. README.
+      writeFileSync(
+        join(reportStaticDir, 'README.md'),
+        buildReadme(readClientName(clientPath, slug)),
+        'utf8',
       );
     }
 
-    // e. Favicon (best-effort).
-    const faviconSrc = join(dashboardDir, 'dist', 'client', 'favicon.svg');
-    if (existsSync(faviconSrc)) {
-      cpSync(faviconSrc, join(reportStaticDir, 'favicon.svg'));
-    }
-
-    // f. Screenshots (best-effort).
-    const screenshotsSrc = join(clientPath, 'screenshots');
-    if (existsSync(screenshotsSrc)) {
-      cpSync(screenshotsSrc, join(reportStaticDir, 'screenshots'), {
-        recursive: true,
-      });
-      this.log(`[report] Copied ${screenshotsSrc} → screenshots/`);
-    }
-
-    // g. README.
-    writeFileSync(
-      join(reportStaticDir, 'README.md'),
-      buildReadme(readClientName(clientPath, slug)),
-      'utf8',
-    );
-
     const absOut = resolve(reportStaticDir);
-    this.log(`[report] Static export complete: ${absOut}`);
+    if (!skipBuild) {
+      this.log(`[report] Static export complete: ${absOut}`);
+    }
 
     // --upload stub. Exit 0 so the local artifact is still acknowledged.
     if (flags.upload) {
