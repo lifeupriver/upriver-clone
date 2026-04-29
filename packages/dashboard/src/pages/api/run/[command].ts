@@ -139,6 +139,23 @@ function sseEventFrame(name: string, payload: unknown, encoder: TextEncoder): Ui
  * closes the stream. On client abort, sends SIGTERM (then SIGKILL after 2s).
  */
 export const POST: APIRoute = async ({ params, request }) => {
+  // F.5 — pragmatic token gate. When UPRIVER_RUN_TOKEN is set in the env,
+  // every POST must carry a matching `X-Upriver-Token` header. Unset = dev
+  // mode (no auth, current behavior) so local workflows keep working. This is
+  // the cheapest gate that prevents an exposed dashboard from spawning CLI
+  // processes for an unauthenticated visitor; full Supabase auth is the
+  // proper F.5 target but requires plumbing not yet in place.
+  const expectedToken = process.env['UPRIVER_RUN_TOKEN'];
+  if (expectedToken) {
+    const provided = request.headers.get('x-upriver-token');
+    if (!provided || provided !== expectedToken) {
+      return new Response(JSON.stringify({ error: 'forbidden — missing or invalid X-Upriver-Token' }), {
+        status: 403,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+  }
+
   const command = params.command;
   if (typeof command !== 'string' || !ALLOWED_COMMANDS.includes(command)) {
     return new Response(JSON.stringify({ error: 'unknown command' }), {

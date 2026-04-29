@@ -76,9 +76,15 @@ export default function NewClientForm(): React.ReactElement {
     abortRef.current = ac;
 
     try {
+      const headers: Record<string, string> = { 'content-type': 'application/json' };
+      if (typeof document !== 'undefined') {
+        const tokenTag = document.querySelector('meta[name="upriver-run-token"]');
+        const token = tokenTag?.getAttribute('content');
+        if (token) headers['x-upriver-token'] = token;
+      }
       const res = await fetch('/api/run/init', {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers,
         body: JSON.stringify({
           args: [form.url.trim()],
           flags: { slug: form.slug, name: form.name },

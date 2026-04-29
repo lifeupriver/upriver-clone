@@ -74,7 +74,7 @@ export default function PipelineStages({ slug, currentStage }: Props): JSX.Eleme
     try {
       const res = await fetch(`/api/run/${stage.command}`, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: runHeaders(),
         body: JSON.stringify({ args: [slug, ...(stage.args ?? [])], flags: {} }),
         signal: ac.signal,
       });
@@ -188,6 +188,21 @@ export default function PipelineStages({ slug, currentStage }: Props): JSX.Eleme
  * because the dashboard package has no test runner and adding a shared util
  * without coverage is a larger move than F.2 needs.
  */
+/**
+ * F.5 — read the optional `<meta name="upriver-run-token">` value from the
+ * dashboard page and attach it as `X-Upriver-Token`. When the dashboard
+ * server has UPRIVER_RUN_TOKEN unset, the meta tag isn't rendered and we
+ * fall back to a plain content-type header (current dev behavior).
+ */
+function runHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { 'content-type': 'application/json' };
+  if (typeof document === 'undefined') return headers;
+  const tag = document.querySelector('meta[name="upriver-run-token"]');
+  const token = tag?.getAttribute('content');
+  if (token) headers['x-upriver-token'] = token;
+  return headers;
+}
+
 async function consumeSSE(body: ReadableStream<Uint8Array>, opts: StreamCallbacks): Promise<void> {
   const reader = body.getReader();
   const decoder = new TextDecoder('utf-8');

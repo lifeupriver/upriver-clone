@@ -10,6 +10,13 @@ export interface Props {
 const { title, section = 'clients' } = Astro.props;
 const currentPath = Astro.url.pathname;
 
+// F.5 — when UPRIVER_RUN_TOKEN is set on the server, render it as a meta tag
+// so client islands can attach it as `X-Upriver-Token` to /api/run/* POSTs.
+// Same-origin disclosure only — anyone who can load the page can read it,
+// which is fine because the gate's purpose is to block unauthenticated direct
+// API hits, not to be a per-user secret.
+const runToken = process.env['UPRIVER_RUN_TOKEN'] ?? '';
+
 const nav = [
   { href: '/clients', label: 'Clients', section: 'clients' },
   { href: '/deliverables', label: 'Deliverables', section: 'deliverables' },
@@ -20,6 +27,7 @@ const nav = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {runToken && <meta name="upriver-run-token" content={runToken} />}
     <title>{title} — Upriver Dashboard</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
