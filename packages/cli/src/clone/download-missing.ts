@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, statSy
 import { join, basename } from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
+import { assertPathInside } from '@upriver/core';
 
 interface AssetEntry {
   url: string;
@@ -88,7 +89,9 @@ function safeFilename(rawFilename: string, taken: Set<string>): string {
     .replace(/[^A-Za-z0-9._-]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
-  if (!safe) safe = 'asset';
+  // Reject any name that resolves to '.' or '..' or starts with one — these
+  // could traverse out of outDir even after the post-resolve containment check.
+  if (safe === '' || safe === '.' || safe === '..' || /^\.+$/.test(safe)) safe = 'asset';
   if (!taken.has(safe)) return safe;
   const dot = safe.lastIndexOf('.');
   const stem = dot > 0 ? safe.slice(0, dot) : safe;
@@ -128,7 +131,9 @@ export async function downloadMissing(args: {
         const raw = basename(u.pathname);
         const filename = safeFilename(raw, taken);
         taken.add(filename);
-        const dest = join(outDir, filename);
+        // Containment check: dest must resolve inside outDir even if the
+        // filename somehow slips a separator past safeFilename.
+        const dest = assertPathInside(join(outDir, filename), outDir);
         await fetchToFile(url, dest);
         results.push({ url, ok: true, localFilename: filename });
       } catch (e) {
@@ -137,7 +142,18 @@ export async function downloadMissing(args: {
     }
   };
 
-  await Promise.all(Array.from({ length: concurrency }, () => worker()));
+  const settled = await Promise.allSettled(
+    Array.from({ length: concurrency }, () => worker()),
+  );
+  for (const s of settled) {
+    if (s.status === 'rejected') {
+      // Worker should never reject (errors are caught inside), but log if it does
+      // so a single bad URL doesn't silently disappear.
+      console.warn(
+        `[download-missing] worker rejected: ${s.reason instanceof Error ? s.reason.message : String(s.reason)}`,
+      );
+    }
+  }
   return results;
 }
 

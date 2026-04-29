@@ -256,14 +256,6 @@ function runClaudeAndCaptureLastLine(prompt: string, cwd: string): Promise<strin
   });
 }
 
-function runShell(cmd: string, cwd: string): Promise<boolean> {
-  return new Promise((resolveP) => {
-    const child = spawn(cmd, { cwd, stdio: 'ignore', shell: true });
-    child.on('exit', (code) => resolveP(code === 0));
-    child.on('error', () => resolveP(false));
-  });
-}
-
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }

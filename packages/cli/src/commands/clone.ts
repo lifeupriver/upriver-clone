@@ -111,7 +111,13 @@ export default class Clone extends BaseCommand {
     };
 
     const workers = Array.from({ length: concurrency }, () => runWorker());
-    await Promise.all(workers);
+    // allSettled so a single worker rejection doesn't lose results from the others.
+    const settled = await Promise.allSettled(workers);
+    for (const s of settled) {
+      if (s.status === 'rejected') {
+        this.warn(`worker rejected: ${s.reason instanceof Error ? s.reason.message : String(s.reason)}`);
+      }
+    }
 
     const ok = results.filter((r) => r.ok).length;
     const failed = results.length - ok;

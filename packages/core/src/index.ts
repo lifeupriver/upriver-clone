@@ -25,3 +25,6 @@ export {
 
 // Usage
 export { logUsageEvent, formatCost } from './usage/logger.js';
+
+// Util
+export { assertPathInside } from './util/paths.js';

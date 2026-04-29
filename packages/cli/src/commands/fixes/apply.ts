@@ -111,7 +111,12 @@ export default class FixesApply extends BaseCommand {
     };
 
     const workers = Array.from({ length: concurrency }, () => runWorker());
-    await Promise.all(workers);
+    const settled = await Promise.allSettled(workers);
+    for (const s of settled) {
+      if (s.status === 'rejected') {
+        this.warn(`worker rejected: ${s.reason instanceof Error ? s.reason.message : String(s.reason)}`);
+      }
+    }
 
     const ok = results.filter((r) => r.ok).length;
     const failed = results.length - ok;
