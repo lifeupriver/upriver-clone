@@ -1,107 +1,183 @@
-# Roadmap session handoff
+# Handoff — current state, pending work
 
-**Last commit:** `363aaca refactor(dashboard): consume pipeline stages from @upriver/core/pipeline`
-**Branch:** `main`
-**Total resumed-session commits:** 32 past `0d8fdd2`. Latest sub-session: 5 commits — drift audit, pipeline dedup (cli + react island), roadmap annotation, dashboard lib/pipeline dedup.
-**Pushed:** no — all local. `main` has diverged 52 commits from `origin/main`.
+**Last commit:** `ce2994a feat(supabase): wire upriver-platform project — env vars, doctor, .env.example`
+**Branch:** `main` (synced with `origin/main` post `ff2fd67` merge)
+**Working tree:** one untracked file — `.planning/roadmap/OPTION-B-MIGRATION.md` (commit it; this handoff references it)
+**Tests:** `pnpm --filter @upriver/cli run test` → 72/72 green
+**Typecheck:** `pnpm -r run typecheck` → clean across all packages
 
-## Newest sub-session: drift audit + cleanup
-
-After the code-tractable roadmap was complete, I did a roadmap-vs-reality audit. Output: `.planning/roadmap/DRIFT-REPORT.md`. Five material drifts, eight narrower-than-spec items, five path drifts, two cross-workstream wiring gaps. **No item is missing entirely** — gaps are mostly naming, coverage, or wiring.
-
-The drift report's recommendation #3 (the only one that didn't need user input) was completed: the pipeline stage list is now in `packages/core/src/pipeline/stages.ts` (with a `./pipeline` subpath export so the client React island can import without dragging in node-only modules). Both `commands/run/all.ts` and `PipelineStages.tsx` now read from one source.
-
-**Drift-report recommendation status:**
-
-1. C.6 flag name — `--audit-mode=sales|operator` (spec) vs `--mode=base|deep|all` (shipped). **Needs your pick.**
-2. C.7 estimatedImpact schema — `{metric, magnitude, rationale}` (spec) vs `{scorePoints, description}` (shipped). **Needs your pick** and re-wires the report hero.
-3. ~~G.7 pipeline-graph dedup~~ ✅ closed by `b34dbe0` + `363aaca`. Both `commands/run/all.ts`, the React island `PipelineStages.tsx`, and the server-side `dashboard/src/lib/pipeline.ts` now import from `@upriver/core/pipeline`. New stages added in one place propagate everywhere.
-4. ~~Update `PRODUCT-ROADMAP.md` with shipped status~~ ✅ closed by `c532818`. Per-workstream banners summarize ✅/⚠️/🔧/🚫 and call out divergences inline. Original spec text preserved.
-5. ~~Document partial state in the roadmap proper~~ ✅ closed alongside #4 — banners cover E.5/F.5/F.6/G.4 partial states.
-
-Items 3, 4, 5 are autonomous closes from this last sub-session. Items 1 and 2 are the only drift items remaining and both need a product call.
-
-`pnpm -r run typecheck` clean. CLI tests **72/72**. Dashboard build clean.
+This handoff captures the state at the moment a context-window switch
+was triggered. Everything below is current as of this commit.
 
 ---
 
-## What shipped this sub-session
+## What's standing up RIGHT NOW
 
-| Workstream | Items | Commit |
+**Decided:**
+- Architecture: **Option B** (full Vercel hosting). User explicitly
+  picked B over A on the previous turn. Migration plan in
+  `.planning/roadmap/OPTION-B-MIGRATION.md` (4 phases).
+- Vercel team `Upriver` exists (id `team_FIxyAOaCMqi7KGYQntQeCbuW`,
+  slug `upriver`) — user renamed `Newburgh Ready` → `Upriver`. Team
+  already contains 3 unrelated projects (`roll`, `fairshare`,
+  `newburghready`) that stay where they are.
+- Supabase project `upriver-platform` exists (id
+  `qavbpfmhgvkhrnbqalrp`, region `us-east-1`, status
+  `ACTIVE_HEALTHY`, $10/month). In the new `Upriver` Pro org
+  (id `ezbdnbazneviadrqalph`).
+- Supabase Storage bucket `upriver` created, private, 500 MB object
+  cap. Layout: `clients/<slug>/...` + `reports/<slug>/...`.
+
+**Wired in code:**
+- `.env.example` updated with the real Supabase URL + publishable key
+  inline. Still needs the service-role key pasted from the Supabase
+  dashboard (Settings → API → service_role) — never exposed via MCP.
+- `packages/cli/src/util/env.ts` registers
+  `UPRIVER_SUPABASE_URL`, `UPRIVER_SUPABASE_SERVICE_KEY`,
+  `UPRIVER_SUPABASE_PUBLISHABLE_KEY`, `UPRIVER_SUPABASE_BUCKET`,
+  `RESEND_API_KEY`, `UPRIVER_REPORT_FROM`.
+- `upriver doctor` checks all of the above.
+- `upriver report send` delivers via Resend when `RESEND_API_KEY` is
+  set; falls back to manual-print otherwise. `--from` flag +
+  `UPRIVER_REPORT_FROM` env override the sender. Default sender
+  `reports@upriverhudsonvalley.com`. `--dry-run` flag for testing.
+- `next-steps.astro` ships live pricing: Polish $2,800 / Rebuild
+  $9,500 / Rebuild + content $18,500. Benefit-framed copy.
+- Audit `--mode=all` runs LLM C.3–C.5 deep + tooling-driven `--deep`
+  passes. `--deep` flag stays as alias for tooling-only.
+
+**Not yet wired (Phase 1 of OPTION-B-MIGRATION not started):**
+- Dashboard adapter is still `@astrojs/node` (operator-local model).
+  Switch to `@astrojs/vercel` is the first slice of Phase 1.
+- No Vercel project exists for `upriver-platform`. Creation is a
+  Phase 1 step.
+- Filesystem-touching dashboard routes have no runtime guards —
+  they'll 500 if deployed before Phase 2 storage abstraction lands.
+
+---
+
+## All four planning docs
+
+```
+.planning/roadmap/
+├── PRODUCT-ROADMAP.md       ← original spec + per-workstream status banners
+├── DRIFT-REPORT.md          ← spec-vs-shipped gap analysis (with merge addendum)
+├── DECISIONS-NEEDED.md      ← 2 open + credential drops; resolved table
+├── OPTION-B-MIGRATION.md    ← NEW. 4-phase plan for hosted Vercel + Supabase
+├── HANDOFF.md               ← this file
+└── RESUME-PROMPT.md         ← fresh-session prompt; paste at start of new context
+```
+
+Read order for a fresh session: **RESUME-PROMPT.md** → **HANDOFF.md
+(this file)** → **OPTION-B-MIGRATION.md** → DECISIONS-NEEDED.md as
+reference. Spec doc and drift report are background.
+
+---
+
+## All workstreams from PRODUCT-ROADMAP.md — status snapshot
+
+| Workstream | Status | Notes |
 |---|---|---|
-| G.4 | Anthropic SDK runner for deep passes (with disk caching), CLI fallback when no API key | `c8c7b40` |
-| (cli) | `upriver doctor` preflight — env vars + binaries + per-feature unlocks | `8d30fc4` |
-| (G.7+) | `run all --audit-mode` pass-through to the audit stage | `d912952` |
+| A. Branded report | ✅ Complete | A.1–A.6 all shipped. A.4 hero metrics use a parallel path independent of C.7 by design. |
+| B. Intake portal | ✅ Complete (B.3 deferred) | B.3 collected on `next-steps.astro` instead of `findings.astro`. |
+| C. Audit depth + GEO/AEO | ✅ Complete | C.1, C.2, C.5 narrower than spec; defensible. C.6 canonicalized as `--mode`. C.7 schema is `{scorePoints, description}` (parallel to A.4's path). |
+| D. Clone fidelity | ✅ Complete | Pixel + copy diff; layout-structure + token-adherence not implemented. |
+| E. Improvement layer | ✅ Mostly | E.5 ships as `report compare` stub. Full E.5 (auto re-audit chain) blocked on preview-deploy infra. |
+| F. Operator GUI | ✅ Mostly | F.6 ships as `report bundle` light variant (local zip). F.5 is `UPRIVER_RUN_TOKEN` shared-secret gate; full Supabase Auth pending in Phase 4 of Option B. F.6 full Supabase sync is Phase 2 of Option B. |
+| G. Efficiency | ✅ Complete | G.1–G.7 all shipped. G.4 SDK runner is generic, not Agent-SDK-specific. |
+| H. Skills | ✅ Mostly | H.1 (symlink expansion) is operator-side filesystem work. |
+| I. Tooling-driven deep audit | ✅ I.1–I.9 shipped | Added post-roadmap via `ff2fd67`. I.10 (run-all `--deep` pass-through) and I.13 (dimension surfacing in reports) still open. |
 
-`pnpm -r run typecheck` is clean. `pnpm --filter @upriver/cli run test` is **72/72 green**.
+---
 
-## Headline: code-tractable roadmap is complete
+## Decisions still open (from DECISIONS-NEEDED.md)
 
-Every roadmap item that doesn't depend on an external decision is shipped. Workstreams A, C, D, G are 100% done. B is done modulo the one item that was deferred by design. E, F, H each have a single open item — and every one is blocked on something outside the codebase.
+**Policy items still needing your call:**
+- **C.** `UPRIVER_RUN_TOKEN` policy — local-only or set a value?
+  Probably moot once Option B Phase 4 lands Supabase Auth, but for
+  the interim `pnpm dev` use case still relevant.
+- **E.** `RESEND_API_KEY` value — code is wired; just needs the API
+  key + `upriverhudsonvalley.com` verified in Resend dashboard.
 
-## Final state by workstream
+**Infrastructure decisions for Option B:**
+- **Phase 3 worker platform** — recommended Inngest. Alternatives:
+  Trigger.dev, GitHub Actions, Vercel Fluid Compute, Fly.io.
+- **Phase 3 container image registry** — recommended GitHub Container
+  Registry (free).
+- **Phase 4 operator email** — recommended single seed for now,
+  allowlist later.
+- **Migration of existing clients/<slug>/ data** — when Phase 2 ships,
+  back-migrate existing locals to the bucket, or only new clients?
+- **Service-role key** — operator must paste it manually from
+  Supabase dashboard into local `.env` and into the Vercel project's
+  env vars. Not exposed via MCP.
 
-### Workstream A — report shell ✓
-All items done.
+---
 
-### Workstream B — intake ✓ (B.3 deferred)
-- B.1, B.2, B.4, B.5, B.6 done.
-- **B.3** skipped — per-page wants are already collected on `next-steps.astro`. Add the findings-page-level UI only when product validation says it's needed.
+## OPTION-B-MIGRATION phases — quick reference
 
-### Workstream C — audit depth + GEO/AEO ✓
-C.1 through C.7 all shipped. The deep-audit runner architecture (Anthropic SDK + claude-cli fallback, parallelized, cached) is the foundation for any future deep passes — drop a new `DeepPassSpec` into `DEEP_PASSES` and it ships.
+Full detail in `.planning/roadmap/OPTION-B-MIGRATION.md`.
 
-### Workstream D — clone fidelity ✓
-All items done.
+### Phase 1 — adapter swap + Vercel project (1–2 hours, NOT STARTED)
+1. `pnpm add -D @astrojs/vercel --filter @upriver/dashboard`
+2. Swap adapter in `packages/dashboard/astro.config.mjs`
+3. Add runtime guards: `process.env.VERCEL === '1'` ⇒ filesystem-
+   touching routes return 503 / placeholder
+4. Better: feature-flag via `UPRIVER_DATA_SOURCE=local|supabase`
+5. Create Vercel project via `mcp__plugin_vercel_vercel__deploy_to_vercel`
+   — scoped to Upriver team (`team_FIxyAOaCMqi7KGYQntQeCbuW`), root
+   directory `packages/dashboard`
+6. Set env vars on the Vercel project
+7. **Don't actually deploy yet** — Phase 2 is needed for it to work
 
-### Workstream E — improvement layer (E.5 partial)
-- E.1, E.2, E.3, E.4, E.6, E.7 done.
-- **E.5** has a working stub (`upriver report compare`). The full automated re-audit chain is blocked on preview-deploy infrastructure decisions (Vercel project conventions, preview URL convention, env wiring).
-- **What's needed to unblock:** decision on whether previews live under one Vercel project (per-branch URLs) or per-client. Then a small command — `upriver report reaudit-preview <slug>` — that scrapes the preview URL into a sibling client subdir and chains into `upriver report compare`.
+### Phase 2 — storage abstraction (2–3 days)
+- `ClientDataSource` interface in `packages/core/src/data/`
+- `LocalFsClientDataSource` (current) + `SupabaseClientDataSource` (new)
+- Refactor `dashboard/src/lib/fs-reader.ts` to use the abstraction
+- New `upriver sync push|pull <slug>` CLI commands
+- Vercel deploy uses `UPRIVER_DATA_SOURCE=supabase`
 
-### Workstream F — dashboard (F.6 partial)
-- F.1, F.2, F.3, F.4, F.5, F.6 light done.
-- **F.6 full** Supabase storage sync is blocked on bucket/auth conventions.
-- **What's needed to unblock:** decisions on Supabase bucket layout, signed-URL retention, and which auth provider gates the dashboard. The F.6 light bundle command produces the file shape; F.6 full just needs an upload step on top.
+### Phase 3 — pipeline execution off the dashboard (5–7 days)
+- Inngest jobs per pipeline stage in `packages/worker/`
+- Replace `/api/run/*` with `/api/enqueue/*`
+- `/api/jobs/<id>` SSE for live status
+- Container image with `claude` + Lighthouse + squirrelscan + Playwright
 
-### Workstream G — performance / pipeline ✓
-G.1 through G.7 all shipped.
+### Phase 4 — auth (1–2 days)
+- Supabase Auth (operator login + per-slug client view tokens)
+- Middleware on `/clients/*` and `/api/enqueue/*`
+- Replaces `UPRIVER_RUN_TOKEN`
 
-### Workstream H — skills (H.1 operator-side)
-- H.2, H.3, H.4 done.
-- **H.1** is filesystem fiddling on the operator's box (symlinking new skills under `.agents/skills/`). Not a code task.
+---
 
-## Decisions still waiting on the user
+## Critical context for the next session
 
-These are now the only blockers for the full roadmap:
+### MCP servers in use
+- **Supabase MCP** — authenticated, sees the `Upriver` org. Use
+  `mcp__plugin_supabase_supabase__*` tools. Must call `confirm_cost`
+  before `create_project` or `create_branch`.
+- **Vercel MCP** — authenticated. Use `mcp__plugin_vercel_vercel__*`.
+  Note: no `create_team` tool (do manually in dashboard if needed);
+  no explicit `create_project` (created implicitly via `deploy_to_vercel`).
 
-| Decision | Unblocks |
-|---|---|
-| Preview-deploy infrastructure (Vercel conventions) | E.5 full |
-| Supabase bucket + signed-URL conventions | F.6 full, F.5 full Supabase auth |
-| Auth provider for dashboard (Vercel auth? Supabase auth?) | F.5 full |
-| Pricing copy for `next-steps.astro` scope tiers | Operator-facing report polish |
-| `UPRIVER_REPORT_HOST` value | `upriver report send` share URLs |
-| SMTP integration | `upriver report send` real delivery |
-| Firecrawl USD/credit rate | `upriver cost` accuracy |
-| `Co-Authored-By` trailer policy | Commit hygiene |
-| `UPRIVER_RUN_TOKEN` on any deployed dashboard | Operator/security ops |
-| `ANTHROPIC_API_KEY` in deploy env | Deep audits in production |
+### Project IDs to remember
+- Supabase project: `qavbpfmhgvkhrnbqalrp` (upriver-platform)
+- Supabase org: `ezbdnbazneviadrqalph` (Upriver, Pro)
+- Vercel team: `team_FIxyAOaCMqi7KGYQntQeCbuW` (Upriver)
 
-## Suggested next-session focus
+### Live env values
+- `UPRIVER_SUPABASE_URL=https://qavbpfmhgvkhrnbqalrp.supabase.co`
+- `UPRIVER_SUPABASE_PUBLISHABLE_KEY=sb_publishable_hy3i0LN--QsvbLXm03Amhw_8GLFGIOn`
+- Service-role key: in Supabase dashboard → Settings → API. **Operator
+  must paste manually** — not exposed via MCP.
 
-There are no more well-scoped engineering todos in the roadmap. Three productive directions for the next session:
-
-1. **Push the branch.** 47 commits across this resumed work are local-only. The handoff has assumed they'd be reviewed eventually; getting them up as one branch (or split per-workstream) is the next logical step.
-2. **Audit drift between roadmap and reality.** Re-read `PRODUCT-ROADMAP.md` against this handoff and confirm nothing was misinterpreted. The roadmap was the source of truth; if anything's been over-built or under-built, this is the moment to catch it.
-3. **Pick one user-decision blocker and make it.** Each decision in the table above is a one-meeting unblock. Pick the smallest (probably `UPRIVER_REPORT_HOST` value) and ship the env-var change so the corresponding feature flips from default-stub to real.
-
-If new roadmap items get added, the deep-audit runner, the SSE pipeline view, the clone-fidelity gate, and the run-all orchestrator are all reusable foundations for what comes next.
-
-## Notes for the next session
-
-- `upriver doctor` is the cheapest way to onboard a new operator box. After cloning the repo and `pnpm install`, running `doctor` prints exactly which env vars and binaries are missing for which features.
-- The deep-audit runner now prefers the Anthropic SDK with `cachedClaudeCall` — re-running the same audit prompt is free after the first call. Cache lives under `clients/<slug>/.cache/llm/`. To force a fresh call, delete that directory.
-- `run all --audit-mode=deep` and `--audit-mode=all` will now actually run deep passes as part of the orchestrated pipeline. That spends real Anthropic tokens — keep it explicit, not a default. Default stays `base`.
-- Workstream G being complete does not mean the pipeline is fully optimized. G.6 only de-duplicated the discover→scrape Firecrawl batch; if profiling later shows other duplicate Firecrawl batches (audit re-scraping for branding extraction, e.g.), that's a follow-on, not a blocker.
-- Three commits past the prior handoff hit a non-deterministic Write hook that flags `child_process` imports as potential `exec` injection. The new `doctor.ts` uses `execFileSync` with explicit arg arrays — same pattern as the rest of the codebase. No exception was needed; the hook's a soft warning.
+### Repo conventions
+- `pnpm -r run typecheck` must pass before every commit
+- `pnpm --filter @upriver/cli run test` before any CLI commit
+- Atomic commits per slice; commit messages reference workstream
+  letter and item id (e.g., `feat(workstream-G): G.6 — ...`)
+- `Co-Authored-By: Claude` trailer is rejected by the harness — ship
+  commits without it
+- Subprocess security: `execFile` with explicit arg arrays, never the
+  shell-string variant
+- `.planning/roadmap/` is committed (not gitignored)
