@@ -26,39 +26,62 @@ order before doing anything:
 
 ## Headline state
 
-- Branch: `main`, synced with `origin/main`. Tests 72/72 green,
-  typecheck clean across all packages.
+- Branch: `main`, 5 commits ahead of `origin/main`. Tests 72/72 green,
+  typecheck clean across all packages. Working tree clean.
 - Supabase project `upriver-platform` (id `qavbpfmhgvkhrnbqalrp`) is
-  ACTIVE_HEALTHY in the new `Upriver` Pro org
+  ACTIVE_HEALTHY in the `Upriver` Pro org
   (id `ezbdnbazneviadrqalph`). Bucket `upriver` exists, private,
   500 MB cap. Env vars wired in `.env.example`.
 - Vercel team `Upriver` exists (id `team_FIxyAOaCMqi7KGYQntQeCbuW`).
-  No upriver-platform Vercel project yet — Phase 1's first step.
+  No upriver-platform Vercel project yet — intentionally deferred
+  until Phase 2 ships, so the first deploy is a working one.
 - Architecture: Option B (full hosted Vercel + Supabase). Phase 1
-  has NOT started — the dashboard is still on the Astro Node adapter.
+  code-side complete (commit `79429ea`); project creation slices
+  4–6 deferred. **Next phase to start: Phase 2 (storage abstraction).**
 
-## Immediate next step — Phase 1 of OPTION-B-MIGRATION.md
+## Phase 1 — what landed
 
-1. `pnpm add -D @astrojs/vercel --filter @upriver/dashboard`
-2. Swap adapter in `packages/dashboard/astro.config.mjs` from
-   `node({ mode: 'standalone' })` to `vercel()`.
-3. Add a runtime guard via a new `UPRIVER_DATA_SOURCE` env var:
-   default `local` keeps current behavior; `supabase` is the Phase 2
-   path. Filesystem-touching routes detect the flag and either render
-   normally (local) or return a clear 503 / placeholder (supabase
-   without Phase 2 backend in place).
-4. Create the Vercel project via `mcp__plugin_vercel_vercel__deploy_to_vercel`,
-   scoped to the Upriver team (slug `upriver`), root directory
-   `packages/dashboard`.
-5. Set env vars on the Vercel project: UPRIVER_SUPABASE_URL,
-   UPRIVER_SUPABASE_PUBLISHABLE_KEY, ANTHROPIC_API_KEY (if available),
-   plus a placeholder UPRIVER_RUN_TOKEN.
-6. Do NOT deploy code yet — Phase 1 is just adapter + project
-   creation. Deploying without Phase 2 storage produces 500s on every
-   page that reads the filesystem.
+- `@astrojs/vercel` adapter (replaced `@astrojs/node`); broken
+  `start` script removed.
+- `packages/dashboard/src/lib/data-source.ts` —
+  `getDataSource()` reads `UPRIVER_DATA_SOURCE` (default `local`);
+  `assertLocalDataSource()` throws `DataSourceUnavailableError` when
+  `supabase`. Phase 2 will wire the actual supabase implementation.
+- `getClientsBase()` (fs-reader.ts) and `resolveUpriverBin()`
+  (run-cli.ts) gate via `assertLocalDataSource()` — every fs route is
+  covered through these helpers.
+- `src/middleware.ts` translates `DataSourceUnavailableError` to a
+  clean 503 (HTML or JSON depending on `Accept`).
+- `.gitignore` ignores `.vercel/`.
 
-After Phase 1 ships (one or two commits), surface a short status note
-and ask whether to proceed to Phase 2 (storage abstraction).
+## Immediate next step — Phase 2 of OPTION-B-MIGRATION.md
+
+Storage abstraction. From `OPTION-B-MIGRATION.md`:
+
+1. Define `ClientDataSource` interface in `packages/core/src/data/`
+   with `listClients()`, `readClientFile(slug, path)`,
+   `writeClientFile(slug, path, body)`,
+   `signClientFileUrl(slug, path, ttl)`. Pure interface, no IO.
+2. Implementations:
+   - `LocalFsClientDataSource` — current behavior on `clients/<slug>/`.
+   - `SupabaseClientDataSource` — `@supabase/supabase-js`, bucket
+     `upriver`, prefix `clients/<slug>/`.
+3. Refactor `dashboard/src/lib/fs-reader.ts` (and friends) to consume
+   the abstraction; pick implementation from `getDataSource()`.
+4. New CLI commands: `upriver sync push <slug>` and
+   `upriver sync pull <slug>` — idempotent (skip on size+mtime match).
+5. Once Phase 2 verifies locally with `UPRIVER_DATA_SOURCE=supabase`
+   pointed at the live bucket, **then** circle back to deferred Phase 1
+   slices 4–6: create the Vercel project via `deploy_to_vercel`, scope
+   to team `team_FIxyAOaCMqi7KGYQntQeCbuW`, root `packages/dashboard`,
+   set env vars (`UPRIVER_SUPABASE_URL`,
+   `UPRIVER_SUPABASE_PUBLISHABLE_KEY`,
+   `UPRIVER_SUPABASE_SERVICE_KEY`, `UPRIVER_DATA_SOURCE=supabase`,
+   `ANTHROPIC_API_KEY`, `UPRIVER_RUN_TOKEN` placeholder).
+
+Phase 2 needs the **Supabase service-role key** in local `.env`
+(operator paste from Supabase dashboard → Settings → API; not exposed
+via MCP). Surface this requirement before starting implementation.
 
 ## MCP servers
 
@@ -104,7 +127,8 @@ Prefer action, minimize interruptions, but pause for:
 
 When stop conditions hit, write a fresh `HANDOFF.md` and surface.
 
-Begin by reading HANDOFF.md, then start Phase 1 step 1.
+Begin by reading HANDOFF.md, then start Phase 2 step 1 (after
+confirming the Supabase service-role key is available in `.env`).
 ```
 
 ---

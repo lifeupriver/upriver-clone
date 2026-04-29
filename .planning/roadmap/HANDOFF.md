@@ -1,10 +1,11 @@
 # Handoff — current state, pending work
 
-**Last commit:** `ce2994a feat(supabase): wire upriver-platform project — env vars, doctor, .env.example`
-**Branch:** `main` (synced with `origin/main` post `ff2fd67` merge)
-**Working tree:** one untracked file — `.planning/roadmap/OPTION-B-MIGRATION.md` (commit it; this handoff references it)
+**Last commit:** `79429ea feat(option-b): phase 1 — vercel adapter + UPRIVER_DATA_SOURCE guard`
+**Branch:** `main` (5 commits ahead of `origin/main`)
+**Working tree:** clean
 **Tests:** `pnpm --filter @upriver/cli run test` → 72/72 green
 **Typecheck:** `pnpm -r run typecheck` → clean across all packages
+**Dashboard build:** `pnpm --filter @upriver/dashboard run build` → produces valid `.vercel/output/` with `_render.func`
 
 This handoff captures the state at the moment a context-window switch
 was triggered. Everything below is current as of this commit.
@@ -46,13 +47,29 @@ was triggered. Everything below is current as of this commit.
 - Audit `--mode=all` runs LLM C.3–C.5 deep + tooling-driven `--deep`
   passes. `--deep` flag stays as alias for tooling-only.
 
-**Not yet wired (Phase 1 of OPTION-B-MIGRATION not started):**
-- Dashboard adapter is still `@astrojs/node` (operator-local model).
-  Switch to `@astrojs/vercel` is the first slice of Phase 1.
-- No Vercel project exists for `upriver-platform`. Creation is a
-  Phase 1 step.
-- Filesystem-touching dashboard routes have no runtime guards —
-  they'll 500 if deployed before Phase 2 storage abstraction lands.
+**Phase 1 code-side complete (commit `79429ea`):**
+- Dashboard adapter is `@astrojs/vercel` (was `@astrojs/node`).
+  `@astrojs/node` dep removed; broken `start` script removed.
+- `UPRIVER_DATA_SOURCE` env switch landed: default `local` keeps
+  current behavior; `supabase` will be wired in Phase 2.
+- `packages/dashboard/src/lib/data-source.ts` exposes
+  `getDataSource()`, `assertLocalDataSource()`, and
+  `DataSourceUnavailableError`.
+- `getClientsBase()` (fs-reader) and `resolveUpriverBin()` (run-cli)
+  call `assertLocalDataSource()` — covers every fs-touching route via
+  the shared base helpers.
+- `src/middleware.ts` catches the error and returns a 503 with a clean
+  HTML placeholder (or JSON when `accept: application/json`).
+- `.gitignore` now ignores `.vercel/`.
+
+**Phase 1 deferred (slices 4–6):**
+- Vercel project creation + env-var setup deferred per operator call.
+  Reasoning: `deploy_to_vercel` MCP is the only project-creation path,
+  and the first deploy would only render 503s for filesystem routes
+  until Phase 2 ships. Defer until Phase 2 is ready so the first
+  hosted deployment is a working one.
+- Vercel team `Upriver` (id `team_FIxyAOaCMqi7KGYQntQeCbuW`) is ready
+  to receive the project when Phase 2 lands.
 
 ---
 
@@ -118,17 +135,15 @@ reference. Spec doc and drift report are background.
 
 Full detail in `.planning/roadmap/OPTION-B-MIGRATION.md`.
 
-### Phase 1 — adapter swap + Vercel project (1–2 hours, NOT STARTED)
-1. `pnpm add -D @astrojs/vercel --filter @upriver/dashboard`
-2. Swap adapter in `packages/dashboard/astro.config.mjs`
-3. Add runtime guards: `process.env.VERCEL === '1'` ⇒ filesystem-
-   touching routes return 503 / placeholder
-4. Better: feature-flag via `UPRIVER_DATA_SOURCE=local|supabase`
-5. Create Vercel project via `mcp__plugin_vercel_vercel__deploy_to_vercel`
-   — scoped to Upriver team (`team_FIxyAOaCMqi7KGYQntQeCbuW`), root
-   directory `packages/dashboard`
-6. Set env vars on the Vercel project
-7. **Don't actually deploy yet** — Phase 2 is needed for it to work
+### Phase 1 — adapter swap + Vercel project (CODE-SIDE DONE, project creation deferred)
+1. ✅ `pnpm add -D @astrojs/vercel --filter @upriver/dashboard` (commit `79429ea`)
+2. ✅ Swap adapter in `packages/dashboard/astro.config.mjs`
+3. ✅ Runtime guards via `UPRIVER_DATA_SOURCE` (default `local`) +
+   middleware → 503 placeholder when `supabase`
+4. ⏸ Create Vercel project — deferred until Phase 2 ships, so the
+   first deploy is a working one
+5. ⏸ Set env vars on the Vercel project — deferred with #4
+6. ⏸ Don't deploy — moot until #4–5
 
 ### Phase 2 — storage abstraction (2–3 days)
 - `ClientDataSource` interface in `packages/core/src/data/`
