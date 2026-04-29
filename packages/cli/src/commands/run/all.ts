@@ -33,7 +33,7 @@ interface Stage {
 const PIPELINE: Stage[] = [
   { id: 'scrape', name: 'scrape', args: (s) => [s], describe: 'Firecrawl scrape every page' },
   { id: 'discover', name: 'discover', args: (s) => [s], describe: 'Scrape competitors + keyword discovery' },
-  { id: 'audit', name: 'audit', args: (s) => [s], describe: 'Run all base audit passes' },
+  { id: 'audit', name: 'audit', args: (s) => [s], describe: 'Run audit passes (base by default; --audit-mode threads through)' },
   { id: 'synthesize', name: 'synthesize', args: (s) => [s], describe: 'Compose audit-package.json' },
   { id: 'scaffold', name: 'scaffold', args: (s) => [s], describe: 'Generate Astro repo from template' },
   { id: 'clone', name: 'clone', args: (s) => [s, '--no-pr'], describe: 'Visual clone every page' },
@@ -74,6 +74,12 @@ export default class RunAll extends BaseCommand {
     'continue-on-error': Flags.boolean({
       description: 'Keep running stages even after a failure (useful for diagnostics).',
       default: false,
+    }),
+    'audit-mode': Flags.string({
+      description:
+        'Pass-through to `upriver audit --mode`. base = heuristic only (default), deep = LLM-driven C.3-C.5 only, all = both.',
+      options: ['base', 'deep', 'all'],
+      default: 'base',
     }),
   };
 
@@ -120,8 +126,12 @@ export default class RunAll extends BaseCommand {
     let failedCount = 0;
     let skippedCount = 0;
 
+    const auditMode = flags['audit-mode'] ?? 'base';
     for (const stage of stages) {
-      const stageArgs = stage.args(slug);
+      const stageArgs = [...stage.args(slug)];
+      if (stage.id === 'audit' && auditMode !== 'base') {
+        stageArgs.push('--mode', auditMode);
+      }
       const cmdParts = stage.name.split(/\s+/);
       const fullArgs = [binPath, ...cmdParts, ...stageArgs];
       this.log(`\n────────  ${stage.id}: upriver ${stage.name} ${stageArgs.join(' ')}  ────────`);
