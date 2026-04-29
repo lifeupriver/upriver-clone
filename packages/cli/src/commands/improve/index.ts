@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 import { Args, Flags } from '@oclif/core';
@@ -11,6 +11,7 @@ import {
   skillExists,
   type SkillTrack,
 } from '../../improve/matrix-loader.js';
+import { generateOpportunities } from '../../improve/opportunities-generator.js';
 import { loadAuditPackage } from '../../scaffold/template-writer.js';
 import { readIntake } from '../../util/intake-reader.js';
 
@@ -103,6 +104,15 @@ export default class Improve extends BaseCommand {
     this.log(`\nimprove "${slug}" — matrix v${matrix.version}, ${tracks.length} track(s)`);
     this.log(`  Client dir: ${dir}`);
     this.log(`  Repo dir:   ${repoDir}`);
+
+    // E.7 — emit deterministic improvement-opportunities.md before tracks run
+    // so operators can review the programmatic-SEO surface alongside the plan.
+    const opps = generateOpportunities(pkg);
+    const oppPath = join(dir, 'improvement-opportunities.md');
+    writeFileSync(oppPath, opps.body, 'utf8');
+    this.log(
+      `  Wrote ${oppPath} (${opps.counts.missingPages} missing pages, ${opps.counts.pillarCandidates} pillar candidates, ${opps.counts.contentFindings} content findings)`,
+    );
 
     const ready: SkillTrack[] = [];
     const missing: SkillTrack[] = [];
