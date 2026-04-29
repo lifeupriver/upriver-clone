@@ -85,6 +85,9 @@ importers:
       '@google-analytics/data':
         specifier: ^4.0.0
         version: 4.12.1
+      '@supabase/supabase-js':
+        specifier: ^2.104.1
+        version: 2.104.1
       googleapis:
         specifier: ^137.0.0
         version: 137.1.0
