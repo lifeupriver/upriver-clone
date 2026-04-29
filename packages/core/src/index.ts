@@ -46,3 +46,13 @@ export { assertPathInside } from './util/paths.js';
 // Errors
 export { UpriverError, ConfigError, FirecrawlError } from './errors.js';
 export type { UpriverErrorOptions } from './errors.js';
+
+// Skills registry (workstream H.3)
+export {
+  MARKETING_SKILLS,
+  UPRIVER_SKILLS,
+  ALL_SKILLS,
+  getSkill,
+  hasSkill,
+} from './skills/registry.js';
+export type { SkillEntry, Workstream } from './skills/registry.js';
