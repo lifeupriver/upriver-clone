@@ -47,6 +47,12 @@ export default class Improve extends BaseCommand {
       description: 'Run live tracks in the main repo working tree instead of a worktree per track.',
       default: false,
     }),
+    pr: Flags.boolean({
+      description:
+        'After a track commits, push the branch and open a PR via `gh pr create`. Pass --no-pr to skip.',
+      default: true,
+      allowNo: true,
+    }),
   };
 
   async run(): Promise<void> {
@@ -145,6 +151,7 @@ export default class Improve extends BaseCommand {
         intake,
         useWorktree,
         dryRun: false,
+        openPr: flags.pr,
         log: (msg) => this.log(msg),
       });
       results.push(result);
@@ -158,6 +165,8 @@ export default class Improve extends BaseCommand {
       const tag = r.ok ? 'ok' : r.skipped ? 'skip' : 'fail';
       const detail = r.error ? ` — ${r.error}` : r.skippedReason ? ` — ${r.skippedReason}` : '';
       this.log(`  [${tag}] ${r.trackId} (${r.branch})${detail}`);
+      if (r.prUrl) this.log(`         PR: ${r.prUrl}`);
+      else if (r.prSkippedReason) this.log(`         PR skipped: ${r.prSkippedReason}`);
     }
   }
 }

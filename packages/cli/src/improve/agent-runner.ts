@@ -1,5 +1,5 @@
 import { execFileSync, spawn } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 import type { AuditPackage, ClientIntake, SitePage } from '@upriver/core';
@@ -36,6 +36,12 @@ export interface RunTrackOptions {
   intake: ClientIntake | null;
   useWorktree: boolean;
   dryRun: boolean;
+  /**
+   * When true (and the track produced a commit), push `improve/<id>` and open a
+   * GitHub PR via `gh pr create`. Best-effort: no remote / no `gh` / no commits
+   * each downgrade to a logged warning rather than a hard failure.
+   */
+  openPr: boolean;
   log: (msg: string) => void;
 }
 
@@ -52,6 +58,11 @@ export interface TrackResult {
   skipped?: boolean;
   skippedReason?: string;
   error?: string;
+  /** Path to the per-track summary markdown, if one was written. */
+  summaryPath?: string;
+  /** PR URL when `gh pr create` succeeded; warning string when skipped. */
+  prUrl?: string;
+  prSkippedReason?: string;
 }
 
 /**
@@ -233,7 +244,7 @@ export function resolveTrackTargets(
  * @returns Track result with `ok`/`skipped`/`error` populated.
  */
 export async function runTrack(opts: RunTrackOptions): Promise<TrackResult> {
-  const { track, clientDir, repoDir, pkg, intake, useWorktree, dryRun, log } = opts;
+  const { track, clientDir, repoDir, pkg, intake, useWorktree, dryRun, openPr, log } = opts;
   const branch = `improve/${track.id}`;
 
   if (!skillExists(track.skill)) {
@@ -296,15 +307,50 @@ export async function runTrack(opts: RunTrackOptions): Promise<TrackResult> {
     log(`-> ${track.id}: launching Claude Code (branch ${branch}, cwd ${workCwd})`);
     await runClaudeCode(prompt, workCwd);
 
+    let didCommit = false;
     try {
       execFileSync('git', ['add', '-A'], { cwd: workCwd, stdio: 'pipe' });
       const msg = `improve(${track.id}): apply ${track.skill} skill`.slice(0, 160);
       execFileSync('git', ['commit', '-m', msg], { cwd: workCwd, stdio: 'pipe' });
+      didCommit = true;
     } catch {
       // Nothing to commit — agent decided no changes were needed.
     }
 
-    return { trackId: track.id, branch, ok: true };
+    const summaryPath = writeTrackSummary({
+      track,
+      pkg,
+      branch,
+      workCwd,
+      clientDir,
+      didCommit,
+      pageList: resolveTrackTargets(pkg, track.targets),
+    });
+
+    let prUrl: string | undefined;
+    let prSkippedReason: string | undefined;
+    if (openPr) {
+      if (!didCommit) {
+        prSkippedReason = 'no commit on branch';
+        log(`[pr] ${track.id}: skipped — ${prSkippedReason}`);
+      } else {
+        const result = openPullRequest({
+          branch,
+          workCwd,
+          repoDir,
+          track,
+          summaryPath,
+          log,
+        });
+        if (result.url) prUrl = result.url;
+        else prSkippedReason = result.reason;
+      }
+    }
+
+    const result: TrackResult = { trackId: track.id, branch, ok: true, summaryPath };
+    if (prUrl) result.prUrl = prUrl;
+    if (prSkippedReason) result.prSkippedReason = prSkippedReason;
+    return result;
   } catch (err) {
     return {
       trackId: track.id,
@@ -323,6 +369,137 @@ export async function runTrack(opts: RunTrackOptions): Promise<TrackResult> {
         // best-effort
       }
     }
+  }
+}
+
+/**
+ * Write `<clientDir>/improve/<id>-summary.md` describing what the track did.
+ * Body is built deterministically from git metadata so we don't have to capture
+ * Claude Code's stdout. Returns the absolute path of the file written.
+ */
+function writeTrackSummary(args: {
+  track: SkillTrack;
+  pkg: AuditPackage;
+  branch: string;
+  workCwd: string;
+  clientDir: string;
+  didCommit: boolean;
+  pageList: TrackPageTarget[];
+}): string {
+  const { track, pkg, branch, workCwd, clientDir, didCommit, pageList } = args;
+  const dir = join(clientDir, 'improve');
+  mkdirSync(dir, { recursive: true });
+  const path = join(dir, `${track.id}-summary.md`);
+
+  let diffstat = '(no commit produced — agent reported no changes needed)';
+  let commitLog = '';
+  if (didCommit) {
+    diffstat = safeGit(['diff', '--stat', 'HEAD~1..HEAD'], workCwd) ?? '(diffstat unavailable)';
+    commitLog = safeGit(['log', '-1', '--pretty=format:%h %s', 'HEAD'], workCwd) ?? '';
+  }
+
+  const pages = pageList.length === 0
+    ? '_(no targeted pages)_'
+    : pageList.map((p) => `- \`${p.path}\` — ${p.title || '(untitled)'}`).join('\n');
+
+  const body = `# improve(${track.id})
+
+**Client:** ${pkg.meta.clientName} (${pkg.meta.siteUrl})
+**Branch:** \`${branch}\`
+**Skill:** \`${track.skill}\`
+**Targets:** \`${track.targets}\`
+
+## What this track does
+
+${track.description}
+
+**Expected output:** ${track.output}
+
+## Pages touched
+
+${pages}
+
+## Commit
+
+${commitLog ? `\`${commitLog}\`` : '_no commit_'}
+
+## Diffstat
+
+\`\`\`
+${diffstat.trim()}
+\`\`\`
+
+---
+
+_Generated by \`upriver improve\` (E.4)._
+`;
+  writeFileSync(path, body, 'utf8');
+  return path;
+}
+
+/**
+ * Push `branch` and open a GitHub PR via `gh pr create`. Best-effort: a missing
+ * `origin`, missing `gh`, or `gh` exit non-zero each return a `reason` rather
+ * than throwing — the caller already counts the track as successful by the
+ * point we reach here.
+ */
+function openPullRequest(args: {
+  branch: string;
+  workCwd: string;
+  repoDir: string;
+  track: SkillTrack;
+  summaryPath: string;
+  log: (msg: string) => void;
+}): { url?: string; reason?: string } {
+  const { branch, workCwd, track, summaryPath, log } = args;
+
+  const remotes = safeGit(['remote'], workCwd) ?? '';
+  if (!remotes.split(/\s+/).includes('origin')) {
+    return { reason: 'no `origin` remote on cloned repo' };
+  }
+
+  try {
+    execFileSync('git', ['push', '-u', 'origin', branch], { cwd: workCwd, stdio: 'pipe' });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    log(`[pr] ${track.id}: git push failed — ${msg.split('\n')[0]}`);
+    return { reason: 'git push failed' };
+  }
+
+  const title = `improve(${track.id}): ${track.description}`.slice(0, 200);
+  try {
+    const stdout = execFileSync(
+      'gh',
+      [
+        'pr',
+        'create',
+        '--base',
+        'main',
+        '--head',
+        branch,
+        '--title',
+        title,
+        '--body-file',
+        summaryPath,
+      ],
+      { cwd: workCwd, stdio: ['ignore', 'pipe', 'pipe'] },
+    ).toString();
+    const url = stdout.trim().split(/\s+/).find((tok) => tok.startsWith('http'));
+    log(`[pr] ${track.id}: ${url ?? stdout.trim()}`);
+    return { url: url ?? stdout.trim() };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    const firstLine = msg.split('\n')[0] ?? msg;
+    log(`[pr] ${track.id}: gh pr create failed — ${firstLine}`);
+    return { reason: `gh pr create failed: ${firstLine}` };
+  }
+}
+
+function safeGit(args: string[], cwd: string): string | null {
+  try {
+    return execFileSync('git', args, { cwd, stdio: ['ignore', 'pipe', 'pipe'] }).toString();
+  } catch {
+    return null;
   }
 }
 
