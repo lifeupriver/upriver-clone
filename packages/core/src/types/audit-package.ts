@@ -133,6 +133,19 @@ export interface ImplementationPlan {
   requiresAssets: string[];
 }
 
+export interface ImpactMetric {
+  key: string;
+  value: number;
+  display: string;
+  label: string;
+  rationale: string;
+}
+
+export interface ImpactMetrics {
+  generatedAt: string;
+  metrics: ImpactMetric[];
+}
+
 export interface AuditPackage {
   meta: AuditPackageMeta;
   brandingProfile: FirecrawlBrandingProfile;
@@ -143,4 +156,5 @@ export interface AuditPackage {
   findings: AuditFinding[];
   brandVoiceDraft: BrandVoiceDraft;
   implementationPlan: ImplementationPlan;
+  impactMetrics?: ImpactMetrics;
 }

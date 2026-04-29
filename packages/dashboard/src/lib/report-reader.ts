@@ -24,10 +24,13 @@ export function readAuditPackage(slug: string): AuditPackage | null {
  * Read the executive-summary narrative for a client.
  *
  * Resolution order:
- *   1. clients/<slug>/executive-summary.md (written by a later workstream).
+ *   1. clients/<slug>/executive-summary.md — the dedicated standalone file
+ *      written by `upriver synthesize` alongside `audit-package.json`. This
+ *      is the canonical source as of workstream A.4.
  *   2. The "Executive summary" or "What's working" section of
  *      clients/<slug>/docs/brand-voice-guide.md, captured from the heading
- *      to the next H1 or end of file.
+ *      to the next H1 or end of file. Kept as a backward-compat fallback for
+ *      audit packages produced before the standalone file existed.
  *
  * @param slug - Client slug.
  * @returns Markdown body, or null if no source is available.

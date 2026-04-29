@@ -37,6 +37,8 @@ const overall = summary?.overall ?? auditPackage.meta.overallScore;
 
 const dimensionsBelowThreshold = passes.filter(p => p.score < 80).length;
 
+const heroMetrics = (auditPackage.impactMetrics?.metrics ?? []).slice(0, 3);
+
 /**
  * Split a markdown body on `\n## ` boundaries so each chunk represents a
  * leading heading followed by its prose. The first chunk may be a preamble
@@ -104,20 +106,31 @@ const narrativeBlocks = executiveSummary ? splitNarrative(executiveSummary) : []
     </div>
   </section>
 
-  {/* TODO(roadmap): A.4 replace with impact-metrics output */}
   <section class="stats">
-    <div class="card stat-card">
-      <span class="stat-num score-num">{p0Count}</span>
-      <span class="stat-label">Critical issues blocking growth</span>
-    </div>
-    <div class="card stat-card">
-      <span class="stat-num score-num">{dimensionsBelowThreshold}</span>
-      <span class="stat-label">Dimensions below shippable threshold</span>
-    </div>
-    <div class="card stat-card">
-      <span class="stat-num score-num">{totalFindings}</span>
-      <span class="stat-label">Total opportunities identified</span>
-    </div>
+    {heroMetrics.length > 0 ? (
+      heroMetrics.map(metric => (
+        <div class="card stat-card">
+          <span class="stat-num score-num">{metric.display || String(metric.value)}</span>
+          <span class="stat-label">{metric.label}</span>
+          <span class="stat-rationale">{metric.rationale}</span>
+        </div>
+      ))
+    ) : (
+      <>
+        <div class="card stat-card">
+          <span class="stat-num score-num">{p0Count}</span>
+          <span class="stat-label">Critical issues blocking growth</span>
+        </div>
+        <div class="card stat-card">
+          <span class="stat-num score-num">{dimensionsBelowThreshold}</span>
+          <span class="stat-label">Dimensions below shippable threshold</span>
+        </div>
+        <div class="card stat-card">
+          <span class="stat-num score-num">{totalFindings}</span>
+          <span class="stat-label">Total opportunities identified</span>
+        </div>
+      </>
+    )}
   </section>
 
   <section class="narrative">
@@ -218,6 +231,14 @@ const narrativeBlocks = executiveSummary ? splitNarrative(executiveSummary) : []
     color: var(--text-muted);
     font-size: var(--fs-sm);
     line-height: 1.4;
+  }
+
+  .stat-rationale {
+    color: var(--text-muted);
+    font-size: var(--fs-xs);
+    line-height: 1.5;
+    opacity: 0.85;
+    margin-top: 0.25rem;
   }
 
   .narrative {

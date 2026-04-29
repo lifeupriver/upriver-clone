@@ -23,6 +23,7 @@ import {
   buildBrandVoiceGuide,
   buildClientClaudeMd,
 } from '../docs/client-docs.js';
+import { computeImpactMetrics } from '../synthesize/impact-metrics.js';
 import { loadPagesAndTokens, type LoadedPage } from '../synthesize/loader.js';
 
 const MODEL = 'claude-sonnet-4-6';
@@ -68,6 +69,13 @@ export default class Synthesize extends BaseCommand {
 
     const scoreByDimension = Object.fromEntries(passes.map((p) => [p.dimension, p.score]));
     const overallScore = Math.round(passes.reduce((s, r) => s + r.score, 0) / passes.length);
+
+    const impactMetrics = computeImpactMetrics({
+      passes,
+      findings: allFindings,
+      pages,
+      scoreByDimension,
+    });
 
     const brandingProfile = (designTokens ?? {}) as AuditPackage['brandingProfile'];
     const designSystem = synthesizeDesignSystem(brandingProfile);
@@ -142,11 +150,16 @@ export default class Synthesize extends BaseCommand {
       findings: allFindings,
       brandVoiceDraft,
       implementationPlan,
+      impactMetrics,
     };
 
     const pkgPath = join(dir, 'audit-package.json');
     writeFileSync(pkgPath, JSON.stringify(auditPackage, null, 2), 'utf8');
     this.log(`\n  Wrote ${pkgPath}`);
+
+    const execPath = join(dir, 'executive-summary.md');
+    writeFileSync(execPath, executiveSummary, 'utf8');
+    this.log(`  Wrote ${execPath}`);
 
     const repoAgentsDir = join(dir, 'repo', '.agents');
     const docsDir = join(dir, 'docs');
