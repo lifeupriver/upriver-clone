@@ -37,6 +37,12 @@ export default class Clone extends BaseCommand {
     'dry-run': Flags.boolean({ description: 'Print the agent prompts without running Claude Code' }),
     'no-verify': Flags.boolean({ description: 'Skip the screenshot verification loop' }),
     'verify-iterations': Flags.integer({ description: 'Max iterations of the verification loop', default: 2 }),
+    'design-system': Flags.string({
+      description:
+        'Which design system the clone agent should honor. "client" (default) = reproduce the live brand palette/typography exactly. "upriver" = neutral house tokens, ignore brand-specific palette quirks (cleaner, opinionated rebuilds).',
+      options: ['client', 'upriver'],
+      default: 'client',
+    }),
   };
 
   async run(): Promise<void> {
@@ -115,6 +121,7 @@ export default class Clone extends BaseCommand {
           verifyPort,
           verifyIterations: flags['verify-iterations'],
           priorFidelity,
+          designSystem: (flags['design-system'] ?? 'client') as 'client' | 'upriver',
         });
         results.push(result);
       }
@@ -140,9 +147,9 @@ export default class Clone extends BaseCommand {
   }
 
   private async clonePage(opts: ClonePageOpts): Promise<PageResult> {
-    const { page, slug, clientDir, repoDir, pkg, intake, useWorktree, dryRun, openPr, verify, verifyPort, verifyIterations, priorFidelity } = opts;
+    const { page, slug, clientDir, repoDir, pkg, intake, useWorktree, dryRun, openPr, verify, verifyPort, verifyIterations, priorFidelity, designSystem } = opts;
     const branch = `clone/${pageSlugForBranch(page)}`;
-    const prompt = buildAgentPrompt({ page, slug, pkg, clientDir, intake });
+    const prompt = buildAgentPrompt({ page, slug, pkg, clientDir, intake, designSystem });
 
     if (dryRun) {
       this.log(`\n--- [dry-run] page=${page.slug || '/'} branch=${branch} ---`);
@@ -260,6 +267,7 @@ interface ClonePageOpts {
   verifyPort: number;
   verifyIterations: number;
   priorFidelity?: Map<string, PageFidelity> | null;
+  designSystem: 'client' | 'upriver';
 }
 
 interface PageResult {
@@ -291,8 +299,9 @@ function buildAgentPrompt(args: {
   pkg: AuditPackage;
   clientDir: string;
   intake: ClientIntake | null;
+  designSystem: 'client' | 'upriver';
 }): string {
-  const { page, slug, pkg, clientDir, intake } = args;
+  const { page, slug, pkg, clientDir, intake, designSystem } = args;
   // Canonicalize the page path. Some scrapes record the homepage with slug='home'
   // even though page.url has pathname '/'. Trust the URL pathname when it's root,
   // so we always write to src/pages/index.astro for the homepage.
@@ -345,7 +354,9 @@ Use the Read tool on the desktop screenshot. Then write a 5–8 bullet visual de
 Edit \`${pageFile}\` (create if missing). Match the screenshot's layout — sections in the same order, same hierarchy, same image-to-text relationships, same approximate spacing/sizing.
 
 - **Copy is verbatim.** Headings, body paragraphs, CTAs, link labels — port them exactly as they appear in rawhtml. Do not paraphrase, "tighten," or apply any voice rules. If the live page says "Welcome to Audrey's Farmhouse," your page says "Welcome to Audrey's Farmhouse."
-- **Use design tokens** from \`src/styles/global.css\` (\`--color-brand-*\`, \`--color-ink-*\`, \`--color-primary\`, \`--color-accent\`, \`--font-display\`, \`--font-sans\`, \`--radius-card\`, \`--radius-button\`). Translate the screenshot's visible colors / type / spacing to these tokens. Do NOT use hardcoded hex values.
+- **Use design tokens** from \`src/styles/global.css\` (\`--color-brand-*\`, \`--color-ink-*\`, \`--color-primary\`, \`--color-accent\`, \`--font-display\`, \`--font-sans\`, \`--radius-card\`, \`--radius-button\`). ${designSystem === 'upriver'
+    ? 'Design system mode: **upriver house style**. The tokens above are intentionally neutral; do NOT try to reproduce every brand-specific palette nuance from the screenshot. Use the --color-brand-* scale as the only brand color, and stick to --font-display / --font-sans for type. The output should feel cleaner and more "upriver-flavored" than a literal port — divergence from the screenshot on color/type is fine and expected.'
+    : 'Design system mode: **client**. Translate the screenshot\'s visible colors / type / spacing to these tokens, faithfully reproducing the live brand palette and typography.'} Do NOT use hardcoded hex values.
 - **Write inline markup directly.** Do NOT wrap content in the template's stock components (\`Hero\`, \`CTASection\`, \`TestimonialCard\`, etc.) unless one happens to structurally match the source — usually it won't. New page-specific components are fine for repeating sections; otherwise inline is preferred.
 - **Forms:** if the source has any form (newsletter signup, contact / inquiry, RSVP, etc.), recreate it in Astro — do NOT just embed an external link or skip it. Extract every \`<input>\`, \`<select>\`, \`<textarea>\`, and \`<button type="submit">\` from rawhtml, preserving \`name\`, \`type\`, \`required\`, \`placeholder\`, and any visible labels. Wire the form's \`action\` to a same-origin endpoint:
   - Newsletter / subscribe forms → \`/api/newsletter\`
