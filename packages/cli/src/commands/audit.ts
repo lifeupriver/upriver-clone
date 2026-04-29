@@ -53,6 +53,12 @@ export default class Audit extends BaseCommand {
       options: ALL_PASSES.map((p) => p.name),
       multiple: false,
     }),
+    mode: Flags.string({
+      description:
+        'Audit mode. base = fast heuristic passes (current default). deep = agent-driven passes (C.3–C.5, not yet shipped). all = both.',
+      options: ['base', 'deep', 'all'],
+      default: 'base',
+    }),
     out: Flags.string({
       description: 'Output directory (default: clients/<slug>/audit)',
     }),
@@ -75,11 +81,23 @@ export default class Audit extends BaseCommand {
     const outDir = flags.out ?? join(dir, 'audit');
     mkdirSync(outDir, { recursive: true });
 
+    const mode = (flags.mode ?? 'base') as 'base' | 'deep' | 'all';
+    if (mode === 'deep') {
+      this.warn(
+        '--mode=deep is reserved for the agent-driven C.3–C.5 passes (content-strategy, conversion-psychology, competitor-deep) which have not shipped yet. No passes will run. Use --mode=base or --mode=all.',
+      );
+      return;
+    }
+    if (mode === 'all') {
+      this.warn(
+        '--mode=all currently runs only the base heuristic passes; deep passes (C.3–C.5) are not yet wired in.',
+      );
+    }
     const passesToRun = flags.pass
       ? ALL_PASSES.filter((p) => p.name === flags.pass)
       : ALL_PASSES;
 
-    this.log(`\nRunning ${passesToRun.length} audit pass${passesToRun.length > 1 ? 'es' : ''} for "${slug}"...\n`);
+    this.log(`\nRunning ${passesToRun.length} audit pass${passesToRun.length > 1 ? 'es' : ''} for "${slug}" (mode=${mode})...\n`);
 
     // Run all passes in parallel
     const startTime = Date.now();
