@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Args } from '@oclif/core';
 import { BaseCommand } from '../base-command.js';
-import { clientDir, logUsageEvent } from '@upriver/core';
+import { clientDir } from '@upriver/core';
 import type {
   AuditFinding,
   AuditPackage,
@@ -11,6 +11,7 @@ import type {
   MissingPage,
   SitePage,
 } from '@upriver/core';
+import { cachedClaudeCall } from '../util/cached-llm.js';
 
 const MODEL = 'claude-sonnet-4-6';
 const MAX_TOKENS = 16000;
@@ -42,32 +43,22 @@ export default class InterviewPrep extends BaseCommand {
     const prompt = buildInterviewPrompt(pkg);
 
     const anthropic = new Anthropic({ apiKey });
-    const resp = await anthropic.messages.create({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      messages: [{ role: 'user', content: prompt }],
-    });
-
-    await logUsageEvent({
-      client_slug: slug,
-      event_type: 'claude_api',
-      model: MODEL,
-      input_tokens: resp.usage.input_tokens,
-      output_tokens: resp.usage.output_tokens,
+    const { text, usage, fromCache } = await cachedClaudeCall({
+      anthropic,
+      slug,
       command: 'interview-prep',
+      model: MODEL,
+      maxTokens: MAX_TOKENS,
+      messages: [{ role: 'user', content: prompt }],
+      log: (msg) => this.log(msg),
     });
-
-    const block = resp.content.find((b) => b.type === 'text');
-    if (!block || block.type !== 'text') {
-      this.error('Claude returned no text content');
-    }
-    const body = stripFences(block.text).trim();
+    const body = stripFences(text).trim();
 
     const outPath = join(dir, 'interview-guide.md');
     writeFileSync(outPath, body + '\n', 'utf8');
     this.log(`\nWrote ${outPath}`);
     this.log(
-      `  ${resp.usage.input_tokens} in / ${resp.usage.output_tokens} out tokens`,
+      `  ${usage.input_tokens} in / ${usage.output_tokens} out tokens${fromCache ? ' (cached)' : ''}`,
     );
     this.log(`\nNext: walk through the guide with the client, then run:`);
     this.log(`  upriver process-interview ${slug} --transcript <path>`);

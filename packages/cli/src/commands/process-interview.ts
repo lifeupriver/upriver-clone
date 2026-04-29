@@ -6,10 +6,10 @@ import { BaseCommand } from '../base-command.js';
 import {
   clientDir,
   FirecrawlClient,
-  logUsageEvent,
   readClientConfig,
 } from '@upriver/core';
 import type { AuditPackage, FirecrawlScrapeResult } from '@upriver/core';
+import { cachedClaudeCall } from '../util/cached-llm.js';
 
 const MODEL = 'claude-opus-4-7';
 const INPUT_BUDGET_TOKENS = 30_000;
@@ -347,27 +347,39 @@ ${spec.brief(clientName)}
     );
   }
 
-  const resp = await anthropic.messages.create({
-    model: MODEL,
-    max_tokens: MAX_TOKENS_PER_DOC,
-    messages: [{ role: 'user', content: trimmed }],
-  });
+  let result: { text: string; usage: { input_tokens: number; output_tokens: number } };
+  try {
+    const callResult = await cachedClaudeCall({
+      anthropic,
+      slug,
+      command: 'process-interview',
+      model: MODEL,
+      maxTokens: MAX_TOKENS_PER_DOC,
+      messages: [{ role: 'user', content: trimmed }],
+      log: (msg) => cmd.log(msg),
+    });
+    result = { text: callResult.text, usage: callResult.usage };
+  } catch (err) {
+    // Mirror prior debug behavior for empty-text failures.
+    if (err instanceof Error && /no text content/i.test(err.message)) {
+      mkdirSync(debugDir, { recursive: true });
+      writeFileSync(
+        join(debugDir, `${spec.key}.raw.json`),
+        JSON.stringify({ error: err.message }, null, 2),
+        'utf8',
+      );
+      throw new Error(
+        `${spec.label}: model returned no usable text. Raw response saved to ${debugDir}/${spec.key}.raw.json`,
+      );
+    }
+    throw err;
+  }
 
-  await logUsageEvent({
-    client_slug: slug,
-    event_type: 'claude_api',
-    model: MODEL,
-    input_tokens: resp.usage.input_tokens,
-    output_tokens: resp.usage.output_tokens,
-    command: 'process-interview',
-  });
-
-  const block = resp.content.find((b) => b.type === 'text');
-  if (!block || block.type !== 'text' || !block.text.trim()) {
+  if (!result.text.trim()) {
     mkdirSync(debugDir, { recursive: true });
     writeFileSync(
       join(debugDir, `${spec.key}.raw.json`),
-      JSON.stringify({ usage: resp.usage, content: resp.content, stop_reason: resp.stop_reason }, null, 2),
+      JSON.stringify({ usage: result.usage, text: result.text }, null, 2),
       'utf8',
     );
     throw new Error(
@@ -376,7 +388,7 @@ ${spec.brief(clientName)}
   }
 
   // Clean any incidental fence wrapping the model added despite the rule.
-  const text = block.text
+  const text = result.text
     .replace(/^```(?:markdown|md)?\s*\n/i, '')
     .replace(/\n```\s*$/, '')
     .trim();

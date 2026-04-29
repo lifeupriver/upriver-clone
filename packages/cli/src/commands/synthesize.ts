@@ -3,7 +3,7 @@ import { existsSync, readFileSync, readdirSync, mkdirSync, writeFileSync } from 
 import { join } from 'node:path';
 import { Args } from '@oclif/core';
 import { BaseCommand } from '../base-command.js';
-import { clientDir, readClientConfig, logUsageEvent } from '@upriver/core';
+import { clientDir, readClientConfig } from '@upriver/core';
 import type {
   AuditPackage,
   AuditFinding,
@@ -25,6 +25,7 @@ import {
 } from '../docs/client-docs.js';
 import { computeImpactMetrics } from '../synthesize/impact-metrics.js';
 import { loadPagesAndTokens, type LoadedPage } from '../synthesize/loader.js';
+import { cachedClaudeCall, type CacheableTextBlockParam } from '../util/cached-llm.js';
 
 const MODEL = 'claude-sonnet-4-6';
 const MAX_TOKENS = 8000;
@@ -90,6 +91,7 @@ export default class Synthesize extends BaseCommand {
     const screenshots = { pages: pages.map(toScreenshot) };
 
     const anthropic = new Anthropic({ apiKey });
+    const systemBlocks = systemContextBlocks(config.name, config.url, overallScore);
 
     this.log('  [1/3] Drafting brand voice...');
     const brandVoiceDraft = await callClaude<BrandVoiceDraft>(
@@ -98,6 +100,7 @@ export default class Synthesize extends BaseCommand {
       'synthesize',
       brandVoicePrompt(config.name, contentInventory, designSystem, pages),
       this,
+      systemBlocks,
     );
 
     this.log('  [2/3] Writing executive summary...');
@@ -107,6 +110,7 @@ export default class Synthesize extends BaseCommand {
       'synthesize',
       executiveSummaryPrompt(config.name, overallScore, allFindings, scoreByDimension),
       this,
+      systemBlocks,
     );
 
     this.log('  [3/3] Building implementation plan...');
@@ -116,6 +120,7 @@ export default class Synthesize extends BaseCommand {
       'synthesize',
       implementationPlanPrompt(allFindings, missingPages),
       this,
+      systemBlocks,
     );
 
     // quickWins is always derived locally for type safety; Claude only proposes the phase plan
@@ -391,14 +396,54 @@ function defaultPhases(findings: AuditFinding[]): ImplementationPhase[] {
   ];
 }
 
+/**
+ * Build the shared system-prompt context for synthesize's three sub-calls.
+ *
+ * Returns `CacheableTextBlockParam[]` so the last block can carry a
+ * `cache_control: { type: 'ephemeral' }` marker. With prompt caching enabled,
+ * this stable preamble is reused across all three synthesize calls within the
+ * SDK's cache window, cutting input-token cost on the 2nd and 3rd calls.
+ *
+ * @param clientName - Display name for the client.
+ * @param siteUrl - Client's site URL.
+ * @param overallScore - Audit overall score (0-100).
+ * @returns Cacheable system blocks, last entry marked ephemeral.
+ */
+function systemContextBlocks(
+  clientName: string,
+  siteUrl: string,
+  overallScore: number,
+): CacheableTextBlockParam[] {
+  return [
+    {
+      type: 'text',
+      text:
+        'You are part of Upriver Consulting\'s synthesize step, compiling a website ' +
+        'audit into client-facing artifacts (brand voice draft, executive summary, ' +
+        'implementation plan). Be concrete, plain-spoken, and grounded in the audit ' +
+        'evidence the user message provides — no generic boilerplate.',
+    },
+    {
+      type: 'text',
+      text:
+        `Client: ${clientName}\nSite: ${siteUrl}\nAudit overall score: ${overallScore}/100\n\n` +
+        'When the user message asks for JSON, return ONLY valid JSON with no prose ' +
+        'or markdown fences. When it asks for markdown, return ONLY markdown with no ' +
+        'preface or explanation.',
+      cache_control: { type: 'ephemeral' },
+    },
+  ];
+}
+
 async function callClaude<T>(
   anthropic: Anthropic,
   slug: string,
   command: string,
   prompt: string,
   cmd: BaseCommand,
+  system?: CacheableTextBlockParam[],
 ): Promise<T> {
-  const text = await callClaudeText(anthropic, slug, command, prompt, cmd);
+  const text = await callClaudeText(anthropic, slug, command, prompt, cmd, system);
   return parseJson<T>(text);
 }
 
@@ -408,26 +453,20 @@ async function callClaudeText(
   command: string,
   prompt: string,
   cmd: BaseCommand,
+  system?: CacheableTextBlockParam[],
 ): Promise<string> {
   try {
-    const resp = await anthropic.messages.create({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      messages: [{ role: 'user', content: prompt }],
-    });
-
-    await logUsageEvent({
-      client_slug: slug,
-      event_type: 'claude_api',
-      model: MODEL,
-      input_tokens: resp.usage.input_tokens,
-      output_tokens: resp.usage.output_tokens,
+    const { text } = await cachedClaudeCall({
+      anthropic,
+      slug,
       command,
+      model: MODEL,
+      maxTokens: MAX_TOKENS,
+      messages: [{ role: 'user', content: prompt }],
+      ...(system ? { system } : {}),
+      log: (msg) => cmd.log(msg),
     });
-
-    const block = resp.content.find((b) => b.type === 'text');
-    if (!block || block.type !== 'text') throw new Error('Claude returned no text content');
-    return block.text;
+    return text;
   } catch (err) {
     cmd.warn(`Claude API error: ${String(err)}`);
     throw err;
