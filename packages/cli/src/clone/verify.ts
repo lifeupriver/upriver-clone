@@ -3,6 +3,8 @@ import { existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import type { SitePage } from '@upriver/core';
 
+import type { PageFidelity } from '../clone-qa/fidelity-scorer.js';
+
 const CLAUDE_BIN = process.env['CLAUDE_BIN'] || 'claude';
 
 export interface VerifyOptions {
@@ -16,6 +18,13 @@ export interface VerifyOptions {
   pagePath: string; // The canonical path being cloned, e.g. "/" or "/about".
   sourceScreenshot: string; // Path to the source screenshot (audrey's actual home.png).
   pageFile: string; // The Astro file the agent is editing, e.g. "src/pages/index.astro".
+  /**
+   * Optional fidelity entry for this page from a previous `clone-fidelity`
+   * run. When present, the verify prompt is plan-aware: it tells the agent the
+   * prior pixel/copy scores and which copy tokens were missing from the clone,
+   * so iteration 1 starts knowing what to fix.
+   */
+  priorFidelity?: PageFidelity;
   log: (msg: string) => void;
 }
 
@@ -105,6 +114,7 @@ export async function verifyClonePage(opts: VerifyOptions): Promise<VerifyResult
         pagePath: opts.pagePath,
         iter: i,
         maxIter: opts.iterations,
+        ...(i === 1 && opts.priorFidelity ? { priorFidelity: opts.priorFidelity } : {}),
       });
 
       opts.log(`  [verify] Asking Claude to compare and fix...`);
@@ -190,8 +200,11 @@ function buildVerifyPrompt(args: {
   pagePath: string;
   iter: number;
   maxIter: number;
+  priorFidelity?: PageFidelity;
 }): string {
+  const priorBlock = renderPriorFidelityBlock(args.priorFidelity);
   return `You are verifying the visual fidelity of a cloned page against its source. Compare two screenshots and fix discrepancies.
+${priorBlock}
 
 ## Read both screenshots NOW (mandatory)
 1. Source (live site): \`${args.sourceScreenshot}\`
@@ -221,6 +234,27 @@ Constraints:
 - Keep changes scoped to \`${args.pageFile}\`.
 
 End with one line: \`DONE\` or \`CONTINUE\` followed by a one-sentence reason.`;
+}
+
+/**
+ * Render a "prior fidelity" hint block for the verify prompt. Empty string when
+ * no prior data is available so callers can unconditionally interpolate it.
+ */
+function renderPriorFidelityBlock(prior: PageFidelity | undefined): string {
+  if (!prior || prior.status !== 'scored') return '';
+  const missing = prior.copy.missingFromClone.slice(0, 20);
+  const missingLine =
+    missing.length > 0
+      ? `Top tokens present on live but missing in the clone: ${missing.join(', ')}.`
+      : 'No specific copy gaps were sampled.';
+  return `\n## Prior fidelity report (from \`clone-qa/summary.json\`)
+
+Pixel score: **${prior.pixel.score}/100** (${prior.pixel.differingPixels.toLocaleString()} differing pixels)
+Copy score:  **${prior.copy.score}/100** (${prior.copy.sharedTokens}/${prior.copy.liveTokens} live tokens present in clone)
+Overall:     **${prior.overall}/100**
+
+${missingLine} Treat this list as a high-signal hint about content the clone left out — restore the missing copy verbatim if it's content (not boilerplate).
+`;
 }
 
 function runClaudeAndCaptureLastLine(prompt: string, cwd: string): Promise<string> {

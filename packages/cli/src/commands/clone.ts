@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs';
 import { BaseCommand } from '../base-command.js';
 import type { AuditPackage, ClientConfig, ClientIntake, SitePage } from '@upriver/core';
 import { loadAuditPackage, resolveScaffoldPaths } from '../scaffold/template-writer.js';
+import type { FidelitySummary, PageFidelity } from '../clone-qa/fidelity-scorer.js';
 import { verifyClonePage } from '../clone/verify.js';
 import {
   buildAssetIndex,
@@ -47,6 +48,10 @@ export default class Clone extends BaseCommand {
 
     const pkg = loadAuditPackage(clientDir);
     const intake = readIntake(slug);
+    const priorFidelity = readPriorFidelity(clientDir);
+    if (priorFidelity) {
+      this.log(`  Loaded prior fidelity report (${priorFidelity.size} pages) — verify loop will be plan-aware.`);
+    }
 
     let pages = pkg.siteStructure.pages.filter((p) => p.statusCode < 400);
 
@@ -109,6 +114,7 @@ export default class Clone extends BaseCommand {
           verify: shouldVerify,
           verifyPort,
           verifyIterations: flags['verify-iterations'],
+          priorFidelity,
         });
         results.push(result);
       }
@@ -134,7 +140,7 @@ export default class Clone extends BaseCommand {
   }
 
   private async clonePage(opts: ClonePageOpts): Promise<PageResult> {
-    const { page, slug, clientDir, repoDir, pkg, intake, useWorktree, dryRun, openPr, verify, verifyPort, verifyIterations } = opts;
+    const { page, slug, clientDir, repoDir, pkg, intake, useWorktree, dryRun, openPr, verify, verifyPort, verifyIterations, priorFidelity } = opts;
     const branch = `clone/${pageSlugForBranch(page)}`;
     const prompt = buildAgentPrompt({ page, slug, pkg, clientDir, intake });
 
@@ -175,6 +181,7 @@ export default class Clone extends BaseCommand {
         const sourceScreenshot = resolve(clientDir, 'screenshots', 'desktop', `${pageFileSlug(page)}.png`);
         const path = canonicalPagePath(page);
         const pageFile = path === '/' ? 'src/pages/index.astro' : `src/pages${path}.astro`;
+        const priorEntry = priorFidelity?.get(pageFileSlug(page) === 'index' ? 'home' : pageFileSlug(page));
         const result = await verifyClonePage({
           page,
           slug,
@@ -186,6 +193,7 @@ export default class Clone extends BaseCommand {
           pagePath: path,
           sourceScreenshot,
           pageFile,
+          ...(priorEntry ? { priorFidelity: priorEntry } : {}),
           log: (m) => this.log(m),
         });
         verifyStatus = `${result.status} after ${result.iterationsRun}/${verifyIterations} iter(s)`;
@@ -251,6 +259,7 @@ interface ClonePageOpts {
   verify: boolean;
   verifyPort: number;
   verifyIterations: number;
+  priorFidelity?: Map<string, PageFidelity> | null;
 }
 
 interface PageResult {
@@ -649,6 +658,25 @@ function normalizePath(p: string): string {
   }
   if (p === 'index') return '/';
   return p.startsWith('/') ? p : `/${p}`;
+}
+
+/**
+ * D.5 — read `clone-qa/summary.json` (the fidelity report) if it exists, and
+ * return a per-pageSlug map. Returns null when no prior run exists so the
+ * verify loop still works on a first-pass clone.
+ */
+function readPriorFidelity(clientDir: string): Map<string, PageFidelity> | null {
+  const path = join(clientDir, 'clone-qa', 'summary.json');
+  if (!existsSync(path)) return null;
+  try {
+    const raw = readFileSync(path, 'utf8');
+    const parsed = JSON.parse(raw) as FidelitySummary;
+    const map = new Map<string, PageFidelity>();
+    for (const p of parsed.pages ?? []) map.set(p.pageSlug, p);
+    return map;
+  } catch {
+    return null;
+  }
 }
 
 function shellQuote(s: string): string {
