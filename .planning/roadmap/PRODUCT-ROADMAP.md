@@ -126,13 +126,13 @@ The dependency arrows are real but loose: A and B can ship before C; D unlocks E
 
 ## C. Audit depth + GEO/AEO expansion
 
-> **Status: shipped with drift.** C.1 ⚠️ C.2 ⚠️ C.3 ✅ C.4 ✅ C.5 ⚠️ C.6 🔧 C.7 🔧. Surface widened by `ff2fd67` — see beyond-roadmap note in document banner.
+> **Status: shipped.** C.1 ⚠️ C.2 ⚠️ C.3 ✅ C.4 ✅ C.5 ⚠️ C.6 ✅ C.7 ✅. Surface widened by `ff2fd67` — see beyond-roadmap note in document banner.
 >
 > - **C.1 geo:** narrower than spec — TL;DR/llms.txt/factoids/disambiguation present; chunk-level semantic completeness, Wikipedia/Wikidata presence, citation-friendly anchor text not implemented.
 > - **C.2 typography:** narrower than spec on its own (hierarchy/font-count/scale-ratio only), but the spec's font/web-quality/FOUT-adjacent gaps are partially closed by the merged `accessibility-deep` and `web-quality` passes. Explicit pairing critique still missing.
 > - **C.5 competitor-deep:** assumes `<clientDir>/competitors/*.json` is already populated; spec wanted the pass to scrape competitors itself via Firecrawl.
-> - **C.6 flag name drift:** shipped as `--mode=base|deep|all`, not `--audit-mode=sales|operator`. Now also has a sibling `--deep` boolean (legacy from merge) that runs a different set of passes. Two-flag UX worth consolidating.
-> - **C.7 schema drift:** shipped as `{scorePoints, description}`, not `{metric, magnitude, rationale}`. Different shape entirely; A.4's report hero uses a parallel impact-metrics path instead.
+> - **C.6 flag canonicalized as `--mode=base|deep|all`.** The `sales|operator` framing in the spec text below is superseded — `base` ≈ operator, `deep` adds LLM passes, `all` adds tooling-driven passes too. `--mode=all` consolidated with the merged `--deep` boolean: `--mode=all` runs both tracks; `--deep` alone runs the tooling track only.
+> - **C.7 schema canonicalized as `{ scorePoints: number; description: string }`.** The `{metric, magnitude, rationale}` shape in the spec text below is superseded. A.4's report hero produces business-framed metrics independently via `synthesize/impact-metrics.ts`; C.7's per-finding impact is a quantitative score-points heuristic rendered in `fixes plan`. Two paths by design — different consumers, different semantics.
 
 **Problem.** The 10 base passes (`packages/audit-passes/src/{seo,content,design,sales,links,schema,aeo,local,backlinks,competitors}/index.ts`) are heuristic and quick. The 8 deep passes (`packages/cli/src/deep-audit/passes/`) are LLM-driven and gated behind `--deep`. Coverage is good but missing categories the user named: **GEO** (generative engine optimization, distinct from AEO), **typography depth**, **content strategy / keyword opportunity**, **conversion psychology**, and **competitor side-by-side**.
 
@@ -311,6 +311,63 @@ The dependency arrows are real but loose: A and B can ship before C; D unlocks E
 3. **Skill registry typed in core.** Today skills are referenced as string paths in agent prompts (e.g., `fixes/apply.ts:10`). Move to a typed registry at `packages/core/src/skills/registry.ts` that exports `{name, path, methodology, when}` so the CLI can validate at startup that referenced skills exist (catches the breakage from `README.md:166-168` after a `git pull` of marketingskills).
 
 4. **`upriver-design` as a first-class skill in the clone path.** The `upriver-design-system/` skill exists with strict brand rules (see `SKILL.md:20-26`: no em dashes, no emoji, single accent color). Wire it into the clone agent prompt _by default_ when the operator wants the cloned site to match Upriver-as-vendor styling; otherwise default off so the clone matches the client's brand. Flag: `--design-system upriver|client` on `clone.ts` flags (lines 27-37).
+
+---
+
+## I. Tooling-driven deep audit (added post-roadmap via `ff2fd67`)
+
+> **Status: shipped, follow-on work tracked.** I.1 ✅ I.2 ✅ I.3 ✅ I.4 ✅ I.5 ✅ I.6 ✅ I.7 ✅ I.8 ✅ I.9 ✅. Follow-on integration items below are open.
+
+**Context.** A parallel branch landed 9 deep audit passes that lean on
+external tooling (Lighthouse, squirrelscan, Playwright) and direct
+Anthropic calls rather than the C.3–C.5 shared `AgentRunner` pattern.
+They live under `packages/cli/src/deep-audit/` alongside the LLM
+passes and are gated behind `--deep` (or implicitly `--mode=all`).
+
+**Shipped passes:**
+
+1. **I.1 `runDesignDeep`** — applies the `impeccable` design skill via
+   Anthropic. `packages/cli/src/deep-audit/passes/design-deep.ts`.
+2. **I.2 `runWebQuality`** — runs Lighthouse against the cloned site,
+   produces performance / a11y / SEO findings.
+   `packages/cli/src/deep-audit/passes/web-quality.ts`.
+3. **I.3 `runAuditWebsite`** — wraps the `squirrelscan` CLI.
+   `packages/cli/src/deep-audit/passes/audit-website.ts`.
+4. **I.4 `runAccessibilityDeep`** — WCAG-focused agent pass.
+   `packages/cli/src/deep-audit/passes/accessibility-deep.ts`.
+5. **I.5 `runCoreWebVitalsDeep`** — CWV-focused agent pass.
+   `packages/cli/src/deep-audit/passes/cwv-deep.ts`.
+6. **I.6 `runAnalyticsTracking`** — Playwright-driven analytics check.
+   `packages/cli/src/deep-audit/passes/analytics-tracking.ts`.
+7. **I.7 `runTrustSignals`** — Anthropic-driven trust-signal critique.
+   `packages/cli/src/deep-audit/passes/trust-signals.ts`.
+8. **I.8 `runCrossBrowser`** — Playwright cross-browser smoke.
+   `packages/cli/src/deep-audit/passes/cross-browser.ts`.
+9. **I.9 `runPreflight`** — checks for `claude`, `lighthouse`,
+   `squirrelscan`, Playwright browsers, and required skills before any
+   pass runs. Failures degrade to a `[SKIP]` line, not a hard error.
+   `packages/cli/src/deep-audit/preflight.ts`.
+
+**Follow-on work (open):**
+
+1. **I.10 `run all --deep` pass-through.** `commands/run/all.ts`
+   threads `--audit-mode` into the audit stage but not `--deep`. Add
+   pass-through so the orchestrator can invoke tooling-driven passes.
+2. **I.11 Consolidate the deep-pass `AgentRunner` story.** Track 1
+   (C.3–C.5 LLM passes) uses the injectable `AgentRunner` factory;
+   Track 2 (these 9 passes) instantiates Anthropic per pass. Decide
+   whether to migrate the new passes onto `AgentRunner` (cheaper to
+   stub in tests, picks up prompt caching automatically) or leave
+   them per-pass.
+3. **I.12 Test coverage for the merged passes.** No tests landed in
+   `ff2fd67`; the C.3–C.5 passes have a parser test in
+   `runner.test.ts`. Add at least a smoke test per merged pass that
+   stubs the Anthropic / Lighthouse / squirrelscan dependency.
+4. **I.13 New `AuditDimension` values surface in reports.** The merge
+   added `web-quality`, `core-web-vitals`, `accessibility`,
+   `audit-website`, `analytics`, `cross-browser`, `trust-signals`.
+   `findings.astro` renders dimension cards from a fixed list — verify
+   the new dimensions appear or wire them in if they don't.
 
 ---
 

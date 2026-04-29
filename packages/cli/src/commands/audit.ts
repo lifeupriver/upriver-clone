@@ -89,13 +89,13 @@ export default class Audit extends BaseCommand {
     }),
     mode: Flags.string({
       description:
-        'Audit mode. base = fast heuristic passes (default). deep = agent-driven C.3–C.5 passes only. all = both.',
+        'Audit mode. base = heuristic passes only (default). deep = + LLM-driven C.3–C.5 passes. all = + tooling-driven passes (Lighthouse / squirrelscan / Playwright / Anthropic accessibility & CWV & trust). For tooling-only without LLM passes, use --deep.',
       options: ['base', 'deep', 'all'],
       default: 'base',
     }),
     'deep-concurrency': Flags.integer({
       description:
-        'Max parallel deep passes when --mode includes deep. Default 2 — keeps token usage bounded.',
+        'Max parallel LLM deep passes when --mode includes deep. Default 2 — keeps token usage bounded.',
       default: 2,
       min: 1,
     }),
@@ -103,7 +103,8 @@ export default class Audit extends BaseCommand {
       description: 'Output directory (default: clients/<slug>/audit)',
     }),
     deep: Flags.boolean({
-      description: 'Run LLM-driven deep passes (impeccable design, Lighthouse, squirrelscan, WCAG a11y, Core Web Vitals)',
+      description:
+        'Run tooling-driven deep passes (impeccable design, Lighthouse, squirrelscan, accessibility, CWV, analytics, trust signals, cross-browser). Implied by --mode=all. Use this flag alone for tooling-only without LLM passes.',
       default: false,
     }),
   };
@@ -214,9 +215,11 @@ export default class Audit extends BaseCommand {
       await Promise.allSettled(workers);
     }
 
-    // Track 2: tooling-driven deep passes (--deep boolean). Only when --deep
-    // and no --pass filter.
-    if (flags.deep && !flags.pass) {
+    // Track 2: tooling-driven deep passes. Triggered by --deep OR by
+    // --mode=all (so "all" is genuinely all). --pass filter still gates either
+    // path off, since tooling passes don't fit the per-pass filter shape.
+    const runTooling = (flags.deep || mode === 'all') && !flags.pass;
+    if (runTooling) {
       const preflight = runPreflight();
       this.log(`\n${'─'.repeat(60)}\nPreflight checks for --deep:`);
       for (const w of preflight.warnings) this.log(`  ⚠  ${w}`);
@@ -323,7 +326,8 @@ export default class Audit extends BaseCommand {
     const summary = {
       slug,
       audited_at: new Date().toISOString(),
-      deep: flags.deep && !flags.pass,
+      deep: runTooling,
+      mode,
       overall_score: overallScore,
       overall_grade: gradeScore(overallScore),
       passes_run: totalPassesRun,
