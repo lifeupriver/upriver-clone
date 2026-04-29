@@ -64,6 +64,13 @@ export const ENV_REGISTRY: Record<string, EnvVarSpec> = {
     required: false,
     description: 'Set to anything truthy to surface debug-level log output (silent-catch reasons, retry traces).',
   },
+  UPRIVER_REPORT_HOST: {
+    name: 'UPRIVER_REPORT_HOST',
+    required: false,
+    description:
+      'Host where the static report bundle is published, used by `upriver report send` to build share URLs. Defaults to https://reports.upriver.com.',
+    example: 'https://reports.upriver.com',
+  },
 };
 
 export function describeEnvVar(name: string): string {

@@ -171,7 +171,7 @@ export default class ReportBuild extends BaseCommand {
     if (flags.upload) {
       // TODO(roadmap): A.6 wire Supabase upload.
       this.warn(
-        `--upload not yet wired. Output ready at ${absOut}. Configure UPRIVER_SUPABASE_URL + UPRIVER_SUPABASE_SERVICE_KEY to enable.`,
+        `--upload not yet wired. Output ready at ${absOut}. To produce a share URL once hosted, run: upriver report send ${slug} --to client@example.com.`,
       );
     }
   }
@@ -219,7 +219,7 @@ function buildReadme(clientName: string): string {
     '- findings.html — full findings',
     '- next-steps.html — pricing tiers and intake CTA',
     '',
-    'Hosted version: TODO(roadmap): A.6 inject share-link URL.',
+    'Hosted version: run `upriver report send <slug> --to ...` to mint a share URL.',
     '',
   ].join('\n');
 }
