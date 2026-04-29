@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { basename, isAbsolute, join, resolve } from 'node:path';
 
 import { Args, Flags } from '@oclif/core';
+import type { AuditFinding } from '@upriver/core';
 
 import { BaseCommand } from '../base-command.js';
 import { extractCloneText } from '../clone-qa/extract-clone-text.js';
@@ -136,6 +137,21 @@ export default class CloneFidelity extends BaseCommand {
     const scored = results.filter((r) => r.status === 'scored');
     this.log(`\n  Wrote ${outPath}`);
     this.log(`  Overall fidelity: ${overall}/100 across ${scored.length} pages`);
+
+    // D.3 — emit synthetic findings for low-scoring pages so `fixes plan`
+    // can route them through the same workflow as audit findings.
+    const findings = buildFidelityFindings(results);
+    const findingsPath = join(clientDir, 'clone-fidelity-findings.json');
+    writeFileSync(
+      findingsPath,
+      `${JSON.stringify({ generatedAt: summary.generatedAt, findings }, null, 2)}\n`,
+      'utf-8',
+    );
+    if (findings.length > 0) {
+      this.log(`  Wrote ${findings.length} fidelity finding(s) to ${findingsPath}`);
+    } else {
+      this.log(`  No fidelity findings (all pages >= ${FIDELITY_THRESHOLD} or unscored)`);
+    }
     this.log('');
   }
 }
@@ -178,6 +194,41 @@ function readLiveText(clientDir: string, pageSlug: string): string {
     // TODO(roadmap): structured logging for clone-fidelity input failures.
     return '';
   }
+}
+
+const FIDELITY_THRESHOLD = 80;
+
+/**
+ * Synthesize one `AuditFinding` per scored page that fell below
+ * `FIDELITY_THRESHOLD`. The shape mirrors audit findings so `fixes plan` can
+ * merge them in unmodified.
+ *
+ * @param pages - Per-page fidelity scores from the run.
+ * @returns Array of synthetic findings (possibly empty).
+ */
+export function buildFidelityFindings(pages: PageFidelity[]): AuditFinding[] {
+  const findings: AuditFinding[] = [];
+  for (const p of pages) {
+    if (p.status !== 'scored') continue;
+    if (p.overall >= FIDELITY_THRESHOLD) continue;
+    const pixel = p.pixel.score;
+    const copy = p.copy.score;
+    const lagging = pixel < copy ? 'pixel parity' : copy < pixel ? 'copy completeness' : 'both pixel and copy parity';
+    findings.push({
+      id: `clone-fidelity-${p.pageSlug}`,
+      dimension: 'design',
+      priority: 'p1',
+      effort: 'medium',
+      title: `Clone fidelity for /${p.pageSlug} is ${p.overall}/100`,
+      description: `The cloned ${p.pageSlug} page scored ${p.overall}/100 against live (pixel ${pixel}, copy ${copy}). Lagging dimension: ${lagging}.`,
+      why_it_matters:
+        'Low fidelity erodes client trust at the dogfood preview and produces a worse baseline for subsequent improvement tracks. Closing the gap before improve runs prevents compounding divergence.',
+      recommendation: `Inspect clone-qa/diff/${p.pageSlug}.png, then update the corresponding cloned page (\`src/pages/${p.pageSlug === 'home' ? 'index' : p.pageSlug}.astro\` and any referenced components) to bring ${lagging} back above ${FIDELITY_THRESHOLD}.`,
+      evidence: `clone-qa/diff/${p.pageSlug}.png`,
+      page: p.pageSlug,
+    });
+  }
+  return findings;
 }
 
 /** Short status indicator for the per-page log line. */

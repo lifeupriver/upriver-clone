@@ -131,7 +131,11 @@ export default class FixesPlan extends BaseCommand {
 
     const scopePath = join(dir, 'fixes-plan-scope.md');
     const inScopeIds = readScope(scopePath);
-    const allFindings = pkg.findings;
+    const fidelityFindings = readFidelityFindings(dir);
+    if (fidelityFindings.length > 0) {
+      this.log(`  Merging ${fidelityFindings.length} clone-fidelity finding(s) from clone-fidelity-findings.json`);
+    }
+    const allFindings = mergeFindings(pkg.findings, fidelityFindings);
     const intakeFixIds = collectIntakeFixIds(intake);
 
     let selected: AuditFinding[];
@@ -169,6 +173,34 @@ export default class FixesPlan extends BaseCommand {
     }
     this.log(`\nNext: upriver fixes apply ${slug}`);
   }
+}
+
+/**
+ * Read synthetic clone-fidelity findings (D.1+D.3) if present. Returns [] when
+ * the file is missing or unparsable so fidelity is purely additive.
+ */
+function readFidelityFindings(dir: string): AuditFinding[] {
+  const path = join(dir, 'clone-fidelity-findings.json');
+  if (!existsSync(path)) return [];
+  try {
+    const raw = readFileSync(path, 'utf8');
+    const parsed = JSON.parse(raw) as { findings?: AuditFinding[] };
+    return Array.isArray(parsed.findings) ? parsed.findings : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Merge audit findings with synthetic ones, dropping later duplicates by id. */
+function mergeFindings(audit: AuditFinding[], extra: AuditFinding[]): AuditFinding[] {
+  const seen = new Set<string>(audit.map((f) => f.id));
+  const out = [...audit];
+  for (const f of extra) {
+    if (seen.has(f.id)) continue;
+    seen.add(f.id);
+    out.push(f);
+  }
+  return out;
 }
 
 function readScope(path: string): Set<string> | null {
