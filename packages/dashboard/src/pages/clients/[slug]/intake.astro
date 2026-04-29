@@ -1,0 +1,496 @@
+---
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import {
+  clientExists,
+  getClientsBase,
+  readAllFindings,
+  readClientConfig,
+  readIntake,
+} from '@/lib/fs-reader';
+import { clientFacingPriority } from '@/lib/report-reader';
+import type { AuditFinding, FindingDecision } from '@upriver/core';
+
+// Server-rendered admin view of the persisted client intake. Operator-facing:
+// shows scope tier, decisions, page wants, reference sites, and exposes the
+// "Lock scope" action that converts intake decisions to fixes-plan-scope.md.
+
+const { slug } = Astro.params;
+
+if (!slug || !clientExists(slug)) {
+  return Astro.redirect('/clients');
+}
+
+const config = readClientConfig(slug)!;
+const intake = readIntake(slug);
+const findings = readAllFindings(slug);
+const findingsById = new Map<string, AuditFinding>(findings.map((f) => [f.id, f]));
+
+const scopeMdPath = join(getClientsBase(), slug, 'fixes-plan-scope.md');
+const scopeAlreadyLocked = existsSync(scopeMdPath);
+
+// Decision row sort order: fix → discuss → skip, then by priority (p0/p1/p2),
+// then by id for stability.
+const DECISION_ORDER: Record<FindingDecision, number> = { fix: 0, discuss: 1, skip: 2 };
+const PRIORITY_ORDER: Record<string, number> = { p0: 0, p1: 1, p2: 2 };
+
+interface DecisionRow {
+  id: string;
+  decision: FindingDecision;
+  finding: AuditFinding | undefined;
+}
+
+const decisions: DecisionRow[] = intake
+  ? Object.entries(intake.findingDecisions ?? {})
+      .map(([id, decision]) => ({ id, decision, finding: findingsById.get(id) }))
+      .sort((a, b) => {
+        const d = DECISION_ORDER[a.decision] - DECISION_ORDER[b.decision];
+        if (d !== 0) return d;
+        const pa = a.finding ? (PRIORITY_ORDER[a.finding.priority] ?? 9) : 9;
+        const pb = b.finding ? (PRIORITY_ORDER[b.finding.priority] ?? 9) : 9;
+        if (pa !== pb) return pa - pb;
+        return a.id.localeCompare(b.id);
+      })
+  : [];
+
+const fixCount = decisions.filter((d) => d.decision === 'fix').length;
+
+const decisionPill: Record<FindingDecision, { label: string; cls: string }> = {
+  fix: { label: 'Fix', cls: 'pill-accent' },
+  discuss: { label: 'Discuss', cls: 'pill-muted' },
+  skip: { label: "Don't bother", cls: 'pill-ghost' },
+};
+
+const pageWantsEntries = intake
+  ? Object.entries(intake.pageWants ?? {}).filter(([, v]) => v.trim().length > 0)
+  : [];
+
+const tierLabel: Record<string, string> = {
+  polish: 'Polish',
+  rebuild: 'Rebuild',
+  'rebuild-plus-content': 'Rebuild + content',
+};
+
+/**
+ * Format an ISO timestamp as a short, locale-aware string.
+ *
+ * @param iso - ISO date string (or null).
+ * @returns Formatted string, or em-dash if null.
+ */
+function fmtTs(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  } catch {
+    return iso;
+  }
+}
+
+const intakeUrl = `/deliverables/${slug}/next-steps`;
+---
+
+<DashboardLayout title={`${config.name} — Intake`} section="clients">
+  <div class="breadcrumb">
+    <a href="/clients" class="bc-link">Clients</a>
+    <span class="bc-sep">/</span>
+    <a href={`/clients/${slug}`} class="bc-link">{config.name}</a>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">Intake</span>
+  </div>
+
+  <div class="doc-header">
+    <div>
+      <span class="eyebrow">Client Intake</span>
+      <h1>{config.name}</h1>
+    </div>
+    {intake && (
+      <div class="header-pills">
+        <span class="pill pill-muted">Submitted {fmtTs(intake.submittedAt)}</span>
+      </div>
+    )}
+  </div>
+
+  {!intake ? (
+    <div class="card empty-card">
+      <span class="eyebrow">No intake yet</span>
+      <h3>Client has not submitted intake yet.</h3>
+      <p>
+        They can fill it out at <code>{intakeUrl}</code>. Share the link below with the
+        client to collect their scope tier, finding decisions, page priorities, and
+        reference sites.
+      </p>
+      <div class="empty-actions">
+        <a class="link-btn" href={intakeUrl} target="_blank" rel="noopener">
+          Open intake form
+        </a>
+        <a class="link-btn link-btn-ghost" href={intakeUrl}>
+          Copy link
+        </a>
+      </div>
+    </div>
+  ) : (
+    <div class="cards">
+      {/* Scope tier */}
+      <section class="card pad">
+        <span class="eyebrow">Scope tier</span>
+        <div class="tier-row">
+          <span class="tier-value">
+            {intake.scopeTier ? (tierLabel[intake.scopeTier] ?? intake.scopeTier) : 'Undecided'}
+          </span>
+          <dl class="ts-list">
+            <dt>Submitted</dt>
+            <dd>{fmtTs(intake.submittedAt)}</dd>
+            <dt>Updated</dt>
+            <dd>{fmtTs(intake.updatedAt)}</dd>
+          </dl>
+        </div>
+      </section>
+
+      {/* Decisions */}
+      <section class="card pad">
+        <span class="eyebrow">Decisions</span>
+        <h3 class="card-h">Findings ({decisions.length})</h3>
+        {decisions.length === 0 ? (
+          <p class="muted">No finding decisions recorded.</p>
+        ) : (
+          <table class="decisions">
+            <thead>
+              <tr>
+                <th class="col-priority">Priority</th>
+                <th class="col-finding">Finding</th>
+                <th class="col-decision">Decision</th>
+              </tr>
+            </thead>
+            <tbody>
+              {decisions.map(({ id, decision, finding }) => {
+                const priority = finding ? clientFacingPriority(finding.priority) : null;
+                const pill = decisionPill[decision];
+                return (
+                  <tr>
+                    <td>
+                      {priority ? (
+                        <span class={`pill ${priority.pill}`}>{priority.label}</span>
+                      ) : (
+                        <span class="pill pill-ghost">—</span>
+                      )}
+                    </td>
+                    <td>
+                      <div class="finding-title">{finding?.title ?? id}</div>
+                      <div class="finding-id mono">{id}</div>
+                    </td>
+                    <td>
+                      <span class={`pill ${pill.cls}`}>{pill.label}</span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      {/* Page wants */}
+      <section class="card pad">
+        <span class="eyebrow">Page wants</span>
+        <h3 class="card-h">What the client wants per page</h3>
+        {pageWantsEntries.length === 0 ? (
+          <p class="muted">No per-page priorities recorded.</p>
+        ) : (
+          <ul class="page-wants">
+            {pageWantsEntries.map(([pageSlug, text]) => (
+              <li>
+                <div class="page-slug mono">{pageSlug}</div>
+                <p class="page-text">{text}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* Reference sites */}
+      <section class="card pad">
+        <span class="eyebrow">Reference sites</span>
+        <h3 class="card-h">Inspiration the client called out</h3>
+        {(intake.referenceSites ?? []).length === 0 ? (
+          <p class="muted">No reference sites listed.</p>
+        ) : (
+          <ul class="ref-sites">
+            {intake.referenceSites.map((url) => (
+              <li>
+                <a href={url} target="_blank" rel="noopener" class="ref-link">{url}</a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* Lock scope */}
+      <section class="card pad lock-card">
+        <span class="eyebrow">Lock scope</span>
+        <h3 class="card-h">Convert decisions into fixes-plan-scope.md</h3>
+        <p class="muted">
+          Writes <code>clients/{slug}/fixes-plan-scope.md</code> from the
+          {' '}{fixCount} finding{fixCount === 1 ? '' : 's'} marked Fix. The CLI
+          {' '}<code>upriver fixes plan {slug}</code> will then plan from this scope.
+        </p>
+        {scopeAlreadyLocked && (
+          <p class="warn">
+            <strong>Re-lock (overwrite):</strong> a <code>fixes-plan-scope.md</code> already
+            exists for this client. Submitting will overwrite it.
+          </p>
+        )}
+        {fixCount === 0 && (
+          <p class="warn">
+            No findings are marked Fix. Lock scope will return 400 until the client
+            picks at least one finding.
+          </p>
+        )}
+        <form method="POST" action={`/api/intake/${slug}/lock-scope`} class="lock-form">
+          <button type="submit" class="lock-btn" disabled={fixCount === 0}>
+            {scopeAlreadyLocked ? 'Re-lock scope' : 'Lock scope'}
+          </button>
+        </form>
+      </section>
+    </div>
+  )}
+</DashboardLayout>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: var(--fs-xs);
+  }
+  .bc-link {
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+  .bc-link:hover { color: var(--accent); }
+  .bc-sep { color: var(--border); }
+  .bc-current {
+    color: var(--text-body);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .doc-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .doc-header h1 { margin: 0.25rem 0 0; }
+
+  .header-pills {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .pad { padding: 1.5rem; }
+
+  .card-h {
+    margin: 0.5rem 0 1rem;
+    font-size: 1.1rem;
+  }
+
+  .muted { color: var(--text-muted); font-size: var(--fs-sm); margin: 0; }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    color: var(--accent);
+    background: var(--accent-05);
+    padding: 0.05rem 0.3rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .empty-card {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .empty-card h3 { margin: 0.25rem 0 0; }
+  .empty-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+
+  .link-btn {
+    display: inline-block;
+    padding: 0.55rem 0.95rem;
+    background: var(--accent-05);
+    border: 1px solid var(--accent-20);
+    border-radius: var(--radius-sm);
+    color: var(--accent);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: border-color var(--dur-fast) var(--ease-out),
+                color var(--dur-fast) var(--ease-out);
+  }
+  .link-btn:hover { color: var(--accent-hover); border-color: var(--accent-30); }
+  .link-btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border-color: var(--border);
+  }
+  .link-btn-ghost:hover { color: var(--text-body); border-color: var(--border-input); }
+
+  .tier-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+  .tier-value {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--text-body);
+  }
+  .ts-list {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.15rem 0.75rem;
+    margin: 0;
+    font-size: var(--fs-xs);
+  }
+  .ts-list dt {
+    font-family: var(--font-heading);
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .ts-list dd { margin: 0; color: var(--text-body); }
+
+  .decisions {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.25rem;
+  }
+  .decisions th {
+    text-align: left;
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .decisions td {
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .col-priority { width: 110px; }
+  .col-decision { width: 130px; }
+
+  .finding-title { color: var(--text-body); font-size: var(--fs-sm); }
+  .finding-id {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-top: 0.15rem;
+  }
+  .mono { font-family: var(--font-mono); }
+
+  .page-wants {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .page-wants li {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-wants li:last-child { border-bottom: none; padding-bottom: 0; }
+  .page-slug {
+    color: var(--accent);
+    font-size: var(--fs-xs);
+    margin-bottom: 0.35rem;
+  }
+  .page-text {
+    margin: 0;
+    color: var(--text-body);
+    font-size: var(--fs-sm);
+    white-space: pre-wrap;
+  }
+
+  .ref-sites {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .ref-link {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    word-break: break-all;
+  }
+  .ref-link:hover { color: var(--accent-hover); }
+
+  .lock-card { border-color: var(--accent-20); }
+  .warn {
+    background: var(--accent-05);
+    border: 1px solid var(--accent-20);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 0.85rem;
+    color: var(--text-body);
+    font-size: var(--fs-sm);
+    margin: 0.75rem 0 0;
+  }
+  .lock-form { margin-top: 1rem; }
+  .lock-btn {
+    padding: 0.7rem 1.25rem;
+    background: var(--accent);
+    color: var(--bg-body, #0d0d0d);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out);
+  }
+  .lock-btn:hover:not(:disabled) {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+  }
+  .lock-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+</style>
