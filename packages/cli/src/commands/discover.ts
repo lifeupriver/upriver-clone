@@ -1,5 +1,5 @@
 import { Args, Flags } from '@oclif/core';
-import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { BaseCommand } from '../base-command.js';
 import {
@@ -99,6 +99,20 @@ export default class Discover extends BaseCommand {
 
     if (flags.resume && existsSync(contentInventoryPath)) {
       this.log('  Resuming — content-inventory.json already exists, skipping scrape.');
+    } else if (pagesDirectoryHasRecords(join(dir, 'pages'))) {
+      // G.6 — single Firecrawl batch: if `upriver scrape` has already pulled
+      // these URLs, reuse those page records instead of re-scraping. The
+      // ContentInventoryPage shape is a strict subset of PageRecord.
+      const reused = inventoryFromExistingPages(join(dir, 'pages'));
+      pages = reused;
+      writeFileSync(
+        contentInventoryPath,
+        JSON.stringify({ slug, pages, generated_at: new Date().toISOString(), source: 'reused-from-pages' }, null, 2),
+        'utf8',
+      );
+      this.log(
+        `  Reused ${pages.length} page record(s) from clients/${slug}/pages/ — no Firecrawl credits spent.`,
+      );
     } else {
       try {
         let done = 0;
@@ -258,4 +272,55 @@ export default class Discover extends BaseCommand {
 
     return reviews.slice(0, 20); // cap at 20 per source
   }
+}
+
+/**
+ * G.6 — return true when `pagesDir` already has at least one `<slug>.json` page
+ * record (written by `upriver scrape`). Discover can then reuse those records
+ * instead of issuing a duplicate Firecrawl batch for the same URLs.
+ */
+function pagesDirectoryHasRecords(pagesDir: string): boolean {
+  if (!existsSync(pagesDir)) return false;
+  try {
+    return readdirSync(pagesDir).some((f) => f.endsWith('.json'));
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * G.6 — derive the `ContentInventoryPage[]` shape from already-scraped
+ * `<dir>/pages/*.json` records. Preserves the same field set discover would
+ * produce from a fresh Firecrawl batch (url, slug, title, description,
+ * wordCount, discoveredAt). Pages that fail to parse are skipped silently —
+ * one malformed file shouldn't kill the whole inventory.
+ */
+function inventoryFromExistingPages(pagesDir: string): ContentInventoryPage[] {
+  const out: ContentInventoryPage[] = [];
+  for (const file of readdirSync(pagesDir)) {
+    if (!file.endsWith('.json')) continue;
+    try {
+      const raw = readFileSync(join(pagesDir, file), 'utf8');
+      const parsed = JSON.parse(raw) as {
+        url?: string;
+        slug?: string;
+        scraped_at?: string;
+        metadata?: { title?: string; description?: string };
+        content?: { wordCount?: number };
+      };
+      const url = parsed.url ?? '';
+      if (!url) continue;
+      out.push({
+        url,
+        slug: parsed.slug ?? '',
+        title: parsed.metadata?.title ?? '',
+        description: parsed.metadata?.description ?? '',
+        wordCount: parsed.content?.wordCount ?? 0,
+        discoveredAt: parsed.scraped_at ?? new Date().toISOString(),
+      });
+    } catch {
+      // skip malformed file
+    }
+  }
+  return out;
 }
