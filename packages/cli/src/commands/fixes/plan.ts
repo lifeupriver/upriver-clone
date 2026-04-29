@@ -3,7 +3,8 @@ import { join } from 'node:path';
 import { Args, Flags } from '@oclif/core';
 import { BaseCommand } from '../../base-command.js';
 import { clientDir } from '@upriver/core';
-import type { AuditFinding, AuditPackage } from '@upriver/core';
+import type { AuditFinding, AuditPackage, ClientIntake } from '@upriver/core';
+import { readIntake } from '../../util/intake-reader.js';
 
 interface PhasePlan {
   number: number;
@@ -126,16 +127,24 @@ export default class FixesPlan extends BaseCommand {
       );
     }
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as AuditPackage;
+    const intake = readIntake(slug);
 
     const scopePath = join(dir, 'fixes-plan-scope.md');
     const inScopeIds = readScope(scopePath);
     const allFindings = pkg.findings;
+    const intakeFixIds = collectIntakeFixIds(intake);
 
     let selected: AuditFinding[];
     let scopeNote: string;
     if (inScopeIds) {
+      // Operator-locked scope wins over intake. Keep current precedence so a
+      // human signoff in `fixes-plan-scope.md` is the canonical source.
       selected = allFindings.filter((f) => inScopeIds.has(f.id));
       scopeNote = `Scope document: \`fixes-plan-scope.md\` (${selected.length} of ${allFindings.length} findings signed off).`;
+    } else if (intakeFixIds && intakeFixIds.size > 0) {
+      selected = allFindings.filter((f) => intakeFixIds.has(f.id));
+      scopeNote = `Scope from client intake (${selected.length} of ${allFindings.length} findings marked Fix).`;
+      this.log(`  Scope source: client intake (intake.json)`);
     } else {
       selected = allFindings.filter((f) => f.priority === 'p0' || f.priority === 'p1');
       scopeNote = `No \`fixes-plan-scope.md\` found — defaulting to all P0 + P1 findings (${selected.length} of ${allFindings.length}).`;
@@ -148,7 +157,7 @@ export default class FixesPlan extends BaseCommand {
 
     const phases = buildPhases(selected);
     const outPath = flags.out ?? join(dir, 'fixes-plan.md');
-    writeFileSync(outPath, renderPlan(pkg, scopeNote, phases, selected), 'utf8');
+    writeFileSync(outPath, renderPlan(pkg, scopeNote, phases, selected, intake), 'utf8');
 
     this.log(`\nWrote ${outPath}`);
     this.log(
@@ -214,6 +223,7 @@ function renderPlan(
   scopeNote: string,
   phases: PhasePlan[],
   selected: AuditFinding[],
+  intake: ClientIntake | null,
 ): string {
   const date = new Date().toISOString().slice(0, 10);
   const p0 = selected.filter((f) => f.priority === 'p0').length;
@@ -267,6 +277,8 @@ function renderPlan(
     lines.push('');
   }
 
+  appendClientPrioritiesSection(lines, pkg, intake);
+
   lines.push('## Scope document');
   lines.push('');
   lines.push(
@@ -287,4 +299,66 @@ function renderPlan(
 
 function escapePipes(s: string): string {
   return s.replace(/\|/g, '\\|');
+}
+
+/**
+ * Collect the set of finding IDs the client marked as `'fix'` in their intake.
+ * Returns null when the intake is absent so the caller can distinguish
+ * "no intake" from "intake with zero fix decisions".
+ *
+ * @param intake - Parsed `ClientIntake` or null.
+ * @returns A set of finding IDs marked Fix, or null when intake is absent.
+ */
+function collectIntakeFixIds(intake: ClientIntake | null): Set<string> | null {
+  if (!intake) return null;
+  const ids = new Set<string>();
+  for (const [id, decision] of Object.entries(intake.findingDecisions)) {
+    if (decision === 'fix') ids.add(id);
+  }
+  return ids;
+}
+
+/**
+ * Append a "Client priorities" section to the plan markdown if the intake
+ * has any non-empty `pageWants` entry. Also renders a "Reference sites"
+ * subsection when the intake lists any. No-op otherwise.
+ *
+ * @param lines - The accumulating markdown line buffer.
+ * @param pkg - The audit package, used to resolve page slugs to titles.
+ * @param intake - Parsed `ClientIntake` or null.
+ */
+function appendClientPrioritiesSection(
+  lines: string[],
+  pkg: AuditPackage,
+  intake: ClientIntake | null,
+): void {
+  if (!intake) return;
+  const wants = Object.entries(intake.pageWants ?? {})
+    .filter(([, text]) => typeof text === 'string' && text.trim().length > 0);
+  const refs = (intake.referenceSites ?? []).filter((s) => typeof s === 'string' && s.length > 0);
+  if (wants.length === 0 && refs.length === 0) return;
+
+  lines.push('## Client priorities');
+  lines.push('');
+
+  if (wants.length > 0) {
+    const titleBySlug = new Map<string, string>();
+    for (const p of pkg.siteStructure.pages) {
+      if (p.slug) titleBySlug.set(p.slug, p.title || p.slug);
+    }
+    for (const [slug, text] of wants) {
+      const heading = titleBySlug.get(slug) ?? slug;
+      lines.push(`### ${heading}`);
+      lines.push('');
+      lines.push(text.trim());
+      lines.push('');
+    }
+  }
+
+  if (refs.length > 0) {
+    lines.push('## Reference sites');
+    lines.push('');
+    for (const url of refs) lines.push(`- ${url}`);
+    lines.push('');
+  }
 }

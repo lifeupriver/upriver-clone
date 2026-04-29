@@ -5,7 +5,7 @@ import { Args, Flags } from '@oclif/core';
 import { parse as parseYaml } from 'yaml';
 import { readFileSync } from 'node:fs';
 import { BaseCommand } from '../base-command.js';
-import type { AuditPackage, ClientConfig, SitePage } from '@upriver/core';
+import type { AuditPackage, ClientConfig, ClientIntake, SitePage } from '@upriver/core';
 import { loadAuditPackage, resolveScaffoldPaths } from '../scaffold/template-writer.js';
 import { verifyClonePage } from '../clone/verify.js';
 import {
@@ -15,6 +15,7 @@ import {
   type RewriteOptions,
 } from '../clone/rewrite-links.js';
 import { withKeyedLock } from '../util/keyed-lock.js';
+import { readIntake } from '../util/intake-reader.js';
 
 const CLAUDE_BIN = process.env['CLAUDE_BIN'] || 'claude';
 
@@ -45,6 +46,7 @@ export default class Clone extends BaseCommand {
     if (!existsSync(repoDir)) this.error(`Scaffolded repo not found at ${repoDir}. Run "upriver scaffold ${slug}" first.`);
 
     const pkg = loadAuditPackage(clientDir);
+    const intake = readIntake(slug);
 
     let pages = pkg.siteStructure.pages.filter((p) => p.statusCode < 400);
 
@@ -100,6 +102,7 @@ export default class Clone extends BaseCommand {
           clientDir,
           repoDir,
           pkg,
+          intake,
           useWorktree: useWorktrees,
           dryRun: flags['dry-run'] === true,
           openPr: flags['no-pr'] !== true && !flags['dry-run'],
@@ -131,9 +134,9 @@ export default class Clone extends BaseCommand {
   }
 
   private async clonePage(opts: ClonePageOpts): Promise<PageResult> {
-    const { page, slug, clientDir, repoDir, pkg, useWorktree, dryRun, openPr, verify, verifyPort, verifyIterations } = opts;
+    const { page, slug, clientDir, repoDir, pkg, intake, useWorktree, dryRun, openPr, verify, verifyPort, verifyIterations } = opts;
     const branch = `clone/${pageSlugForBranch(page)}`;
-    const prompt = buildAgentPrompt({ page, slug, pkg, clientDir });
+    const prompt = buildAgentPrompt({ page, slug, pkg, clientDir, intake });
 
     if (dryRun) {
       this.log(`\n--- [dry-run] page=${page.slug || '/'} branch=${branch} ---`);
@@ -241,6 +244,7 @@ interface ClonePageOpts {
   clientDir: string;
   repoDir: string;
   pkg: AuditPackage;
+  intake: ClientIntake | null;
   useWorktree: boolean;
   dryRun: boolean;
   openPr: boolean;
@@ -277,8 +281,9 @@ function buildAgentPrompt(args: {
   slug: string;
   pkg: AuditPackage;
   clientDir: string;
+  intake: ClientIntake | null;
 }): string {
-  const { page, slug, pkg, clientDir } = args;
+  const { page, slug, pkg, clientDir, intake } = args;
   // Canonicalize the page path. Some scrapes record the homepage with slug='home'
   // even though page.url has pathname '/'. Trust the URL pathname when it's root,
   // so we always write to src/pages/index.astro for the homepage.
@@ -307,6 +312,7 @@ function buildAgentPrompt(args: {
     .map((r) => `  - \`${r}\``)
     .join('\n');
   const clientDomain = stripScheme(pkg.meta.siteUrl);
+  const clientWantsBlock = buildClientWantsBlock(intake, page.slug);
 
   return `You are producing a 1:1 visual replica of the page \`${path}\` from ${pkg.meta.clientName}'s live site as an Astro page. Pixel-level fidelity is the goal. **Do not redesign, rewrite, or "improve" anything.** Brand voice and copy rewrites happen in a separate downstream pass — not here.
 
@@ -374,7 +380,7 @@ ${ctas}
 
 ## Step 4 — verify the build
 Run \`pnpm install --silent\` if \`node_modules\` is missing, then \`pnpm build\`. The page must compile. If a Vercel-adapter or other env error blocks \`pnpm build\`, fall back to \`pnpm exec astro check\`.
-
+${clientWantsBlock}
 ## Constraints
 - Do NOT apply brand voice, copywriting, or copy-editing rules here. This is a structural clone, not a redesign.
 - Do NOT add new top-level routes beyond the page you were assigned.
@@ -386,6 +392,36 @@ Run \`pnpm install --silent\` if \`node_modules\` is missing, then \`pnpm build\
 > The CLI writes a CHANGELOG fragment to \`CHANGELOG.d/clone-<slug>.md\` after you finish — you do not need to edit \`CHANGELOG.md\`.
 
 When done, print a one-line summary: \`clone(${path}): <count> sections ported, <count> images, <count> CTAs.\`
+`;
+}
+
+/**
+ * Build the "Client wants on this page" markdown block for the agent prompt.
+ * Returns an empty string when the intake is null, the page has no entry, or
+ * the entry is blank. Output begins with a blank line so it slots cleanly
+ * between Step 4 and the Constraints section.
+ *
+ * @param intake - Parsed `ClientIntake` or null.
+ * @param pageSlug - The `SitePage.slug` to look up in `intake.pageWants`.
+ * @returns Markdown block or empty string.
+ */
+function buildClientWantsBlock(intake: ClientIntake | null, pageSlug: string): string {
+  if (!intake || !intake.pageWants) return '';
+  const wants = intake.pageWants[pageSlug];
+  if (typeof wants !== 'string' || wants.trim().length === 0) return '';
+  const quoted = wants
+    .trim()
+    .split(/\r?\n/)
+    .map((line) => `> ${line}`)
+    .join('\n');
+  return `\n## Client wants on this page
+
+The client reviewed their audit and asked for the following changes to be reflected in the cloned page (verbatim):
+
+${quoted}
+
+Honor these wants if and only if they preserve fidelity to the source. Do NOT redesign or rewrite copy — that's the improvement layer's job. Surface any conflict in your final summary line.
+
 `;
 }
 
