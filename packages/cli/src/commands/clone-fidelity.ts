@@ -12,6 +12,8 @@ import {
   type FidelitySummary,
   type PageFidelity,
 } from '../clone-qa/fidelity-scorer.js';
+import { filterUnmatched, findCdnUrlsInRepo } from '../clone/download-missing.js';
+import { buildAssetIndex, DEFAULT_CDN_HOSTS } from '../clone/rewrite-links.js';
 import { resolveScaffoldPaths } from '../scaffold/template-writer.js';
 
 interface ClonedPage {
@@ -141,6 +143,17 @@ export default class CloneFidelity extends BaseCommand {
     // D.3 — emit synthetic findings for low-scoring pages so `fixes plan`
     // can route them through the same workflow as audit findings.
     const findings = buildFidelityFindings(results);
+
+    // D.4 — promote the unmatched-CDN-URL check from `finalize` into a fidelity
+    // gate. If the cloned repo still references live CDN hosts that aren't in
+    // the asset manifest, that's a hard fidelity failure (broken images on
+    // first load if the live CDN ever rotates).
+    const cdnFinding = scanUnmatchedCdn(repoDir, clientDir);
+    if (cdnFinding) {
+      findings.push(cdnFinding);
+      this.log(`  Unmatched CDN URLs detected in cloned repo — emitting fidelity gate finding`);
+    }
+
     const findingsPath = join(clientDir, 'clone-fidelity-findings.json');
     writeFileSync(
       findingsPath,
@@ -229,6 +242,40 @@ export function buildFidelityFindings(pages: PageFidelity[]): AuditFinding[] {
     });
   }
   return findings;
+}
+
+/**
+ * D.4 — scan the cloned repo for live-CDN URLs that aren't in the asset
+ * manifest, and return one fidelity finding if any are present. Returns null
+ * when the repo / manifest are missing (treated as "fidelity not gated").
+ */
+export function scanUnmatchedCdn(repoDir: string, clientDir: string): AuditFinding | null {
+  const srcDir = join(repoDir, 'src');
+  const manifestPath = join(clientDir, 'asset-manifest.json');
+  if (!existsSync(srcDir) || !existsSync(manifestPath)) return null;
+  let imageManifest: Map<string, string>;
+  let filenameToLocal: Map<string, string>;
+  try {
+    ({ imageManifest, filenameToLocal } = buildAssetIndex(manifestPath));
+  } catch {
+    return null;
+  }
+  const found = findCdnUrlsInRepo(srcDir, DEFAULT_CDN_HOSTS);
+  const unmatched = filterUnmatched(found, imageManifest, filenameToLocal);
+  if (unmatched.length === 0) return null;
+  const sample = unmatched.slice(0, 5).join(', ');
+  return {
+    id: 'clone-fidelity-cdn',
+    dimension: 'design',
+    priority: 'p0',
+    effort: 'medium',
+    title: `${unmatched.length} unmatched CDN URL(s) still in cloned repo`,
+    description: `The cloned repo references ${unmatched.length} URL(s) on a known live CDN host that are not present in asset-manifest.json. These will 404 (or rot) once the live site rotates them.`,
+    why_it_matters:
+      'Live-CDN references are a fidelity time bomb: they look fine in dev because the live host is up, then break when the original site moves assets. Operators expect a finalized clone to be self-contained.',
+    recommendation: `Re-run \`upriver finalize ${basename(clientDir)} --download-missing\` to fetch and rewrite the unmatched URLs to local /images paths.`,
+    evidence: `Unmatched (first 5): ${sample}${unmatched.length > 5 ? `, +${unmatched.length - 5} more` : ''}`,
+  };
 }
 
 /** Short status indicator for the per-page log line. */
