@@ -1,10 +1,9 @@
 # Roadmap session handoff
 
-**Last commit:** `b34dbe0 refactor(core): single source of truth for pipeline stages (closes drift)`
+**Last commit:** `363aaca refactor(dashboard): consume pipeline stages from @upriver/core/pipeline`
 **Branch:** `main`
-**Commits this sub-session:** 2 (range `12a02c0..b34dbe0`) — drift audit + one dedup fix.
-**Total resumed-session commits:** 29 past `0d8fdd2`.
-**Pushed:** no — all local. `main` has diverged 49 commits from `origin/main`.
+**Total resumed-session commits:** 32 past `0d8fdd2`. Latest sub-session: 5 commits — drift audit, pipeline dedup (cli + react island), roadmap annotation, dashboard lib/pipeline dedup.
+**Pushed:** no — all local. `main` has diverged 52 commits from `origin/main`.
 
 ## Newest sub-session: drift audit + cleanup
 
@@ -12,13 +11,15 @@ After the code-tractable roadmap was complete, I did a roadmap-vs-reality audit.
 
 The drift report's recommendation #3 (the only one that didn't need user input) was completed: the pipeline stage list is now in `packages/core/src/pipeline/stages.ts` (with a `./pipeline` subpath export so the client React island can import without dragging in node-only modules). Both `commands/run/all.ts` and `PipelineStages.tsx` now read from one source.
 
-**Remaining drift-report recommendations all need your decisions:**
+**Drift-report recommendation status:**
 
-1. C.6 flag name — `--audit-mode=sales|operator` (spec) vs `--mode=base|deep|all` (shipped). Pick one.
-2. C.7 estimatedImpact schema — `{metric, magnitude, rationale}` (spec) vs `{scorePoints, description}` (shipped). Pick one and re-wire the report hero accordingly.
-3. ~~G.7 pipeline-graph dedup~~ ✅ closed by `b34dbe0`.
-4. Update `PRODUCT-ROADMAP.md` to reflect shipped reality (otherwise future sessions re-build under spec names).
-5. Document F.5 / F.6 / E.5 partial state in the roadmap proper, not just here.
+1. C.6 flag name — `--audit-mode=sales|operator` (spec) vs `--mode=base|deep|all` (shipped). **Needs your pick.**
+2. C.7 estimatedImpact schema — `{metric, magnitude, rationale}` (spec) vs `{scorePoints, description}` (shipped). **Needs your pick** and re-wires the report hero.
+3. ~~G.7 pipeline-graph dedup~~ ✅ closed by `b34dbe0` + `363aaca`. Both `commands/run/all.ts`, the React island `PipelineStages.tsx`, and the server-side `dashboard/src/lib/pipeline.ts` now import from `@upriver/core/pipeline`. New stages added in one place propagate everywhere.
+4. ~~Update `PRODUCT-ROADMAP.md` with shipped status~~ ✅ closed by `c532818`. Per-workstream banners summarize ✅/⚠️/🔧/🚫 and call out divergences inline. Original spec text preserved.
+5. ~~Document partial state in the roadmap proper~~ ✅ closed alongside #4 — banners cover E.5/F.5/F.6/G.4 partial states.
+
+Items 3, 4, 5 are autonomous closes from this last sub-session. Items 1 and 2 are the only drift items remaining and both need a product call.
 
 `pnpm -r run typecheck` clean. CLI tests **72/72**. Dashboard build clean.
 
