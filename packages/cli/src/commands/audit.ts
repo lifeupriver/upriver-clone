@@ -74,9 +74,15 @@ export default class Audit extends BaseCommand {
     }),
     mode: Flags.string({
       description:
-        'Audit mode. base = fast heuristic passes (current default). deep = agent-driven passes (C.3–C.5, not yet shipped). all = both.',
+        'Audit mode. base = fast heuristic passes (default). deep = agent-driven C.3–C.5 passes only. all = both.',
       options: ['base', 'deep', 'all'],
       default: 'base',
+    }),
+    'deep-concurrency': Flags.integer({
+      description:
+        'Max parallel deep passes when --mode includes deep. Default 2 — keeps token usage bounded.',
+      default: 2,
+      min: 1,
     }),
     out: Flags.string({
       description: 'Output directory (default: clients/<slug>/audit)',
@@ -144,27 +150,37 @@ export default class Audit extends BaseCommand {
       if (r.status === 'fulfilled') passed.push(r.value);
     }
 
-    // Deep passes (C.3–C.5). Sequential — they invoke an LLM and we don't
-    // want to fan out token usage without a concurrency budget.
+    // Deep passes (C.3–C.5). G.3 — parallelized with a concurrency cap so
+    // token usage stays bounded but multiple LLM-driven passes overlap.
     if (runDeep) {
-      this.log(`\nRunning ${DEEP_PASSES.length} deep pass${DEEP_PASSES.length > 1 ? 'es' : ''}...\n`);
-      for (const spec of DEEP_PASSES) {
-        const passStart = Date.now();
-        try {
-          const result = await runDeepPass(spec, { slug, clientDir: dir, runAgent: claudeCliRunner });
-          const elapsed = ((Date.now() - passStart) / 1000).toFixed(1);
-          const grade = gradeScore(result.score);
-          const p0 = result.findings.filter((f) => f.priority === 'p0').length;
-          const p1 = result.findings.filter((f) => f.priority === 'p1').length;
-          const p2 = result.findings.filter((f) => f.priority === 'p2').length;
-          this.log(
-            `  [${grade}] ${spec.id.padEnd(18)} score=${result.score}/100  p0=${p0} p1=${p1} p2=${p2}  (${elapsed}s)  [deep]`,
-          );
-          passed.push(result);
-        } catch (err) {
-          this.warn(`  [ERR] ${spec.id.padEnd(18)} failed: ${err instanceof Error ? err.message : String(err)}`);
+      const cap = Math.max(1, flags['deep-concurrency'] ?? 2);
+      this.log(
+        `\nRunning ${DEEP_PASSES.length} deep pass${DEEP_PASSES.length === 1 ? '' : 'es'} (concurrency=${cap})...\n`,
+      );
+      const queue = [...DEEP_PASSES];
+      const runOne = async (): Promise<void> => {
+        while (queue.length > 0) {
+          const spec = queue.shift();
+          if (!spec) break;
+          const passStart = Date.now();
+          try {
+            const result = await runDeepPass(spec, { slug, clientDir: dir, runAgent: claudeCliRunner });
+            const elapsed = ((Date.now() - passStart) / 1000).toFixed(1);
+            const grade = gradeScore(result.score);
+            const p0 = result.findings.filter((f) => f.priority === 'p0').length;
+            const p1 = result.findings.filter((f) => f.priority === 'p1').length;
+            const p2 = result.findings.filter((f) => f.priority === 'p2').length;
+            this.log(
+              `  [${grade}] ${spec.id.padEnd(22)} score=${result.score}/100  p0=${p0} p1=${p1} p2=${p2}  (${elapsed}s)  [deep]`,
+            );
+            passed.push(result);
+          } catch (err) {
+            this.warn(`  [ERR] ${spec.id.padEnd(22)} failed: ${err instanceof Error ? err.message : String(err)}`);
+          }
         }
-      }
+      };
+      const workers = Array.from({ length: Math.min(cap, DEEP_PASSES.length) }, () => runOne());
+      await Promise.allSettled(workers);
     }
 
     // Write individual pass JSON files
