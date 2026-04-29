@@ -3,6 +3,7 @@ import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { BaseCommand } from '../base-command.js';
 import { clientDir } from '@upriver/core';
+import { competitorDeepPass } from '../deep-audit/passes/competitor-deep/run.js';
 import { contentStrategyPass } from '../deep-audit/passes/content-strategy/run.js';
 import { conversionPsychologyPass } from '../deep-audit/passes/conversion-psychology/run.js';
 import { claudeCliRunner, runDeepPass, type DeepPassSpec } from '../deep-audit/runner.js';
@@ -47,6 +48,7 @@ const ALL_PASSES = [
 const DEEP_PASSES: ReadonlyArray<DeepPassSpec<unknown>> = [
   contentStrategyPass as DeepPassSpec<unknown>,
   conversionPsychologyPass as DeepPassSpec<unknown>,
+  competitorDeepPass as DeepPassSpec<unknown>,
 ];
 
 function gradeScore(score: number): string {
