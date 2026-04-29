@@ -1,42 +1,28 @@
 import { useRef, useState } from 'react';
 
+// Subpath import — pulls only the pure stage list, no node-only modules from
+// the @upriver/core root (which would break the client bundle).
+import { PIPELINE_STAGES, type PipelineStage } from '@upriver/core/pipeline';
+
 /**
- * F.2 — Live pipeline view. One row per stage with a Run button that POSTs to
- * `/api/run/<command>` and streams the SSE response into a shared log panel.
+ * F.2 / G.7 — Live pipeline view. One row per stage with a Run button that
+ * POSTs to `/api/run/<command>` and streams the SSE response into a shared
+ * log panel.
  *
- * Stages are duplicated from `@/lib/pipeline` (which imports node:fs and so
- * can't be bundled into a client island). Keep the labels in sync if either
- * list changes.
+ * Stage list is now imported from `@upriver/core` (single source of truth).
+ * Stages with `command: null` (init / discover / launch) render as display-
+ * only — they can't be invoked from the GUI (init needs a URL, discover and
+ * launch aren't on the API allowlist).
  */
 
-interface StageDef {
-  /** Stable identifier matching the server-side pipeline lib. */
-  id: string;
-  /** Operator-visible label. */
-  label: string;
-  /**
-   * The slash-allowlist command name in `/api/run/[command].ts`. `null` means
-   * the stage cannot be invoked from the GUI (init needs a URL; discover and
-   * launch aren't on the allowlist yet).
-   */
-  command: string | null;
-  /** Argv for the command beyond `<slug>`. */
-  args?: string[];
-}
+type StageDef = Pick<PipelineStage, 'id' | 'label' | 'command' | 'args'>;
 
-const STAGES: StageDef[] = [
-  { id: 'init', label: 'Init', command: null },
-  { id: 'discover', label: 'Discover', command: null },
-  { id: 'scrape', label: 'Scrape', command: 'scrape' },
-  { id: 'audit', label: 'Audit', command: 'audit' },
-  { id: 'synthesize', label: 'Synthesize', command: 'synthesize' },
-  { id: 'design-brief', label: 'Design Brief', command: 'design-brief' },
-  { id: 'scaffold', label: 'Scaffold', command: 'scaffold' },
-  { id: 'clone', label: 'Clone', command: 'clone' },
-  { id: 'fixes', label: 'Fixes plan', command: 'fixes-plan' },
-  { id: 'qa', label: 'QA', command: 'qa' },
-  { id: 'launch', label: 'Launch', command: null },
-];
+const STAGES: StageDef[] = PIPELINE_STAGES.map(({ id, label, command, args }) => ({
+  id,
+  label,
+  command,
+  ...(args ? { args } : {}),
+}));
 
 interface Props {
   slug: string;

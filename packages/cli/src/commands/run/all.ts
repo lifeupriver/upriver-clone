@@ -3,14 +3,40 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import { Args, Flags } from '@oclif/core';
-import { clientDir } from '@upriver/core';
+import { clientDir, PIPELINE_STAGES, type PipelineStage } from '@upriver/core';
 
 import { BaseCommand } from '../../base-command.js';
 
 /**
- * One stage in the pipeline. `args` is appended verbatim to `upriver <name>`.
- * `optional` stages are run when the precondition is met but their failure
- * does not abort the pipeline (e.g. clone-fidelity needs scaffolded pages).
+ * Stages the orchestrator actually invokes. We filter the canonical
+ * PIPELINE_STAGES list down to the ones with a runnable command and a
+ * useful place in the orchestrated pipeline. `init` is excluded because it
+ * takes a URL not a slug; `qa` is excluded because clone-fidelity already
+ * covers the same surface for the orchestrated path; `launch` is excluded
+ * because it requires manual DNS/host decisions.
+ *
+ * `discover` is included even though its command is `null` in the canonical
+ * list — discover-as-orchestrator-stage is invocable via the `discover` CLI
+ * command directly, just not via the GUI's allowlist. The orchestrator runs
+ * it in-process via spawn, which is unrestricted.
+ */
+const ORCHESTRATED_IDS: ReadonlySet<string> = new Set([
+  'scrape',
+  'discover',
+  'audit',
+  'synthesize',
+  'scaffold',
+  'clone',
+  'finalize',
+  'clone-fidelity',
+  'fixes-plan',
+  'improve',
+]);
+
+/**
+ * G.7 — Stage shape used inside this command. Wraps the canonical
+ * `PipelineStage` with the orchestrator's slash-command name and per-stage
+ * argv builder.
  */
 interface Stage {
   id: string;
@@ -20,28 +46,27 @@ interface Stage {
   describe: string;
 }
 
-/**
- * G.7 — Static topological pipeline graph. The order encodes the full
- * dependency chain: every stage assumes outputs from the prior stages exist
- * on disk. Each command is independently idempotent (most respect
- * BaseCommand.skipIfExists), so re-running `run all` after a partial failure
- * picks up where it left off.
- *
- * `init` is intentionally excluded — it takes a URL not a slug, so it must be
- * run by hand before `run all`.
- */
-const PIPELINE: Stage[] = [
-  { id: 'scrape', name: 'scrape', args: (s) => [s], describe: 'Firecrawl scrape every page' },
-  { id: 'discover', name: 'discover', args: (s) => [s], describe: 'Scrape competitors + keyword discovery' },
-  { id: 'audit', name: 'audit', args: (s) => [s], describe: 'Run audit passes (base by default; --audit-mode threads through)' },
-  { id: 'synthesize', name: 'synthesize', args: (s) => [s], describe: 'Compose audit-package.json' },
-  { id: 'scaffold', name: 'scaffold', args: (s) => [s], describe: 'Generate Astro repo from template' },
-  { id: 'clone', name: 'clone', args: (s) => [s, '--no-pr'], describe: 'Visual clone every page' },
-  { id: 'finalize', name: 'finalize', args: (s) => [s, '--download-missing'], describe: 'Rewrite links + fetch missing CDN assets' },
-  { id: 'clone-fidelity', name: 'clone-fidelity', args: (s) => [s], optional: true, describe: 'Score cloned vs live; emit fidelity findings' },
-  { id: 'fixes-plan', name: 'fixes plan', args: (s) => [s], describe: 'Generate fixes-plan.md from audit + intake + fidelity' },
-  { id: 'improve', name: 'improve', args: (s) => [s, '--dry-run'], optional: true, describe: 'Plan improvement-track matrix (--no-dry-run to apply)' },
-];
+/** Stage id → CLI command name when it differs from the id. */
+const COMMAND_NAME_OVERRIDES: Record<string, string> = {
+  'fixes-plan': 'fixes plan',
+  // 'discover' is invoked as `upriver discover`; the canonical record sets
+  // `command: null` because discover isn't on the dashboard API allowlist.
+  discover: 'discover',
+};
+
+const PIPELINE: Stage[] = PIPELINE_STAGES.filter((s) => ORCHESTRATED_IDS.has(s.id)).map(
+  (s: PipelineStage): Stage => {
+    const name = COMMAND_NAME_OVERRIDES[s.id] ?? s.command ?? s.id;
+    const extraArgs = s.args ?? [];
+    return {
+      id: s.id,
+      name,
+      args: (slug) => [slug, ...extraArgs],
+      ...(s.optional ? { optional: true } : {}),
+      describe: s.describe,
+    };
+  },
+);
 
 /**
  * `upriver run all <slug>` — orchestrate every pipeline stage in dependency

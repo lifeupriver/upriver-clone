@@ -56,3 +56,7 @@ export {
   hasSkill,
 } from './skills/registry.js';
 export type { SkillEntry, Workstream } from './skills/registry.js';
+
+// Pipeline (G.7 — single source of truth for stage list)
+export { PIPELINE_STAGES, findStage } from './pipeline/stages.js';
+export type { PipelineStage, PipelineStageId } from './pipeline/stages.js';
