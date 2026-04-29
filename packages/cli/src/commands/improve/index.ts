@@ -7,12 +7,12 @@ import { join, resolve } from 'node:path';
 import { Args, Flags } from '@oclif/core';
 import { clientDir } from '@upriver/core';
 
-import { BaseCommand } from '../base-command.js';
+import { BaseCommand } from '../../base-command.js';
 import {
   loadSkillMatrix,
   skillExists,
   type SkillTrack,
-} from '../improve/matrix-loader.js';
+} from '../../improve/matrix-loader.js';
 
 /**
  * `upriver improve <slug>` — run the improvement-layer skill matrix against a
