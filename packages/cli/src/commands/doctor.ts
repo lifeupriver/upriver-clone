@@ -42,8 +42,23 @@ export default class Doctor extends BaseCommand {
       ),
       checkEnv(
         'UPRIVER_SUPABASE_URL',
-        'central usage logging',
-        'Usage logs still go to <clientDir>/token-and-credit-usage.log; only the central rollup is skipped.',
+        'usage logging + F.6 storage sync + report share-URL hosting',
+        'Usage logs still go to <clientDir>/token-and-credit-usage.log; F.6 sync + signed-URL hosting fall back to local-only.',
+      ),
+      checkEnv(
+        'UPRIVER_SUPABASE_SERVICE_KEY',
+        'F.6 sync push/pull, signed-URL minting',
+        'Paste from Supabase dashboard → Settings → API → service_role. Without it, server-side bucket writes fail.',
+      ),
+      checkEnv(
+        'UPRIVER_SUPABASE_PUBLISHABLE_KEY',
+        'browser-side dashboard auth + signed-URL refresh',
+        'Without it, client-side Supabase calls (eventual F.5 full auth) fall back to operator-only.',
+      ),
+      checkEnv(
+        'UPRIVER_SUPABASE_BUCKET',
+        'override the default storage bucket name',
+        'Defaults to `upriver`. Only set if you renamed the bucket.',
       ),
       checkEnv(
         'AHREFS_API_KEY',

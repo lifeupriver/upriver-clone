@@ -30,13 +30,29 @@ export const ENV_REGISTRY: Record<string, EnvVarSpec> = {
   UPRIVER_SUPABASE_URL: {
     name: 'UPRIVER_SUPABASE_URL',
     required: false,
-    description: 'Internal Supabase project URL for usage logging. Optional — usage logs degrade silently if unset.',
-    example: 'https://[ref].supabase.co',
+    description:
+      'Supabase project URL for the upriver-platform project. Used by usage logger, F.6 storage sync, and report-share signed URLs. Degrades silently if unset.',
+    example: 'https://qavbpfmhgvkhrnbqalrp.supabase.co',
   },
   UPRIVER_SUPABASE_SERVICE_KEY: {
     name: 'UPRIVER_SUPABASE_SERVICE_KEY',
     required: false,
-    description: 'Service-role key for the internal usage Supabase. Paired with UPRIVER_SUPABASE_URL.',
+    description:
+      'Service-role key for upriver-platform. Required for F.6 sync push/pull and signed-URL minting. Paste from the Supabase dashboard (Settings → API → service_role key) — not exposed via MCP.',
+  },
+  UPRIVER_SUPABASE_PUBLISHABLE_KEY: {
+    name: 'UPRIVER_SUPABASE_PUBLISHABLE_KEY',
+    required: false,
+    description:
+      'Publishable (anon) key for upriver-platform. Used by client-side dashboard auth + browser signed-URL refresh. Safe to expose to the browser.',
+    example: 'sb_publishable_...',
+  },
+  UPRIVER_SUPABASE_BUCKET: {
+    name: 'UPRIVER_SUPABASE_BUCKET',
+    required: false,
+    description:
+      'Bucket name in upriver-platform Storage. Files live under `clients/<slug>/...` and `reports/<slug>/...` prefixes. Defaults to `upriver`.',
+    example: 'upriver',
   },
   UPRIVER_GIT_EMAIL: {
     name: 'UPRIVER_GIT_EMAIL',
