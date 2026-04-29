@@ -1,5 +1,6 @@
 ---
 import ReportLayout from '@/layouts/ReportLayout.astro';
+import CoverHeader from '@/components/astro/CoverHeader.astro';
 import {
   readClientConfig,
   readAuditPasses,
@@ -91,20 +92,13 @@ const narrativeBlocks = executiveSummary ? splitNarrative(executiveSummary) : []
   currentTab="overview"
   title={`${config.name} — Audit Report`}
 >
-  <section class="hero">
-    <span class="eyebrow">Website Audit</span>
-    <h1 class="hero-title">{config.name}</h1>
-    <p class="mono hero-url">{config.url}</p>
-    <p class="hero-meta">
-      <span>{date}</span>
-      <span class="hero-sep">·</span>
-      <span>Audit prepared by Upriver</span>
-    </p>
-    <div class="hero-score-wrap">
-      <span class="eyebrow">Overall score</span>
-      <span class="hero-score score-num">{overall}</span>
-    </div>
-  </section>
+  <CoverHeader
+    clientName={config.name}
+    clientUrl={config.url}
+    date={date}
+    overallScore={overall}
+    branding={auditPackage.brandingProfile}
+  />
 
   <section class="stats">
     {heroMetrics.length > 0 ? (
@@ -163,51 +157,6 @@ const narrativeBlocks = executiveSummary ? splitNarrative(executiveSummary) : []
 </ReportLayout>
 
 <style>
-  .hero {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding-bottom: 2.5rem;
-    margin-bottom: 2.5rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .hero-title {
-    font-size: 3rem;
-    letter-spacing: -0.025em;
-    margin: 0.25rem 0 0.25rem;
-  }
-
-  .hero-url {
-    color: var(--text-muted);
-    font-size: var(--fs-sm);
-    margin: 0;
-  }
-
-  .hero-meta {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    color: var(--text-muted);
-    font-size: var(--fs-sm);
-    margin: 0.25rem 0 1rem;
-  }
-
-  .hero-sep {
-    opacity: 0.6;
-  }
-
-  .hero-score-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .hero-score {
-    font-size: 4rem;
-    line-height: 1;
-  }
-
   .stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -310,7 +259,6 @@ const narrativeBlocks = executiveSummary ? splitNarrative(executiveSummary) : []
   }
 
   @media print {
-    .hero { page-break-after: avoid; }
     .stats, .narrative { page-break-inside: avoid; }
   }
 </style>

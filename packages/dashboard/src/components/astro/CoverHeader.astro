@@ -1,0 +1,244 @@
+---
+/**
+ * CoverHeader.astro
+ *
+ * Client-branded cover card for the top of an audit deliverable.
+ * Renders the client's logo and brand accent (when extracted by Firecrawl)
+ * as the dominant identity, with Upriver demoted to a discreet attribution.
+ *
+ * Falls back to a polished typographic block + Upriver-orange accent when
+ * no branding profile is provided.
+ *
+ * Workstream A.3 (roadmap).
+ */
+import type { FirecrawlBrandingProfile } from '@upriver/core';
+
+export interface Props {
+  clientName: string;
+  clientUrl: string;
+  date: string;
+  overallScore?: number | null;
+  branding?: FirecrawlBrandingProfile | null;
+}
+
+const { clientName, clientUrl, date, overallScore = null, branding = null } = Astro.props;
+
+/**
+ * Validate a CSS color token is a recognizable hex/rgb/hsl form.
+ * We only need a coarse check; CSS will silently ignore garbage anyway,
+ * but rejecting obviously-bad values keeps the inline style attribute clean.
+ */
+function isValidCssColor(value: string | undefined | null): value is string {
+  if (!value || typeof value !== 'string') return false;
+  return /^(#[0-9a-fA-F]{3,8}|rgb|hsl)/.test(value.trim());
+}
+
+/**
+ * Validate a logo URL is something we can safely render in an <img src>.
+ * Accept absolute http(s) URLs and root-relative paths only.
+ */
+function isValidLogoUrl(value: string | undefined | null): value is string {
+  if (!value || typeof value !== 'string') return false;
+  const trimmed = value.trim();
+  return /^https?:\/\//.test(trimmed) || trimmed.startsWith('/');
+}
+
+const rawAccent = branding?.colors?.accent || branding?.colors?.primary || null;
+const accentColor = isValidCssColor(rawAccent) ? rawAccent.trim() : null;
+
+const rawLogo = branding?.logo || branding?.images?.logo || null;
+const logoUrl = isValidLogoUrl(rawLogo) ? rawLogo.trim() : null;
+
+// Only set the custom property when we actually have a validated accent.
+// Otherwise the CSS `var(--client-accent, var(--accent))` chain falls
+// through to the Upriver default. Inline styles use no quotes that could
+// break out of the attribute since we already validated the format.
+const rootStyle = accentColor ? `--client-accent: ${accentColor};` : undefined;
+
+// TODO(roadmap): A.4 will let operators override accent/logo via client config.
+
+const isHttps = logoUrl ? logoUrl.startsWith('https://') : false;
+---
+
+<section class="cover-card" style={rootStyle}>
+  <div class="cover-row">
+    {logoUrl ? (
+      <img
+        class="cover-logo"
+        src={logoUrl}
+        alt={clientName}
+        loading="lazy"
+        referrerpolicy="no-referrer"
+        crossorigin={isHttps ? 'anonymous' : undefined}
+      />
+    ) : (
+      <span class="cover-mark" aria-hidden="true">{clientName.charAt(0).toUpperCase()}</span>
+    )}
+    <div class="cover-meta">
+      <span class="eyebrow">Website Audit</span>
+      <span class="cover-date">{date}</span>
+    </div>
+  </div>
+
+  <h1 class={logoUrl ? 'cover-title cover-title-sub' : 'cover-title'}>{clientName}</h1>
+
+  <p class="mono cover-url">{clientUrl}</p>
+
+  {overallScore != null && (
+    <div class="cover-score">
+      <span class="eyebrow">Overall score</span>
+      <span class="score-num cover-score-num">{overallScore}</span>
+    </div>
+  )}
+
+  <p class="cover-attribution">Audit by Upriver Consulting</p>
+</section>
+
+<style>
+  .cover-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 2rem 2rem 1.75rem;
+    margin-bottom: 2.5rem;
+    border-top: 3px solid var(--client-accent, var(--accent));
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'row     row'
+      'title   score'
+      'url     score'
+      'attrib  attrib';
+    column-gap: 1.5rem;
+    row-gap: 0.5rem;
+    align-items: end;
+  }
+
+  .cover-row {
+    grid-area: row;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .cover-logo {
+    max-height: 56px;
+    max-width: 240px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  .cover-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background: var(--client-accent, var(--accent));
+    color: #fff;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .cover-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    text-align: right;
+  }
+
+  .cover-date {
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+  }
+
+  .cover-title {
+    grid-area: title;
+    font-size: 3rem;
+    letter-spacing: -0.025em;
+    margin: 0.25rem 0 0;
+  }
+
+  /* When the logo carries the visual identity, soften the typographic title. */
+  .cover-title-sub {
+    font-size: 1.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .cover-url {
+    grid-area: url;
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    margin: 0;
+  }
+
+  .cover-score {
+    grid-area: score;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    align-self: end;
+    justify-self: end;
+  }
+
+  .cover-score-num {
+    font-size: 3.5rem;
+    line-height: 1;
+    color: var(--client-accent, var(--accent));
+  }
+
+  .cover-attribution {
+    grid-area: attrib;
+    margin: 1rem 0 0;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 640px) {
+    .cover-card {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        'row'
+        'title'
+        'url'
+        'score'
+        'attrib';
+    }
+
+    .cover-score {
+      align-items: flex-start;
+      justify-self: start;
+    }
+
+    .cover-meta {
+      align-items: flex-end;
+    }
+
+    .cover-title {
+      font-size: 2.25rem;
+    }
+  }
+
+  @media print {
+    .cover-card {
+      page-break-after: avoid;
+      break-inside: avoid;
+    }
+  }
+</style>
