@@ -36,21 +36,46 @@ export class FirecrawlClient {
     body?: unknown,
   ): Promise<T> {
     const url = path.startsWith('http') ? path : `${FIRECRAWL_BASE_URL}${path}`;
-    const res = await fetch(url, {
-      method,
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      ...(body != null ? { body: JSON.stringify(body) } : {}),
-    });
+    const maxAttempts = 4;
+    let lastErr: unknown;
 
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`Firecrawl ${method} ${path} → ${res.status}: ${text}`);
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          ...(body != null ? { body: JSON.stringify(body) } : {}),
+        });
+
+        if (res.ok) return res.json() as Promise<T>;
+
+        // Retry transient failures (429 rate limit, 5xx). Honor Retry-After when
+        // the server provides it; otherwise exponential backoff with jitter.
+        if ((res.status === 429 || res.status >= 500) && attempt < maxAttempts) {
+          const retryAfter = res.headers.get('retry-after');
+          const wait = parseRetryAfter(retryAfter) ?? backoffMs(attempt);
+          await sleep(wait);
+          continue;
+        }
+
+        const text = await res.text();
+        throw new Error(`Firecrawl ${method} ${path} → ${res.status}: ${text}`);
+      } catch (err) {
+        // Network errors (DNS, ECONNRESET, abort) — retry. fetch() throws TypeError.
+        lastErr = err;
+        const transient = err instanceof TypeError;
+        if (transient && attempt < maxAttempts) {
+          await sleep(backoffMs(attempt));
+          continue;
+        }
+        throw err;
+      }
     }
 
-    return res.json() as Promise<T>;
+    throw lastErr instanceof Error ? lastErr : new Error(`Firecrawl ${method} ${path}: retries exhausted`);
   }
 
   private logCredit(event_type: UsageEvent['event_type'], credits: number, extra?: string) {
@@ -208,4 +233,22 @@ export class FirecrawlClient {
     if (options.formats.includes('branding')) credits += 1;
     return credits;
   }
+}
+
+function backoffMs(attempt: number): number {
+  // 1s, 2s, 4s base + up to ~30% jitter so concurrent retries don't synchronize.
+  const base = 1000 * Math.pow(2, attempt - 1);
+  return Math.round(base + Math.random() * base * 0.3);
+}
+
+function parseRetryAfter(header: string | null): number | null {
+  if (!header) return null;
+  const seconds = Number.parseFloat(header);
+  if (Number.isFinite(seconds) && seconds >= 0) return Math.min(seconds * 1000, 60_000);
+  // HTTP-date form (rare for 429); ignore — fall back to backoff.
+  return null;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
 }

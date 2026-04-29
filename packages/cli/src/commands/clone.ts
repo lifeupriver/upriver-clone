@@ -1,4 +1,4 @@
-import { spawn, execSync } from 'node:child_process';
+import { spawn, execSync, execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { Args, Flags } from '@oclif/core';
@@ -14,6 +14,7 @@ import {
   DEFAULT_CDN_HOSTS,
   type RewriteOptions,
 } from '../clone/rewrite-links.js';
+import { withKeyedLock } from '../util/keyed-lock.js';
 
 const CLAUDE_BIN = process.env['CLAUDE_BIN'] || 'claude';
 
@@ -140,7 +141,7 @@ export default class Clone extends BaseCommand {
       return { ok: true, page, branch };
     }
 
-    const workCwd = useWorktree ? createWorktree(repoDir, branch) : repoDir;
+    const workCwd = useWorktree ? await createWorktree(repoDir, branch) : repoDir;
     if (!useWorktree) {
       try {
         execSync(`git checkout -B ${branch}`, { cwd: workCwd, stdio: 'pipe' });
@@ -416,32 +417,45 @@ function runClaudeCode(prompt: string, cwd: string): Promise<void> {
 
 function ensureGitInitialized(repoDir: string): void {
   if (existsSync(join(repoDir, '.git'))) return;
-  execSync('git init -b main', { cwd: repoDir, stdio: 'pipe' });
-  // Local committer identity so commits work even when the user has no global git config
+  execFileSync('git', ['init', '-b', 'main'], { cwd: repoDir, stdio: 'pipe' });
+  // Local committer identity so commits work even when the user has no global git config.
+  // Override via UPRIVER_GIT_EMAIL / UPRIVER_GIT_NAME.
+  const email = process.env['UPRIVER_GIT_EMAIL'] ?? 'upriver@lifeupriver.com';
+  const name = process.env['UPRIVER_GIT_NAME'] ?? 'Upriver Bot';
   try {
-    execSync('git config user.email "upriver@lifeupriver.com"', { cwd: repoDir, stdio: 'pipe' });
-    execSync('git config user.name "Upriver Bot"', { cwd: repoDir, stdio: 'pipe' });
+    execFileSync('git', ['config', 'user.email', email], { cwd: repoDir, stdio: 'pipe' });
+    execFileSync('git', ['config', 'user.name', name], { cwd: repoDir, stdio: 'pipe' });
   } catch {
     // ignore
   }
-  execSync('git add -A', { cwd: repoDir, stdio: 'pipe' });
+  execFileSync('git', ['add', '-A'], { cwd: repoDir, stdio: 'pipe' });
   try {
-    execSync('git commit -m "Initial scaffold from upriver"', { cwd: repoDir, stdio: 'pipe' });
+    execFileSync('git', ['commit', '-m', 'Initial scaffold from upriver'], { cwd: repoDir, stdio: 'pipe' });
   } catch {
     // empty
   }
 }
 
-function createWorktree(repoDir: string, branch: string): string {
-  const dir = join(repoDir, '..', '.worktrees', branch.replace(/[/]/g, '_'));
-  // Make sure the parent exists
-  execSync(`mkdir -p ${shellQuote(join(repoDir, '..', '.worktrees'))}`, { stdio: 'pipe' });
-  // -B to reset branch if it already exists
-  execSync(`git worktree add -B ${branch} ${shellQuote(dir)} HEAD`, {
-    cwd: repoDir,
-    stdio: 'pipe',
+async function createWorktree(repoDir: string, branch: string): Promise<string> {
+  // Serialize per-repo so concurrent workers don't race on `git worktree add`.
+  // Different repos still run in parallel.
+  return withKeyedLock(`worktree:${repoDir}`, async () => {
+    const dir = join(repoDir, '..', '.worktrees', branch.replace(/[/]/g, '_'));
+    mkdirSync(join(repoDir, '..', '.worktrees'), { recursive: true });
+    const addArgs = ['worktree', 'add', '-B', branch, dir, 'HEAD'];
+    try {
+      execFileSync('git', addArgs, { cwd: repoDir, stdio: 'pipe' });
+    } catch {
+      // Best-effort prune of stale entries, then retry once.
+      try {
+        execFileSync('git', ['worktree', 'prune'], { cwd: repoDir, stdio: 'pipe' });
+      } catch {
+        /* ignore */
+      }
+      execFileSync('git', addArgs, { cwd: repoDir, stdio: 'pipe' });
+    }
+    return resolve(dir);
   });
-  return resolve(dir);
 }
 
 function appendChangelogEntry(repoDir: string, page: SitePage): void {

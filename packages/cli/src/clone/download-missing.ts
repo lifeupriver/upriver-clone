@@ -102,30 +102,89 @@ function safeFilename(rawFilename: string, taken: Set<string>): string {
 }
 
 async function fetchToFile(url: string, dest: string): Promise<void> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  if (!res.body) throw new Error('empty body');
-  await pipeline(Readable.fromWeb(res.body as never), createWriteStream(dest));
+  const maxAttempts = 3;
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        // Retry 429/5xx; surface 4xx immediately.
+        if ((res.status === 429 || res.status >= 500) && attempt < maxAttempts) {
+          await sleep(backoffMs(attempt));
+          continue;
+        }
+        throw new Error(`HTTP ${res.status}`);
+      }
+      if (!res.body) throw new Error('empty body');
+      await pipeline(Readable.fromWeb(res.body as never), createWriteStream(dest));
+      return;
+    } catch (err) {
+      lastErr = err;
+      // Network errors only — fetch() throws TypeError on those. Don't retry
+      // bad-status errors (those rethrow above).
+      if (err instanceof TypeError && attempt < maxAttempts) {
+        await sleep(backoffMs(attempt));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error('download retries exhausted');
+}
+
+function backoffMs(attempt: number): number {
+  const base = 500 * Math.pow(2, attempt - 1);
+  return Math.round(base + Math.random() * base * 0.3);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function hostKey(url: string): string {
+  try {
+    return new URL(url).host.toLowerCase();
+  } catch {
+    return 'unknown';
+  }
 }
 
 export async function downloadMissing(args: {
   urls: string[];
   outDir: string;
   concurrency?: number;
+  perHostConcurrency?: number;
   existingFilenames: Set<string>;
 }): Promise<DownloadResult[]> {
   const { urls, outDir, existingFilenames } = args;
   const concurrency = args.concurrency ?? 8;
+  const perHostMax = args.perHostConcurrency ?? 3;
   if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
 
   const taken = new Set(existingFilenames);
   const queue = [...urls];
   const results: DownloadResult[] = [];
 
+  // Track in-flight requests per host so we don't burst on a single CDN.
+  const hostInFlight = new Map<string, number>();
+  const acquireHost = async (host: string): Promise<void> => {
+    while ((hostInFlight.get(host) ?? 0) >= perHostMax) {
+      await sleep(50);
+    }
+    hostInFlight.set(host, (hostInFlight.get(host) ?? 0) + 1);
+  };
+  const releaseHost = (host: string): void => {
+    const cur = hostInFlight.get(host) ?? 0;
+    if (cur <= 1) hostInFlight.delete(host);
+    else hostInFlight.set(host, cur - 1);
+  };
+
   const worker = async (): Promise<void> => {
     while (queue.length > 0) {
       const url = queue.shift();
       if (!url) break;
+      const host = hostKey(url);
+      await acquireHost(host);
       try {
         const u = new URL(url);
         const raw = basename(u.pathname);
@@ -138,6 +197,8 @@ export async function downloadMissing(args: {
         results.push({ url, ok: true, localFilename: filename });
       } catch (e) {
         results.push({ url, ok: false, error: (e as Error).message });
+      } finally {
+        releaseHost(host);
       }
     }
   };
