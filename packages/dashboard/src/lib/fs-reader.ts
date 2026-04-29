@@ -143,3 +143,53 @@ export function readIntake(slug: string): ClientIntake | null {
     return null;
   }
 }
+
+/**
+ * Aggregated clone-fidelity summary written by `upriver clone-fidelity`.
+ * Mirrors the `FidelitySummary` shape exported by the CLI scorer; redeclared
+ * here so the dashboard package does not depend on `@upriver/cli`.
+ */
+export interface FidelitySummary {
+  generatedAt: string;
+  overall: number;
+  pages: Array<{
+    pageSlug: string;
+    pixel: {
+      totalPixels: number;
+      matchedPixels: number;
+      differingPixels: number;
+      score: number;
+      diffPath: string | null;
+    };
+    copy: {
+      liveTokens: number;
+      cloneTokens: number;
+      sharedTokens: number;
+      missingFromClone: string[];
+      score: number;
+    };
+    overall: number;
+    status: 'scored' | 'no-live-shot' | 'no-clone-shot' | 'error';
+    errorMessage?: string;
+  }>;
+}
+
+/**
+ * Read the clone-fidelity summary for a slug.
+ *
+ * Returns the parsed contents of `clients/<slug>/clone-qa/summary.json`,
+ * or `null` if the file is missing or cannot be parsed. Callers should
+ * treat `null` as "no fidelity scores yet" and render an empty state.
+ *
+ * @param slug - Client slug (directory name under the clients base path).
+ * @returns Parsed `FidelitySummary`, or `null` if missing/invalid.
+ */
+export function readFidelitySummary(slug: string): FidelitySummary | null {
+  const path = join(getClientsBase(), slug, 'clone-qa', 'summary.json');
+  if (!existsSync(path)) return null;
+  try {
+    return JSON.parse(readFileSync(path, 'utf8')) as FidelitySummary;
+  } catch {
+    return null;
+  }
+}

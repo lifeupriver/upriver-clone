@@ -1,0 +1,323 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import {
+  clientExists,
+  readClientConfig,
+  readFidelitySummary,
+  type FidelitySummary,
+} from '@/lib/fs-reader';
+
+const { slug } = Astro.params;
+
+if (!slug || !clientExists(slug)) {
+  return Astro.redirect('/clients');
+}
+
+const config = readClientConfig(slug)!;
+const summary = readFidelitySummary(slug);
+
+type FidelityPage = FidelitySummary['pages'][number];
+
+const statusPillClass: Record<FidelityPage['status'], string> = {
+  scored: 'pill-success',
+  'no-live-shot': 'pill-muted',
+  'no-clone-shot': 'pill-muted',
+  error: 'pill-accent',
+};
+
+const statusLabel: Record<FidelityPage['status'], string> = {
+  scored: 'Scored',
+  'no-live-shot': 'No Live Shot',
+  'no-clone-shot': 'No Clone Shot',
+  error: 'Error',
+};
+
+const sortedPages: FidelityPage[] = summary
+  ? [...summary.pages].sort((a, b) => a.overall - b.overall)
+  : [];
+
+const scoredPages = sortedPages.filter((p) => p.status === 'scored');
+const failedPages = sortedPages.filter((p) => p.status !== 'scored');
+
+/**
+ * Format a timestamp as a short relative phrase (e.g. "3 hours ago").
+ *
+ * @param iso - ISO-8601 timestamp string.
+ * @returns Human-readable relative time, or the raw string on parse failure.
+ */
+function formatRelative(iso: string): string {
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return iso;
+  const deltaMs = Date.now() - then;
+  const sec = Math.round(deltaMs / 1000);
+  if (sec < 60) return `${sec}s ago`;
+  const min = Math.round(sec / 60);
+  if (min < 60) return `${min} min ago`;
+  const hr = Math.round(min / 60);
+  if (hr < 24) return `${hr} hr ago`;
+  const days = Math.round(hr / 24);
+  return `${days} day${days === 1 ? '' : 's'} ago`;
+}
+---
+
+<DashboardLayout title={`${config.name} — Clone Fidelity`} section="clients">
+  <div class="breadcrumb">
+    <a href="/clients" class="bc-link">Clients</a>
+    <span class="bc-sep">/</span>
+    <a href={`/clients/${slug}`} class="bc-link">{config.name}</a>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">Clone Fidelity</span>
+  </div>
+
+  <div class="doc-header">
+    <div>
+      <span class="eyebrow">Clone Fidelity</span>
+      <h1>{config.name}</h1>
+      <p class="subtitle">How closely the cloned site matches the original.</p>
+    </div>
+  </div>
+
+  {!summary ? (
+    <div class="empty">
+      <p>
+        No fidelity scores yet. Run
+        <code class="mono">upriver clone-fidelity {slug}</code>
+        after the clone.
+      </p>
+    </div>
+  ) : (
+    <>
+      <section class="overall-card card">
+        <div class="overall-meta">
+          <span class="eyebrow">Overall fidelity</span>
+          <p class="overall-sub">Generated {formatRelative(summary.generatedAt)}</p>
+        </div>
+        <span class="score-num overall-num">{summary.overall}</span>
+      </section>
+
+      {scoredPages.length > 0 && (
+        <section class="page-section">
+          <h2 class="section-h">Pages (worst first)</h2>
+          <div class="page-grid">
+            {scoredPages.map((p) => (
+              <article class="page-card card">
+                <header class="page-card-head">
+                  <h3 class="page-slug mono">{p.pageSlug}</h3>
+                  <span class:list={['pill', statusPillClass[p.status]]}>
+                    {statusLabel[p.status]}
+                  </span>
+                </header>
+
+                <dl class="mini-stats">
+                  <div class="mini-stat">
+                    <dt>Overall</dt>
+                    <dd><span class="score-num mini-num">{p.overall}</span></dd>
+                  </div>
+                  <div class="mini-stat">
+                    <dt>Pixel</dt>
+                    <dd><span class="score-num mini-num">{p.pixel.score}</span></dd>
+                  </div>
+                  <div class="mini-stat">
+                    <dt>Copy</dt>
+                    <dd><span class="score-num mini-num">{p.copy.score}</span></dd>
+                  </div>
+                </dl>
+
+                {p.copy.missingFromClone.length > 0 && (
+                  <p class="missing">
+                    <span class="missing-label">Top missing words from clone:</span>{' '}
+                    <span class="mono missing-list">
+                      {p.copy.missingFromClone.slice(0, 8).join(', ')}
+                    </span>
+                  </p>
+                )}
+
+                {/* TODO(roadmap): D.2 wire diff-image serving endpoint */}
+                <p class="diff-hint">
+                  <span class="missing-label">Diff PNG:</span>{' '}
+                  <code class="mono">
+                    clients/{slug}/clone-qa/diff/{p.pageSlug}.png
+                  </code>
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {failedPages.length > 0 && (
+        <section class="page-section">
+          <h2 class="section-h">Failed pages</h2>
+          <div class="page-grid">
+            {failedPages.map((p) => (
+              <article class="page-card card page-card-failed">
+                <header class="page-card-head">
+                  <h3 class="page-slug mono">{p.pageSlug}</h3>
+                  <span class:list={['pill', statusPillClass[p.status]]}>
+                    {statusLabel[p.status]}
+                  </span>
+                </header>
+                {p.errorMessage && (
+                  <p class="error-msg mono">{p.errorMessage}</p>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {scoredPages.length === 0 && failedPages.length === 0 && (
+        <div class="empty">
+          <p>Summary contained no pages.</p>
+        </div>
+      )}
+    </>
+  )}
+</DashboardLayout>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: var(--fs-xs);
+  }
+  .bc-link {
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+  .bc-link:hover { color: var(--accent); }
+  .bc-sep { color: var(--border); }
+  .bc-current {
+    color: var(--text-body);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .doc-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .doc-header h1 { margin: 0.25rem 0 0; }
+  .subtitle {
+    margin: 0.5rem 0 0;
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+  }
+
+  .empty {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    color: var(--text-muted);
+  }
+  .empty code, .empty .mono { font-family: var(--font-mono); color: var(--accent); }
+
+  .overall-card {
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+  .overall-meta { display: flex; flex-direction: column; gap: 0.25rem; }
+  .overall-sub { margin: 0; color: var(--text-muted); font-size: var(--fs-sm); }
+  .overall-num { font-size: 3rem; }
+
+  .page-section { margin-bottom: 2.5rem; }
+
+  .section-h {
+    font-size: var(--fs-xxs);
+    margin-bottom: 1rem;
+    padding-bottom: 0.625rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .page-card {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  .page-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .page-slug {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--text-body);
+    word-break: break-all;
+  }
+
+  .mini-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mini-stat { display: flex; flex-direction: column; gap: 0.25rem; }
+
+  .mini-stat dt {
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .mini-stat dd { margin: 0; }
+
+  .mini-num { font-size: 1.25rem; }
+
+  .missing, .diff-hint {
+    margin: 0;
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .missing-label {
+    font-family: var(--font-heading);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .missing-list { color: var(--text-body); word-break: break-word; }
+
+  .diff-hint code { color: var(--accent); }
+
+  .page-card-failed { opacity: 0.85; }
+
+  .error-msg {
+    margin: 0;
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    word-break: break-word;
+  }
+</style>
