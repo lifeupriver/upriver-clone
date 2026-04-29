@@ -167,19 +167,25 @@ export default class Audit extends BaseCommand {
       if (r.status === 'fulfilled') passed.push(r.value);
     }
 
-<<<<<<< HEAD
-    // Deep passes (C.3–C.5). G.3 — parallelized with a concurrency cap so
-    // token usage stays bounded but multiple LLM-driven passes overlap.
+    // Two deep-pass tracks coexist:
+    //   1. C.3–C.5 LLM passes via DEEP_PASSES + injectable runAgent. Gated by
+    //      --mode=deep|all. Concurrency capped via --deep-concurrency.
+    //   2. Tooling-driven deep passes (impeccable, lighthouse, squirrelscan,
+    //      playwright) gated by the legacy --deep boolean.
+    // Both push into the same `passed[]` accumulator so downstream summary /
+    // JSON-write steps see them transparently.
+    let deepRun = 0;
+
+    // Track 1: C.3–C.5 LLM passes (G.3 — parallelized with concurrency cap;
+    // G.4 — prefer the Anthropic SDK runner when an API key is available).
     if (runDeep) {
       const cap = Math.max(1, flags['deep-concurrency'] ?? 2);
-      // G.4 — prefer the Anthropic SDK runner (with prompt caching) when an
-      // API key is available; fall back to the claude CLI runner otherwise.
       const runAgent: AgentRunner = process.env['ANTHROPIC_API_KEY']
         ? createAnthropicRunner({ slug })
         : claudeCliRunner;
       const runnerLabel = process.env['ANTHROPIC_API_KEY'] ? 'anthropic-sdk' : 'claude-cli';
       this.log(
-        `\nRunning ${DEEP_PASSES.length} deep pass${DEEP_PASSES.length === 1 ? '' : 'es'} (concurrency=${cap}, runner=${runnerLabel})...\n`,
+        `\nRunning ${DEEP_PASSES.length} LLM deep pass${DEEP_PASSES.length === 1 ? '' : 'es'} (concurrency=${cap}, runner=${runnerLabel})...\n`,
       );
       const queue = [...DEEP_PASSES];
       const runOne = async (): Promise<void> => {
@@ -189,15 +195,16 @@ export default class Audit extends BaseCommand {
           const passStart = Date.now();
           try {
             const result = await runDeepPass(spec, { slug, clientDir: dir, runAgent });
-            const elapsed = ((Date.now() - passStart) / 1000).toFixed(1);
+            const elapsedPass = ((Date.now() - passStart) / 1000).toFixed(1);
             const grade = gradeScore(result.score);
             const p0 = result.findings.filter((f) => f.priority === 'p0').length;
             const p1 = result.findings.filter((f) => f.priority === 'p1').length;
             const p2 = result.findings.filter((f) => f.priority === 'p2').length;
             this.log(
-              `  [${grade}] ${spec.id.padEnd(22)} score=${result.score}/100  p0=${p0} p1=${p1} p2=${p2}  (${elapsed}s)  [deep]`,
+              `  [${grade}] ${spec.id.padEnd(22)} score=${result.score}/100  p0=${p0} p1=${p1} p2=${p2}  (${elapsedPass}s)  [llm-deep]`,
             );
             passed.push(result);
+            deepRun += 1;
           } catch (err) {
             this.warn(`  [ERR] ${spec.id.padEnd(22)} failed: ${err instanceof Error ? err.message : String(err)}`);
           }
@@ -207,9 +214,8 @@ export default class Audit extends BaseCommand {
       await Promise.allSettled(workers);
     }
 
-=======
-    // Deep passes (LLM + external CLIs). Only when --deep and no --pass filter.
-    let deepRun = 0;
+    // Track 2: tooling-driven deep passes (--deep boolean). Only when --deep
+    // and no --pass filter.
     if (flags.deep && !flags.pass) {
       const preflight = runPreflight();
       this.log(`\n${'─'.repeat(60)}\nPreflight checks for --deep:`);
@@ -297,7 +303,6 @@ export default class Audit extends BaseCommand {
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 
->>>>>>> d7893e6bac08ee4fed9a0674c0a97d0a451a8373
     // Write individual pass JSON files
     for (const result of passed) {
       const outPath = join(outDir, `${result.dimension}.json`);
