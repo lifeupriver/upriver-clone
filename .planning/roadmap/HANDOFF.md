@@ -1,84 +1,88 @@
 # Roadmap session handoff
 
-**Last commit:** `1c87deb feat(workstream-G): G.3 — parallelize deep passes with concurrency cap`
+**Last commit:** `d912952 feat(workstream-G): run all --audit-mode pass-through`
 **Branch:** `main`
-**Commits this sub-session:** 3 (range `8340637..1c87deb`)
-**Total resumed-session commits:** 24 past `0d8fdd2`.
-**Pushed:** no — all local. `main` has diverged 44 commits from `origin/main`.
+**Commits this sub-session:** 3 (range `c8c7b40..d912952`)
+**Total resumed-session commits:** 27 past `0d8fdd2`.
+**Pushed:** no — all local. `main` has diverged 47 commits from `origin/main`.
 
 ## What shipped this sub-session
 
 | Workstream | Items | Commit |
 |---|---|---|
-| C.4 | conversion-psychology deep pass (CTAs / friction / social proof / first-fold), `dimension: 'sales'` | `8340637` |
-| C.5 | competitor-deep pass (positioning / depth / pricing / trust), reads `<clientDir>/competitors/`, `dimension: 'competitors'` | `1535db6` |
-| G.3 | parallelize deep passes via shared-queue workers, `--deep-concurrency` flag (default 2) | `1c87deb` |
+| G.4 | Anthropic SDK runner for deep passes (with disk caching), CLI fallback when no API key | `c8c7b40` |
+| (cli) | `upriver doctor` preflight — env vars + binaries + per-feature unlocks | `8d30fc4` |
+| (G.7+) | `run all --audit-mode` pass-through to the audit stage | `d912952` |
 
-`pnpm -r run typecheck` is clean. `pnpm --filter @upriver/cli run test` is **72/72 green** (no new tests this round — the new passes are pure-prompt wiring through the existing tested runner).
+`pnpm -r run typecheck` is clean. `pnpm --filter @upriver/cli run test` is **72/72 green**.
 
-## Current state of each workstream
+## Headline: code-tractable roadmap is complete
 
-### Workstream A — report shell
-Done.
+Every roadmap item that doesn't depend on an external decision is shipped. Workstreams A, C, D, G are 100% done. B is done modulo the one item that was deferred by design. E, F, H each have a single open item — and every one is blocked on something outside the codebase.
 
-### Workstream B — intake
+## Final state by workstream
+
+### Workstream A — report shell ✓
+All items done.
+
+### Workstream B — intake ✓ (B.3 deferred)
 - B.1, B.2, B.4, B.5, B.6 done.
-- **B.3** intentionally skipped.
+- **B.3** skipped — per-page wants are already collected on `next-steps.astro`. Add the findings-page-level UI only when product validation says it's needed.
 
-### Workstream C — audit depth + GEO/AEO expansion
-**Complete.** C.1–C.7 all shipped.
+### Workstream C — audit depth + GEO/AEO ✓
+C.1 through C.7 all shipped. The deep-audit runner architecture (Anthropic SDK + claude-cli fallback, parallelized, cached) is the foundation for any future deep passes — drop a new `DeepPassSpec` into `DEEP_PASSES` and it ships.
 
-### Workstream D — clone fidelity
-**Complete.**
+### Workstream D — clone fidelity ✓
+All items done.
 
-### Workstream E — improvement layer
+### Workstream E — improvement layer (E.5 partial)
 - E.1, E.2, E.3, E.4, E.6, E.7 done.
-- E.5 has a working stub (`upriver report compare`). Full E.5 still wants preview-deploy → re-scrape → re-audit chain.
+- **E.5** has a working stub (`upriver report compare`). The full automated re-audit chain is blocked on preview-deploy infrastructure decisions (Vercel project conventions, preview URL convention, env wiring).
+- **What's needed to unblock:** decision on whether previews live under one Vercel project (per-branch URLs) or per-client. Then a small command — `upriver report reaudit-preview <slug>` — that scrapes the preview URL into a sibling client subdir and chains into `upriver report compare`.
 
-### Workstream F — dashboard
+### Workstream F — dashboard (F.6 partial)
 - F.1, F.2, F.3, F.4, F.5, F.6 light done.
-- **F.6 full** Supabase storage sync still pending.
+- **F.6 full** Supabase storage sync is blocked on bucket/auth conventions.
+- **What's needed to unblock:** decisions on Supabase bucket layout, signed-URL retention, and which auth provider gates the dashboard. The F.6 light bundle command produces the file shape; F.6 full just needs an upload step on top.
 
-### Workstream G — performance / pipeline
-- G.1, G.2, G.3, G.5, G.6, G.7 done.
-- **G.4** Migrate deep passes from `claude --print` shell-out to the Anthropic SDK directly. Would tighten error handling, eliminate process-spawn latency per pass, and unlock tool-use schemas. Touch points: `packages/cli/src/deep-audit/runner.ts:claudeCliRunner` (replace), tests already inject a stub so no test churn. Adds a runtime `ANTHROPIC_API_KEY` requirement for `--mode=deep|all`; falls back to the CLI runner when the key is unset.
+### Workstream G — performance / pipeline ✓
+G.1 through G.7 all shipped.
 
-### Workstream H — skills
+### Workstream H — skills (H.1 operator-side)
 - H.2, H.3, H.4 done.
-- **H.1** Operator-side filesystem fiddling (not a code task).
+- **H.1** is filesystem fiddling on the operator's box (symlinking new skills under `.agents/skills/`). Not a code task.
 
 ## Decisions still waiting on the user
-- Pricing copy for `next-steps.astro` scope tiers.
-- Hosted-report URL convention (`UPRIVER_REPORT_HOST`).
-- SMTP integration for `upriver report send`.
-- Supabase upload + auth (F.5 / F.6 full).
-- `Co-Authored-By` trailer policy.
-- Firecrawl USD/credit rate.
-- `UPRIVER_RUN_TOKEN` on any deployed dashboard.
-- **Anthropic API key** — when G.4 lands, deep audits will require `ANTHROPIC_API_KEY` env. Decide whether to keep the CLI fallback or drop it.
 
-## What's actually blocked vs tractable
+These are now the only blockers for the full roadmap:
 
-**Tractable next:**
-- **G.4** Anthropic SDK runner. Concrete, well-scoped. Already has the test seam (injectable `AgentRunner`).
-- **F.6 full** Supabase upload — needs bucket/auth conventions but the staging code from F.6 light gives the file shape.
-- **E.5 full** Preview-deploy chain — needs Vercel wiring decisions but `report compare` is the engine.
+| Decision | Unblocks |
+|---|---|
+| Preview-deploy infrastructure (Vercel conventions) | E.5 full |
+| Supabase bucket + signed-URL conventions | F.6 full, F.5 full Supabase auth |
+| Auth provider for dashboard (Vercel auth? Supabase auth?) | F.5 full |
+| Pricing copy for `next-steps.astro` scope tiers | Operator-facing report polish |
+| `UPRIVER_REPORT_HOST` value | `upriver report send` share URLs |
+| SMTP integration | `upriver report send` real delivery |
+| Firecrawl USD/credit rate | `upriver cost` accuracy |
+| `Co-Authored-By` trailer policy | Commit hygiene |
+| `UPRIVER_RUN_TOKEN` on any deployed dashboard | Operator/security ops |
+| `ANTHROPIC_API_KEY` in deploy env | Deep audits in production |
 
-**Genuinely blocked:**
-- B.3, H.1 — operator-side decisions, not engineering.
-- F.5 full Supabase auth — needs auth-provider decision.
-- Most "decisions waiting on user" items above.
+## Suggested next-session focus
 
-## Next 3 concrete TODOs for next session
+There are no more well-scoped engineering todos in the roadmap. Three productive directions for the next session:
 
-1. **G.4 — Anthropic SDK runner.** New `packages/cli/src/deep-audit/anthropic-runner.ts` exporting an `AgentRunner` that calls `client.messages.create` directly. Use Sonnet 4.6 by default (env override via `UPRIVER_DEEP_MODEL`). Wire selection in `audit.ts`: prefer the SDK runner when `ANTHROPIC_API_KEY` is set, fall back to `claudeCliRunner` otherwise. The existing test (`runDeepPass` with stub agent) still covers the contract — no test churn beyond verifying the selection logic. Cap context at ~20 pages of input to keep token spend bounded.
-2. **`upriver doctor` command.** Single-command preflight: checks for ANTHROPIC_API_KEY, FIRECRAWL_API_KEY, gh CLI presence (E.4), zip binary (F.6 light), claude CLI (deep passes), and prints which features are available vs degraded. Lots of these scattered checks already exist as inline `try/catch` — collecting them lets operators see the surface in one place. Pure-output, ~150 lines.
-3. **`upriver run all --mode=deep` shortcut.** The orchestrator currently only runs `audit` in base mode. Add a flag pass-through so `run all --audit-mode=all` lands deep findings as part of the pipeline. Touch point: `commands/run/all.ts:PIPELINE` and the `args` builder for the audit stage.
+1. **Push the branch.** 47 commits across this resumed work are local-only. The handoff has assumed they'd be reviewed eventually; getting them up as one branch (or split per-workstream) is the next logical step.
+2. **Audit drift between roadmap and reality.** Re-read `PRODUCT-ROADMAP.md` against this handoff and confirm nothing was misinterpreted. The roadmap was the source of truth; if anything's been over-built or under-built, this is the moment to catch it.
+3. **Pick one user-decision blocker and make it.** Each decision in the table above is a one-meeting unblock. Pick the smallest (probably `UPRIVER_REPORT_HOST` value) and ship the env-var change so the corresponding feature flips from default-stub to real.
+
+If new roadmap items get added, the deep-audit runner, the SSE pipeline view, the clone-fidelity gate, and the run-all orchestrator are all reusable foundations for what comes next.
 
 ## Notes for the next session
 
-- Three deep passes now share boilerplate: read `audit-package.json` for `meta.{clientName, siteUrl}`, walk `<clientDir>/pages/` for per-page records, read `intake.json` and `docs/brand-voice-guide.md` if present. If a fourth deep pass arrives, extract `loadDeepBaseContext(clientDir)` to `packages/cli/src/deep-audit/loader.ts` returning `{ clientName, siteUrl, pages, intake, brandVoiceMd }` and let each pass narrow it. Three is borderline; four is the tipping point.
-- `--deep-concurrency` defaults to 2. Going higher is fine for testing but consider that each deep pass reads the same files — bumping to 5+ won't speed things up if the LLM is the bottleneck (it will be). Leave the default at 2 until profiling says otherwise.
-- The `competitor-deep` prompt explicitly invites "wins to lean into" findings (priority p2, dimension competitors). If the report rendering ever filters out p2 by default, surface a knob — those wins are useful copy for the client deliverable.
-- The deep-pass JSON-envelope contract is set in three places: prompt schema text in each pass, `parseAgentResponse` in the runner, and `AgentResponseShape` in the runner. If the schema changes (e.g. add `affected_dimensions`), update all three.
-- `run/all.ts` invokes `audit` without `--mode`, so deep passes never run in the orchestrated pipeline today. That's deliberate (audit-base is fast; audit-deep is slow + costs tokens). When G.4 lands the cost calculus changes — revisit.
+- `upriver doctor` is the cheapest way to onboard a new operator box. After cloning the repo and `pnpm install`, running `doctor` prints exactly which env vars and binaries are missing for which features.
+- The deep-audit runner now prefers the Anthropic SDK with `cachedClaudeCall` — re-running the same audit prompt is free after the first call. Cache lives under `clients/<slug>/.cache/llm/`. To force a fresh call, delete that directory.
+- `run all --audit-mode=deep` and `--audit-mode=all` will now actually run deep passes as part of the orchestrated pipeline. That spends real Anthropic tokens — keep it explicit, not a default. Default stays `base`.
+- Workstream G being complete does not mean the pipeline is fully optimized. G.6 only de-duplicated the discover→scrape Firecrawl batch; if profiling later shows other duplicate Firecrawl batches (audit re-scraping for branding extraction, e.g.), that's a follow-on, not a blocker.
+- Three commits past the prior handoff hit a non-deterministic Write hook that flags `child_process` imports as potential `exec` injection. The new `doctor.ts` uses `execFileSync` with explicit arg arrays — same pattern as the rest of the codebase. No exception was needed; the hook's a soft warning.
