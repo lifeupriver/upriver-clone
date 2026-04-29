@@ -3,10 +3,11 @@ import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { BaseCommand } from '../base-command.js';
 import { clientDir } from '@upriver/core';
+import { createAnthropicRunner } from '../deep-audit/anthropic-runner.js';
 import { competitorDeepPass } from '../deep-audit/passes/competitor-deep/run.js';
 import { contentStrategyPass } from '../deep-audit/passes/content-strategy/run.js';
 import { conversionPsychologyPass } from '../deep-audit/passes/conversion-psychology/run.js';
-import { claudeCliRunner, runDeepPass, type DeepPassSpec } from '../deep-audit/runner.js';
+import { claudeCliRunner, runDeepPass, type AgentRunner, type DeepPassSpec } from '../deep-audit/runner.js';
 import {
   runSeo,
   runContent,
@@ -154,8 +155,14 @@ export default class Audit extends BaseCommand {
     // token usage stays bounded but multiple LLM-driven passes overlap.
     if (runDeep) {
       const cap = Math.max(1, flags['deep-concurrency'] ?? 2);
+      // G.4 — prefer the Anthropic SDK runner (with prompt caching) when an
+      // API key is available; fall back to the claude CLI runner otherwise.
+      const runAgent: AgentRunner = process.env['ANTHROPIC_API_KEY']
+        ? createAnthropicRunner({ slug })
+        : claudeCliRunner;
+      const runnerLabel = process.env['ANTHROPIC_API_KEY'] ? 'anthropic-sdk' : 'claude-cli';
       this.log(
-        `\nRunning ${DEEP_PASSES.length} deep pass${DEEP_PASSES.length === 1 ? '' : 'es'} (concurrency=${cap})...\n`,
+        `\nRunning ${DEEP_PASSES.length} deep pass${DEEP_PASSES.length === 1 ? '' : 'es'} (concurrency=${cap}, runner=${runnerLabel})...\n`,
       );
       const queue = [...DEEP_PASSES];
       const runOne = async (): Promise<void> => {
@@ -164,7 +171,7 @@ export default class Audit extends BaseCommand {
           if (!spec) break;
           const passStart = Date.now();
           try {
-            const result = await runDeepPass(spec, { slug, clientDir: dir, runAgent: claudeCliRunner });
+            const result = await runDeepPass(spec, { slug, clientDir: dir, runAgent });
             const elapsed = ((Date.now() - passStart) / 1000).toFixed(1);
             const grade = gradeScore(result.score);
             const p0 = result.findings.filter((f) => f.priority === 'p0').length;
