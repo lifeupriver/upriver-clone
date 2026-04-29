@@ -1,0 +1,44 @@
+# Upriver improvement-layer skill matrix.
+# Each track is one PR worth of changes applied across a defined set of pages.
+# `skill` references a path under .agents/skills/<name>/SKILL.md. Missing skills
+# are warned about at load time but do not abort the run — operators can install
+# symlinks or skip those tracks with --skip.
+version: 1
+tracks:
+  - id: seo
+    skill: ai-seo
+    targets: all-pages
+    description: Apply AI-SEO recommendations across every page.
+    output: per-page edits + recommendations.md
+  - id: copy
+    skill: copywriting
+    targets: hero,services,about
+    description: Tighten brand voice on the high-leverage marketing pages.
+    output: per-page edits
+  - id: schema
+    skill: schema-markup
+    targets: all-pages
+    description: Add or fix structured-data JSON-LD blocks.
+    output: per-page edits
+  - id: typography
+    skill: impeccable
+    references: [typography, typeset, layout]
+    targets: all-pages
+    description: Tighten type scale, line lengths, pairings.
+    output: tokens + per-page edits
+  - id: content-strategy
+    skill: content-strategy
+    targets: pillar-page-candidates
+    description: Identify pillar/cluster opportunities; emit recommendations.
+    output: improvement-opportunities.md
+  - id: conversion
+    skill: page-cro
+    targets: high-intent-pages
+    description: Critique CTAs, trust signals, friction; apply edits.
+    output: per-page edits
+  - id: geo
+    skill: ai-seo
+    references: [llm-discoverability]
+    targets: all-pages
+    description: Generative-engine optimization (llms.txt, FAQ blocks, TL;DR sections).
+    output: per-page edits + llms.txt
