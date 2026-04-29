@@ -7,14 +7,32 @@ import { finding, scoreFromFindings } from '../shared/finding-builder.js';
 function extractJsonLd(html: string): Record<string, unknown>[] {
   const results: Record<string, unknown>[] = [];
   const regex = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
-  let match;
-  while ((match = regex.exec(html)) !== null) {
+  for (const m of html.matchAll(regex)) {
+    const raw = (m[1] ?? '').replace(/^﻿/, '').trim();
+    if (!raw) continue;
     try {
-      const parsed = JSON.parse(match[1] ?? '');
-      if (Array.isArray(parsed)) results.push(...parsed);
-      else results.push(parsed);
-    } catch {
-      // malformed JSON-LD
+      const parsed: unknown = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        for (const item of parsed) {
+          if (item && typeof item === 'object') results.push(item as Record<string, unknown>);
+        }
+      } else if (parsed && typeof parsed === 'object') {
+        // Some sites wrap their schemas in `@graph`. Surface those nodes too
+        // so downstream type-checks see them.
+        const obj = parsed as Record<string, unknown>;
+        const graph = obj['@graph'];
+        if (Array.isArray(graph)) {
+          for (const item of graph) {
+            if (item && typeof item === 'object') results.push(item as Record<string, unknown>);
+          }
+        } else {
+          results.push(obj);
+        }
+      }
+    } catch (err) {
+      if (process.env['UPRIVER_DEBUG']) {
+        console.warn(`[schema] malformed JSON-LD: ${(err as Error).message}`);
+      }
     }
   }
   return results;

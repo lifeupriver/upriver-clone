@@ -2,6 +2,7 @@ import { google } from 'googleapis';
 import { readFileSync } from 'node:fs';
 import { z } from 'zod';
 import { logUsageEvent } from '../usage/logger.js';
+import { ConfigError } from '../errors.js';
 
 // Minimum-fields schema for a Google service account JSON. We only validate
 // the fields googleapis actually requires; extra fields pass through.
@@ -39,8 +40,9 @@ export async function fetchGscData(
 ): Promise<GscData> {
   const keyPath = process.env['GOOGLE_SERVICE_ACCOUNT_KEY'];
   if (!keyPath) {
-    throw new Error(
+    throw new ConfigError(
       'GOOGLE_SERVICE_ACCOUNT_KEY env var is not set. Set it to the path of your Google service account JSON file (download from Google Cloud Console → IAM → Service Accounts).',
+      { code: 'GSC_KEY_MISSING' },
     );
   }
 
@@ -48,8 +50,9 @@ export async function fetchGscData(
   try {
     raw = JSON.parse(readFileSync(keyPath, 'utf8'));
   } catch (err) {
-    throw new Error(
+    throw new ConfigError(
       `Failed to read or parse service account key at ${keyPath}: ${err instanceof Error ? err.message : String(err)}`,
+      { code: 'GSC_KEY_UNREADABLE', context: { keyPath }, cause: err },
     );
   }
   const parsed = ServiceAccountKeyZ.safeParse(raw);
@@ -58,8 +61,9 @@ export async function fetchGscData(
       .slice(0, 3)
       .map((i) => `${i.path.join('.') || '<root>'}: ${i.message}`)
       .join('; ');
-    throw new Error(
+    throw new ConfigError(
       `Service account key at ${keyPath} is missing required fields (${issues}). Expected a Google service account JSON with type, client_email, and private_key.`,
+      { code: 'GSC_KEY_INVALID', context: { keyPath, issues } },
     );
   }
   const auth = new google.auth.GoogleAuth({

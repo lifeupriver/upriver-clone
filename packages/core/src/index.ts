@@ -41,3 +41,7 @@ export { logUsageEvent, formatCost } from './usage/logger.js';
 
 // Util
 export { assertPathInside } from './util/paths.js';
+
+// Errors
+export { UpriverError, ConfigError, FirecrawlError } from './errors.js';
+export type { UpriverErrorOptions } from './errors.js';

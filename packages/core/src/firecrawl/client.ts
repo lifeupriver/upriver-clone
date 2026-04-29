@@ -7,6 +7,7 @@ import type {
 } from '../types/firecrawl.js';
 import type { UsageEvent } from '../types/audit.js';
 import { logUsageEvent } from '../usage/logger.js';
+import { FirecrawlError } from '../errors.js';
 
 const FIRECRAWL_BASE_URL = 'https://api.firecrawl.dev';
 
@@ -62,7 +63,9 @@ export class FirecrawlClient {
         }
 
         const text = await res.text();
-        throw new Error(`Firecrawl ${method} ${path} → ${res.status}: ${text}`);
+        throw new FirecrawlError(`Firecrawl ${method} ${path} → ${res.status}: ${text}`, {
+          context: { method, path, status: res.status, body: text.slice(0, 500) },
+        });
       } catch (err) {
         // Network errors (DNS, ECONNRESET, abort) — retry. fetch() throws TypeError.
         lastErr = err;
@@ -223,7 +226,9 @@ export class FirecrawlClient {
       }
 
       if (poll.status === 'failed') {
-        throw new Error(`Batch scrape job ${jobId} failed`);
+        throw new FirecrawlError(`Batch scrape job ${jobId} failed`, {
+          context: { jobId },
+        });
       }
     }
 
