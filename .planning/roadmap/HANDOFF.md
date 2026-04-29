@@ -1,85 +1,91 @@
 # Roadmap session handoff
 
-**Last commit:** `0d8fdd2 feat(workstream-H): H.2+H.3 — four new upriver-skills + typed skills registry`
+**Last commit:** `bb0362f feat(workstream-C): C.2 — typography base audit pass`
 **Branch:** `main`
-**Commits this session:** 18 (range `cc6a233..0d8fdd2`)
-**Pushed:** no — all local.
+**Commits this session:** 12 (range `cef4f43..bb0362f`, started from `0d8fdd2`)
+**Pushed:** no — all local. `main` has diverged 33 commits from `origin/main`.
 
-## What shipped
+## What shipped this session
 
 | Workstream | Items | Commit |
 |---|---|---|
-| A.1 | New report shell (index/scorecard/findings/next-steps Astro pages) | `cc6a233` |
-| A.4 | Impact metrics + narrative hero | `d0250aa` |
-| A.3 | Client-branded `CoverHeader` | `09315f3` |
-| A.2 | Static report export (`upriver report build`) | `1a38179` |
-| A.5 | Report PDF export (`upriver report pdf`) | `489aaf7` |
-| A.6 | Share-link tokens + `upriver report send` | `208e8e8` |
-| B.1+B.2 | `ClientIntake` type, `IntakeForm` island, `/api/intake` endpoint | `16cad25` |
-| B.6 | Operator intake admin view + lock-scope action | `614af24` |
-| B.4+B.5 | Wire intake into `fixes plan` and `clone` prompts | `9e6a6e2` |
-| G.2+G.5 | Content-addressed LLM cache + prompt-caching helper | `b58169e` |
-| G.1 | `BaseCommand.skipIfExists` (synthesize, report build) | `74cbb32` |
-| D.1 | Clone-fidelity scorer (pixel + copy) | `345efd6` |
-| D.2 | Clone-fidelity dashboard route | `57fa614` |
-| E.1+E.2 | `upriver improve` command shell + skill matrix loader | `fcc275a` |
-| E.6 | Deterministic GEO/AEO generator (llms.txt, FAQ JSON-LD, TL;DR) | `68a709a` |
-| E.3 | Improvement-track agent runner + worktree-per-track | `6a92e60` |
-| F.1+F.3 | `/api/run/[command]` SSE endpoint + `/clients/new` wizard | `7a58a03` |
-| H.2+H.3 | Four new upriver-skills + typed skills registry | `0d8fdd2` |
+| E.4 | One PR per improve track via `gh pr create` (best-effort, --no-pr opt-out) | `cef4f43` |
+| D.3 | Clone-fidelity emits synthetic AuditFindings; `fixes plan` reads them | `bcd38a3` |
+| C.1 | GEO base audit pass (TL;DR / llms.txt / factoids / entity disambiguation) | `130867c` |
+| D.4 | Unmatched-CDN URL check promoted into a fidelity gate | `7c4b347` |
+| D.5 | `clone/verify` reads prior `clone-qa/summary.json` and threads it into the verify prompt | `094a2b7` |
+| E.7 | `improvement-opportunities.md` generator (missing pages + pillar candidates + finding-derived) | `a5c09c7` |
+| F.4 | `upriver cost <slug>` + cost-summary util parsing `token-and-credit-usage.log` | `f033f42` |
+| C.7 | `EstimatedImpact` on findings (default heuristic from priority × effort) | `db089ed` |
+| C.6 | `--mode base/deep/all` flag on `upriver audit` (deep is reserved for C.3–C.5) | `47e32b4` |
+| C.2 | Typography base audit pass (hierarchy / font count / type-scale) | `bb0362f` |
 
-`pnpm -r run typecheck` is clean. `pnpm --filter @upriver/cli run test` is 54/54 green. `pnpm --filter @upriver/core run test` is 8/8 green.
+`pnpm -r run typecheck` is clean. `pnpm --filter @upriver/cli run test` is **62/62 green** (was 54/54; added +4 opportunities-generator + +4 cost-summary tests). `pnpm --filter @upriver/core run test` is 8/8.
 
-## What's still pending
+## Current state of each workstream
 
-### Workstream B
-- **B.3 — per-page wants on `findings.astro`.** Skipped intentionally: the IntakeForm on `next-steps.astro` already collects per-page wants via textareas. B.3 only adds value if the operator wants page-level interactions on the findings page itself. Defer until product validation says it's needed.
+### Workstream A — report shell
+Done last session. No work this session.
+
+### Workstream B — intake
+- B.1, B.2, B.4, B.5, B.6 done (last session).
+- **B.3** intentionally skipped: per-page wants already collected on `next-steps.astro`; only adds value if findings-page level wants are needed. Defer until product validation says it's needed.
 
 ### Workstream C — audit depth + GEO/AEO expansion
-Nothing shipped. C.1 (geo base pass), C.2 (typography base pass), C.3 (content-strategy deep), C.4 (conversion-psychology deep), C.5 (competitor-deep), C.6 (`--audit-mode` flag), C.7 (`estimatedImpact` on findings) are all open. The `packages/cli/src/deep-audit/passes/` directory referenced in the roadmap doesn't exist yet — anyone working on C should create it as part of the first deep-pass slice.
+- C.1 ✓ (geo base)
+- C.2 ✓ (typography base — emits `dimension: 'design'` to share scoring with the design pass; consider promoting to its own dimension once a typography dashboard exists)
+- C.6 ✓ (`--mode` flag)
+- C.7 ✓ (`estimatedImpact`)
+- **C.3 content-strategy deep, C.4 conversion-psychology deep, C.5 competitor-deep** — still open. These are agent-driven passes that should land under `packages/audit-passes/src/<name>/index.ts` with an Agent SDK runner. Directory `packages/cli/src/deep-audit/passes/` referenced in roadmap **still doesn't exist**.
+- The `--mode=deep` flag in `audit.ts` warns and exits — landing C.3 means: (1) wire the deep-pass runner, (2) add agent prompts per pass under .agents/skills/, (3) gate deep passes behind `--mode=deep|all`.
 
-### Workstream D
-- **D.3** Auto-generate `clone-fidelity-<n>` findings from low-scoring pages.
-- **D.4** Promote `finalize.ts` unmatched-CDN-URL check into a fidelity gate.
-- **D.5** Verify loop becomes plan-aware (`clone/verify.ts` consumes the fidelity report).
+### Workstream D — clone fidelity
+- D.1, D.2 done last session.
+- D.3, D.4, D.5 ✓ this session.
+- **Workstream D is now complete.**
 
-### Workstream E
-- **E.4** One PR per track via `gh pr create` (branches `improve/<id>` are pushed-ready; need a PR-open helper).
-- **E.5** Before/after re-audit on the preview branch + `improvement-report.md`.
-- **E.7** Programmatic-SEO opportunity surfacing into `improvement-opportunities.md`.
+### Workstream E — improvement layer
+- E.1, E.2, E.3, E.6 done last session.
+- E.4 ✓ (PR-per-track), E.7 ✓ (opportunities surfacing).
+- **E.5 — before/after re-audit on the preview branch + improvement-report.md.** Genuinely blocked on preview-deploy infra (no Vercel wiring, no preview URL convention). When unblocked: snapshot `audit-package.json` before improve runs, after improve commit lands, scrape preview URL into a fresh client subdir, re-run audit, diff the dimension scores into `<clientDir>/improve/improvement-report.md`. Probably wants a sibling `upriver report compare <slug-before> <slug-after>` helper.
 
-### Workstream F
-- **F.2** Live pipeline view: replace static `PipelineTrack` with run buttons per stage.
-- **F.4** Cost preview before expensive steps (read `token-and-credit-usage.log`, surface estimate).
-- **F.5** Auth gate for `/api/run/*` (Supabase auth, operator-only).
+### Workstream F — dashboard
+- F.1, F.3 done last session. F.4 ✓ this session.
+- **F.2** Live pipeline view: replace static `PipelineTrack` in dashboard with run buttons hitting `/api/run/[command]` SSE.
+- **F.5** Auth gate for `/api/run/*` (Supabase auth). Operator-only.
 - **F.6** `upriver dashboard deploy` + Supabase storage sync.
 
-### Workstream G
-- **G.3** Parallelize deep audit passes — blocked on workstream C creating `deep-audit/passes/*`.
-- **G.4** Migrate the highest-volume passes to Agent SDK — also blocked on C.
-- **G.6** Single Firecrawl batch instead of per-command scrapes.
-- **G.7** Pipeline-level dependency graph + `upriver run all <slug>`.
+### Workstream G — performance / pipeline
+- G.1, G.2, G.5 done last session.
+- **G.3, G.4** still blocked on C deep passes existing.
+- **G.6** Single Firecrawl batch instead of per-command scrapes — tractable, not yet started.
+- **G.7** Pipeline-level dependency graph + `upriver run all <slug>` — tractable, not yet started.
 
-### Workstream H
-- **H.1** Expand the symlink set in `.agents/skills/`. Filesystem fiddling — operator-side. Not done in this session.
-- **H.4** `--design-system upriver|client` flag on `upriver clone`.
+### Workstream H — skills
+- H.2, H.3 done last session.
+- **H.1** Expand the symlink set in `.agents/skills/`. Filesystem fiddling — operator-side.
+- **H.4** `--design-system upriver|client` flag on `upriver clone`. Small, tractable.
 
-### Decisions waiting on the user
-- **Pricing copy** for the three scope tiers on `next-steps.astro` ("Polish / Rebuild / Rebuild + content"). Currently "Contact us" placeholders.
-- **Hosted-report URL** convention. Code defaults to `https://reports.upriver.com` via `UPRIVER_REPORT_HOST`. If the actual host differs, set the env var or update the default.
-- **SMTP integration** for `upriver report send`. Currently logs the email body; operator forwards manually. Pick an SMTP provider before wiring.
-- **Supabase upload** for `upriver report build --upload`. Currently a stub. Needs a bucket + signed-URL convention.
+## Decisions still waiting on the user
+- **Pricing copy** for the three scope tiers on `next-steps.astro` (placeholders).
+- **Hosted-report URL** convention (env var `UPRIVER_REPORT_HOST`).
+- **SMTP integration** for `upriver report send`.
+- **Supabase upload** for `upriver report build --upload`.
+- **`Co-Authored-By: Claude Opus 4.7` trailer** — the harness rejects it as fabricated authorship. Commits in both sessions shipped without it. Resolve the policy conflict in `CLAUDE.md` if you want it on commits.
+- **`token-and-credit-usage.log` USD rate.** F.4 defaults to `$0.001/credit`. If the real Firecrawl rate differs (it does — varies by tier), set the right default in `packages/cli/src/util/cost-summary.ts:DEFAULT_USD_PER_CREDIT` or always pass `--usd-per-credit`.
+- **`.planning/roadmap/`** — was untracked at session start; this handoff (and the prior version) are now committed. If that's the wrong call, `git rm --cached .planning/roadmap/*` and add to `.gitignore`.
 
 ## Next 3 concrete TODOs for next session
 
-1. **E.4 — open one PR per track via `gh pr create`.** The improve-track branches (`improve/<id>`) are already produced by E.3. Add a `--no-pr` flag (default false), push the branch, run `gh pr create --base main --head improve/<id> --title "improve(<id>): ..." --body-file <track-summary.md>`. Build a `<clientDir>/improve/<track-id>-summary.md` from the track output.
-2. **D.3 — fidelity findings feed into fixes.** In `clone-fidelity.ts`, when a page scores < 80, emit a synthetic `AuditFinding` with id `clone-fidelity-<page-slug>`, priority `p1`, dimension `design`, and append it to `audit-package.json` (or a sibling `clone-fidelity-findings.json` that `fixes plan` reads alongside the audit findings).
-3. **C.1 — GEO base pass.** `packages/audit-passes/src/geo/index.ts` exporting `runGeo(slug, clientDir): Promise<AuditPassResult>`. Heuristic checks: per-section TL;DR presence (count of `summary` / `tl;dr` / `key takeaways` headings across pages), llms.txt presence (`public/llms.txt` exists), structured factoids (year founded, service area, prices in any extracted content), entity disambiguation. Wire into `audit.ts` `ALL_PASSES`. Use existing `loader.ts` `loadPagesAndTokens` pattern.
+1. **H.4 — `--design-system upriver|client` flag on `upriver clone`.** Smallest open item. The flag toggles whether clone passes the upriver design-token defaults to the agent prompt or sticks with extracted client tokens. Edit `packages/cli/src/commands/clone.ts` flags + `buildAgentPrompt`.
+2. **G.6 — single Firecrawl batch.** Replace the per-command scrape calls with one batch issued at `init` time and stored under `<clientDir>/firecrawl-batch.json`. Subsequent commands read from that batch instead of re-scraping. Touch points: `commands/scrape.ts`, `commands/audit.ts`, `commands/discover.ts`. Keep a fallback path so individual commands still work pre-batch for dev runs.
+3. **G.7 — `upriver run all <slug>` pipeline orchestrator.** Define a static dependency graph (init → scrape → discover → audit → synthesize → scaffold → clone → finalize → clone-fidelity → fixes plan → improve), execute in topological order, halt on first failure. Use `BaseCommand.skipIfExists` semantics so re-runs are idempotent. New file: `packages/cli/src/commands/run-all.ts`.
 
 ## Notes for the next session
 
-- The agent runner in E.3 duplicates `runClaudeCode` and `createWorktree` from `commands/{clone,fixes/apply}.ts`. Annotated with TODOs. Worth extracting to `packages/cli/src/util/{claude-code,git-worktree}.ts` as a small refactor before E.4 lands.
-- The dashboard package has no test runner. F.1 helper `flagsToArgs` has no unit test for that reason. If anyone touches the dashboard with new pure helpers, add `node:test` plus a `test` script.
-- `rewriteHtml` in `packages/cli/src/commands/report/rewrite.ts` (A.2) is a regex-based path-rewriter. If the report HTML acquires more route-types, expand the rule set there.
-- The `Co-Authored-By: Claude Opus 4.7 (1M context)` trailer specified in CLAUDE.md gets rejected by the harness as fabricated authorship. Commits in this session shipped without it. Worth resolving the policy conflict.
-- `.planning/roadmap/` was untracked at start of session and has been ignored by every commit. This handoff doc is the first file checked in there — keep it `.gitignored` if that's the convention, else the next session can decide.
+- The verify prompt's "Prior fidelity report" block (D.5) only fires on iteration 1. Later iterations re-screenshot, so the prior report becomes stale; intentionally omitted there. If iteration 1 doesn't trigger improvements, consider widening to "first iteration that hasn't yet matched the prior gap".
+- `EstimatedImpact.scorePoints` (C.7) is a heuristic ceiling — pass authors who think the priority/effort matrix understates impact should pass `opts.impact` explicitly. None do yet.
+- `cost-summary.ts` parser is regex-based and assumes the log format the @upriver/core Firecrawl client writes. If anyone widens that format (e.g. adds a JSON-line variant), update the parser there before adding new event types upstream.
+- `improve` now writes `<clientDir>/improvement-opportunities.md` on every invocation — even `--dry-run`. That's intentional (opportunities are derived from the audit, not the tracks) but means re-running improve after manually editing the file overwrites it. Operators who want to keep edits should commit them or copy elsewhere.
+- The audit command's `--mode=deep` exits with a warning. Once C.3 lands, change that branch to dispatch to a deep-pass runner instead of returning early.
+- Audit-passes dist (`packages/audit-passes/dist/`) and core dist had to be rebuilt after the `AuditDimension` change in C.1 and the `EstimatedImpact` addition in C.7. If `tsc` complains about cross-package types, run `pnpm --filter @upriver/core run build && pnpm --filter @upriver/audit-passes run build` first.
