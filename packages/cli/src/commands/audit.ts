@@ -3,6 +3,8 @@ import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { BaseCommand } from '../base-command.js';
 import { clientDir } from '@upriver/core';
+import { contentStrategyPass } from '../deep-audit/passes/content-strategy/run.js';
+import { claudeCliRunner, runDeepPass, type DeepPassSpec } from '../deep-audit/runner.js';
 import {
   runSeo,
   runContent,
@@ -33,6 +35,17 @@ const ALL_PASSES = [
   { name: 'backlinks', fn: runBacklinks },
   { name: 'competitors', fn: runCompetitors },
 ] as const;
+
+/**
+ * Deep audit passes (C.3–C.5). Each is an LLM-agent-driven pass that takes
+ * scraped content + intake + brand voice and produces AuditFindings via the
+ * shared deep-audit/runner. Only invoked when --mode=deep|all. Currently
+ * scaffolded with content-strategy; conversion-psychology and competitor-deep
+ * land under separate roadmap items.
+ */
+const DEEP_PASSES: ReadonlyArray<DeepPassSpec<unknown>> = [
+  contentStrategyPass as DeepPassSpec<unknown>,
+];
 
 function gradeScore(score: number): string {
   if (score >= 85) return 'A';
@@ -84,22 +97,17 @@ export default class Audit extends BaseCommand {
     mkdirSync(outDir, { recursive: true });
 
     const mode = (flags.mode ?? 'base') as 'base' | 'deep' | 'all';
-    if (mode === 'deep') {
-      this.warn(
-        '--mode=deep is reserved for the agent-driven C.3–C.5 passes (content-strategy, conversion-psychology, competitor-deep) which have not shipped yet. No passes will run. Use --mode=base or --mode=all.',
-      );
-      return;
-    }
-    if (mode === 'all') {
-      this.warn(
-        '--mode=all currently runs only the base heuristic passes; deep passes (C.3–C.5) are not yet wired in.',
-      );
-    }
-    const passesToRun = flags.pass
-      ? ALL_PASSES.filter((p) => p.name === flags.pass)
-      : ALL_PASSES;
+    const runBase = mode === 'base' || mode === 'all';
+    const runDeep = mode === 'deep' || mode === 'all';
+    const passesToRun = !runBase
+      ? []
+      : flags.pass
+        ? ALL_PASSES.filter((p) => p.name === flags.pass)
+        : ALL_PASSES;
 
-    this.log(`\nRunning ${passesToRun.length} audit pass${passesToRun.length > 1 ? 'es' : ''} for "${slug}" (mode=${mode})...\n`);
+    this.log(
+      `\nRunning ${passesToRun.length} base pass${passesToRun.length === 1 ? '' : 'es'} for "${slug}" (mode=${mode}${runDeep ? `, +${DEEP_PASSES.length} deep` : ''})...\n`,
+    );
 
     // Run all passes in parallel
     const startTime = Date.now();
@@ -130,6 +138,29 @@ export default class Audit extends BaseCommand {
     const passed: AuditPassResult[] = [];
     for (const r of results) {
       if (r.status === 'fulfilled') passed.push(r.value);
+    }
+
+    // Deep passes (C.3–C.5). Sequential — they invoke an LLM and we don't
+    // want to fan out token usage without a concurrency budget.
+    if (runDeep) {
+      this.log(`\nRunning ${DEEP_PASSES.length} deep pass${DEEP_PASSES.length > 1 ? 'es' : ''}...\n`);
+      for (const spec of DEEP_PASSES) {
+        const passStart = Date.now();
+        try {
+          const result = await runDeepPass(spec, { slug, clientDir: dir, runAgent: claudeCliRunner });
+          const elapsed = ((Date.now() - passStart) / 1000).toFixed(1);
+          const grade = gradeScore(result.score);
+          const p0 = result.findings.filter((f) => f.priority === 'p0').length;
+          const p1 = result.findings.filter((f) => f.priority === 'p1').length;
+          const p2 = result.findings.filter((f) => f.priority === 'p2').length;
+          this.log(
+            `  [${grade}] ${spec.id.padEnd(18)} score=${result.score}/100  p0=${p0} p1=${p1} p2=${p2}  (${elapsed}s)  [deep]`,
+          );
+          passed.push(result);
+        } catch (err) {
+          this.warn(`  [ERR] ${spec.id.padEnd(18)} failed: ${err instanceof Error ? err.message : String(err)}`);
+        }
+      }
     }
 
     // Write individual pass JSON files
