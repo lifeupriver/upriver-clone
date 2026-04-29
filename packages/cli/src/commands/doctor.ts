@@ -58,7 +58,17 @@ export default class Doctor extends BaseCommand {
       checkEnv(
         'UPRIVER_REPORT_HOST',
         '`upriver report send` share URLs',
-        'Defaults to https://reports.upriver.com — set explicitly if your hosted-report URL differs.',
+        'Defaults to https://reports.upriverhudsonvalley.com — set explicitly if your hosted-report URL differs.',
+      ),
+      checkEnv(
+        'RESEND_API_KEY',
+        '`upriver report send` real delivery',
+        'Without it, send prints the email body for manual forwarding instead of delivering via Resend.',
+      ),
+      checkEnv(
+        'UPRIVER_REPORT_FROM',
+        '`upriver report send` sender address override',
+        'Defaults to reports@upriverhudsonvalley.com. Must be on a Resend-verified domain.',
       ),
       checkBinary(
         'gh',

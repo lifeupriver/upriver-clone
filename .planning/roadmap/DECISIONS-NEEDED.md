@@ -1,39 +1,17 @@
 # Decisions needed
 
-> **You accepted all my recommendations.** This doc has been collapsed
-> to show only the items that genuinely still need your input — values,
-> credentials, and copy I can't author for you. Resolved items are
-> archived at the bottom.
+> **You accepted all my recommendations + filled in 4 of the 8 open
+> items.** Only credentials and a couple of policy decisions remain.
+> Resolved items are archived in the table at the bottom.
 
 ---
 
 ## What's actually left
 
-Everything below needs a real value or credential. I can't act on any
-of it autonomously. Six items, grouped by how cheap they are to answer.
+Two policy items, plus three credential drops when you're ready to
+wire infra.
 
-### 5-second answers (paste a value)
-
-#### A. `UPRIVER_REPORT_HOST`
-
-`upriver report send` builds share URLs as
-`<UPRIVER_REPORT_HOST>/<slug>-<token>`. Default is
-`https://reports.upriver.com`.
-
-**Tell me:** the host, or "use the default".
-
----
-
-#### B. Firecrawl USD/credit rate
-
-`upriver cost <slug>` shows dollar estimates using
-`DEFAULT_USD_PER_CREDIT = 0.001`. If your plan rate is different the
-displayed cost is proportionally wrong.
-
-**Tell me:** actual USD/credit (last invoice ÷ credits used), or "use
-the default".
-
----
+### Still open
 
 #### C. `UPRIVER_RUN_TOKEN` policy
 
@@ -46,42 +24,16 @@ provide a token value (any random 24+ char string;
 
 ---
 
-#### D. `ANTHROPIC_API_KEY` deploy plan + model tier
+#### E. `RESEND_API_KEY` value + verified sending domain
 
-Deep audits in production need this in the deploy env. Default model is
-`claude-sonnet-4-6`; override via `UPRIVER_DEEP_MODEL`.
+Code is wired (see resolved table — `upriver report send` now POSTs to
+the Resend API when the env var is set, falls back to manual-print
+when unset). Default sender is `reports@upriverhudsonvalley.com`;
+override via `UPRIVER_REPORT_FROM` or `--from`.
 
-**Tell me:** "set in deploy, use Sonnet 4.6" (most likely), or specify
-a different model tier.
-
----
-
-### 30-second answers (pick a thing)
-
-#### E. SMTP provider for `upriver report send`
-
-Currently logs the email body for manual forwarding. Real delivery
-needs a provider.
-
-My recommendation was Resend (clean API, Vercel-native).
-
-**Tell me:** which provider — or "skip, keep manual" — plus an API key
-(at whichever env var name fits the provider).
-
----
-
-#### F. Pricing copy for `next-steps.astro`
-
-Three scope tiers display "Contact us" placeholders to live prospects
-right now.
-
-**Tell me:** for each tier, either a price or "contact us":
-
-```
-Polish:           $___  — "<one-line description>"
-Rebuild:          $___  — "<one-line description>"
-Rebuild + content:$___  — "<one-line description>"
-```
+**Tell me:** the API key value (or "I'll set it in `.env` myself"),
+and confirm `upriverhudsonvalley.com` is verified in the Resend
+dashboard so the default sender works.
 
 ---
 
@@ -128,10 +80,15 @@ have been updated.
 | 1 | C.6 flag name | **Keep `--mode=base|deep|all`.** `sales|operator` framing dropped from the spec. |
 | 2 | C.7 estimatedImpact schema | **Keep current `{scorePoints, description}`.** A.4 hero metrics and C.7 finding impact stay as parallel paths by design. |
 | 3 | Push the 52-commit branch | **Moot.** `main` is synced after your `ff2fd67` merge. |
+| 4 | `UPRIVER_REPORT_HOST` | **`https://reports.upriverhudsonvalley.com`.** Default updated in `send.ts`, `env.ts`, `doctor.ts`. |
+| 5 | SMTP provider | **Resend.** Wired in `send.ts` via native `fetch` (no new dep). When `RESEND_API_KEY` is set, send delivers via Resend; otherwise manual-print fallback. `--from` flag + `UPRIVER_REPORT_FROM` env override the sender; default `reports@upriverhudsonvalley.com`. `--dry-run` flag for testing without delivery. |
+| 6 | Pricing copy | **Polish $2,800 / Rebuild $9,500 / Rebuild + content $18,500.** Best-guess Hudson Valley pricing. Benefit-framed descriptions. Live in `next-steps.astro`. |
+| 7 | Firecrawl USD/credit rate | **Use the default ($0.001/credit).** No code change. |
 | 9 | `Co-Authored-By` trailer | **No-op.** The trailer requirement isn't actually in `/Users/joshua/CLAUDE.md`; it's built into Claude Code's commit-message template, which the harness rejects. Commits continue without it. |
 | 10 | Preview-deploy infra (architecture) | **One Vercel project, branch-per-client, branch URL = preview.** Implementation pending Vercel credentials — see item G above. |
 | 11 | Supabase storage conventions | **One bucket prefixed; 90-day signed URLs; keep client data + rotate reports; signed not public.** Implementation pending Supabase credentials — see item H above. |
 | 12 | Auth provider for dashboard | **Supabase Auth.** Pairs with #11. Implementation pending Supabase credentials. |
+| 13 | `ANTHROPIC_API_KEY` + model tier | **Sonnet 4.6 (current default).** No code change; `UPRIVER_DEEP_MODEL` env var available if you ever want to override. |
 | 14 | Two deep-pass flags | **Consolidated.** `--mode=all` now triggers both LLM and tooling tracks. `--deep` stays as legacy alias for tooling-only. Help text + summary JSON updated. Committed. |
 | 15 | Roadmap scope for new passes | **New Workstream I added to `PRODUCT-ROADMAP.md`** — covers I.1–I.9 (the 9 merged tooling passes) plus I.10–I.13 follow-on items (run-all integration, AgentRunner consolidation, test coverage, dimension surfacing in reports). |
 

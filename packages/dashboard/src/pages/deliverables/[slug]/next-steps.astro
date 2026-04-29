@@ -38,25 +38,27 @@ interface ScopeTier {
   description: string;
 }
 
-// TODO(roadmap): pricing copy
 const tiers: ScopeTier[] = [
   {
     name: 'Polish',
-    price: 'Contact us',
-    scope: '2-week scope',
-    description: 'Fix the critical findings only. Your existing site stays in place.',
+    price: '$2,800',
+    scope: '2-week project',
+    description:
+      'Fix every critical finding in this audit on your existing platform — no replatform, no design changes. For sites that mostly work but have a handful of issues blocking conversions or search visibility.',
   },
   {
     name: 'Rebuild',
-    price: 'Contact us',
-    scope: '4-6 week scope',
-    description: 'Replatform to Astro and apply every recommended fix as we go.',
+    price: '$9,500',
+    scope: '4–6 week build',
+    description:
+      'Start fresh on a fast, modern stack with every P0 and P1 finding resolved as we build. The new site scores measurably higher on technical and SEO audits the day it ships.',
   },
   {
     name: 'Rebuild + content',
-    price: 'Contact us',
-    scope: '6-8 week scope',
-    description: 'Everything in Rebuild plus a copy and SEO improvement layer.',
+    price: '$18,500',
+    scope: '6–8 week engagement',
+    description:
+      'Everything in Rebuild plus a copy rewrite informed by your brand voice and a programmatic-SEO layer that publishes pillar content alongside the new site. For venues and service businesses that want to compete on search.',
   },
 ];
 ---

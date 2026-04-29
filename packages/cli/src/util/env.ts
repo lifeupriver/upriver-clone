@@ -68,8 +68,22 @@ export const ENV_REGISTRY: Record<string, EnvVarSpec> = {
     name: 'UPRIVER_REPORT_HOST',
     required: false,
     description:
-      'Host where the static report bundle is published, used by `upriver report send` to build share URLs. Defaults to https://reports.upriver.com.',
-    example: 'https://reports.upriver.com',
+      'Host where the static report bundle is published, used by `upriver report send` to build share URLs. Defaults to https://reports.upriverhudsonvalley.com.',
+    example: 'https://reports.upriverhudsonvalley.com',
+  },
+  RESEND_API_KEY: {
+    name: 'RESEND_API_KEY',
+    required: false,
+    description:
+      '`upriver report send` delivers via the Resend API when this is set; otherwise it prints the email body for manual forwarding.',
+    example: 're_...',
+  },
+  UPRIVER_REPORT_FROM: {
+    name: 'UPRIVER_REPORT_FROM',
+    required: false,
+    description:
+      'Sender address `upriver report send` uses with Resend. Must be on a Resend-verified domain. Defaults to reports@upriverhudsonvalley.com.',
+    example: 'reports@upriverhudsonvalley.com',
   },
 };
 
