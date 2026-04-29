@@ -1,5 +1,7 @@
 # Upriver: workflow, CLI, and product improvements
 
+> **Status as of 2026-04-29 (post-implementation).** Most items are shipped. See `DRIFT-REPORT.md` for the gap analysis between this spec and what actually landed. Per-section status banners below mark each item ✅ shipped / ⚠️ partial / 🔧 drift / ❌ not done / 🚫 deferred. Where shipped reality diverges from this spec materially, the divergence is summarized inline; the original spec text is preserved unchanged for archeology.
+
 ## Context
 
 Upriver is a 14-step CLI pipeline that turns a client URL into a rebuilt Astro site. It works, but it was built as an internal ops tool — every step is a terminal command, the deliverables are markdown files, and the dashboard at `packages/dashboard` is a thin file-system viewer for the operator. The user wants to flip the framing: **use this tool to sell new websites**. The audit isn't internal anymore — it's the lead magnet. The clone and improvement layer aren't internal anymore — they're the deliverable that closes the deal.
@@ -64,6 +66,8 @@ The dependency arrows are real but loose: A and B can ship before C; D unlocks E
 
 ## A. Branded client audit report (the lead magnet)
 
+> **Status: complete.** A.1 ✅ A.2 ✅ A.3 ✅ A.4 ✅ A.5 ✅ A.6 ✅. Note: A.4's hero metrics are produced by a standalone `synthesize/impact-metrics.ts` rather than reading C.7's `estimatedImpact` field — see DRIFT-REPORT.md.
+
 **Problem.** The current "deliverable" is `packages/dashboard/src/pages/deliverables/[slug]/audit-report.astro` (211 lines). It renders against an internal stylesheet meant for the operator dashboard, the cover is generic Upriver branding, and there's no way to send a client a single URL — the dashboard requires `upriver dashboard` running locally.
 
 **Vision.** A static, signed, brandable report at `https://reports.upriver.com/<slug>-<token>` that you can send a prospect cold. It opens to a one-page narrative ("Here's what's costing you bookings"), then drills into evidence, then ends with a single CTA: "Tell us what to fix." Zero terminal context, zero Upriver-internals leaking through.
@@ -89,6 +93,8 @@ The dependency arrows are real but loose: A and B can ship before C; D unlocks E
 ---
 
 ## B. Client intake portal (capture wants between audit and rebuild)
+
+> **Status: complete (B.3 deferred).** B.1 ✅ B.2 ✅ B.3 🚫 B.4 ✅ B.5 ✅ B.6 ✅. B.3 (per-page wants on `findings.astro`) is deliberately collected on `next-steps.astro` instead — the IntakeForm there already captures `pageWants`. Defer the findings-page-level UI until product validation says it's needed.
 
 **Problem.** Today the audit hands off to `interview-prep.ts` → 90-minute Zoom call → manual transcript → `process-interview.ts`. There's no asynchronous capture of "which findings do you care about?" and "what do you _want_ changed about the site?" That info currently lives in the operator's head and the transcript.
 
@@ -118,6 +124,13 @@ The dependency arrows are real but loose: A and B can ship before C; D unlocks E
 
 ## C. Audit depth + GEO/AEO expansion
 
+> **Status: shipped with drift.** C.1 ⚠️ C.2 ⚠️ C.3 ✅ C.4 ✅ C.5 ⚠️ C.6 🔧 C.7 🔧.
+>
+> - **C.1 geo, C.2 typography:** narrower than spec — covers the high-value checks (TL;DR/llms.txt/factoids/disambiguation; hierarchy/font-count/scale-ratio) but skips the longer-tail checks listed below.
+> - **C.5 competitor-deep:** assumes `<clientDir>/competitors/*.json` is already populated; spec wanted the pass to scrape competitors itself via Firecrawl.
+> - **C.6 flag name drift:** shipped as `--mode=base|deep|all`, not `--audit-mode=sales|operator`. Same functional split, different vocabulary. Decide which name wins.
+> - **C.7 schema drift:** shipped as `{scorePoints, description}`, not `{metric, magnitude, rationale}`. Different shape entirely; A.4's report hero uses a parallel impact-metrics path instead.
+
 **Problem.** The 10 base passes (`packages/audit-passes/src/{seo,content,design,sales,links,schema,aeo,local,backlinks,competitors}/index.ts`) are heuristic and quick. The 8 deep passes (`packages/cli/src/deep-audit/passes/`) are LLM-driven and gated behind `--deep`. Coverage is good but missing categories the user named: **GEO** (generative engine optimization, distinct from AEO), **typography depth**, **content strategy / keyword opportunity**, **conversion psychology**, and **competitor side-by-side**.
 
 **Specific changes:**
@@ -139,6 +152,8 @@ The dependency arrows are real but loose: A and B can ship before C; D unlocks E
 ---
 
 ## D. Clone fidelity diff + scoring
+
+> **Status: complete.** D.1 ⚠️ D.2 ✅ D.3 ✅ D.4 ✅ D.5 ✅. D.1 ships pixel + copy diff; layout structure diff (heading-order/CTA-count/image-count) and computed-style token-adherence are not yet implemented — defensible scoping but document the gap.
 
 **Problem.** `clone.ts:39-124` runs Claude Code per page with an optional verify loop (`clone/verify.ts`) and `clone-qa.ts` produces a side-by-side HTML report. There's no _quantitative_ fidelity score per page and no structured diff the operator (or client) can sign off on. Today's QA report is visual eyeballing.
 
@@ -162,6 +177,8 @@ The dependency arrows are real but loose: A and B can ship before C; D unlocks E
 ---
 
 ## E. Improvement layer (the "make it better than the original" pass)
+
+> **Status: shipped with one stub.** E.1 ✅ E.2 ✅ E.3 ✅ E.4 ✅ E.5 ⚠️ E.6 ✅ E.7 ✅. E.5 ships as `upriver report compare <before> <after>` — a manual two-arg diff. Full E.5 (automated re-audit chain against the preview branch + auto-generated `improvement-report.md`) needs preview-deploy infrastructure that isn't wired yet.
 
 **Problem.** This is the biggest gap relative to the user's stated vision. After clone is done and verified, there's no command that says "now apply our skills library to make this site _better_ than the one we cloned." The fix pipeline (`fixes plan` / `fixes apply`) only acts on _audit findings_ from the original site — it doesn't proactively apply, e.g., the `marketing-psychology` skill or the `programmatic-seo` skill to generate new opportunities the original never had.
 
@@ -221,6 +238,12 @@ The dependency arrows are real but loose: A and B can ship before C; D unlocks E
 
 ## F. Operator GUI (run the pipeline from the browser)
 
+> **Status: shipped with drift on 5 + 6.** F.1 ✅ F.2 ✅ F.3 ✅ F.4 ⚠️ F.5 🔧 F.6 🔧.
+>
+> - **F.4:** shipped as `upriver cost <slug>` CLI + util, not the GUI surface the spec described. Library is reusable for the GUI; the wiring isn't there.
+> - **F.5 auth drift:** shipped as `UPRIVER_RUN_TOKEN` shared-secret header check, not Supabase auth with operator/client roles. Anyone with the token has full access. Real F.5 blocked on auth-provider decision.
+> - **F.6 drift:** shipped `upriver report bundle <slug>` (local zip) instead of `upriver dashboard deploy` + `sync push/pull` against Supabase Storage. Different feature; F.6 full blocked on bucket/auth conventions.
+
 **Problem.** Today the dashboard at `packages/dashboard/` is read-only — it visualizes `clients/<slug>/` artifacts but every action is a terminal command. The `dashboard` command at `packages/cli/src/commands/dashboard/index.ts:8-77` just spawns `pnpm run dev` in the dashboard directory. To run the pipeline you need a terminal open in the repo.
 
 **Specific changes:**
@@ -240,6 +263,13 @@ The dependency arrows are real but loose: A and B can ship before C; D unlocks E
 ---
 
 ## G. Efficiency: cache, resume, parallelism, agent SDK
+
+> **Status: complete with two narrower-than-spec items.** G.1 ✅ G.2 ✅ G.3 ⚠️ G.4 🔧 G.5 ✅ G.6 ⚠️ G.7 ✅.
+>
+> - **G.3:** default `--deep-concurrency=2`, not 3. Tunable via flag.
+> - **G.4 drift:** shipped a generic Anthropic SDK runner via `cachedClaudeCall`, not specific Agent-SDK migrations of `design-deep`/`accessibility-deep`/`cwv-deep` (those passes don't exist in this codebase — the spec listed them as theoretical). Caching savings are achieved; structured tool-use is not.
+> - **G.6:** narrower than spec — only de-duplicates the discover→scrape Firecrawl batch. Spec wanted init+scrape+discover all collapsed into one batch. Other paths unchanged.
+> - **G.7:** pipeline graph lives at `packages/core/src/pipeline/stages.ts` with subpath export `@upriver/core/pipeline`. Both `commands/run/all.ts` and the dashboard's `PipelineStages.tsx` import from there.
 
 **Specific changes:**
 
@@ -261,6 +291,8 @@ The dependency arrows are real but loose: A and B can ship before C; D unlocks E
 
 ## H. Skill catalog & methodology upgrades
 
+> **Status: complete (H.1 deferred).** H.1 🚫 H.2 ✅ H.3 ✅ H.4 ✅. H.1 (expanding the symlink set in `.agents/skills/`) is operator-side filesystem fiddling, not a code task.
+
 **Problem.** `marketingskills-main/skills/` has 38 skills installed; only 9 are symlinked into `.agents/skills/` (see `README.md:140-150`). The rest aren't reachable by any command. The Upriver-specific skills at `.agents/upriver-skills/` only cover audit/interview/clone/QA — there's no skill for the new improvement layer or the new audit dimensions.
 
 **Specific changes:**
@@ -280,6 +312,9 @@ The dependency arrows are real but loose: A and B can ship before C; D unlocks E
 ---
 
 ## Recommended ship order
+
+> **Note (post-implementation):** the order below was the original sales-leverage prioritization. In practice the ship order followed dependency more than leverage — A then B then D then E then F then G in roughly that order, with C and H threaded throughout. All workstreams have at least one shipped item; the headline is in the document banner above.
+
 
 | Order | Workstream | Why this order |
 |-------|------------|----------------|
