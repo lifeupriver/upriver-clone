@@ -1,6 +1,6 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import PipelineTrack from '@/components/astro/PipelineTrack.astro';
+import PipelineStages from '@/components/react/PipelineStages';
 import ScoreStrip from '@/components/astro/ScoreStrip.astro';
 import FindingsTable from '@/components/astro/FindingsTable.astro';
 import { readClientConfig, readAuditPasses, readAuditSummary, clientExists } from '@/lib/fs-reader';
@@ -94,8 +94,11 @@ const created = new Date(config.created_at).toLocaleDateString('en-US', {
 
       <!-- Pipeline -->
       <div class="card pipeline-card">
-        <span class="eyebrow" style="margin-bottom: 1rem; display: block;">Pipeline</span>
-        <PipelineTrack currentStage={stage} />
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <span class="eyebrow">Pipeline</span>
+          <span class="eyebrow" style="font-size: 0.62rem; color: var(--text-muted);">click Run to invoke</span>
+        </div>
+        <PipelineStages slug={slug} currentStage={stage} client:load />
       </div>
 
       <!-- Quick nav -->

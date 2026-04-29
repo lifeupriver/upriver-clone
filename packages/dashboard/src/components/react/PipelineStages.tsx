@@ -1,0 +1,253 @@
+import { useRef, useState } from 'react';
+
+/**
+ * F.2 — Live pipeline view. One row per stage with a Run button that POSTs to
+ * `/api/run/<command>` and streams the SSE response into a shared log panel.
+ *
+ * Stages are duplicated from `@/lib/pipeline` (which imports node:fs and so
+ * can't be bundled into a client island). Keep the labels in sync if either
+ * list changes.
+ */
+
+interface StageDef {
+  /** Stable identifier matching the server-side pipeline lib. */
+  id: string;
+  /** Operator-visible label. */
+  label: string;
+  /**
+   * The slash-allowlist command name in `/api/run/[command].ts`. `null` means
+   * the stage cannot be invoked from the GUI (init needs a URL; discover and
+   * launch aren't on the allowlist yet).
+   */
+  command: string | null;
+  /** Argv for the command beyond `<slug>`. */
+  args?: string[];
+}
+
+const STAGES: StageDef[] = [
+  { id: 'init', label: 'Init', command: null },
+  { id: 'discover', label: 'Discover', command: null },
+  { id: 'scrape', label: 'Scrape', command: 'scrape' },
+  { id: 'audit', label: 'Audit', command: 'audit' },
+  { id: 'synthesize', label: 'Synthesize', command: 'synthesize' },
+  { id: 'design-brief', label: 'Design Brief', command: 'design-brief' },
+  { id: 'scaffold', label: 'Scaffold', command: 'scaffold' },
+  { id: 'clone', label: 'Clone', command: 'clone' },
+  { id: 'fixes', label: 'Fixes plan', command: 'fixes-plan' },
+  { id: 'qa', label: 'QA', command: 'qa' },
+  { id: 'launch', label: 'Launch', command: null },
+];
+
+interface Props {
+  slug: string;
+  /** Stage detected on the server at page-load time (for initial highlighting). */
+  currentStage: string;
+}
+
+type Phase = 'idle' | 'running' | 'success' | 'error';
+
+interface StreamCallbacks {
+  onLine: (line: string) => void;
+  onDone: (code: number) => void;
+  onError: (msg: string) => void;
+}
+
+export default function PipelineStages({ slug, currentStage }: Props): JSX.Element {
+  const [phase, setPhase] = useState<Phase>('idle');
+  const [activeStage, setActiveStage] = useState<string | null>(null);
+  const [log, setLog] = useState<string>('');
+  const abortRef = useRef<AbortController | null>(null);
+
+  const currentIdx = STAGES.findIndex((s) => s.id === currentStage);
+
+  async function runStage(stage: StageDef): Promise<void> {
+    if (!stage.command) return;
+    if (phase === 'running') return;
+
+    setPhase('running');
+    setActiveStage(stage.id);
+    setLog(`[start] upriver ${stage.command} ${slug}${stage.args?.length ? ' ' + stage.args.join(' ') : ''}\n`);
+
+    const ac = new AbortController();
+    abortRef.current = ac;
+
+    try {
+      const res = await fetch(`/api/run/${stage.command}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ args: [slug, ...(stage.args ?? [])], flags: {} }),
+        signal: ac.signal,
+      });
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(body.error ?? `HTTP ${res.status}`);
+      }
+      if (!res.body) throw new Error('Empty response body');
+      await consumeSSE(res.body, {
+        onLine: (line) => setLog((prev) => `${prev}${line}\n`),
+        onDone: (code) => {
+          if (code === 0) {
+            setPhase('success');
+            setLog((prev) => `${prev}\n[done] ${stage.label} exited cleanly.\n`);
+          } else {
+            setPhase('error');
+            setLog((prev) => `${prev}\n[error] ${stage.label} exited with code ${code}.\n`);
+          }
+        },
+        onError: (msg) => {
+          setPhase('error');
+          setLog((prev) => `${prev}\n[error] ${msg}\n`);
+        },
+      });
+    } catch (err) {
+      if ((err as Error).name === 'AbortError') {
+        setPhase('idle');
+        setLog((prev) => `${prev}\n[aborted]\n`);
+      } else {
+        setPhase('error');
+        setLog((prev) => `${prev}\n[error] ${(err as Error).message}\n`);
+      }
+    } finally {
+      abortRef.current = null;
+    }
+  }
+
+  function abort(): void {
+    abortRef.current?.abort();
+  }
+
+  return (
+    <div className="pipeline-stages">
+      <ol className="stage-list">
+        {STAGES.map((stage, idx) => {
+          const isComplete = idx < currentIdx;
+          const isCurrent = idx === currentIdx;
+          const isActive = activeStage === stage.id && phase === 'running';
+          return (
+            <li key={stage.id} className={`stage-row${isActive ? ' active' : ''}`}>
+              <span className={`dot ${isComplete ? 'complete' : isCurrent ? 'current' : 'pending'}`} aria-hidden="true" />
+              <span className="label">{stage.label}</span>
+              <span className="run-cell">
+                {stage.command ? (
+                  <button
+                    type="button"
+                    className="run-btn"
+                    disabled={phase === 'running' && activeStage !== stage.id}
+                    onClick={() => runStage(stage)}
+                  >
+                    {isActive ? 'Running…' : 'Run'}
+                  </button>
+                ) : (
+                  <span className="muted">—</span>
+                )}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+
+      <div className="log-panel" aria-live="polite">
+        <div className="log-header">
+          <span>{activeStage ? `Output: ${activeStage}` : 'Output'}</span>
+          {phase === 'running' && (
+            <button type="button" className="abort-btn" onClick={abort}>
+              Abort
+            </button>
+          )}
+        </div>
+        <pre className="log-body">{log || '(no output yet — click a Run button)'}</pre>
+      </div>
+
+      <style>{`
+        .pipeline-stages { display: flex; flex-direction: column; gap: 1rem; }
+        .stage-list { list-style: none; padding: 0; margin: 0; }
+        .stage-row { display: grid; grid-template-columns: 1.25rem 1fr auto; gap: 0.625rem; align-items: center; padding: 0.45rem 0; }
+        .stage-row.active { background: var(--accent-10, rgba(99, 102, 241, 0.08)); border-radius: 0.25rem; padding-inline: 0.5rem; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot.complete { background: var(--success, #16a34a); }
+        .dot.current { background: var(--accent-30, #6366f1); }
+        .dot.pending { background: transparent; border: 1px solid var(--border, #e5e7eb); }
+        .label { font-family: var(--font-heading, system-ui); font-size: var(--fs-xxs, 0.78rem); letter-spacing: 0.06em; text-transform: uppercase; }
+        .run-cell { justify-self: end; }
+        .run-btn { font-size: 0.78rem; padding: 0.3rem 0.7rem; border: 1px solid var(--border, #e5e7eb); background: var(--bg-primary, #fff); border-radius: 0.25rem; cursor: pointer; }
+        .run-btn:hover:not(:disabled) { background: var(--bg-secondary, #f3f4f6); }
+        .run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .muted { color: var(--text-muted, #9ca3af); font-size: 0.78rem; }
+        .log-panel { border: 1px solid var(--border, #e5e7eb); border-radius: 0.375rem; overflow: hidden; }
+        .log-header { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.7rem; background: var(--bg-secondary, #f9fafb); border-bottom: 1px solid var(--border, #e5e7eb); font-size: 0.78rem; }
+        .abort-btn { font-size: 0.72rem; padding: 0.2rem 0.5rem; border: 1px solid var(--border, #e5e7eb); background: transparent; border-radius: 0.25rem; cursor: pointer; }
+        .log-body { font-family: ui-monospace, SF Mono, monospace; font-size: 0.72rem; padding: 0.6rem 0.8rem; margin: 0; max-height: 18rem; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+      `}</style>
+    </div>
+  );
+}
+
+/**
+ * Consume an SSE response body and dispatch line/done/error callbacks.
+ * Mirrors the parser in NewClientForm.tsx — kept inline rather than extracted
+ * because the dashboard package has no test runner and adding a shared util
+ * without coverage is a larger move than F.2 needs.
+ */
+async function consumeSSE(body: ReadableStream<Uint8Array>, opts: StreamCallbacks): Promise<void> {
+  const reader = body.getReader();
+  const decoder = new TextDecoder('utf-8');
+  let buffer = '';
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let sepIdx = indexOfBlankLine(buffer);
+    while (sepIdx !== -1) {
+      const rawEvent = buffer.slice(0, sepIdx);
+      buffer = buffer.slice(sepIdx + delimiterLength(buffer, sepIdx));
+      handleEvent(rawEvent, opts);
+      sepIdx = indexOfBlankLine(buffer);
+    }
+  }
+  if (buffer.trim().length > 0) handleEvent(buffer, opts);
+}
+
+function indexOfBlankLine(s: string): number {
+  const a = s.indexOf('\n\n');
+  const b = s.indexOf('\r\n\r\n');
+  if (a === -1) return b;
+  if (b === -1) return a;
+  return Math.min(a, b);
+}
+
+function delimiterLength(s: string, idx: number): number {
+  return s.startsWith('\r\n\r\n', idx) ? 4 : 2;
+}
+
+function handleEvent(raw: string, opts: StreamCallbacks): void {
+  let eventName = 'message';
+  const dataLines: string[] = [];
+  for (const lineRaw of raw.split('\n')) {
+    const line = lineRaw.replace(/\r$/, '');
+    if (line.length === 0 || line.startsWith(':')) continue;
+    const colon = line.indexOf(':');
+    const field = colon === -1 ? line : line.slice(0, colon);
+    let value = colon === -1 ? '' : line.slice(colon + 1);
+    if (value.startsWith(' ')) value = value.slice(1);
+    if (field === 'event') eventName = value;
+    else if (field === 'data') dataLines.push(value);
+  }
+  const data = dataLines.join('\n');
+  if (eventName === 'done') {
+    try {
+      const parsed = JSON.parse(data) as { code?: number };
+      opts.onDone(typeof parsed.code === 'number' ? parsed.code : 1);
+    } catch {
+      opts.onDone(1);
+    }
+  } else if (eventName === 'error') {
+    try {
+      const parsed = JSON.parse(data) as { message?: string };
+      opts.onError(parsed.message ?? 'unknown error');
+    } catch {
+      opts.onError(data || 'unknown error');
+    }
+  } else {
+    opts.onLine(data);
+  }
+}
