@@ -1,6 +1,17 @@
 export type FindingPriority = 'p0' | 'p1' | 'p2';
 export type FindingEffort = 'light' | 'medium' | 'heavy';
 
+/**
+ * Estimated impact of resolving a finding. `scorePoints` is the rough lift on
+ * the per-dimension score (0–100 scale) once shipped; `description` is a
+ * human-readable phrase used in operator-facing reports. Both are heuristic —
+ * default heuristic lives in `finding-builder.ts`.
+ */
+export interface EstimatedImpact {
+  scorePoints: number;
+  description: string;
+}
+
 export interface AuditFinding {
   id: string;
   dimension: string;
@@ -13,6 +24,7 @@ export interface AuditFinding {
   evidence?: string;
   page?: string;
   affected_pages?: string[];
+  estimatedImpact?: EstimatedImpact;
 }
 
 export type AuditDimension =

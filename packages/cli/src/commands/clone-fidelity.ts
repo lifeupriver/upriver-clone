@@ -239,6 +239,10 @@ export function buildFidelityFindings(pages: PageFidelity[]): AuditFinding[] {
       recommendation: `Inspect clone-qa/diff/${p.pageSlug}.png, then update the corresponding cloned page (\`src/pages/${p.pageSlug === 'home' ? 'index' : p.pageSlug}.astro\` and any referenced components) to bring ${lagging} back above ${FIDELITY_THRESHOLD}.`,
       evidence: `clone-qa/diff/${p.pageSlug}.png`,
       page: p.pageSlug,
+      estimatedImpact: {
+        scorePoints: Math.max(2, FIDELITY_THRESHOLD - p.overall),
+        description: `restore page fidelity from ${p.overall} to ${FIDELITY_THRESHOLD}+`,
+      },
     });
   }
   return findings;
@@ -275,6 +279,7 @@ export function scanUnmatchedCdn(repoDir: string, clientDir: string): AuditFindi
       'Live-CDN references are a fidelity time bomb: they look fine in dev because the live host is up, then break when the original site moves assets. Operators expect a finalized clone to be self-contained.',
     recommendation: `Re-run \`upriver finalize ${basename(clientDir)} --download-missing\` to fetch and rewrite the unmatched URLs to local /images paths.`,
     evidence: `Unmatched (first 5): ${sample}${unmatched.length > 5 ? `, +${unmatched.length - 5} more` : ''}`,
+    estimatedImpact: { scorePoints: 8, description: 'eliminates all live-CDN dependencies' },
   };
 }
 

@@ -299,11 +299,14 @@ function renderPlan(
     lines.push('');
     lines.push('**Findings detail:**');
     lines.push('');
-    lines.push('| ID | Priority | Effort | Dimension | Title |');
-    lines.push('|----|----------|--------|-----------|-------|');
+    lines.push('| ID | Priority | Effort | Dimension | Est. impact | Title |');
+    lines.push('|----|----------|--------|-----------|-------------|-------|');
     for (const f of phase.findings) {
+      const impact = f.estimatedImpact
+        ? `+${f.estimatedImpact.scorePoints} (${escapePipes(f.estimatedImpact.description)})`
+        : '—';
       lines.push(
-        `| ${f.id} | ${f.priority.toUpperCase()} | ${f.effort} | ${f.dimension} | ${escapePipes(f.title)} |`,
+        `| ${f.id} | ${f.priority.toUpperCase()} | ${f.effort} | ${f.dimension} | ${impact} | ${escapePipes(f.title)} |`,
       );
     }
     lines.push('');
