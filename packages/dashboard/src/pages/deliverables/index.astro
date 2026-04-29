@@ -27,7 +27,7 @@ const clients = listClients().filter(c => c.hasDesignBrief || c.overallScore !==
           </div>
           <div class="dc-links">
             {c.overallScore !== null && (
-              <a href={`/deliverables/${c.config.slug}/audit-report`} class="dc-link">
+              <a href={`/deliverables/${c.config.slug}`} class="dc-link">
                 <span>Audit Report</span>
                 <span class="score-num dc-score">{c.overallScore}</span>
               </a>

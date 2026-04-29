@@ -1,0 +1,78 @@
+---
+import DeliverableLayout from './DeliverableLayout.astro';
+
+export type ReportTab = 'overview' | 'scorecard' | 'findings' | 'next-steps';
+
+export interface Props {
+  slug: string;
+  clientName: string;
+  currentTab: ReportTab;
+  title: string;
+}
+
+const { slug, clientName, currentTab, title } = Astro.props;
+
+const tabs: Array<{ id: ReportTab; label: string; href: string }> = [
+  { id: 'overview',   label: 'Overview',   href: `/deliverables/${slug}` },
+  { id: 'scorecard',  label: 'Scorecard',  href: `/deliverables/${slug}/scorecard` },
+  { id: 'findings',   label: 'Findings',   href: `/deliverables/${slug}/findings` },
+  { id: 'next-steps', label: 'Next steps', href: `/deliverables/${slug}/next-steps` },
+];
+---
+
+<DeliverableLayout
+  title={title}
+  clientName={clientName}
+  docType="Audit Report"
+  slug={slug}
+>
+  <nav class="report-tabs no-print" aria-label="Report sections">
+    {tabs.map(t => (
+      <a
+        href={t.href}
+        class:list={['report-tab', { 'report-tab-active': t.id === currentTab }]}
+        aria-current={t.id === currentTab ? 'page' : undefined}
+      >
+        {t.label}
+      </a>
+    ))}
+  </nav>
+
+  <slot />
+</DeliverableLayout>
+
+<style>
+  .report-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .report-tab {
+    padding: 0.5rem 0.875rem;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    transition: color var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out),
+                background var(--dur-fast) var(--ease-out);
+  }
+
+  .report-tab:hover {
+    color: var(--accent);
+  }
+
+  .report-tab-active {
+    color: var(--accent);
+    border-color: var(--accent-20);
+    background: var(--accent-05);
+  }
+</style>

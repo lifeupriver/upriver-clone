@@ -1,0 +1,295 @@
+---
+import ReportLayout from '@/layouts/ReportLayout.astro';
+import {
+  readClientConfig,
+  readAuditPasses,
+  readAuditSummary,
+  clientExists,
+} from '@/lib/fs-reader';
+import { readAuditPackage, readExecutiveSummary } from '@/lib/report-reader';
+
+const { slug } = Astro.params;
+
+if (!slug || !clientExists(slug)) {
+  return Astro.redirect('/clients');
+}
+
+const config = readClientConfig(slug)!;
+const summary = readAuditSummary(slug);
+const passes = readAuditPasses(slug);
+const auditPackage = readAuditPackage(slug);
+
+if (!auditPackage) {
+  return Astro.redirect('/clients');
+}
+
+const executiveSummary = readExecutiveSummary(slug);
+
+const date = new Date().toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const totalFindings = summary?.total_findings ?? auditPackage.meta.totalFindings;
+const p0Count = summary?.p0_count ?? auditPackage.meta.findingsByPriority.p0;
+const overall = summary?.overall ?? auditPackage.meta.overallScore;
+
+const dimensionsBelowThreshold = passes.filter(p => p.score < 80).length;
+
+/**
+ * Split a markdown body on `\n## ` boundaries so each chunk represents a
+ * leading heading followed by its prose. The first chunk may be a preamble
+ * with no heading.
+ */
+interface NarrativeBlock {
+  heading: string | null;
+  body: string;
+}
+
+function splitNarrative(md: string): NarrativeBlock[] {
+  const trimmed = md.trim();
+  if (trimmed.length === 0) return [];
+  const parts = trimmed.split(/\n## /);
+  const blocks: NarrativeBlock[] = [];
+  parts.forEach((part, idx) => {
+    if (idx === 0) {
+      // Preamble may already start with `## `; strip it consistently.
+      const cleaned = part.replace(/^##\s+/, '');
+      const firstNl = cleaned.indexOf('\n');
+      if (/^[A-Z]/.test(cleaned) && firstNl > 0 && firstNl < 120) {
+        blocks.push({
+          heading: cleaned.slice(0, firstNl).trim(),
+          body: cleaned.slice(firstNl + 1).trim(),
+        });
+      } else {
+        blocks.push({ heading: null, body: cleaned.trim() });
+      }
+      return;
+    }
+    const firstNl = part.indexOf('\n');
+    if (firstNl === -1) {
+      blocks.push({ heading: part.trim(), body: '' });
+    } else {
+      blocks.push({
+        heading: part.slice(0, firstNl).trim(),
+        body: part.slice(firstNl + 1).trim(),
+      });
+    }
+  });
+  return blocks.filter(b => (b.heading && b.heading.length > 0) || b.body.length > 0);
+}
+
+const narrativeBlocks = executiveSummary ? splitNarrative(executiveSummary) : [];
+---
+
+<ReportLayout
+  slug={slug}
+  clientName={config.name}
+  currentTab="overview"
+  title={`${config.name} — Audit Report`}
+>
+  <section class="hero">
+    <span class="eyebrow">Website Audit</span>
+    <h1 class="hero-title">{config.name}</h1>
+    <p class="mono hero-url">{config.url}</p>
+    <p class="hero-meta">
+      <span>{date}</span>
+      <span class="hero-sep">·</span>
+      <span>Audit prepared by Upriver</span>
+    </p>
+    <div class="hero-score-wrap">
+      <span class="eyebrow">Overall score</span>
+      <span class="hero-score score-num">{overall}</span>
+    </div>
+  </section>
+
+  {/* TODO(roadmap): A.4 replace with impact-metrics output */}
+  <section class="stats">
+    <div class="card stat-card">
+      <span class="stat-num score-num">{p0Count}</span>
+      <span class="stat-label">Critical issues blocking growth</span>
+    </div>
+    <div class="card stat-card">
+      <span class="stat-num score-num">{dimensionsBelowThreshold}</span>
+      <span class="stat-label">Dimensions below shippable threshold</span>
+    </div>
+    <div class="card stat-card">
+      <span class="stat-num score-num">{totalFindings}</span>
+      <span class="stat-label">Total opportunities identified</span>
+    </div>
+  </section>
+
+  <section class="narrative">
+    <span class="eyebrow">Executive summary</span>
+    {narrativeBlocks.length > 0 ? (
+      narrativeBlocks.map(block => (
+        <div class="narrative-block">
+          {block.heading && <h3>{block.heading}</h3>}
+          {block.body && <p>{block.body}</p>}
+        </div>
+      ))
+    ) : (
+      <p class="narrative-fallback">
+        Detailed narrative will appear here once synthesis completes.
+      </p>
+    )}
+  </section>
+
+  <section class="cta">
+    <div class="card cta-card">
+      <div class="cta-copy">
+        <h3>Ready to act on this?</h3>
+        <p>Walk through the recommended fixes and pick the scope that fits.</p>
+      </div>
+      <a href={`/deliverables/${slug}/next-steps`} class="cta-btn">
+        See what we'd do about it
+      </a>
+    </div>
+  </section>
+</ReportLayout>
+
+<style>
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-bottom: 2.5rem;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    letter-spacing: -0.025em;
+    margin: 0.25rem 0 0.25rem;
+  }
+
+  .hero-url {
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    margin: 0;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    margin: 0.25rem 0 1rem;
+  }
+
+  .hero-sep {
+    opacity: 0.6;
+  }
+
+  .hero-score-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .hero-score {
+    font-size: 4rem;
+    line-height: 1;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .stat-card {
+    padding: 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .stat-num {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+
+  .stat-label {
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    line-height: 1.4;
+  }
+
+  .narrative {
+    margin-bottom: 3rem;
+  }
+
+  .narrative .eyebrow {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .narrative-block {
+    margin-bottom: 1.5rem;
+    max-width: 72ch;
+  }
+
+  .narrative-block h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .narrative-block p {
+    color: var(--text-body);
+    font-size: var(--fs-body);
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+
+  .narrative-fallback {
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    max-width: 65ch;
+  }
+
+  .cta-card {
+    padding: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .cta-copy h3 {
+    margin-bottom: 0.25rem;
+  }
+
+  .cta-copy p {
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+  }
+
+  .cta-btn {
+    padding: 0.65rem 1.1rem;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    box-shadow: var(--shadow-btn-primary);
+    transition: background var(--dur-fast) var(--ease-out);
+  }
+
+  .cta-btn:hover {
+    background: var(--accent-hover);
+  }
+
+  @media print {
+    .hero { page-break-after: avoid; }
+    .stats, .narrative { page-break-inside: avoid; }
+  }
+</style>

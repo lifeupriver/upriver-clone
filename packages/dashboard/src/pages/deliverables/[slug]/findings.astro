@@ -1,0 +1,139 @@
+---
+import ReportLayout from '@/layouts/ReportLayout.astro';
+import ClientFindingCard from '@/components/astro/ClientFindingCard.astro';
+import { readClientConfig, readAuditPasses, clientExists } from '@/lib/fs-reader';
+import { readAuditPackage } from '@/lib/report-reader';
+import type { AuditFinding } from '@upriver/core';
+
+const { slug } = Astro.params;
+
+if (!slug || !clientExists(slug)) {
+  return Astro.redirect('/clients');
+}
+
+const config = readClientConfig(slug)!;
+const passes = readAuditPasses(slug);
+const auditPackage = readAuditPackage(slug);
+
+if (!auditPackage) {
+  return Astro.redirect('/clients');
+}
+
+const allFindings: AuditFinding[] = passes.flatMap(p => p.findings);
+
+const critical = allFindings.filter(f => f.priority === 'p0');
+const important = allFindings.filter(f => f.priority === 'p1');
+const polish = allFindings.filter(f => f.priority === 'p2');
+
+interface FindingGroup {
+  id: string;
+  title: string;
+  findings: AuditFinding[];
+}
+
+const groups: FindingGroup[] = [
+  { id: 'critical',  title: 'Critical — fix immediately',   findings: critical },
+  { id: 'important', title: 'Important — fix soon',         findings: important },
+  { id: 'polish',    title: "Polish — when there's time",   findings: polish },
+];
+---
+
+<ReportLayout
+  slug={slug}
+  clientName={config.name}
+  currentTab="findings"
+  title={`${config.name} — Findings`}
+>
+  <header class="page-header">
+    <span class="eyebrow">Findings</span>
+    <h1>What's holding your site back</h1>
+  </header>
+
+  <section class="intro">
+    <h2 class="section-h">What this means</h2>
+    <p>
+      We grade every site on {passes.length} dimensions. Items below are written for you, not for
+      engineers — pick the ones that match your priorities and we'll fix them.
+    </p>
+  </section>
+
+  {groups.map(group => (
+    <section class="finding-group" id={group.id}>
+      <div class="group-header">
+        <h2 class="group-title">{group.title}</h2>
+        <span class="pill pill-muted">{group.findings.length}</span>
+      </div>
+      {group.findings.length === 0 ? (
+        <p class="empty">No items here.</p>
+      ) : (
+        <div class="findings-list">
+          {group.findings.map(f => (
+            <ClientFindingCard finding={f} />
+          ))}
+        </div>
+      )}
+    </section>
+  ))}
+</ReportLayout>
+
+<style>
+  .page-header {
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    margin: 0.25rem 0 0.375rem;
+  }
+
+  .intro {
+    margin-bottom: 2.5rem;
+    max-width: 72ch;
+  }
+
+  .intro p {
+    color: var(--text-body);
+    font-size: var(--fs-body);
+    line-height: 1.7;
+  }
+
+  .section-h {
+    font-size: var(--fs-xxs);
+    margin-bottom: 0.75rem;
+  }
+
+  .finding-group {
+    margin-bottom: 3rem;
+  }
+
+  .group-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.625rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .group-title {
+    font-size: var(--fs-xxs);
+    margin: 0;
+  }
+
+  .findings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .empty {
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    font-style: italic;
+  }
+
+  @media print {
+    .finding-group {
+      page-break-inside: avoid;
+    }
+  }
+</style>

@@ -108,7 +108,7 @@ export function ScoreRadar({ scores, size = 260 }: Props) {
             fontSize="9"
             fontFamily="'JetBrains Mono', monospace"
             fill={MUTED}
-            textTransform="uppercase"
+            style={{ textTransform: 'uppercase' }}
           >
             {dim.toUpperCase()}
           </text>
