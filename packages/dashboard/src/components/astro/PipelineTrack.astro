@@ -15,7 +15,7 @@ const currentIdx = stageIndex(currentStage);
     const isActive   = idx === currentIdx;
     const isPending  = idx > currentIdx;
     return (
-      <div class="pipeline-step">
+      <div class="pipeline-step" data-stage={item.id}>
         <div class="step-connector" />
         <div class:list={['step-dot', { complete: isComplete, active: isActive, pending: isPending }]}>
           {isComplete && (
