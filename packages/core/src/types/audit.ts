@@ -24,6 +24,7 @@ export type AuditDimension =
   | 'links'
   | 'schema'
   | 'aeo'
+  | 'geo'
   | 'competitors'
   | 'local';
 

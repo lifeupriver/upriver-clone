@@ -5,6 +5,7 @@ export { run as runSales } from './sales/index.js';
 export { run as runLinks } from './links/index.js';
 export { run as runSchema } from './schema/index.js';
 export { run as runAeo } from './aeo/index.js';
+export { run as runGeo } from './geo/index.js';
 export { run as runLocal } from './local/index.js';
 export { run as runBacklinks } from './backlinks/index.js';
 export { run as runCompetitors } from './competitors/index.js';
