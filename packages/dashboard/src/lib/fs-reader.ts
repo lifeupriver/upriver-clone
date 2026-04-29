@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import type { ClientConfig } from '@upriver/core';
 import type { AuditFinding, AuditPassResult, ClientIntake } from '@upriver/core';
+import { assertLocalDataSource } from './data-source.js';
 import { detectStage, type PipelineStage } from './pipeline.js';
 
 export interface ClientSummary {
@@ -28,6 +29,7 @@ export interface AuditSummary {
 }
 
 export function getClientsBase(): string {
+  assertLocalDataSource();
   return process.env['UPRIVER_CLIENTS_DIR'] ?? join(process.cwd(), 'clients');
 }
 

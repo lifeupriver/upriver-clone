@@ -7,13 +7,11 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "start": "node dist/server/entry.mjs",
     "typecheck": "astro check",
     "clean": "rm -rf dist .astro node_modules/.astro"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.0",
-    "@astrojs/node": "^9.0.0",
     "@astrojs/react": "^4.2.0",
     "@tailwindcss/vite": "^4.0.0",
     "@types/react": "^18.3.0",
@@ -25,5 +23,8 @@
     "tailwindcss": "^4.0.0",
     "typescript": "^5.4.0",
     "yaml": "^2.4.0"
+  },
+  "devDependencies": {
+    "@astrojs/vercel": "^8.2.11"
   }
 }

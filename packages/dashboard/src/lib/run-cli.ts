@@ -2,6 +2,8 @@ import { existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { assertLocalDataSource } from './data-source.js';
+
 /**
  * Resolve the absolute path to the upriver CLI bin (`packages/cli/bin/run.js`).
  *
@@ -14,6 +16,7 @@ import { fileURLToPath } from 'node:url';
  * @throws Error if the bin cannot be located.
  */
 export function resolveUpriverBin(): string {
+  assertLocalDataSource();
   const thisFile = fileURLToPath(import.meta.url);
   // src/lib/run-cli.ts → src/lib → src → packages/dashboard
   const dashboardDir = resolve(dirname(thisFile), '..', '..');
