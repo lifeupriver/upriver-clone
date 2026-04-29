@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { BaseCommand } from '../base-command.js';
 import { clientDir } from '@upriver/core';
 import { contentStrategyPass } from '../deep-audit/passes/content-strategy/run.js';
+import { conversionPsychologyPass } from '../deep-audit/passes/conversion-psychology/run.js';
 import { claudeCliRunner, runDeepPass, type DeepPassSpec } from '../deep-audit/runner.js';
 import {
   runSeo,
@@ -45,6 +46,7 @@ const ALL_PASSES = [
  */
 const DEEP_PASSES: ReadonlyArray<DeepPassSpec<unknown>> = [
   contentStrategyPass as DeepPassSpec<unknown>,
+  conversionPsychologyPass as DeepPassSpec<unknown>,
 ];
 
 function gradeScore(score: number): string {
