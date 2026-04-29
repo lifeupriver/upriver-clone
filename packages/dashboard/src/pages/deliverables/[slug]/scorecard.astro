@@ -1,21 +1,20 @@
 ---
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
 import ReportLayout from '@/layouts/ReportLayout.astro';
 import DimensionScoreCard from '@/components/astro/DimensionScoreCard.astro';
 import { ScoreRadar } from '@/components/react/ScoreRadar';
-import { readClientConfig, readAuditPasses, clientExists, getClientsBase } from '@/lib/fs-reader';
+import { readClientConfig, readAuditPasses, clientExists } from '@/lib/fs-reader';
 import { readAuditPackage } from '@/lib/report-reader';
+import { resolveClientDataSource } from '@/lib/data-source';
 
 const { slug } = Astro.params;
 
-if (!slug || !clientExists(slug)) {
+if (!slug || !(await clientExists(slug))) {
   return Astro.redirect('/clients');
 }
 
-const config = readClientConfig(slug)!;
-const passes = readAuditPasses(slug);
-const auditPackage = readAuditPackage(slug);
+const config = (await readClientConfig(slug))!;
+const passes = await readAuditPasses(slug);
+const auditPackage = await readAuditPackage(slug);
 
 if (!auditPackage) {
   return Astro.redirect('/clients');
@@ -27,8 +26,6 @@ const topPages = [...auditPackage.siteStructure.pages]
   .sort((a, b) => b.wordCount - a.wordCount)
   .slice(0, 6);
 
-const clientsBase = getClientsBase();
-
 interface PageSnapshot {
   slug: string;
   title: string;
@@ -36,15 +33,15 @@ interface PageSnapshot {
   hasShot: boolean;
 }
 
-const snapshots: PageSnapshot[] = topPages.map(p => {
-  const shotPath = join(clientsBase, slug, 'screenshots', 'desktop', `${p.slug}.png`);
-  return {
+const ds = resolveClientDataSource();
+const snapshots: PageSnapshot[] = await Promise.all(
+  topPages.map(async (p) => ({
     slug: p.slug,
     title: p.title,
     url: p.url,
-    hasShot: existsSync(shotPath),
-  };
-});
+    hasShot: await ds.fileExists(slug, `screenshots/desktop/${p.slug}.png`),
+  })),
+);
 ---
 
 <ReportLayout

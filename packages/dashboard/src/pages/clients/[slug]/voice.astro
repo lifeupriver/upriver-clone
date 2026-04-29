@@ -5,15 +5,15 @@ import { readClientConfig, readMarkdownFile, clientExists } from '@/lib/fs-reade
 
 const { slug } = Astro.params;
 
-if (!slug || !clientExists(slug)) {
+if (!slug || !(await clientExists(slug))) {
   return Astro.redirect('/clients');
 }
 
-const config = readClientConfig(slug)!;
-const voice = readMarkdownFile(slug, 'docs/brand-voice-guide.md');
-const faqs = readMarkdownFile(slug, 'docs/faq-bank.md');
-const overrides = readMarkdownFile(slug, 'docs/aesthetic-overrides.md');
-const assets = readMarkdownFile(slug, 'docs/asset-gaps.md');
+const config = (await readClientConfig(slug))!;
+const voice = await readMarkdownFile(slug, 'docs/brand-voice-guide.md');
+const faqs = await readMarkdownFile(slug, 'docs/faq-bank.md');
+const overrides = await readMarkdownFile(slug, 'docs/aesthetic-overrides.md');
+const assets = await readMarkdownFile(slug, 'docs/asset-gaps.md');
 
 const tabs = [
   { id: 'voice', label: 'Brand Voice', content: voice },

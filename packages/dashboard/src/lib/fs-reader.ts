@@ -1,9 +1,8 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import type { ClientConfig } from '@upriver/core';
 import type { AuditFinding, AuditPassResult, ClientIntake } from '@upriver/core';
-import { assertLocalDataSource } from './data-source.js';
+
+import { resolveClientDataSource } from './data-source.js';
 import { detectStage, type PipelineStage } from './pipeline.js';
 
 export interface ClientSummary {
@@ -28,28 +27,23 @@ export interface AuditSummary {
   completed_at: string;
 }
 
-export function getClientsBase(): string {
-  assertLocalDataSource();
-  return process.env['UPRIVER_CLIENTS_DIR'] ?? join(process.cwd(), 'clients');
-}
-
-export function listClients(): ClientSummary[] {
-  const base = getClientsBase();
-  if (!existsSync(base)) return [];
-
-  const slugs = readdirSync(base, { withFileTypes: true })
-    .filter(d => d.isDirectory())
-    .map(d => d.name);
+export async function listClients(): Promise<ClientSummary[]> {
+  const ds = resolveClientDataSource();
+  const slugs = await ds.listClientSlugs();
 
   const results: ClientSummary[] = [];
 
   for (const slug of slugs) {
-    const config = readClientConfig(slug);
+    const config = await readClientConfig(slug);
     if (!config) continue;
 
-    const summary = readAuditSummary(slug);
-    const pipelineStage = detectStage(slug);
-    const slugBase = join(base, slug);
+    const summary = await readAuditSummary(slug);
+    const pipelineStage = await detectStage(slug);
+    const [hasDesignBrief, hasQaReport, hasLaunchChecklist] = await Promise.all([
+      ds.fileExists(slug, 'claude-design-brief.md'),
+      ds.fileExists(slug, 'qa-report.md'),
+      ds.fileExists(slug, 'launch-checklist.md'),
+    ]);
 
     results.push({
       config,
@@ -58,50 +52,49 @@ export function listClients(): ClientSummary[] {
       p0Count: summary?.p0_count ?? 0,
       p1Count: summary?.p1_count ?? 0,
       p2Count: summary?.p2_count ?? 0,
-      hasDesignBrief: existsSync(join(slugBase, 'claude-design-brief.md')),
-      hasQaReport: existsSync(join(slugBase, 'qa-report.md')),
-      hasLaunchChecklist: existsSync(join(slugBase, 'launch-checklist.md')),
+      hasDesignBrief,
+      hasQaReport,
+      hasLaunchChecklist,
     });
   }
 
-  return results.sort((a, b) =>
-    new Date(b.config.created_at).getTime() - new Date(a.config.created_at).getTime()
+  return results.sort(
+    (a, b) =>
+      new Date(b.config.created_at).getTime() - new Date(a.config.created_at).getTime(),
   );
 }
 
-export function readClientConfig(slug: string): ClientConfig | null {
-  const path = join(getClientsBase(), slug, 'client-config.yaml');
-  if (!existsSync(path)) return null;
+export async function readClientConfig(slug: string): Promise<ClientConfig | null> {
+  const text = await resolveClientDataSource().readClientFileText(slug, 'client-config.yaml');
+  if (!text) return null;
   try {
-    return parseYaml(readFileSync(path, 'utf8')) as ClientConfig;
+    return parseYaml(text) as ClientConfig;
   } catch {
     return null;
   }
 }
 
-export function readAuditSummary(slug: string): AuditSummary | null {
-  const path = join(getClientsBase(), slug, 'audit', 'summary.json');
-  if (!existsSync(path)) return null;
+export async function readAuditSummary(slug: string): Promise<AuditSummary | null> {
+  const text = await resolveClientDataSource().readClientFileText(slug, 'audit/summary.json');
+  if (!text) return null;
   try {
-    return JSON.parse(readFileSync(path, 'utf8')) as AuditSummary;
+    return JSON.parse(text) as AuditSummary;
   } catch {
     return null;
   }
 }
 
-export function readAuditPasses(slug: string): AuditPassResult[] {
-  const auditDir = join(getClientsBase(), slug, 'audit');
-  if (!existsSync(auditDir)) return [];
-
-  const files = readdirSync(auditDir).filter(
-    f => f.endsWith('.json') && f !== 'summary.json'
-  );
+export async function readAuditPasses(slug: string): Promise<AuditPassResult[]> {
+  const ds = resolveClientDataSource();
+  const files = await ds.listClientFiles(slug, 'audit');
+  const passFiles = files.filter(f => f.endsWith('.json') && f !== 'summary.json');
 
   const passes: AuditPassResult[] = [];
-  for (const file of files) {
+  for (const file of passFiles) {
+    const text = await ds.readClientFileText(slug, `audit/${file}`);
+    if (!text) continue;
     try {
-      const data = JSON.parse(readFileSync(join(auditDir, file), 'utf8')) as AuditPassResult;
-      passes.push(data);
+      passes.push(JSON.parse(text) as AuditPassResult);
     } catch {
       // skip malformed files
     }
@@ -110,37 +103,34 @@ export function readAuditPasses(slug: string): AuditPassResult[] {
   return passes.sort((a, b) => a.dimension.localeCompare(b.dimension));
 }
 
-export function readAllFindings(slug: string): AuditFinding[] {
-  return readAuditPasses(slug).flatMap(p => p.findings);
+export async function readAllFindings(slug: string): Promise<AuditFinding[]> {
+  const passes = await readAuditPasses(slug);
+  return passes.flatMap(p => p.findings);
 }
 
-export function readMarkdownFile(slug: string, filename: string): string | null {
-  const path = join(getClientsBase(), slug, filename);
-  if (!existsSync(path)) return null;
-  try {
-    return readFileSync(path, 'utf8');
-  } catch {
-    return null;
-  }
+export async function readMarkdownFile(
+  slug: string,
+  filename: string,
+): Promise<string | null> {
+  return resolveClientDataSource().readClientFileText(slug, filename);
 }
 
-export function clientExists(slug: string): boolean {
-  return existsSync(join(getClientsBase(), slug, 'client-config.yaml'));
+export async function clientExists(slug: string): Promise<boolean> {
+  return resolveClientDataSource().fileExists(slug, 'client-config.yaml');
 }
 
 /**
  * Read the persisted client intake for a slug.
  *
- * @param slug - Client slug (directory name under the clients base path).
+ * @param slug - Client slug.
  * @returns Parsed `ClientIntake`, or `null` if `intake.json` is missing or
- *          unparseable. The caller is responsible for treating `null` as
- *          "no intake yet" and rendering an empty form.
+ *          unparseable.
  */
-export function readIntake(slug: string): ClientIntake | null {
-  const path = join(getClientsBase(), slug, 'intake.json');
-  if (!existsSync(path)) return null;
+export async function readIntake(slug: string): Promise<ClientIntake | null> {
+  const text = await resolveClientDataSource().readClientFileText(slug, 'intake.json');
+  if (!text) return null;
   try {
-    return JSON.parse(readFileSync(path, 'utf8')) as ClientIntake;
+    return JSON.parse(text) as ClientIntake;
   } catch {
     return null;
   }
@@ -179,18 +169,17 @@ export interface FidelitySummary {
 /**
  * Read the clone-fidelity summary for a slug.
  *
- * Returns the parsed contents of `clients/<slug>/clone-qa/summary.json`,
- * or `null` if the file is missing or cannot be parsed. Callers should
- * treat `null` as "no fidelity scores yet" and render an empty state.
- *
- * @param slug - Client slug (directory name under the clients base path).
+ * @param slug - Client slug.
  * @returns Parsed `FidelitySummary`, or `null` if missing/invalid.
  */
-export function readFidelitySummary(slug: string): FidelitySummary | null {
-  const path = join(getClientsBase(), slug, 'clone-qa', 'summary.json');
-  if (!existsSync(path)) return null;
+export async function readFidelitySummary(slug: string): Promise<FidelitySummary | null> {
+  const text = await resolveClientDataSource().readClientFileText(
+    slug,
+    'clone-qa/summary.json',
+  );
+  if (!text) return null;
   try {
-    return JSON.parse(readFileSync(path, 'utf8')) as FidelitySummary;
+    return JSON.parse(text) as FidelitySummary;
   } catch {
     return null;
   }

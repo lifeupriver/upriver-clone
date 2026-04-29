@@ -8,14 +8,14 @@ import { detectStage } from '@/lib/pipeline';
 
 const { slug } = Astro.params;
 
-if (!slug || !clientExists(slug)) {
+if (!slug || !(await clientExists(slug))) {
   return Astro.redirect('/clients');
 }
 
-const config = readClientConfig(slug)!;
-const passes = readAuditPasses(slug);
-const summary = readAuditSummary(slug);
-const stage = detectStage(slug);
+const config = (await readClientConfig(slug))!;
+const passes = await readAuditPasses(slug);
+const summary = await readAuditSummary(slug);
+const stage = await detectStage(slug);
 
 const allFindings = passes.flatMap(p => p.findings);
 const p0Findings  = allFindings.filter(f => f.priority === 'p0');

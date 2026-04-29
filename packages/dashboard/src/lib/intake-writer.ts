@@ -1,7 +1,6 @@
-import { writeFileSync } from 'node:fs';
-import { join } from 'node:path';
 import type { ClientIntake } from '@upriver/core';
-import { getClientsBase } from './fs-reader.js';
+
+import { resolveClientDataSource } from './data-source.js';
 
 /**
  * Build a fresh, empty `ClientIntake` skeleton.
@@ -26,16 +25,17 @@ export function emptyIntake(): ClientIntake {
 }
 
 /**
- * Persist a `ClientIntake` to `clients/<slug>/intake.json`.
+ * Persist a `ClientIntake` to `clients/<slug>/intake.json` via the configured
+ * data source. The caller is responsible for ensuring the slug exists (in
+ * practice, the API handler checks `clientExists` first).
  *
- * Writes pretty-printed JSON synchronously; matches the rest of the dashboard's
- * sync IO style. The caller is responsible for ensuring the client directory
- * already exists (in practice, the API handler checks `clientExists` first).
- *
- * @param slug - Client slug (directory name under the clients base path).
+ * @param slug - Client slug.
  * @param intake - The intake document to persist.
  */
-export function writeIntake(slug: string, intake: ClientIntake): void {
-  const path = join(getClientsBase(), slug, 'intake.json');
-  writeFileSync(path, `${JSON.stringify(intake, null, 2)}\n`, 'utf8');
+export async function writeIntake(slug: string, intake: ClientIntake): Promise<void> {
+  await resolveClientDataSource().writeClientFile(
+    slug,
+    'intake.json',
+    `${JSON.stringify(intake, null, 2)}\n`,
+  );
 }

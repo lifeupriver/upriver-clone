@@ -1,21 +1,23 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
 import { readClientConfig, clientExists } from '@/lib/fs-reader';
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { resolveClientDataSource } from '@/lib/data-source';
 
 const { slug } = Astro.params;
 
-if (!slug || !clientExists(slug)) {
+if (!slug || !(await clientExists(slug))) {
   return Astro.redirect('/clients');
 }
 
-const config = readClientConfig(slug)!;
+const config = (await readClientConfig(slug))!;
 const port = config.dev_port ?? 4322;
 const previewUrl = `http://localhost:${port}/`;
 
-const repoPath = join(process.env.UPRIVER_CLIENTS_DIR ?? './clients', slug, 'repo');
-const repoExists = existsSync(repoPath);
+// Probe for a scaffolded repo. On the local data source this checks
+// clients/<slug>/repo/; on supabase it checks the bucket. Local-only
+// dev-server fetch below works regardless.
+const repoExists = await resolveClientDataSource().fileExists(slug, 'repo');
+const repoPath = `clients/${slug}/repo`;
 
 // Probe whether the dev server is up. Astro pages render server-side, so this
 // happens at request time. Short timeout — we don't want to stall the page.

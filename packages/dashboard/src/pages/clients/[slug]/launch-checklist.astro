@@ -5,12 +5,12 @@ import { readClientConfig, readMarkdownFile, clientExists } from '@/lib/fs-reade
 
 const { slug } = Astro.params;
 
-if (!slug || !clientExists(slug)) {
+if (!slug || !(await clientExists(slug))) {
   return Astro.redirect('/clients');
 }
 
-const config = readClientConfig(slug)!;
-const content = readMarkdownFile(slug, 'launch-checklist.md');
+const config = (await readClientConfig(slug))!;
+const content = await readMarkdownFile(slug, 'launch-checklist.md');
 ---
 
 <DashboardLayout title={`${config.name} — Launch Checklist`} section="clients">

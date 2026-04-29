@@ -142,13 +142,13 @@ export const GET: APIRoute = async ({ params }) => {
       headers: { 'content-type': 'application/json' },
     });
   }
-  if (!clientExists(slug)) {
+  if (!(await clientExists(slug))) {
     return new Response(JSON.stringify({ error: 'client not found' }), {
       status: 404,
       headers: { 'content-type': 'application/json' },
     });
   }
-  const intake = readIntake(slug);
+  const intake = await readIntake(slug);
   return new Response(JSON.stringify(intake ?? {}), {
     status: 200,
     headers: { 'content-type': 'application/json' },
@@ -171,7 +171,7 @@ export const POST: APIRoute = async ({ params, request }) => {
       headers: { 'content-type': 'application/json' },
     });
   }
-  if (!clientExists(slug)) {
+  if (!(await clientExists(slug))) {
     return new Response(JSON.stringify({ error: 'client not found' }), {
       status: 404,
       headers: { 'content-type': 'application/json' },
@@ -194,7 +194,7 @@ export const POST: APIRoute = async ({ params, request }) => {
     });
   }
 
-  const existing = readIntake(slug) ?? emptyIntake();
+  const existing = (await readIntake(slug)) ?? emptyIntake();
   const merged = mergeIntake(existing, parsed);
 
   const now = new Date().toISOString();
@@ -203,7 +203,7 @@ export const POST: APIRoute = async ({ params, request }) => {
     merged.submittedAt = now;
   }
 
-  writeIntake(slug, merged);
+  await writeIntake(slug, merged);
 
   return new Response(JSON.stringify(merged), {
     status: 200,

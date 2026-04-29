@@ -7,13 +7,13 @@ import type { AuditFinding } from '@upriver/core';
 
 const { slug } = Astro.params;
 
-if (!slug || !clientExists(slug)) {
+if (!slug || !(await clientExists(slug))) {
   return Astro.redirect('/clients');
 }
 
-const config = readClientConfig(slug)!;
-const passes = readAuditPasses(slug);
-const auditPackage = readAuditPackage(slug);
+const config = (await readClientConfig(slug))!;
+const passes = await readAuditPasses(slug);
+const auditPackage = await readAuditPackage(slug);
 
 if (!auditPackage) {
   return Astro.redirect('/clients');

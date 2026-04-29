@@ -7,13 +7,13 @@ import { readAuditPasses, readAuditSummary, readClientConfig, clientExists } fro
 
 const { slug } = Astro.params;
 
-if (!slug || !clientExists(slug)) {
+if (!slug || !(await clientExists(slug))) {
   return Astro.redirect('/clients');
 }
 
-const config = readClientConfig(slug)!;
-const passes = readAuditPasses(slug);
-const summary = readAuditSummary(slug);
+const config = (await readClientConfig(slug))!;
+const passes = await readAuditPasses(slug);
+const summary = await readAuditSummary(slug);
 
 if (passes.length === 0) {
   return Astro.redirect(`/clients/${slug}`);

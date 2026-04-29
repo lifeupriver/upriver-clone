@@ -1,9 +1,6 @@
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
-
 import { PIPELINE_STAGES, type PipelineStageId } from '@upriver/core/pipeline';
 
-import { getClientsBase } from './fs-reader.js';
+import { resolveClientDataSource } from './data-source.js';
 
 /**
  * Re-export the canonical stage list and id type from @upriver/core/pipeline.
@@ -19,26 +16,25 @@ export type PipelineStage = PipelineStageId;
 export { PIPELINE_STAGES };
 
 /**
- * Infer the current pipeline stage for a slug from the artifacts on disk.
- * Walks back from the latest possible stage so e.g. an existing audit doesn't
- * mask a fresh `fixes-plan.md`. Returns `'init'` when nothing has run yet.
- *
- * Server-only — uses node:fs.
+ * Infer the current pipeline stage for a slug from artifacts present in the
+ * configured data source. Walks back from the latest possible stage so e.g.
+ * an existing audit doesn't mask a fresh `fixes-plan.md`. Returns `'init'`
+ * when nothing has run yet.
  */
-export function detectStage(slug: string): PipelineStage {
-  const base = join(getClientsBase(), slug);
-  const has = (path: string) => existsSync(join(base, path));
-
-  if (has('launch-checklist.md')) return 'launch';
-  if (has('qa-report.md')) return 'qa';
-  if (has('fixes-plan.md')) return 'fixes-plan';
-  if (has('repo/package.json')) return 'clone';
-  if (has('repo')) return 'scaffold';
-  if (has('claude-design-brief.md')) return 'design-brief';
-  if (has('audit-package.json')) return 'synthesize';
-  if (has('audit/summary.json')) return 'audit';
-  if (has('pages')) return 'scrape';
-  if (has('site-map.json')) return 'discover';
+export async function detectStage(slug: string): Promise<PipelineStage> {
+  const ds = resolveClientDataSource();
+  // Probe artifacts from latest → earliest. Sequential is fine — most stages
+  // bail early in practice.
+  if (await ds.fileExists(slug, 'launch-checklist.md')) return 'launch';
+  if (await ds.fileExists(slug, 'qa-report.md')) return 'qa';
+  if (await ds.fileExists(slug, 'fixes-plan.md')) return 'fixes-plan';
+  if (await ds.fileExists(slug, 'repo/package.json')) return 'clone';
+  if (await ds.fileExists(slug, 'repo')) return 'scaffold';
+  if (await ds.fileExists(slug, 'claude-design-brief.md')) return 'design-brief';
+  if (await ds.fileExists(slug, 'audit-package.json')) return 'synthesize';
+  if (await ds.fileExists(slug, 'audit/summary.json')) return 'audit';
+  if (await ds.fileExists(slug, 'pages')) return 'scrape';
+  if (await ds.fileExists(slug, 'site-map.json')) return 'discover';
   return 'init';
 }
 

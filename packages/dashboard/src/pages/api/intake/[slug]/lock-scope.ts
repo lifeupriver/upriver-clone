@@ -1,9 +1,8 @@
-import { writeFileSync } from 'node:fs';
-import { join } from 'node:path';
 import type { APIRoute } from 'astro';
 import type { AuditFinding } from '@upriver/core';
-import { clientExists, getClientsBase, readAllFindings, readIntake } from '@/lib/fs-reader';
+import { clientExists, readAllFindings, readIntake } from '@/lib/fs-reader';
 import { readAuditPackage } from '@/lib/report-reader';
+import { resolveClientDataSource } from '@/lib/data-source';
 
 export const prerender = false;
 
@@ -128,14 +127,14 @@ export const POST: APIRoute = async ({ params, redirect }) => {
       headers: { 'content-type': 'application/json' },
     });
   }
-  if (!clientExists(slug)) {
+  if (!(await clientExists(slug))) {
     return new Response(JSON.stringify({ error: 'client not found' }), {
       status: 404,
       headers: { 'content-type': 'application/json' },
     });
   }
 
-  const intake = readIntake(slug);
+  const intake = await readIntake(slug);
   if (!intake) {
     return new Response(JSON.stringify({ error: 'No intake.json on disk for this client.' }), {
       status: 400,
@@ -164,12 +163,12 @@ export const POST: APIRoute = async ({ params, redirect }) => {
     });
   }
 
-  const findings = readAllFindings(slug);
+  const findings = await readAllFindings(slug);
   const findingsById = new Map<string, AuditFinding>(findings.map((f) => [f.id, f]));
 
   // Page titles come from audit-package.json when available; fall back to slug
   // strings on the headings so the doc is still useful pre-synthesize.
-  const pkg = readAuditPackage(slug);
+  const pkg = await readAuditPackage(slug);
   const pageTitlesBySlug = new Map<string, string>();
   if (pkg?.siteStructure?.pages) {
     for (const p of pkg.siteStructure.pages) {
@@ -188,12 +187,11 @@ export const POST: APIRoute = async ({ params, redirect }) => {
     pageTitlesBySlug,
   );
 
-  const outPath = join(getClientsBase(), slug, 'fixes-plan-scope.md');
   try {
-    // Note: existsSync(outPath) intentionally not branched — this endpoint
-    // overwrites by design; the admin view shows a "Re-lock" warning when
-    // the file is already present.
-    writeFileSync(outPath, body, 'utf8');
+    // Note: existsSync intentionally not branched — this endpoint overwrites
+    // by design; the admin view shows a "Re-lock" warning when the file is
+    // already present.
+    await resolveClientDataSource().writeClientFile(slug, 'fixes-plan-scope.md', body);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return new Response(JSON.stringify({ error: `Failed to write scope: ${message}` }), {

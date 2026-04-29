@@ -1,16 +1,24 @@
 /**
- * Runtime data-source switch for Phase 1 of the Option B migration.
+ * Runtime data-source switch for the Option B migration.
  *
- * `local` (default) keeps the operator-laptop behavior: the dashboard reads
- * `clients/<slug>/` from the working directory and shells out to the local
- * `upriver` CLI bin.
+ * `local` keeps the operator-laptop behavior: read `clients/<slug>/` from
+ * the working directory and shell out to the local `upriver` CLI bin.
  *
- * `supabase` is the Phase 2 path. Until that lands, every filesystem-touching
- * code path calls `assertLocalDataSource()` which throws
- * `DataSourceUnavailableError`. The Astro middleware translates that error
- * into a 503 with a clear placeholder so a Vercel deploy doesn't surface
- * confusing ENOENT stack traces.
+ * `supabase` (used on Vercel) reads/writes via the Supabase Storage bucket
+ * configured by `UPRIVER_SUPABASE_*` env vars.
+ *
+ * `assertLocalDataSource()` still exists to gate code paths that haven't
+ * been ported off the local filesystem yet — primarily `run-cli.ts`, which
+ * spawns the CLI as a child process. Phase 3 replaces that with a
+ * worker-platform enqueue.
  */
+import {
+  LocalFsClientDataSource,
+  SupabaseClientDataSource,
+  createSupabaseClientDataSourceFromEnv,
+  type ClientDataSource,
+} from '@upriver/core/data';
+
 export type DataSource = 'local' | 'supabase';
 
 export function getDataSource(): DataSource {
@@ -31,13 +39,43 @@ export class DataSourceUnavailableError extends Error {
   }
 }
 
+/**
+ * Throw `DataSourceUnavailableError` if the current source isn't `local`.
+ * Used by code paths (CLI subprocess spawning) that have no Supabase
+ * equivalent yet — Phase 3 will replace those with a worker-platform
+ * enqueue.
+ */
 export function assertLocalDataSource(): void {
   const source = getDataSource();
   if (source !== 'local') {
     throw new DataSourceUnavailableError(
       source,
-      'Phase 2 of OPTION-B-MIGRATION.md will implement the Supabase data source. ' +
-        'Until then, set UPRIVER_DATA_SOURCE=local (or unset).',
+      'This code path requires the local CLI subprocess. Phase 3 of ' +
+        'OPTION-B-MIGRATION.md will replace it with a worker-platform enqueue.',
     );
   }
 }
+
+let cached: ClientDataSource | null = null;
+
+/**
+ * Resolve and memoize a `ClientDataSource` for the current data source.
+ * Cached for the lifetime of the module — both implementations are stateless
+ * apart from the underlying client instance.
+ */
+export function resolveClientDataSource(): ClientDataSource {
+  if (cached) return cached;
+  const source = getDataSource();
+  cached = source === 'supabase'
+    ? createSupabaseClientDataSourceFromEnv()
+    : new LocalFsClientDataSource();
+  return cached;
+}
+
+/** Test/dev helper: drop the cached instance so the next resolve re-reads env. */
+export function resetClientDataSource(): void {
+  cached = null;
+}
+
+export { SupabaseClientDataSource, LocalFsClientDataSource };
+export type { ClientDataSource };

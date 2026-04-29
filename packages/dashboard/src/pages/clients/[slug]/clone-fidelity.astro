@@ -9,12 +9,12 @@ import {
 
 const { slug } = Astro.params;
 
-if (!slug || !clientExists(slug)) {
+if (!slug || !(await clientExists(slug))) {
   return Astro.redirect('/clients');
 }
 
-const config = readClientConfig(slug)!;
-const summary = readFidelitySummary(slug);
+const config = (await readClientConfig(slug))!;
+const summary = await readFidelitySummary(slug);
 
 type FidelityPage = FidelitySummary['pages'][number];
 

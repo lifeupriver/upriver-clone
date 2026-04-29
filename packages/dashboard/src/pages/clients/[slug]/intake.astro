@@ -1,15 +1,13 @@
 ---
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
 import {
   clientExists,
-  getClientsBase,
   readAllFindings,
   readClientConfig,
   readIntake,
 } from '@/lib/fs-reader';
 import { clientFacingPriority } from '@/lib/report-reader';
+import { resolveClientDataSource } from '@/lib/data-source';
 import type { AuditFinding, FindingDecision } from '@upriver/core';
 
 // Server-rendered admin view of the persisted client intake. Operator-facing:
@@ -18,17 +16,16 @@ import type { AuditFinding, FindingDecision } from '@upriver/core';
 
 const { slug } = Astro.params;
 
-if (!slug || !clientExists(slug)) {
+if (!slug || !(await clientExists(slug))) {
   return Astro.redirect('/clients');
 }
 
-const config = readClientConfig(slug)!;
-const intake = readIntake(slug);
-const findings = readAllFindings(slug);
+const config = (await readClientConfig(slug))!;
+const intake = await readIntake(slug);
+const findings = await readAllFindings(slug);
 const findingsById = new Map<string, AuditFinding>(findings.map((f) => [f.id, f]));
 
-const scopeMdPath = join(getClientsBase(), slug, 'fixes-plan-scope.md');
-const scopeAlreadyLocked = existsSync(scopeMdPath);
+const scopeAlreadyLocked = await resolveClientDataSource().fileExists(slug, 'fixes-plan-scope.md');
 
 // Decision row sort order: fix → discuss → skip, then by priority (p0/p1/p2),
 // then by id for stability.

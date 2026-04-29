@@ -2,7 +2,7 @@
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
 import { listClients } from '@/lib/fs-reader';
 
-const clients = listClients().filter(c => c.hasDesignBrief || c.overallScore !== null);
+const clients = (await listClients()).filter(c => c.hasDesignBrief || c.overallScore !== null);
 ---
 
 <DashboardLayout title="Deliverables" section="deliverables">

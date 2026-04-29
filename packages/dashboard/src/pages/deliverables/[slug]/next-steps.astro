@@ -6,18 +6,18 @@ import { readAuditPackage } from '@/lib/report-reader';
 
 const { slug } = Astro.params;
 
-if (!slug || !clientExists(slug)) {
+if (!slug || !(await clientExists(slug))) {
   return Astro.redirect('/clients');
 }
 
-const config = readClientConfig(slug)!;
-const auditPackage = readAuditPackage(slug);
+const config = (await readClientConfig(slug))!;
+const auditPackage = await readAuditPackage(slug);
 
 if (!auditPackage) {
   return Astro.redirect('/clients');
 }
 
-const existingIntake = readIntake(slug) ?? undefined;
+const existingIntake = (await readIntake(slug)) ?? undefined;
 
 const mappedFindings = auditPackage.findings.map(f => ({
   id: f.id,

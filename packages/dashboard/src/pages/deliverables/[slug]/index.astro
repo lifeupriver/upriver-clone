@@ -11,20 +11,20 @@ import { readAuditPackage, readExecutiveSummary } from '@/lib/report-reader';
 
 const { slug } = Astro.params;
 
-if (!slug || !clientExists(slug)) {
+if (!slug || !(await clientExists(slug))) {
   return Astro.redirect('/clients');
 }
 
-const config = readClientConfig(slug)!;
-const summary = readAuditSummary(slug);
-const passes = readAuditPasses(slug);
-const auditPackage = readAuditPackage(slug);
+const config = (await readClientConfig(slug))!;
+const summary = await readAuditSummary(slug);
+const passes = await readAuditPasses(slug);
+const auditPackage = await readAuditPackage(slug);
 
 if (!auditPackage) {
   return Astro.redirect('/clients');
 }
 
-const executiveSummary = readExecutiveSummary(slug);
+const executiveSummary = await readExecutiveSummary(slug);
 
 const date = new Date().toLocaleDateString('en-US', {
   year: 'numeric',

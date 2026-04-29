@@ -1,20 +1,22 @@
-import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import type { AuditPackage } from '@upriver/core';
 import type { FindingPriority } from '@upriver/core';
-import { getClientsBase } from './fs-reader.js';
+
+import { resolveClientDataSource } from './data-source.js';
 
 /**
  * Read the full audit-package.json for a client.
  *
- * @param slug - Client slug (directory name under the clients base path).
+ * @param slug - Client slug.
  * @returns Parsed AuditPackage, or null if the file is missing or invalid JSON.
  */
-export function readAuditPackage(slug: string): AuditPackage | null {
-  const path = join(getClientsBase(), slug, 'audit-package.json');
-  if (!existsSync(path)) return null;
+export async function readAuditPackage(slug: string): Promise<AuditPackage | null> {
+  const text = await resolveClientDataSource().readClientFileText(
+    slug,
+    'audit-package.json',
+  );
+  if (!text) return null;
   try {
-    return JSON.parse(readFileSync(path, 'utf8')) as AuditPackage;
+    return JSON.parse(text) as AuditPackage;
   } catch {
     return null;
   }
@@ -35,28 +37,16 @@ export function readAuditPackage(slug: string): AuditPackage | null {
  * @param slug - Client slug.
  * @returns Markdown body, or null if no source is available.
  */
-export function readExecutiveSummary(slug: string): string | null {
-  const base = getClientsBase();
-  const direct = join(base, slug, 'executive-summary.md');
-  if (existsSync(direct)) {
-    try {
-      return readFileSync(direct, 'utf8');
-    } catch {
-      // fall through to the brand-voice-guide fallback
-    }
-  }
+export async function readExecutiveSummary(slug: string): Promise<string | null> {
+  const ds = resolveClientDataSource();
 
-  const fallback = join(base, slug, 'docs', 'brand-voice-guide.md');
-  if (!existsSync(fallback)) return null;
+  const direct = await ds.readClientFileText(slug, 'executive-summary.md');
+  if (direct) return direct;
 
-  let raw: string;
-  try {
-    raw = readFileSync(fallback, 'utf8');
-  } catch {
-    return null;
-  }
+  const fallback = await ds.readClientFileText(slug, 'docs/brand-voice-guide.md');
+  if (!fallback) return null;
 
-  const lines = raw.split('\n');
+  const lines = fallback.split('\n');
   const startIdx = lines.findIndex(
     (l) => /^##\s+executive\s+summary\b/i.test(l) || /^##\s+what['’]s\s+working\b/i.test(l),
   );
