@@ -38,7 +38,14 @@ export type AuditDimension =
   | 'aeo'
   | 'geo'
   | 'competitors'
-  | 'local';
+  | 'local'
+  | 'web-quality'
+  | 'core-web-vitals'
+  | 'accessibility'
+  | 'audit-website'
+  | 'analytics'
+  | 'cross-browser'
+  | 'trust-signals';
 
 export interface AuditPassResult {
   dimension: AuditDimension;
