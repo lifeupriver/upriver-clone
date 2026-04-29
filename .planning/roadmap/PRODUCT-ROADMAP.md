@@ -1,6 +1,8 @@
 # Upriver: workflow, CLI, and product improvements
 
-> **Status as of 2026-04-29 (post-implementation).** Most items are shipped. See `DRIFT-REPORT.md` for the gap analysis between this spec and what actually landed. Per-section status banners below mark each item ✅ shipped / ⚠️ partial / 🔧 drift / ❌ not done / 🚫 deferred. Where shipped reality diverges from this spec materially, the divergence is summarized inline; the original spec text is preserved unchanged for archeology.
+> **Status as of 2026-04-29 (post-implementation, post-merge).** Most items are shipped. See `DRIFT-REPORT.md` for the gap analysis between this spec and what actually landed. Per-section status banners below mark each item ✅ shipped / ⚠️ partial / 🔧 drift / ❌ not done / 🚫 deferred. Where shipped reality diverges from this spec materially, the divergence is summarized inline; the original spec text is preserved unchanged for archeology.
+>
+> **Beyond-roadmap addition (`ff2fd67`):** a parallel branch landed 9 tooling-driven deep passes — `design-deep`, `web-quality` (Lighthouse), `audit-website` (squirrelscan), `accessibility-deep`, `cwv-deep`, `analytics-tracking`, `trust-signals`, `cross-browser`, plus `runPreflight` — under a separate `--deep` boolean flag. Distinct from the C.3–C.5 LLM-driven `--mode=deep|all` track. Both coexist; details in `DRIFT-REPORT.md` addendum.
 
 ## Context
 
@@ -124,11 +126,12 @@ The dependency arrows are real but loose: A and B can ship before C; D unlocks E
 
 ## C. Audit depth + GEO/AEO expansion
 
-> **Status: shipped with drift.** C.1 ⚠️ C.2 ⚠️ C.3 ✅ C.4 ✅ C.5 ⚠️ C.6 🔧 C.7 🔧.
+> **Status: shipped with drift.** C.1 ⚠️ C.2 ⚠️ C.3 ✅ C.4 ✅ C.5 ⚠️ C.6 🔧 C.7 🔧. Surface widened by `ff2fd67` — see beyond-roadmap note in document banner.
 >
-> - **C.1 geo, C.2 typography:** narrower than spec — covers the high-value checks (TL;DR/llms.txt/factoids/disambiguation; hierarchy/font-count/scale-ratio) but skips the longer-tail checks listed below.
+> - **C.1 geo:** narrower than spec — TL;DR/llms.txt/factoids/disambiguation present; chunk-level semantic completeness, Wikipedia/Wikidata presence, citation-friendly anchor text not implemented.
+> - **C.2 typography:** narrower than spec on its own (hierarchy/font-count/scale-ratio only), but the spec's font/web-quality/FOUT-adjacent gaps are partially closed by the merged `accessibility-deep` and `web-quality` passes. Explicit pairing critique still missing.
 > - **C.5 competitor-deep:** assumes `<clientDir>/competitors/*.json` is already populated; spec wanted the pass to scrape competitors itself via Firecrawl.
-> - **C.6 flag name drift:** shipped as `--mode=base|deep|all`, not `--audit-mode=sales|operator`. Same functional split, different vocabulary. Decide which name wins.
+> - **C.6 flag name drift:** shipped as `--mode=base|deep|all`, not `--audit-mode=sales|operator`. Now also has a sibling `--deep` boolean (legacy from merge) that runs a different set of passes. Two-flag UX worth consolidating.
 > - **C.7 schema drift:** shipped as `{scorePoints, description}`, not `{metric, magnitude, rationale}`. Different shape entirely; A.4's report hero uses a parallel impact-metrics path instead.
 
 **Problem.** The 10 base passes (`packages/audit-passes/src/{seo,content,design,sales,links,schema,aeo,local,backlinks,competitors}/index.ts`) are heuristic and quick. The 8 deep passes (`packages/cli/src/deep-audit/passes/`) are LLM-driven and gated behind `--deep`. Coverage is good but missing categories the user named: **GEO** (generative engine optimization, distinct from AEO), **typography depth**, **content strategy / keyword opportunity**, **conversion psychology**, and **competitor side-by-side**.

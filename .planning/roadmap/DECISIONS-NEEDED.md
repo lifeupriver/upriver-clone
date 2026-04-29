@@ -5,8 +5,12 @@ further. Grouped by what unblocks. Each item has: what's at stake, the
 options, a recommendation where I have one, and exactly what answer I
 need from you.
 
-If you can answer 5 minutes' worth, items 1–4 alone unblock most of
-what's left.
+If you can answer 5 minutes' worth, items 1–2 + 4–9 alone unblock most
+of what's left.
+
+**Updates since first draft:** Item 3 (push the branch) is now moot —
+`main` is synced with `origin/main` after your merge of `ff2fd67`.
+Items 14 and 15 are new, prompted by the merged work.
 
 ---
 
@@ -68,30 +72,12 @@ real win from migration.
 
 ---
 
-### 3. Push the 52-commit branch?
+### 3. ~~Push the 52-commit branch?~~ — RESOLVED
 
-**What's at stake.** All work since `0d8fdd2` (4 sub-sessions, 52
-commits) is local on `main`. `origin/main` is 52 commits behind.
-
-**Options:**
-- **(a) Fast-forward push to `origin/main`** — assumes nobody else has
-  pushed in the meantime. I'd verify with `git fetch origin` first. If
-  no divergence, `git push origin main`. **Destructive if there's been
-  remote work** — I won't do this without your explicit go-ahead.
-- **(b) Push as a feature branch** — `git push -u origin
-  roadmap/post-implementation` (or whatever name) and open a PR. Lets
-  you review the 52 commits before merging.
-- **(c) Split per workstream into separate branches/PRs.** I'd cherry-
-  pick or rebase-split so each workstream lands as its own PR. ~1 hour
-  of work; gives the cleanest review surface.
-- **(d) Hold.** Keep it all local until you're ready to review.
-
-**Recommendation:** (b) if you're going to review yourself, (c) if
-someone else is reviewing. (a) only if `origin/main` is genuinely
-abandoned and this is a solo project — in which case say so.
-
-**What I need from you:** which option (a/b/c/d), and if (b)/(c), what
-branch name(s) you'd like.
+**Status.** Moot. After this doc was first drafted, you pulled / merged
+`ff2fd67` from a parallel branch and `main` is now synced with
+`origin/main`. No remaining divergence to push. Future work follows
+whatever PR-vs-direct-push convention this repo uses.
 
 ---
 
@@ -294,13 +280,88 @@ deep passes).
 
 ---
 
+### 14. Two deep-pass flags — consolidate or keep separate?
+
+**What's at stake.** After the merge of `ff2fd67`, `audit.ts` has two
+flags that both trigger "deep" passes:
+
+- **`--mode=deep|all`** runs the C.3–C.5 LLM passes via the
+  `DEEP_PASSES` array + injectable `AgentRunner`. Three passes today:
+  `content-strategy`, `conversion-psychology`, `competitor-deep`.
+- **`--deep`** boolean runs 9 tooling-driven passes (`design-deep`,
+  `web-quality` Lighthouse, `audit-website` squirrelscan,
+  `accessibility-deep`, `cwv-deep`, `analytics-tracking`,
+  `trust-signals`, `cross-browser`).
+
+Both populate `passed[]`. An operator who wants "everything" runs
+`upriver audit <slug> --mode=all --deep`. That works but isn't
+intuitive.
+
+**Options:**
+- **(a) Keep both, document.** Two flags, two systems, operator
+  picks. Simplest from here. Add a note to `--help` clarifying.
+- **(b) Merge into one flag with values.** e.g.
+  `--mode=base|llm-deep|tooling-deep|all`. Consolidates UX; needs
+  a small refactor in `audit.ts` (~30 min).
+- **(c) Map `--deep` onto `--mode=tooling`.** Keep the boolean alias
+  but delegate to a unified `mode` enum internally. Backwards-compat
+  hatch for any existing scripts.
+
+**Recommendation:** (b) or (c). The two-flag UX will trip operators.
+(c) is the lowest-risk path — keeps existing `--deep` invocations
+working while adding the unified flag.
+
+**What I need from you:** option choice. If (b), pick the value names
+(my suggestion: `base | llm-deep | tooling-deep | all`). If (c), I'll
+keep the existing flag names and just consolidate the dispatch code.
+
+---
+
+### 15. Are the new tooling-driven passes part of the roadmap?
+
+**What's at stake.** `ff2fd67` shipped 9 tooling-driven deep passes
+(`design-deep`, `web-quality`, `audit-website`, `accessibility-deep`,
+`cwv-deep`, `analytics-tracking`, `trust-signals`, `cross-browser`)
+plus `runPreflight`. The original `PRODUCT-ROADMAP.md` doesn't
+mention them — they live outside Workstream C's named scope.
+
+This matters for two reasons:
+- **Drift report accuracy.** Currently I treat them as
+  "beyond-roadmap addition" in DRIFT-REPORT.md. If you consider them
+  part of the roadmap, several "narrower-than-spec" findings (C.2
+  typography, D.1 token-adherence) get reclassified as "covered by
+  adjacent passes."
+- **Future work.** If they're in scope, they need their own status
+  tracking, test coverage, and integration with `run all`. If
+  they're a one-off, they stay where they are.
+
+**Options:**
+- **(a) Add them as Workstream I.** "I. Tooling-driven deep audit"
+  with each of the 9 passes as a numbered sub-item. Future drift
+  audits track them alongside A–H.
+- **(b) Fold into Workstream C as C.8–C.16.** They're audit depth,
+  which is exactly what C is about. Makes C a much bigger workstream.
+- **(c) Treat as out-of-roadmap.** They live in
+  `packages/cli/src/deep-audit/` and are tracked by code review only.
+  Roadmap stays focused on the original product narrative.
+
+**Recommendation:** (a). The 9 passes are coherent enough to be their
+own workstream and fit awkwardly inside C. New workstream gives a
+clean home for follow-on items (G.4 consolidation, run-all
+integration, the `--deep` UX decision in #14).
+
+**What I need from you:** option choice (a/b/c). If (a), I'll draft a
+Workstream I block for `PRODUCT-ROADMAP.md`.
+
+---
+
 ## How I'd recommend you triage these
 
-If you have **5 minutes:** answer #1, #2, #6, #7, #9. All trivial,
-all unblock real downstream work.
+If you have **5 minutes:** answer #1, #2, #6, #7, #9, #14. All
+trivial, all unblock real downstream work.
 
-If you have **15 minutes:** add #3 (push decision), #4 (report host),
-#5 (SMTP provider), #8 (run token).
+If you have **15 minutes:** add #4 (report host), #5 (SMTP provider),
+#8 (run token), #15 (roadmap scope for new passes).
 
 If you have **a meeting's worth:** add #10–#13. These are real
 architecture calls, but each one is a single hour of my work once

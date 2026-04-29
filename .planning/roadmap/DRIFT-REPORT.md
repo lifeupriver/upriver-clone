@@ -113,3 +113,73 @@ These are fine but worth documenting so future readers don't assume the wiring e
 5. **Document the F.5 / F.6 / E.5 partial state.** All three are blocked on user decisions. They're called out in HANDOFF.md but not in the roadmap itself.
 
 The work is solid; the gaps are mostly naming/coverage/wiring, not missing functionality. Spending an hour on items 1–5 above gets the spec and reality in sync.
+
+---
+
+## Addendum (post-merge of `ff2fd67`)
+
+After the original audit was written, a parallel branch landed via `ff2fd67`
+("Add web-audit & accessibility skills and deep-audit CLI"). The merge had
+unresolved `<<<<<<<` markers in `audit.ts`; resolved in `7fd13a7` by keeping
+both deep-pass tracks — they describe non-overlapping systems.
+
+**New work delivered by the merge.**
+
+- 9 tooling-driven deep passes under `packages/cli/src/deep-audit/passes/`:
+  `design-deep`, `web-quality` (Lighthouse), `audit-website` (squirrelscan),
+  `accessibility-deep`, `cwv-deep`, `analytics-tracking`, `trust-signals`,
+  `cross-browser`, plus `runPreflight` for binary/skill availability checks.
+- Shared infrastructure: `parse-findings.ts`, `skill-loader.ts`, `sample.ts`,
+  and a generic `skill-pass.ts` runner.
+- 7 new `AuditDimension` values: `web-quality`, `core-web-vitals`,
+  `accessibility`, `audit-website`, `analytics`, `cross-browser`,
+  `trust-signals`.
+- Legacy `--deep` boolean flag on `audit.ts`, distinct from `--mode=deep|all`.
+- `audit-passes/src/index.ts` now re-exports `loadPages`, `loadDesignTokens`,
+  `loadRawHtml` so deep passes can consume the shared loader.
+
+**How this changes the prior drift findings.**
+
+- **C.2 typography pass — narrower-than-spec gap partly closed.** The
+  spec wanted FOUT/FOIT risk and pairing critique; the new
+  `accessibility-deep` covers font-related a11y, and `web-quality`
+  (Lighthouse) covers FOUT-adjacent performance signals. The gap is now
+  smaller but not zero — explicit pairing critique still missing.
+- **D.1 clone fidelity — spec's token-adherence check now adjacent.**
+  `web-quality` runs Lighthouse against the cloned site; computed-style
+  checks against design tokens could land as a small extension of that
+  pass rather than a fresh implementation.
+- **G.4 SDK runner — no longer the only deep-pass runner.** The merged
+  passes call Anthropic directly via injected `Anthropic` clients
+  (preflight gates on `ANTHROPIC_API_KEY`). Two patterns coexist now:
+  the C.3-C.5 `AgentRunner` factory + the per-pass direct-Anthropic
+  pattern. Worth deciding whether to consolidate.
+
+**New drifts the merge introduced.**
+
+- **Two competing deep-pass systems.** `--mode=deep|all` runs the
+  C.3-C.5 LLM passes via `DEEP_PASSES` + `runAgent`. `--deep` runs the
+  9 tooling-driven passes via per-pass invocation. Both populate the
+  same `passed[]`; the operator has to know which flag triggers which
+  set. Minor UX friction, not a correctness bug.
+- **`audit.ts` description line is stale.** Header still says "Run all
+  10 audit passes concurrently" — actual count is 12 base + up to 12
+  deep (3 LLM + 9 tooling).
+- **`run all` orchestrator doesn't expose `--deep`.** Only
+  `--audit-mode` is plumbed through. Operators wanting tooling-driven
+  deep passes via the orchestrator have no way today.
+
+**No items missing** — the merge added new functionality on top of the
+existing roadmap surface; it didn't break or remove anything once the
+conflict resolved.
+
+**Updated recommendations:**
+
+1. Decide whether `--deep` and `--mode=deep|all` should remain
+   separate or merge into one flag (e.g., `--mode=deep|tooling|all`).
+2. Plumb the chosen flag(s) through `run all`.
+3. Update the audit command's description and the docstrings that
+   still say "10 passes".
+4. Decide whether the new tooling-driven passes need explicit roadmap
+   entries (they're not in the original C section) or whether they're
+   considered Workstream-out-of-scope.
