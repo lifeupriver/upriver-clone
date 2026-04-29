@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import type { ClientConfig } from '@upriver/core';
-import type { AuditFinding, AuditPassResult } from '@upriver/core';
+import type { AuditFinding, AuditPassResult, ClientIntake } from '@upriver/core';
 import { detectStage, type PipelineStage } from './pipeline.js';
 
 export interface ClientSummary {
@@ -124,4 +124,22 @@ export function readMarkdownFile(slug: string, filename: string): string | null 
 
 export function clientExists(slug: string): boolean {
   return existsSync(join(getClientsBase(), slug, 'client-config.yaml'));
+}
+
+/**
+ * Read the persisted client intake for a slug.
+ *
+ * @param slug - Client slug (directory name under the clients base path).
+ * @returns Parsed `ClientIntake`, or `null` if `intake.json` is missing or
+ *          unparseable. The caller is responsible for treating `null` as
+ *          "no intake yet" and rendering an empty form.
+ */
+export function readIntake(slug: string): ClientIntake | null {
+  const path = join(getClientsBase(), slug, 'intake.json');
+  if (!existsSync(path)) return null;
+  try {
+    return JSON.parse(readFileSync(path, 'utf8')) as ClientIntake;
+  } catch {
+    return null;
+  }
 }

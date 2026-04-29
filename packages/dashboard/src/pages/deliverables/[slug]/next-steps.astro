@@ -1,6 +1,7 @@
 ---
 import ReportLayout from '@/layouts/ReportLayout.astro';
-import { readClientConfig, clientExists } from '@/lib/fs-reader';
+import IntakeForm from '@/components/react/IntakeForm';
+import { readClientConfig, clientExists, readIntake } from '@/lib/fs-reader';
 import { readAuditPackage } from '@/lib/report-reader';
 
 const { slug } = Astro.params;
@@ -15,6 +16,20 @@ const auditPackage = readAuditPackage(slug);
 if (!auditPackage) {
   return Astro.redirect('/clients');
 }
+
+const existingIntake = readIntake(slug) ?? undefined;
+
+const mappedFindings = auditPackage.findings.map(f => ({
+  id: f.id,
+  title: f.title,
+  priority: f.priority,
+}));
+
+const mappedPages = auditPackage.siteStructure.pages.map(p => ({
+  slug: p.slug,
+  title: p.title,
+  url: p.url,
+}));
 
 interface ScopeTier {
   name: string;
@@ -44,9 +59,6 @@ const tiers: ScopeTier[] = [
     description: 'Everything in Rebuild plus a copy and SEO improvement layer.',
   },
 ];
-
-const intakeMailto =
-  `mailto:hello@upriver.com?subject=Audit%20intake%20for%20${encodeURIComponent(config.name)}`;
 ---
 
 <ReportLayout
@@ -73,16 +85,16 @@ const intakeMailto =
     ))}
   </section>
 
-  {/* TODO(roadmap): B replace with embedded IntakeForm */}
   <section class="intake">
     <div class="card intake-card">
-      <div class="intake-copy">
-        <h3>Tell us what to fix</h3>
-        <p>
-          Walk through the findings and mark which ones matter to you. Takes about 5 minutes.
-        </p>
-      </div>
-      <a href={intakeMailto} class="intake-btn">Start intake</a>
+      <IntakeForm
+        client:load
+        slug={slug}
+        clientName={config.name}
+        findings={mappedFindings}
+        pages={mappedPages}
+        initial={existingIntake}
+      />
     </div>
   </section>
 </ReportLayout>
@@ -143,43 +155,6 @@ const intakeMailto =
 
   .intake-card {
     padding: 1.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-  }
-
-  .intake-copy {
-    max-width: 48ch;
-  }
-
-  .intake-copy h3 {
-    margin-bottom: 0.25rem;
-  }
-
-  .intake-copy p {
-    color: var(--text-muted);
-    font-size: var(--fs-sm);
-    line-height: 1.6;
-  }
-
-  .intake-btn {
-    padding: 0.65rem 1.1rem;
-    background: var(--accent);
-    color: #fff;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-heading);
-    font-size: var(--fs-xs);
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    box-shadow: var(--shadow-btn-primary);
-    transition: background var(--dur-fast) var(--ease-out);
-  }
-
-  .intake-btn:hover {
-    background: var(--accent-hover);
   }
 
   @media print {
