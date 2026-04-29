@@ -14,6 +14,7 @@ import {
   FirecrawlClient,
   readClientConfig,
   clientDir,
+  ExtractedZ,
 } from '@upriver/core';
 import type {
   FirecrawlScrapeResult,
@@ -321,17 +322,34 @@ export default class Scrape extends BaseCommand {
       if (existsSync(pagePath)) {
         const existing = JSON.parse(readFileSync(pagePath, 'utf8')) as PageRecord;
         if (r.json) {
-          const j = r.json as Record<string, unknown>;
-          existing.extracted = {
-            ctaButtons: (j['ctaButtons'] as unknown[]) ?? [],
-            contact: j['contact'] ?? {},
-            teamMembers: (j['teamMembers'] as unknown[]) ?? [],
-            testimonials: (j['testimonials'] as unknown[]) ?? [],
-            faqs: (j['faqs'] as unknown[]) ?? [],
-            pricing: (j['pricing'] as unknown[]) ?? [],
-            socialLinks: (j['socialLinks'] as unknown[]) ?? [],
-            eventSpaces: (j['eventSpaces'] as unknown[]) ?? [],
-          };
+          // Validate Firecrawl's extraction against our Zod schema. Bad
+          // elements are dropped (rather than failing the whole page) so a
+          // malformed CTA doesn't lose all the testimonials too.
+          const parsed = ExtractedZ.safeParse(r.json);
+          if (parsed.success) {
+            existing.extracted = parsed.data as PageRecord['extracted'];
+          } else {
+            // Best-effort: take only the fields that pass schema validation,
+            // log the rest. PageRecord allows unknown[] so falling back keeps
+            // forward compatibility if Firecrawl adds new fields.
+            this.warn(
+              `  Schema validation failed for ${pageUrl}: ${parsed.error.issues
+                .slice(0, 3)
+                .map((i) => `${i.path.join('.')}: ${i.message}`)
+                .join('; ')}`,
+            );
+            const j = r.json as Record<string, unknown>;
+            existing.extracted = {
+              ctaButtons: (j['ctaButtons'] as unknown[]) ?? [],
+              contact: j['contact'] ?? {},
+              teamMembers: (j['teamMembers'] as unknown[]) ?? [],
+              testimonials: (j['testimonials'] as unknown[]) ?? [],
+              faqs: (j['faqs'] as unknown[]) ?? [],
+              pricing: (j['pricing'] as unknown[]) ?? [],
+              socialLinks: (j['socialLinks'] as unknown[]) ?? [],
+              eventSpaces: (j['eventSpaces'] as unknown[]) ?? [],
+            };
+          }
         }
         writeFileSync(pagePath, JSON.stringify(existing, null, 2), 'utf8');
       }

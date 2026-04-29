@@ -85,8 +85,12 @@ export class FirecrawlClient {
       try {
         mkdirSync(dirname(this.creditLogPath), { recursive: true });
         appendFileSync(this.creditLogPath, entry);
-      } catch {
-        // non-fatal
+      } catch (err) {
+        // Non-fatal — Supabase log below still captures the event. Surface
+        // the failure on stderr so misconfigured paths aren't silent.
+        console.warn(
+          `[firecrawl] failed to write credit log at ${this.creditLogPath}: ${err instanceof Error ? err.message : String(err)}`,
+        );
       }
     }
 

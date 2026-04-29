@@ -68,8 +68,10 @@ export function filterUnmatched(
       const u = new URL(url);
       const fn = decodeURIComponent(basename(u.pathname));
       if (filenameToLocal.has(fn)) continue;
-    } catch {
-      // unmatched
+    } catch (err) {
+      if (process.env['UPRIVER_DEBUG']) {
+        console.warn(`[download-missing] cannot parse URL ${url}: ${(err as Error).message}`);
+      }
     }
     unmatched.push(url);
   }

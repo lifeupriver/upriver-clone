@@ -4,6 +4,19 @@ export * from './types/firecrawl.js';
 export * from './types/audit.js';
 export * from './types/audit-package.js';
 export * from './types/extraction-schemas.js';
+export {
+  CtaButtonZ,
+  ContactZ,
+  TeamMemberZ,
+  TestimonialZ,
+  FaqZ,
+  PricingItemZ,
+  SocialLinkZ,
+  EventSpaceZ,
+  ExtractedZ,
+  coerceArray,
+} from './types/extraction-zod.js';
+export type { Extracted } from './types/extraction-zod.js';
 
 // Firecrawl
 export { FirecrawlClient } from './firecrawl/client.js';

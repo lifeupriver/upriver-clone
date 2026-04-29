@@ -41,8 +41,14 @@ export async function logUsageEvent(event: UsageEvent): Promise<void> {
         },
         body: JSON.stringify(record),
       });
-    } catch {
-      // non-fatal — local log still captures it
+    } catch (err) {
+      // Non-fatal — local credit log still captures it. Surface so a broken
+      // Supabase doesn't silently lose telemetry forever.
+      if (process.env['UPRIVER_DEBUG']) {
+        console.warn(
+          `[usage] supabase log failed: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
     }
   }
 }

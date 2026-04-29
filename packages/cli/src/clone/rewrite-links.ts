@@ -53,8 +53,10 @@ export function buildAssetIndex(manifestPath: string): {
       if (urlFilename && !filenameToLocal.has(urlFilename)) {
         filenameToLocal.set(urlFilename, localFilename);
       }
-    } catch {
-      // skip malformed URLs
+    } catch (err) {
+      if (process.env['UPRIVER_DEBUG']) {
+        console.warn(`[rewrite-links] skipping malformed manifest URL ${asset.url}: ${(err as Error).message}`);
+      }
     }
   }
 
@@ -122,8 +124,10 @@ export function rewriteContent(input: string, opts: RewriteOptions): RewriteResu
           const u = new URL(match);
           const filename = decodeURIComponent(basename(u.pathname));
           localFilename = opts.filenameToLocal.get(filename);
-        } catch {
-          // unmatched
+        } catch (err) {
+          if (process.env['UPRIVER_DEBUG']) {
+            console.warn(`[rewrite-links] could not parse CDN URL ${match}: ${(err as Error).message}`);
+          }
         }
       }
 

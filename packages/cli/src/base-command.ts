@@ -1,6 +1,7 @@
 import { Command } from '@oclif/core';
 import { readClientConfig } from '@upriver/core';
 import type { ClientConfig } from '@upriver/core';
+import { describeEnvVar } from './util/env.js';
 
 export abstract class BaseCommand extends Command {
   protected getConfig(slug: string): ClientConfig {
@@ -10,7 +11,7 @@ export abstract class BaseCommand extends Command {
   protected requireEnv(name: string): string {
     const val = process.env[name];
     if (!val) {
-      this.error(`Required environment variable ${name} is not set.`);
+      this.error(describeEnvVar(name));
     }
     return val;
   }

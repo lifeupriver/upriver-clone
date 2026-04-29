@@ -47,9 +47,17 @@ function loadCompetitorScrapes(clientDir: string): CompetitorData[] {
       try {
         const data = JSON.parse(readFileSync(join(competitorsDir, file), 'utf8')) as CompetitorData;
         results.push(data);
-      } catch { /* skip malformed */ }
+      } catch (err) {
+        if (process.env['UPRIVER_DEBUG']) {
+          console.warn(`[competitors] skipping malformed ${file}: ${(err as Error).message}`);
+        }
+      }
     }
-  } catch { /* dir may not exist */ }
+  } catch (err) {
+    if (process.env['UPRIVER_DEBUG']) {
+      console.warn(`[competitors] cannot read dir ${competitorsDir}: ${(err as Error).message}`);
+    }
+  }
   return results;
 }
 
