@@ -211,6 +211,8 @@ const snapshots: PageSnapshot[] = topPages.map(p => {
   }
 
   @media print {
+    body { background: white !important; color: #111 !important; }
+    .page-header { page-break-before: always; }
     .radar-section,
     .grid-section,
     .snapshots-section {

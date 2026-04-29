@@ -1,4 +1,3 @@
-import { spawn, type ChildProcess } from 'node:child_process';
 import {
   cpSync,
   existsSync,
@@ -6,14 +5,14 @@ import {
   readFileSync,
   writeFileSync,
 } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join, resolve } from 'node:path';
 
 import { Args, Flags } from '@oclif/core';
 import { clientDir } from '@upriver/core';
 
 import { BaseCommand } from '../../base-command.js';
 import { rewriteHtml } from './rewrite.js';
+import { findDashboardDir, withDashboardServer } from './server.js';
 
 interface RouteSpec {
   /** URL path appended to `/deliverables/<slug>`. Empty string for cover. */
@@ -83,90 +82,55 @@ export default class ReportBuild extends BaseCommand {
       );
     }
 
-    // b. Locate the dashboard dir.
-    const dashboardDir = this.findDashboardDir();
+    // b. Resolve the dashboard dir (used later for static asset copy).
+    const dashboardDir = findDashboardDir();
     if (!dashboardDir) {
       this.error(
         'Dashboard package not found. Run from the Upriver monorepo root with pnpm install completed.',
       );
     }
 
-    // c. Build the dashboard if needed.
-    const serverEntry = join(dashboardDir, 'dist', 'server', 'entry.mjs');
-    if (flags.rebuild || !existsSync(serverEntry)) {
-      this.log(`[report] Building dashboard (${dashboardDir})...`);
-      await this.runAstroBuild(dashboardDir);
-    }
-    if (!existsSync(serverEntry)) {
-      this.error(
-        `Dashboard build did not produce ${serverEntry}. Aborting.`,
-      );
-    }
-
-    // d. Spawn the SSR server.
-    const port = flags.port;
-    const baseUrl = `http://127.0.0.1:${port}`;
     const reportStaticDir = join(clientPath, 'report-static');
     mkdirSync(reportStaticDir, { recursive: true });
 
-    let server: ChildProcess | null = null;
-    try {
-      server = spawn('node', ['dist/server/entry.mjs'], {
-        cwd: dashboardDir,
-        env: {
-          ...process.env,
-          HOST: '127.0.0.1',
-          PORT: String(port),
-          UPRIVER_CLIENTS_DIR: clientsBase,
-        },
-        stdio: 'pipe',
-      });
-      drainStream(server, this);
-
-      // e. Wait for the server to come up.
-      const ready = await waitForUrl(`${baseUrl}/deliverables/${slug}`, 30_000);
-      if (!ready) {
-        throw new Error(
-          `SSR dashboard did not come up at ${baseUrl} within 30s.`,
-        );
-      }
-      this.log(`[report] SSR dashboard ready on ${baseUrl}.`);
-
-      // f. Fetch each route and save raw HTML.
-      const captured = new Map<string, string>();
-      for (const { route, filename } of ROUTES) {
-        const url = `${baseUrl}/deliverables/${slug}${route}`;
-        const res = await fetch(url);
-        if (!res.ok) {
-          throw new Error(
-            `Fetch failed for ${url}: HTTP ${res.status} ${res.statusText}`,
-          );
+    // c. Boot SSR dashboard, fetch each route, rewrite, and write to disk.
+    await withDashboardServer(
+      {
+        port: flags.port,
+        clientsDir: clientsBase,
+        rebuild: flags.rebuild,
+        log: (msg) => this.log(msg),
+      },
+      async (baseUrl) => {
+        const captured = new Map<string, string>();
+        for (const { route, filename } of ROUTES) {
+          const url = `${baseUrl}/deliverables/${slug}${route}`;
+          const res = await fetch(url);
+          if (!res.ok) {
+            throw new Error(
+              `Fetch failed for ${url}: HTTP ${res.status} ${res.statusText}`,
+            );
+          }
+          const html = await res.text();
+          captured.set(filename, html);
+          this.log(`[report] Captured ${url} → ${filename}`);
         }
-        const html = await res.text();
-        captured.set(filename, html);
-        this.log(`[report] Captured ${url} → ${filename}`);
-      }
 
-      // g. Rewrite + write each file.
-      const seenUnrewritten = new Set<string>();
-      for (const { filename } of ROUTES) {
-        const raw = captured.get(filename);
-        if (raw === undefined) continue;
-        const rewritten = rewriteHtml(raw, slug, (path) => {
-          if (seenUnrewritten.has(path)) return;
-          seenUnrewritten.add(path);
-          this.warn(`Unrewritten absolute path encountered: ${path}`);
-        });
-        writeFileSync(join(reportStaticDir, filename), rewritten, 'utf8');
-      }
-    } finally {
-      // h. Stop the SSR server.
-      if (server) {
-        await stopServer(server);
-      }
-    }
+        const seenUnrewritten = new Set<string>();
+        for (const { filename } of ROUTES) {
+          const raw = captured.get(filename);
+          if (raw === undefined) continue;
+          const rewritten = rewriteHtml(raw, slug, (path) => {
+            if (seenUnrewritten.has(path)) return;
+            seenUnrewritten.add(path);
+            this.warn(`Unrewritten absolute path encountered: ${path}`);
+          });
+          writeFileSync(join(reportStaticDir, filename), rewritten, 'utf8');
+        }
+      },
+    );
 
-    // i. Copy `_astro` client bundle.
+    // d. Copy `_astro` client bundle.
     const astroSrc = join(dashboardDir, 'dist', 'client', '_astro');
     const astroDst = join(reportStaticDir, '_astro');
     if (existsSync(astroSrc)) {
@@ -178,13 +142,13 @@ export default class ReportBuild extends BaseCommand {
       );
     }
 
-    // j. Favicon (best-effort).
+    // e. Favicon (best-effort).
     const faviconSrc = join(dashboardDir, 'dist', 'client', 'favicon.svg');
     if (existsSync(faviconSrc)) {
       cpSync(faviconSrc, join(reportStaticDir, 'favicon.svg'));
     }
 
-    // k. Screenshots (best-effort).
+    // f. Screenshots (best-effort).
     const screenshotsSrc = join(clientPath, 'screenshots');
     if (existsSync(screenshotsSrc)) {
       cpSync(screenshotsSrc, join(reportStaticDir, 'screenshots'), {
@@ -193,7 +157,7 @@ export default class ReportBuild extends BaseCommand {
       this.log(`[report] Copied ${screenshotsSrc} → screenshots/`);
     }
 
-    // l. README.
+    // g. README.
     writeFileSync(
       join(reportStaticDir, 'README.md'),
       buildReadme(readClientName(clientPath, slug)),
@@ -211,144 +175,6 @@ export default class ReportBuild extends BaseCommand {
       );
     }
   }
-
-  /**
-   * Walk up from this compiled file to locate `packages/dashboard`. Mirrors
-   * the strategy used by the `dashboard` command.
-   *
-   * @returns Absolute path to the dashboard package, or `null` if not found.
-   */
-  private findDashboardDir(): string | null {
-    const thisFile = fileURLToPath(import.meta.url);
-    // dist layout: packages/cli/dist/commands/report/build.js
-    const cliRoot = resolve(dirname(thisFile), '..', '..', '..');
-    const candidates = [
-      join(cliRoot, '..', 'dashboard'),
-      join(process.cwd(), 'packages', 'dashboard'),
-    ];
-    for (const candidate of candidates) {
-      if (existsSync(join(candidate, 'package.json'))) {
-        return candidate;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Run `pnpm run build` inside the dashboard package and resolve when it
-   * exits successfully. Rejects with a clear error otherwise.
-   *
-   * @param dashboardDir - Absolute path to the dashboard package.
-   */
-  private async runAstroBuild(dashboardDir: string): Promise<void> {
-    await new Promise<void>((resolvePromise, rejectPromise) => {
-      const child = spawn('pnpm', ['run', 'build'], {
-        cwd: dashboardDir,
-        stdio: 'inherit',
-      });
-      child.on('error', (err) => {
-        rejectPromise(
-          new Error(
-            `Failed to spawn pnpm for dashboard build: ${err.message}`,
-          ),
-        );
-      });
-      child.on('exit', (code) => {
-        if (code === 0) {
-          resolvePromise();
-        } else {
-          rejectPromise(
-            new Error(`Dashboard build failed with exit code ${code ?? 'null'}.`),
-          );
-        }
-      });
-    });
-  }
-}
-
-/**
- * Drain a child process's stdout/stderr so the OS pipe buffer never fills up
- * and deadlocks the SSR server. Output is passed through to the caller's
- * logger so the operator can see SSR errors live.
- *
- * @param child - The spawned child process.
- * @param cmd - The command instance owning the logger.
- */
-function drainStream(child: ChildProcess, cmd: BaseCommand): void {
-  child.stdout?.setEncoding('utf8');
-  child.stderr?.setEncoding('utf8');
-  child.stdout?.on('data', (chunk: string) => {
-    for (const line of chunk.split(/\r?\n/)) {
-      if (line.trim().length > 0) cmd.log(`[ssr] ${line}`);
-    }
-  });
-  child.stderr?.on('data', (chunk: string) => {
-    for (const line of chunk.split(/\r?\n/)) {
-      if (line.trim().length > 0) cmd.warn(`[ssr] ${line}`);
-    }
-  });
-}
-
-/**
- * Send SIGTERM to the SSR child and wait briefly for it to exit, escalating
- * to SIGKILL after 3s. Resolves once the process is gone.
- *
- * @param child - The child process to terminate.
- */
-async function stopServer(child: ChildProcess): Promise<void> {
-  if (child.exitCode !== null || child.killed) return;
-  await new Promise<void>((resolvePromise) => {
-    const timer = setTimeout(() => {
-      try {
-        child.kill('SIGKILL');
-      } catch {
-        /* ignore */
-      }
-    }, 3_000);
-    child.once('exit', () => {
-      clearTimeout(timer);
-      resolvePromise();
-    });
-    try {
-      child.kill('SIGTERM');
-    } catch {
-      clearTimeout(timer);
-      resolvePromise();
-    }
-  });
-}
-
-/**
- * Poll `url` until it returns a 2xx response or `timeoutMs` elapses.
- *
- * @param url - The URL to probe.
- * @param timeoutMs - Maximum total wait, in milliseconds.
- * @returns `true` if the URL became reachable, `false` on timeout.
- */
-async function waitForUrl(url: string, timeoutMs: number): Promise<boolean> {
-  const start = Date.now();
-  while (Date.now() - start < timeoutMs) {
-    try {
-      const ctrl = new AbortController();
-      const t = setTimeout(() => ctrl.abort(), 1_500);
-      const res = await fetch(url, { signal: ctrl.signal });
-      clearTimeout(t);
-      if (res.ok) return true;
-    } catch {
-      /* not ready */
-    }
-    await sleep(500);
-  }
-  return false;
-}
-
-/**
- * Sleep helper.
- *
- * @param ms - Milliseconds to sleep.
- */
-function sleep(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms));
 }
 
 /**
@@ -397,4 +223,3 @@ function buildReadme(clientName: string): string {
     '',
   ].join('\n');
 }
-

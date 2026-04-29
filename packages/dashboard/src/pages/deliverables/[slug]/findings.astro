@@ -132,6 +132,8 @@ const groups: FindingGroup[] = [
   }
 
   @media print {
+    body { background: white !important; color: #111 !important; }
+    .page-header { page-break-before: always; }
     .finding-group {
       page-break-inside: avoid;
     }

@@ -259,6 +259,7 @@ const narrativeBlocks = executiveSummary ? splitNarrative(executiveSummary) : []
   }
 
   @media print {
+    body { background: white !important; color: #111 !important; }
     .stats, .narrative { page-break-inside: avoid; }
   }
 </style>

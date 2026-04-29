@@ -183,6 +183,8 @@ const intakeMailto =
   }
 
   @media print {
+    body { background: white !important; color: #111 !important; }
+    .page-header { page-break-before: always; }
     .tiers,
     .intake {
       page-break-inside: avoid;
