@@ -34,7 +34,9 @@ export type PipelineStageId =
   | 'fixes-plan'
   | 'qa'
   | 'improve'
-  | 'launch';
+  | 'launch'
+  | 'monitor'
+  | 'followup';
 
 /**
  * One stage in the pipeline. The `command` is the slash-allowlist name in
@@ -87,6 +89,8 @@ export const PIPELINE_STAGES: readonly PipelineStage[] = [
   { id: 'qa', label: 'QA', command: 'qa', describe: 'Re-audit against the cloned/improved site' },
   { id: 'improve', label: 'Improve', command: 'improve', args: ['--dry-run'], optional: true, describe: 'Plan improvement-track matrix (--no-dry-run to apply)' },
   { id: 'launch', label: 'Launch', command: null, describe: 'Operator-only launch checklist (requires DNS/host decisions)' },
+  { id: 'monitor', label: 'Monitor', command: 'monitor', optional: true, describe: 'F06 — weekly delta report for retainer clients (invoked on schedule, not in linear pipeline)' },
+  { id: 'followup', label: 'Followup', command: 'followup', optional: true, describe: 'F07 — 6-month re-audit + case study + re-engagement docs' },
 ];
 
 /** O(1) lookup helper. */

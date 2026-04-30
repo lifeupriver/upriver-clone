@@ -28,6 +28,8 @@ const ALLOWED_COMMANDS: ReadonlyArray<string> = [
   'qa',
   'process-interview',
   'interview-link',
+  'monitor',
+  'followup',
 ];
 
 /** Time to wait after SIGTERM before escalating to SIGKILL on client abort. */
