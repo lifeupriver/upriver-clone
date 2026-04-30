@@ -23,6 +23,7 @@ import {
   runBacklinks,
   runCompetitors,
   runMedia,
+  runGaps,
 } from '@upriver/audit-passes';
 import type { AuditPassResult } from '@upriver/core';
 import {
@@ -57,6 +58,7 @@ const ALL_PASSES: ReadonlyArray<{ name: string; fn: PassFn }> = [
   { name: 'backlinks', fn: runBacklinks },
   { name: 'competitors', fn: runCompetitors },
   { name: 'media', fn: runMedia },
+  { name: 'gaps', fn: runGaps },
 ];
 
 /**

@@ -12,6 +12,14 @@ export { run as runBacklinks } from './backlinks/index.js';
 export { run as runCompetitors } from './competitors/index.js';
 export { run as runMedia, buildInventory, summarizeInventory } from './media/index.js';
 export type { ImageClassification, ImageRecord, MediaInventorySummary } from './media/index.js';
+export {
+  run as runGaps,
+  detectFeatures,
+  detectExpectedPages,
+  FEATURE_CATALOG,
+  VERTICAL_FEATURE_REQUIREMENTS,
+} from './gaps/index.js';
+export type { FeatureId, FeatureSpec, ExpectedPageMatch, DetectedFeatures } from './gaps/index.js';
 
 export type { PageData, DesignTokens } from './shared/loader.js';
 export { loadPages, loadDesignTokens, loadRawHtml } from './shared/loader.js';
