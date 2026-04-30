@@ -1,0 +1,93 @@
+---
+export type ArtifactStatus = 'ready' | 'empty' | 'stale';
+
+export interface Props {
+  title: string;
+  status: ArtifactStatus;
+  href: string;
+  summary?: string;
+  ctaLabel?: string;
+}
+
+const { title, status, href, summary, ctaLabel } = Astro.props;
+
+const statusPillClass: Record<ArtifactStatus, string> = {
+  ready: 'pill-success',
+  empty: 'pill-muted',
+  stale: 'pill-accent',
+};
+
+const statusLabel: Record<ArtifactStatus, string> = {
+  ready: 'Ready',
+  empty: 'Empty',
+  stale: 'Stale',
+};
+
+const isEmpty = status === 'empty';
+---
+
+<a
+  href={href}
+  class:list={['artifact-card', 'card', { 'artifact-empty': isEmpty }]}
+  aria-label={`${title} — ${statusLabel[status]}`}
+>
+  <div class="artifact-head">
+    <h4 class="artifact-title">{title}</h4>
+    <span class:list={['pill', statusPillClass[status]]}>{statusLabel[status]}</span>
+  </div>
+  <p class="artifact-summary">
+    {summary ?? (isEmpty ? 'Not generated yet.' : 'Open')}
+  </p>
+  <span class="artifact-cta">
+    {ctaLabel ?? (isEmpty ? 'Set up →' : 'Open →')}
+  </span>
+</a>
+
+<style>
+  .artifact-card {
+    padding: 1rem 1.125rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: var(--text-body);
+    min-height: 8rem;
+  }
+
+  .artifact-empty { opacity: 0.7; }
+  .artifact-empty:hover { opacity: 1; }
+
+  .artifact-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .artifact-title {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--text-heading);
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+
+  .artifact-summary {
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    line-height: 1.45;
+    margin: 0;
+    flex: 1;
+  }
+
+  .artifact-cta {
+    margin-top: auto;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+</style>

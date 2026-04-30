@@ -21,6 +21,18 @@ if (passes.length === 0) {
 
 const allFindings = passes.flatMap(p => p.findings);
 const scores = Object.fromEntries(passes.map(p => [p.dimension, p.score]));
+
+// Top issues: the three lowest-scoring dimensions, with their P0 counts. The
+// click target preselects that dimension on the findings filter island below.
+const topIssues = [...passes]
+  .sort((a, b) => a.score - b.score)
+  .slice(0, 3)
+  .map((p) => ({
+    dimension: p.dimension,
+    score: p.score,
+    p0Count: p.findings.filter((f) => f.priority === 'p0').length,
+    findingsCount: p.findings.length,
+  }));
 ---
 
 <DashboardLayout title={`${config.name} — Audit`} section="clients">
@@ -46,19 +58,56 @@ const scores = Object.fromEntries(passes.map(p => [p.dimension, p.score]));
     )}
   </div>
 
-  <!-- Score strip + Radar -->
-  <div class="top-section">
-    <div class="score-strip-wrap">
-      <ScoreStrip passes={passes} />
+  <!-- Top issues -->
+  <section class="top-issues">
+    <div class="section-head">
+      <h3 class="section-title">Top issues</h3>
+      <span class="section-hint mono">three weakest dimensions</span>
     </div>
+    <div class="top-issues-grid">
+      {topIssues.map((t) => (
+        <a class="top-issue card" href={`#findings?dim=${encodeURIComponent(t.dimension)}`} data-dim-link={t.dimension}>
+          <div class="ti-head">
+            <span class="ti-dim eyebrow">{t.dimension}</span>
+            <span class="score-num ti-score">{t.score}</span>
+          </div>
+          <div class="ti-body">
+            <span class="ti-count">{t.findingsCount} finding{t.findingsCount === 1 ? '' : 's'}</span>
+            {t.p0Count > 0 && (
+              <span class="pill pill-accent ti-p0">{t.p0Count} P0</span>
+            )}
+          </div>
+          <span class="ti-cta">View →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Score strip (clickable) -->
+  <section class="score-section">
+    <div class="section-head">
+      <h3 class="section-title">All dimensions</h3>
+      <span class="section-hint mono">click a tile to filter findings</span>
+    </div>
+    <ScoreStrip passes={passes} slug={slug} />
+  </section>
+
+  <!-- Score detail (radar collapsed) -->
+  <details class="radar-details">
+    <summary class="radar-summary">
+      <span class="eyebrow">Score detail</span>
+      <span class="radar-hint">Open the radar chart</span>
+    </summary>
     <div class="radar-wrap">
-      <ScoreRadar client:load scores={scores} size={220} />
+      <ScoreRadar client:load scores={scores} size={300} />
     </div>
-  </div>
+  </details>
 
   <!-- Findings browser (interactive React island) -->
-  <section class="findings-section">
-    <h3>Findings ({allFindings.length})</h3>
+  <section class="findings-section" id="findings">
+    <div class="section-head">
+      <h3 class="section-title">Findings ({allFindings.length})</h3>
+    </div>
     <FindingFilters client:load findings={allFindings} />
   </section>
 </DashboardLayout>
@@ -117,17 +166,105 @@ const scores = Object.fromEntries(passes.map(p => [p.dimension, p.score]));
 
   .big-score { font-size: 3rem; }
 
-  .top-section {
+  .top-issues {
     display: flex;
-    gap: 2rem;
-    align-items: flex-start;
-    margin-bottom: 3rem;
+    flex-direction: column;
+    gap: 0.875rem;
+    margin-bottom: 2.5rem;
   }
 
-  .score-strip-wrap { flex: 1; min-width: 0; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .section-title { font-size: var(--fs-xxs); }
+
+  .section-hint { color: var(--text-muted); font-size: var(--fs-xs); }
+
+  .top-issues-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .top-issue {
+    padding: 1rem 1.125rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-color: var(--accent-20);
+    background: linear-gradient(180deg, var(--accent-05), var(--bg-surface));
+    color: var(--text-body);
+  }
+
+  .ti-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .ti-score { font-size: 1.75rem; }
+
+  .ti-body {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--fs-sm);
+    color: var(--text-muted);
+  }
+
+  .ti-cta {
+    margin-top: 0.25rem;
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .score-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    margin-bottom: 2rem;
+  }
+
+  .radar-details {
+    margin-bottom: 2.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    padding: 0;
+  }
+
+  .radar-details[open] { border-color: var(--accent-20); }
+
+  .radar-summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1.25rem;
+  }
+  .radar-summary::-webkit-details-marker { display: none; }
+  .radar-summary::after { content: '▾'; color: var(--text-muted); transition: transform var(--dur-fast) var(--ease-out); }
+  .radar-details[open] > .radar-summary::after { transform: rotate(180deg); }
+
+  .radar-hint {
+    color: var(--text-muted);
+    font-size: var(--fs-xs);
+  }
 
   .radar-wrap {
-    flex-shrink: 0;
+    padding: 1.5rem;
+    text-align: center;
+    border-top: 1px solid var(--border);
   }
 
   .findings-section {
@@ -135,9 +272,41 @@ const scores = Object.fromEntries(passes.map(p => [p.dimension, p.score]));
     flex-direction: column;
     gap: 1rem;
   }
-
-  .findings-section h3 {
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--border);
-  }
 </style>
+
+<script>
+  // The score strip's `DimensionScoreCard` links use `#findings?dim=…` so a
+  // single click both scrolls to the findings section and tells the React
+  // island which dimension to preselect. Native fragments don't carry query
+  // strings, so intercept and re-emit via a custom event the island listens
+  // for.
+  function dimFromHash(hash: string): string | null {
+    const m = hash.match(/^#findings\?dim=(.+)$/);
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+
+  function applyDimFromHash() {
+    const dim = dimFromHash(window.location.hash);
+    if (!dim) return;
+    window.dispatchEvent(new CustomEvent('upriver:set-dim', { detail: { dim } }));
+    const target = document.getElementById('findings');
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.addEventListener('click', (e) => {
+    const a = (e.target as Element | null)?.closest('a[href^="#findings?dim="], a[href*="#findings?dim="]');
+    if (!a) return;
+    const href = (a as HTMLAnchorElement).getAttribute('href') ?? '';
+    const idx = href.indexOf('#findings?dim=');
+    if (idx < 0) return;
+    const fragment = href.slice(idx);
+    const dim = dimFromHash(fragment);
+    if (!dim) return;
+    e.preventDefault();
+    history.replaceState(null, '', fragment);
+    applyDimFromHash();
+  });
+
+  // First paint: honor a deep-link like /clients/<slug>/audit#findings?dim=seo
+  window.addEventListener('load', applyDimFromHash);
+</script>

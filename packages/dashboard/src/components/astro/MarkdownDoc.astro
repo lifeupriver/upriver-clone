@@ -1,56 +1,285 @@
 ---
 export interface Props {
   content: string;
+  /**
+   * Render `## ` headings as anchored, with a sticky right-rail TOC. The TOC
+   * is hidden under `< 960px` viewport width.
+   */
+  withToc?: boolean;
+  /**
+   * Wrap each `## ` section in a `<details open>` so the operator can collapse
+   * sections individually. Doesn't affect the preamble (anything before the
+   * first `## `).
+   */
+  collapseSections?: boolean;
+  /**
+   * Optional pre-extracted summary blurb. If omitted and the content starts
+   * with a `> Summary: …` blockquote, that's used. Rendered as a callout
+   * above the doc body.
+   */
+  summary?: string;
 }
 
-const { content } = Astro.props;
+const { content, withToc = false, collapseSections = false, summary } = Astro.props;
 
-// Convert basic markdown to HTML (headings, bold, code, lists, blockquotes)
-// For the dashboard we use a simple regex-based converter since we control the input.
+interface Section {
+  id: string;
+  heading: string;
+  body: string;
+}
+
+interface ParsedDoc {
+  preamble: string;
+  sections: Section[];
+  callout: string | null;
+}
+
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^\p{Letter}\p{Number}\s-]/gu, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+/**
+ * Split a markdown body into preamble + per-`##` sections, and pull a leading
+ * `> Summary: …` blockquote out of the preamble if present.
+ */
+function parseDoc(md: string, explicitSummary: string | undefined): ParsedDoc {
+  let body = md.trim();
+  let callout = explicitSummary?.trim() ?? null;
+
+  if (!callout) {
+    const match = body.match(/^>\s*Summary:\s*([\s\S]+?)(?:\n\n|\n(?!>))/);
+    if (match) {
+      callout = match[1].replace(/\n>\s?/g, ' ').trim();
+      body = body.slice(match[0].length).trimStart();
+    }
+  }
+
+  const parts = body.split(/\n## /);
+  const preamble = parts[0]?.replace(/^##\s+/, '').trim() ?? '';
+  const sections: Section[] = parts.slice(1).map((part) => {
+    const nl = part.indexOf('\n');
+    const heading = (nl === -1 ? part : part.slice(0, nl)).trim();
+    const sectionBody = nl === -1 ? '' : part.slice(nl + 1).trim();
+    return {
+      id: slugify(heading),
+      heading,
+      body: sectionBody,
+    };
+  });
+
+  return { preamble, sections, callout };
+}
+
+/**
+ * Convert a markdown chunk (no `##` headings — those are stripped by
+ * `parseDoc` and handled separately) to HTML using the same
+ * regex-based pipeline the dashboard has always used.
+ */
 function markdownToHtml(md: string): string {
   return md
-    // Headings
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
     .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    // Bold
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    // Inline code
     .replace(/`([^`]+)`/g, '<code>$1</code>')
-    // Fenced code blocks
     .replace(/```[\w]*\n([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
-    // Blockquotes
     .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-    // Unordered lists
     .replace(/^\s*[-*] (.+)$/gm, '<li>$1</li>')
-    // Ordered lists
     .replace(/^\s*\d+\. (.+)$/gm, '<li>$1</li>')
-    // Horizontal rules
     .replace(/^---+$/gm, '<hr>')
-    // Paragraphs (double newlines)
     .replace(/\n\n(?!<)/g, '</p><p>')
     .replace(/^(?!<)/, '<p>')
     .replace(/(?!>)$/, '</p>')
-    // Wrap adjacent <li> in <ul>
     .replace(/(<li>[\s\S]*?<\/li>)(?:\s*<li>[\s\S]*?<\/li>)*/g, (m) => `<ul>${m}</ul>`)
-    // Clean up empty paragraphs
     .replace(/<p>\s*<\/p>/g, '')
     .replace(/<p>(<[hb])/g, '$1')
     .replace(/(<\/h[123]>)<\/p>/g, '$1');
 }
 
-const html = markdownToHtml(content);
+const parsed = parseDoc(content, summary);
+
+// When neither toc nor collapse is requested, keep the legacy behavior of one
+// flat HTML pass over the whole string — no behavioral change for old call
+// sites that just pass `content`.
+const useStructured = withToc || collapseSections || parsed.callout !== null;
+
+const flatHtml = !useStructured ? markdownToHtml(content) : '';
+
+const preambleHtml = useStructured ? markdownToHtml(parsed.preamble) : '';
+const sectionHtml = useStructured
+  ? parsed.sections.map((s) => ({ ...s, html: markdownToHtml(s.body) }))
+  : [];
 ---
 
-<div class="md-doc" set:html={html} />
+{useStructured ? (
+  <div class:list={['md-doc', 'md-structured', { 'md-with-toc': withToc }]}>
+    <div class="md-body">
+      {parsed.callout && (
+        <div class="quote-block md-summary">
+          <strong class="md-summary-label">Summary</strong>
+          {parsed.callout}
+        </div>
+      )}
+      {preambleHtml && (
+        <div class="md-preamble" set:html={preambleHtml} />
+      )}
+      {sectionHtml.map((s) =>
+        collapseSections ? (
+          <details open class="md-section" id={s.id}>
+            <summary class="md-section-summary">
+              <h2 class="md-h2">{s.heading}</h2>
+            </summary>
+            <div class="md-section-body" set:html={s.html} />
+          </details>
+        ) : (
+          <section class="md-section" id={s.id}>
+            <h2 class="md-h2">{s.heading}</h2>
+            <div class="md-section-body" set:html={s.html} />
+          </section>
+        )
+      )}
+    </div>
+
+    {withToc && sectionHtml.length > 0 && (
+      <nav class="md-toc no-print" aria-label="Document outline">
+        <span class="eyebrow md-toc-label">On this page</span>
+        <ul>
+          {sectionHtml.map((s) => (
+            <li><a href={`#${s.id}`}>{s.heading}</a></li>
+          ))}
+        </ul>
+      </nav>
+    )}
+  </div>
+) : (
+  <div class="md-doc" set:html={flatHtml} />
+)}
 
 <style>
   .md-doc {
-    max-width: 72ch;
     color: var(--text-body);
     line-height: 1.75;
   }
 
+  .md-doc:not(.md-structured) { max-width: 72ch; }
+
+  .md-structured { display: block; }
+
+  .md-body {
+    max-width: 72ch;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .md-summary {
+    margin: 0 0 0.5rem;
+    line-height: 1.55;
+  }
+
+  .md-summary-label {
+    color: var(--text-heading);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  .md-section {
+    margin: 0;
+    padding: 0;
+  }
+
+  .md-section + .md-section { margin-top: 0.75rem; }
+
+  details.md-section {
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+  }
+
+  details.md-section[open] { padding-bottom: 0.5rem; }
+
+  .md-section-summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0;
+  }
+
+  .md-section-summary::-webkit-details-marker { display: none; }
+
+  .md-section-summary::before {
+    content: '▸';
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    transition: transform var(--dur-fast) var(--ease-out);
+    line-height: 1;
+  }
+
+  details[open] > .md-section-summary::before {
+    transform: rotate(90deg);
+  }
+
+  .md-h2 {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: var(--fs-xxs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.4;
+    display: inline;
+  }
+
+  .md-section-body { padding-top: 0.5rem; }
+
+  /* TOC layout */
+  .md-with-toc { display: grid; gap: 2.5rem; grid-template-columns: minmax(0, 72ch) 200px; align-items: start; }
+
+  @media (max-width: 960px) {
+    .md-with-toc { grid-template-columns: minmax(0, 1fr); }
+    .md-toc { display: none; }
+  }
+
+  .md-toc {
+    position: sticky;
+    top: 1.5rem;
+    align-self: start;
+    font-size: var(--fs-xs);
+    border-left: 1px solid var(--border);
+    padding-left: 1rem;
+  }
+
+  .md-toc-label { display: block; margin-bottom: 0.5rem; }
+
+  .md-toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .md-toc a {
+    color: var(--text-muted);
+    transition: color var(--dur-fast) var(--ease-out);
+    display: block;
+    line-height: 1.4;
+  }
+
+  .md-toc a:hover { color: var(--accent); }
+
+  /* Inherited shared markdown element styling */
   .md-doc :global(h1) {
     font-family: var(--font-heading);
     font-weight: 500;
@@ -173,5 +402,15 @@ const html = markdownToHtml(content);
   .md-doc :global(td) {
     padding: 0.6rem 1rem;
     border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  }
+
+  @media print {
+    .md-with-toc { grid-template-columns: 1fr; gap: 0; }
+    .md-toc { display: none; }
+    details.md-section { padding-top: 0; border-top: none; }
+    details.md-section > .md-section-body,
+    details.md-section[open] > .md-section-body { display: block !important; }
+    details.md-section > *:not(summary) { display: block !important; }
+    .md-section-summary::before { display: none; }
   }
 </style>

@@ -17,12 +17,41 @@ const stageClass: Record<string, string> = {
   audit:         'pill-accent',
   synthesize:    'pill-accent',
   'design-brief':'pill-accent',
+  'voice-extract':'pill-accent',
   scaffold:      'pill-success',
   clone:         'pill-success',
-  fixes:         'pill-success',
+  'fixes-plan':  'pill-success',
   qa:            'pill-success',
   launch:        'pill-success',
 };
+
+// Collapse the dense raw-stage list into the 5 phases the operator actually
+// thinks in when triaging the pipeline. The pill filters in the toolbar
+// match against `data-stage-group`, not the raw stage id.
+const stageGroupOf: Record<string, string> = {
+  init: 'discover',
+  discover: 'discover',
+  scrape: 'discover',
+  audit: 'audit',
+  synthesize: 'audit',
+  'voice-extract': 'design',
+  'design-brief': 'design',
+  scaffold: 'build',
+  clone: 'build',
+  'fixes-plan': 'build',
+  qa: 'qa',
+  launch: 'launch',
+};
+
+const stageGroups: Array<{ id: string; label: string }> = [
+  { id: 'all',      label: 'All' },
+  { id: 'discover', label: 'Discover' },
+  { id: 'audit',    label: 'Audit' },
+  { id: 'design',   label: 'Design' },
+  { id: 'build',    label: 'Build' },
+  { id: 'qa',       label: 'QA' },
+  { id: 'launch',   label: 'Launch' },
+];
 ---
 
 <DashboardLayout title="Clients" section="clients">
@@ -30,7 +59,7 @@ const stageClass: Record<string, string> = {
     <span class="eyebrow">Upriver Dashboard</span>
     <h1>Clients</h1>
     <p class="subtitle">
-      {clients.length} client{clients.length !== 1 ? 's' : ''} in the pipeline
+      <span data-clients-shown>{clients.length}</span> of {clients.length} client{clients.length !== 1 ? 's' : ''} in the pipeline
     </p>
   </div>
 
@@ -40,69 +69,145 @@ const stageClass: Record<string, string> = {
       <p class="empty-hint mono">{dataSourceHint}</p>
     </div>
   ) : (
-    <div class="table-wrap">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Client</th>
-            <th>Platform</th>
-            <th>Stage</th>
-            <th style="text-align: right;">Score</th>
-            <th style="text-align: right;">P0</th>
-            <th style="text-align: right;">P1</th>
-            <th style="text-align: right;">P2</th>
-            <th>Created</th>
-          </tr>
-        </thead>
-        <tbody>
-          {clients.map(c => {
-            const created = new Date(c.config.created_at).toLocaleDateString('en-US', {
-              month: 'short', day: 'numeric', year: 'numeric'
-            });
-            const pillClass = stageClass[c.pipelineStage] ?? 'pill-muted';
-            return (
-              <tr>
-                <td>
-                  <div class="client-cell">
-                    <a href={`/clients/${c.config.slug}`} class="client-name">
-                      {c.config.name}
-                    </a>
-                    <span class="mono client-url">{c.config.url}</span>
-                  </div>
-                </td>
-                <td>
-                  {c.config.platform && c.config.platform !== 'unknown' ? (
-                    <span class="pill pill-ghost">{c.config.platform}</span>
-                  ) : (
-                    <span style="color: var(--text-muted);">—</span>
-                  )}
-                </td>
-                <td>
-                  <span class:list={['pill', pillClass]}>{c.pipelineStage}</span>
-                </td>
-                <td style="text-align: right;">
-                  {c.overallScore !== null ? (
-                    <span class="score-num">{c.overallScore}</span>
-                  ) : (
-                    <span style="color: var(--text-muted); font-family: var(--font-mono);">—</span>
-                  )}
-                </td>
-                <td style="text-align: right; font-family: var(--font-mono);">
-                  <span style={c.p0Count > 0 ? 'color: var(--accent);' : 'color: var(--text-muted);'}>
-                    {c.p0Count}
-                  </span>
-                </td>
-                <td style="text-align: right; font-family: var(--font-mono); color: var(--text-body);">{c.p1Count}</td>
-                <td style="text-align: right; font-family: var(--font-mono); color: var(--text-muted);">{c.p2Count}</td>
-                <td style="color: var(--text-muted); font-size: var(--fs-sm);">{created}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <>
+      <div class="toolbar">
+        <input
+          type="search"
+          id="client-search"
+          class="search"
+          placeholder="Search clients…"
+          aria-label="Search clients"
+          autocomplete="off"
+        />
+        <div class="stage-pills" role="tablist" aria-label="Pipeline phase">
+          {stageGroups.map((g, i) => (
+            <button
+              type="button"
+              class:list={['pill', 'stage-pill', { 'stage-pill-active': i === 0 }]}
+              data-stage-group={g.id}
+            >
+              {g.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table" id="clients-table">
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Platform</th>
+              <th>Stage</th>
+              <th style="text-align: right;">Score</th>
+              <th style="text-align: right;">P0</th>
+              <th style="text-align: right;">P1</th>
+              <th style="text-align: right;">P2</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {clients.map(c => {
+              const created = new Date(c.config.created_at).toLocaleDateString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric'
+              });
+              const pillClass = stageClass[c.pipelineStage] ?? 'pill-muted';
+              const stageGroup = stageGroupOf[c.pipelineStage] ?? 'discover';
+              const haystack = [c.config.name, c.config.url, c.config.slug, c.config.platform ?? '']
+                .join(' ')
+                .toLowerCase();
+              return (
+                <tr
+                  data-stage-group={stageGroup}
+                  data-haystack={haystack}
+                  data-slug={c.config.slug}
+                >
+                  <td>
+                    <div class="client-cell">
+                      <a href={`/clients/${c.config.slug}`} class="client-name">
+                        {c.config.name}
+                      </a>
+                      <span class="mono client-url">{c.config.url}</span>
+                    </div>
+                  </td>
+                  <td>
+                    {c.config.platform && c.config.platform !== 'unknown' ? (
+                      <span class="pill pill-ghost">{c.config.platform}</span>
+                    ) : (
+                      <span style="color: var(--text-muted);">—</span>
+                    )}
+                  </td>
+                  <td>
+                    <span class:list={['pill', pillClass]}>{c.pipelineStage}</span>
+                  </td>
+                  <td style="text-align: right;">
+                    {c.overallScore !== null ? (
+                      <span class="score-num">{c.overallScore}</span>
+                    ) : (
+                      <span style="color: var(--text-muted); font-family: var(--font-mono);">—</span>
+                    )}
+                  </td>
+                  <td style="text-align: right; font-family: var(--font-mono);">
+                    <span style={c.p0Count > 0 ? 'color: var(--accent);' : 'color: var(--text-muted);'}>
+                      {c.p0Count}
+                    </span>
+                  </td>
+                  <td style="text-align: right; font-family: var(--font-mono); color: var(--text-body);">{c.p1Count}</td>
+                  <td style="text-align: right; font-family: var(--font-mono); color: var(--text-muted);">{c.p2Count}</td>
+                  <td style="color: var(--text-muted); font-size: var(--fs-sm);">{created}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <p class="empty-result" data-empty-result hidden>No clients match this filter.</p>
+      </div>
+    </>
   )}
 </DashboardLayout>
+
+<script>
+  // Live filter for the operator client list. Matches the search query
+  // against `data-haystack` (name + url + slug + platform, lowercased) and
+  // intersects with the active stage-group pill.
+  const search = document.getElementById('client-search') as HTMLInputElement | null;
+  const tbody = document.querySelector('#clients-table tbody');
+  const rows = tbody ? Array.from(tbody.querySelectorAll<HTMLTableRowElement>('tr')) : [];
+  const pills = Array.from(document.querySelectorAll<HTMLButtonElement>('.stage-pill'));
+  const shownCounter = document.querySelector('[data-clients-shown]');
+  const emptyResult = document.querySelector('[data-empty-result]') as HTMLElement | null;
+
+  let activeGroup = 'all';
+  let query = '';
+
+  function apply() {
+    const q = query.trim().toLowerCase();
+    let shown = 0;
+    rows.forEach((row) => {
+      const matchGroup = activeGroup === 'all' || row.dataset.stageGroup === activeGroup;
+      const matchQuery = q === '' || (row.dataset.haystack ?? '').includes(q);
+      const visible = matchGroup && matchQuery;
+      row.hidden = !visible;
+      if (visible) shown++;
+    });
+    if (shownCounter) shownCounter.textContent = String(shown);
+    if (emptyResult) emptyResult.hidden = shown !== 0;
+  }
+
+  search?.addEventListener('input', (e) => {
+    query = (e.target as HTMLInputElement).value;
+    apply();
+  });
+
+  pills.forEach((p) => {
+    p.addEventListener('click', () => {
+      pills.forEach((q) => q.classList.remove('stage-pill-active'));
+      p.classList.add('stage-pill-active');
+      activeGroup = p.dataset.stageGroup ?? 'all';
+      apply();
+    });
+  });
+</script>
 
 <style>
   .page-header {
@@ -119,11 +224,66 @@ const stageClass: Record<string, string> = {
     margin: 0;
   }
 
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .search {
+    flex: 1;
+    min-width: 240px;
+    max-width: 360px;
+    padding: 0.55rem 0.85rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-input);
+    border-radius: var(--radius-sm);
+    color: var(--text-body);
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    outline: none;
+    transition: border-color var(--dur-fast) var(--ease-out);
+  }
+  .search:focus { border-color: var(--accent); }
+  .search::placeholder { color: var(--text-muted); }
+
+  .stage-pills {
+    display: flex;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+  }
+
+  .stage-pill {
+    cursor: pointer;
+    background: transparent;
+    color: var(--text-muted);
+    border-color: var(--border);
+    transition: color var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out),
+                background var(--dur-fast) var(--ease-out);
+  }
+  .stage-pill:hover { color: var(--text-body); border-color: var(--border-input); }
+  .stage-pill-active {
+    background: var(--accent-10);
+    color: var(--accent);
+    border-color: var(--accent-30);
+  }
+
   .table-wrap {
     background: var(--bg-surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     overflow: hidden;
+  }
+
+  .empty-result {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    margin: 0;
   }
 
   .client-cell {

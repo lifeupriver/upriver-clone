@@ -33,7 +33,7 @@ const content = await readMarkdownFile(slug, 'claude-design-brief.md');
   </div>
 
   {content ? (
-    <MarkdownDoc content={content} />
+    <MarkdownDoc content={content} withToc collapseSections />
   ) : (
     <div class="empty">
       <p>No design brief yet. Run <code>upriver design-brief {slug}</code> to generate it.</p>
