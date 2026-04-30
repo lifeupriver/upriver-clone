@@ -13,6 +13,7 @@ const PUBLIC_PATH_PREFIXES = [
   '/auth/',
   '/api/inngest', // unused in option (1a) but harmless to keep open; serve handler lives in worker
   '/_image', // Astro asset endpoint
+  '/deliverables/expired', // branded share-link-expired page; client-facing, no auth
 ];
 
 function pathIs(pathname: string, prefixes: readonly string[]): boolean {
@@ -106,6 +107,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
       if (slug && token && (await validateShareToken(slug, token))) {
         // Token is valid for this slug — let the request through.
         return next();
+      }
+      // Token was supplied but didn't validate — show the client a branded
+      // expired-link page rather than punting them to the operator login.
+      if (slug && token) {
+        return new Response(null, {
+          status: 302,
+          headers: { location: '/deliverables/expired' },
+        });
       }
     }
 

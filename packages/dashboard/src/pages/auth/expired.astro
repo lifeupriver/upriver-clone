@@ -1,0 +1,17 @@
+---
+import MessageLayout from '@/layouts/MessageLayout.astro';
+---
+
+<MessageLayout title="Sign-in link expired">
+  <span class="eyebrow">Sign-in</span>
+  <h1>This link has expired.</h1>
+  <p class="lede">
+    Magic links are single-use and expire after about an hour. Request a fresh one
+    and we'll get you back in.
+  </p>
+  <a href="/login" class="btn-primary">Send a new link</a>
+  <p class="footnote">
+    If you keep seeing this, double-check the email address and that the link wasn't already
+    clicked from a different browser.
+  </p>
+</MessageLayout>

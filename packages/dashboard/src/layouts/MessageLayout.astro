@@ -1,0 +1,116 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  /** When true, hides the operator brand bar — used on client-facing pages. */
+  clientFacing?: boolean;
+}
+
+const { title, clientFacing = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} — Upriver</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <main class="msg-shell">
+      <div class="msg-card">
+        <a href={clientFacing ? '#' : '/'} class="brand" aria-label="Upriver" tabindex={clientFacing ? -1 : 0}>
+          <svg width="28" height="26" viewBox="0 0 40 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M20 2 L38 34 H22 L20 28 L18 34 H2 Z" stroke="#F1551A" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
+            <path d="M12 34 L20 14 L28 34" stroke="#F1551A" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
+          </svg>
+          <span class="brand-name">Upriver</span>
+        </a>
+        <slot />
+      </div>
+    </main>
+
+    <style>
+      html, body { background: var(--bg-primary); min-height: 100vh; }
+      .msg-shell {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 2rem 1.25rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .msg-shell::before {
+        content: '';
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(ellipse 60% 50% at 50% 35%, var(--accent-glow), transparent 70%),
+          radial-gradient(ellipse 80% 60% at 50% 110%, rgba(241, 85, 26, 0.06), transparent 70%);
+        pointer-events: none; z-index: 0;
+      }
+      .msg-card {
+        position: relative; z-index: 1;
+        width: 100%; max-width: 28rem;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 2.25rem 2rem 1.75rem;
+        box-shadow: var(--shadow-card-soft);
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 1.5rem;
+        text-decoration: none;
+      }
+      .brand-name {
+        font-family: var(--font-heading);
+        font-weight: 500;
+        font-size: 1.1rem;
+        letter-spacing: 0.01em;
+        color: var(--text-heading);
+      }
+      :global(.msg-card .eyebrow) { display: block; margin-bottom: 0.75rem; }
+      :global(.msg-card h1) { font-size: 1.875rem; letter-spacing: -0.02em; margin-bottom: 0.6rem; }
+      :global(.msg-card .lede) {
+        color: var(--text-body);
+        font-size: var(--fs-body);
+        line-height: 1.55;
+        margin-bottom: 1.5rem;
+        max-width: 24rem;
+      }
+      :global(.msg-card .btn-primary) {
+        display: inline-flex;
+        align-items: center;
+        margin-top: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        font-family: var(--font-heading);
+        font-weight: 500;
+        font-size: var(--fs-xs);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #fff;
+        background: var(--accent);
+        border: 0;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-btn-primary);
+        text-decoration: none;
+      }
+      :global(.msg-card .btn-primary:hover) {
+        background: var(--accent-hover);
+        box-shadow: var(--shadow-btn-primary-hover);
+      }
+      :global(.msg-card .footnote) {
+        margin-top: 1.75rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: var(--fs-sm);
+        line-height: 1.55;
+      }
+    </style>
+  </body>
+</html>

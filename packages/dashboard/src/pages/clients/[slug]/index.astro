@@ -10,7 +10,36 @@ import { getDataSource } from '@/lib/data-source';
 const { slug } = Astro.params;
 
 if (!slug || !(await clientExists(slug))) {
-  return Astro.redirect('/clients');
+  const safeSlug = (slug ?? '').replace(/[<>&"']/g, '');
+  return new Response(
+    `<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Client not found — Upriver</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<style>
+  body { background: #faf7f2; color: #1f2937; font: 16px/1.55 system-ui, sans-serif; min-height: 100vh; margin: 0; display: grid; place-items: center; padding: 2rem 1.25rem; }
+  .card { max-width: 28rem; background: #fff; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 2.25rem 2rem 1.75rem; box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06); }
+  .eyebrow { display: block; margin-bottom: 0.75rem; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7280; }
+  h1 { font-size: 1.875rem; letter-spacing: -0.02em; margin: 0 0 0.6rem; }
+  p { margin: 0 0 1.5rem; }
+  code { background: #f3f4f6; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.9em; }
+  .btn { display: inline-flex; align-items: center; padding: 0.75rem 1.25rem; font-weight: 500; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: #F1551A; border-radius: 0.375rem; text-decoration: none; }
+</style>
+</head><body>
+<div class="card">
+  <span class="eyebrow">404</span>
+  <h1>Client not found.</h1>
+  <p>No client matches <code>${safeSlug}</code>. It may have been removed or never existed.</p>
+  <a class="btn" href="/clients">← Back to clients</a>
+</div>
+</body></html>`,
+    {
+      status: 404,
+      headers: { 'content-type': 'text/html; charset=utf-8' },
+    },
+  );
 }
 
 const config = (await readClientConfig(slug))!;
