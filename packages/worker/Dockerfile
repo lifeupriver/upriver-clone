@@ -60,6 +60,7 @@ ENV NODE_ENV=production \
 
 # Install global CLIs the pipeline shells out to. Keep this list pinned and
 # minimal — every binary added here grows the cold-start surface.
+# squirrelscan: verified on npm 2026-04-29 (npm view squirrelscan → 0.0.38).
 RUN npm install -g \
       @anthropic-ai/claude-code@latest \
       lighthouse@12 \
