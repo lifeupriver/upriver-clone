@@ -1,6 +1,6 @@
 import { defineMiddleware } from 'astro:middleware';
 
-import { getSessionUser, isOperator } from './lib/auth.js';
+import { createSupabaseServerClient, getSessionUser, isOperator } from './lib/auth.js';
 import { DataSourceUnavailableError, getDataSource } from './lib/data-source.js';
 import { validateShareToken } from './lib/share-token.js';
 
@@ -43,6 +43,35 @@ function pathStartsWithAny(pathname: string, prefixes: readonly string[]): boole
 export const onRequest = defineMiddleware(async (context, next) => {
   const url = new URL(context.request.url);
   const pathname = url.pathname;
+
+  // Catch-all for Supabase Auth's PKCE callback. The OTP flow's redirect_to
+  // is supposed to be /auth/callback, but if the Redirect URL allowlist
+  // misses it Supabase silently falls back to the Site URL — leaving the
+  // user on / (or wherever) with `?code=…` in the URL. Exchange the code
+  // wherever it shows up, then redirect to the same path with the param
+  // stripped so the user lands cleanly.
+  if (getDataSource() === 'supabase' && url.searchParams.has('code')) {
+    const code = url.searchParams.get('code');
+    if (code) {
+      const supa = createSupabaseServerClient(context.request, context.cookies);
+      const { error } = await supa.auth.exchangeCodeForSession(code);
+      if (!error) {
+        const dest = new URL(url);
+        dest.searchParams.delete('code');
+        // Strip other PKCE-flow params Supabase sometimes appends.
+        dest.searchParams.delete('error');
+        dest.searchParams.delete('error_description');
+        return new Response(null, {
+          status: 302,
+          headers: { location: dest.pathname + dest.search + dest.hash },
+        });
+      }
+      // Code exchange failed — fall through so the user sees whatever the
+      // page would normally render. exchangeCodeForSession errors are
+      // typically expired or already-used codes; treating as "no session"
+      // matches the user's intent.
+    }
+  }
 
   // Auth gate runs only when the dashboard is fronting Supabase storage —
   // i.e. on Vercel. Local dev with UPRIVER_DATA_SOURCE=local keeps the
