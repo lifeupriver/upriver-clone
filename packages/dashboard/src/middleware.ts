@@ -5,7 +5,7 @@ import { DataSourceUnavailableError, getDataSource } from './lib/data-source.js'
 import { validateShareToken } from './lib/share-token.js';
 
 /** Path prefixes that require an `app_metadata.role === 'operator'` session. */
-const OPERATOR_PATH_PREFIXES = ['/clients', '/api/enqueue', '/deliverables'];
+const OPERATOR_PATH_PREFIXES = ['/clients', '/api/enqueue', '/api/share-tokens', '/deliverables'];
 
 /** Paths bypass auth even in supabase mode (login flow). */
 const PUBLIC_PATH_PREFIXES = [

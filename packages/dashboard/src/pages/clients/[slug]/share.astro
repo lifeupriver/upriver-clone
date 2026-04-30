@@ -1,0 +1,72 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import ShareTokenManager from '@/components/react/ShareTokenManager';
+import { readClientConfig, clientExists } from '@/lib/fs-reader';
+import { listShareTokens } from '@/lib/share-token';
+
+const { slug } = Astro.params;
+
+if (!slug || !(await clientExists(slug))) {
+  return Astro.redirect('/clients');
+}
+
+const config = (await readClientConfig(slug))!;
+const tokens = await listShareTokens(slug);
+const origin = new URL(Astro.request.url).origin;
+---
+
+<DashboardLayout title={`${config.name} — Share links`} section="clients">
+  <div class="breadcrumb">
+    <a href="/clients">Clients</a>
+    <span class="sep">/</span>
+    <a href={`/clients/${slug}`}>{config.name}</a>
+    <span class="sep">/</span>
+    <span class="current">Share links</span>
+  </div>
+
+  <header class="page-header">
+    <span class="eyebrow">Share links</span>
+    <h1>Mint a share link</h1>
+    <p class="lede">
+      Share-link recipients see only <code>/deliverables/{slug}/*</code> for this client. They can't reach the operator dashboard or other clients' files.
+    </p>
+  </header>
+
+  <ShareTokenManager
+    slug={slug}
+    origin={origin}
+    initialTokens={tokens}
+    client:load
+  />
+
+  <style>
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+    }
+    .breadcrumb a { color: var(--text-muted); }
+    .breadcrumb a:hover { color: var(--accent); }
+    .breadcrumb .sep { opacity: 0.5; }
+    .breadcrumb .current { color: var(--text-body); }
+
+    .page-header { margin-bottom: 2rem; max-width: 56rem; }
+    .page-header h1 { margin: 0.5rem 0 0.75rem; font-size: 2rem; letter-spacing: -0.015em; }
+    .page-header .lede {
+      color: var(--text-body);
+      font-size: var(--fs-body);
+      line-height: 1.6;
+      max-width: 48rem;
+    }
+    .page-header code {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 0.05rem 0.35rem;
+      border-radius: 0.25rem;
+      font-size: 0.95em;
+    }
+  </style>
+</DashboardLayout>
