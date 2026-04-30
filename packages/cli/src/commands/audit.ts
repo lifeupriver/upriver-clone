@@ -89,8 +89,8 @@ export default class Audit extends BaseCommand {
     }),
     mode: Flags.string({
       description:
-        'Audit mode. base = heuristic passes only (default). deep = + LLM-driven C.3–C.5 passes. all = + tooling-driven passes (Lighthouse / squirrelscan / Playwright / Anthropic accessibility & CWV & trust). For tooling-only without LLM passes, use --deep.',
-      options: ['base', 'deep', 'all'],
+        'Audit mode. base = heuristic passes only (default). deep = base + 3 LLM-driven C.3–C.5 passes. tooling = base + 9 tooling-driven passes (Lighthouse / squirrelscan / Playwright / Anthropic accessibility & CWV & trust). all = base + deep + tooling.',
+      options: ['base', 'deep', 'tooling', 'all'],
       default: 'base',
     }),
     'deep-concurrency': Flags.integer({
@@ -104,8 +104,9 @@ export default class Audit extends BaseCommand {
     }),
     deep: Flags.boolean({
       description:
-        'Run tooling-driven deep passes (impeccable design, Lighthouse, squirrelscan, accessibility, CWV, analytics, trust signals, cross-browser). Implied by --mode=all. Use this flag alone for tooling-only without LLM passes.',
+        'Deprecated alias for --mode=tooling. Will be removed in a future release. Run tooling-driven deep passes (impeccable design, Lighthouse, squirrelscan, accessibility, CWV, analytics, trust signals, cross-browser).',
       default: false,
+      deprecated: { message: 'Use --mode=tooling (or --mode=all) instead.' },
     }),
   };
 
@@ -126,8 +127,8 @@ export default class Audit extends BaseCommand {
     const outDir = flags.out ?? join(dir, 'audit');
     mkdirSync(outDir, { recursive: true });
 
-    const mode = (flags.mode ?? 'base') as 'base' | 'deep' | 'all';
-    const runBase = mode === 'base' || mode === 'all';
+    const mode = (flags.mode ?? 'base') as 'base' | 'deep' | 'tooling' | 'all';
+    const runBase = true;
     const runDeep = mode === 'deep' || mode === 'all';
     const passesToRun = !runBase
       ? []
@@ -218,7 +219,10 @@ export default class Audit extends BaseCommand {
     // Track 2: tooling-driven deep passes. Triggered by --deep OR by
     // --mode=all (so "all" is genuinely all). --pass filter still gates either
     // path off, since tooling passes don't fit the per-pass filter shape.
-    const runTooling = (flags.deep || mode === 'all') && !flags.pass;
+    const runTooling = (flags.deep || mode === 'tooling' || mode === 'all') && !flags.pass;
+    if (flags.deep && mode !== 'tooling' && mode !== 'all') {
+      this.warn('--deep is deprecated; prefer --mode=tooling (or --mode=all to also include LLM passes).');
+    }
     if (runTooling) {
       const preflight = runPreflight();
       this.log(`\n${'─'.repeat(60)}\nPreflight checks for --deep:`);

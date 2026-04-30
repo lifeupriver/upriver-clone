@@ -102,8 +102,8 @@ export default class RunAll extends BaseCommand {
     }),
     'audit-mode': Flags.string({
       description:
-        'Pass-through to `upriver audit --mode`. base = heuristic only (default), deep = LLM-driven C.3-C.5 only, all = both.',
-      options: ['base', 'deep', 'all'],
+        'Pass-through to `upriver audit --mode`. base = heuristic (default); deep = base + LLM C.3–C.5; tooling = base + Lighthouse/squirrelscan/Playwright; all = base + deep + tooling.',
+      options: ['base', 'deep', 'tooling', 'all'],
       default: 'base',
     }),
   };
