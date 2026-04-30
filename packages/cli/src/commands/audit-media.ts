@@ -1,7 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import Anthropic from '@anthropic-ai/sdk';
 import { Args, Flags } from '@oclif/core';
 
 import { clientDir, readClientConfig } from '@upriver/core';
@@ -15,10 +14,9 @@ import {
 } from '@upriver/audit-passes';
 
 import { BaseCommand } from '../base-command.js';
-import { cachedClaudeCall, type CacheableTextBlockParam } from '../util/cached-llm.js';
+import { claudeCliCall, claudeCliAvailable } from '../util/claude-cli.js';
 
-const MODEL = 'claude-sonnet-4-6';
-const MAX_TOKENS = 3000;
+const MODEL = 'sonnet';
 
 const SHOTLIST_SYSTEM = `You are an Upriver photography producer. Given an image inventory and a small-business industry context, you write a tight shot list for a one-day photo shoot. Rules:
 - No em dashes anywhere. Use commas, periods, or parentheses.
@@ -143,9 +141,7 @@ export default class AuditMedia extends BaseCommand {
       },
       stage_c_vision: {
         ran: false,
-        reason: process.env['ANTHROPIC_API_KEY']
-          ? 'skipped — heuristic pass produced sufficient signal at default settings'
-          : 'ANTHROPIC_API_KEY not set',
+        reason: 'vision-API enrichment not yet wired in this build (heuristic + LLM-polished shot list cover the spec)',
       },
     };
     writeFileSync(inventoryPath, JSON.stringify(inventory, null, 2), 'utf8');
@@ -155,9 +151,9 @@ export default class AuditMedia extends BaseCommand {
     );
 
     if (!flags['no-shotlist']) {
-      const apiKey = process.env['ANTHROPIC_API_KEY'];
-      if (!apiKey) {
-        this.warn('ANTHROPIC_API_KEY not set — writing a heuristic shot list without LLM polish.');
+      const claudeReady = await claudeCliAvailable();
+      if (!claudeReady) {
+        this.warn('claude CLI not on PATH — writing a heuristic shot list. Install Claude Code to get LLM-polished output.');
         const fallback = heuristicShotList(config.name ?? slug, vertical, summary);
         writeFileSync(shotlistMdPath, renderShotlistMarkdown(config.name ?? slug, vertical, summary, fallback), 'utf8');
         writeFileSync(
@@ -166,24 +162,18 @@ export default class AuditMedia extends BaseCommand {
           'utf8',
         );
       } else {
-        const anthropic = new Anthropic({ apiKey });
         const userPrompt = buildShotListPrompt({
           clientName: config.name ?? slug,
           vertical,
           summary,
           sampled,
         });
-        const systemBlocks: CacheableTextBlockParam[] = [
-          { type: 'text', text: SHOTLIST_SYSTEM, cache_control: { type: 'ephemeral' } },
-        ];
-        const result = await cachedClaudeCall({
-          anthropic,
+        const result = await claudeCliCall({
           slug,
           command: 'audit-media',
           model: MODEL,
-          maxTokens: MAX_TOKENS,
-          system: systemBlocks,
-          messages: [{ role: 'user', content: userPrompt }],
+          systemPrompt: SHOTLIST_SYSTEM,
+          userPrompt,
           log: (msg) => this.log(msg),
         });
         const llm = parseShotListJson(result.text);

@@ -27,7 +27,7 @@ Copy `.env.example` to `.env` at the repo root. The CLI auto-loads `.env` from t
 | Variable | Required for | Notes |
 |----------|--------------|-------|
 | `FIRECRAWL_API_KEY` | `init`, `discover`, `scrape`, `qa` | [Firecrawl](https://firecrawl.dev) key (`fc-...`). Covers map, scrape, batch, and branding extraction. |
-| `ANTHROPIC_API_KEY` | `synthesize`, `design-brief`, `voice-extract`, `interview-prep`, `process-interview` | Used via `@anthropic-ai/sdk` for brand voice draft/extract, executive summary, and implementation plan. |
+| `ANTHROPIC_API_KEY` | `synthesize`, `design-brief`, `interview-prep`, `process-interview` | Used via `@anthropic-ai/sdk` for synthesize/design-brief LLM passes. New LLM-backed features (`voice-extract`, `audit-media` shot list, future Phase 2/3) use the operator's Claude Max subscription via the headless `claude` CLI instead. Set `UPRIVER_USE_API_KEY=1` to force the API-key path on those features. |
 | `GOOGLE_SERVICE_ACCOUNT_KEY` | `discover` (GSC data), `audit` (seo pass) | Path to a Google service-account JSON file with Search Console read access for the client's property. Optional — commands degrade gracefully without it. |
 | `UPRIVER_SUPABASE_URL` | All commands (usage logging) | Supabase project URL for internal usage tracking. Optional — missing values skip the log write. |
 | `UPRIVER_SUPABASE_SERVICE_KEY` | All commands (usage logging) | Service-role key for the usage-log Supabase. |

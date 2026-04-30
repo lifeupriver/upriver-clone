@@ -1,18 +1,15 @@
 import { mkdirSync, readFileSync, readdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-import Anthropic from '@anthropic-ai/sdk';
-
 import type { AudienceVariant, VoiceRules } from '@upriver/core';
 import { UPRIVER_BANNED_WORDS } from '@upriver/core';
 
-import { cachedClaudeCall, type CacheableTextBlockParam } from '../util/cached-llm.js';
+import { claudeCliCall } from '../util/claude-cli.js';
 import type { LoadedPage } from '../synthesize/loader.js';
 import { analyzeCopy, type VoiceSignals } from './analyzer.js';
 import { SYSTEM_PROMPT, buildUserPrompt } from './prompt.js';
 
-const MODEL = 'claude-sonnet-4-6';
-const MAX_TOKENS = 4096;
+const MODEL = 'sonnet';
 /** Cap on chars sent to the LLM — ~6k words at ~5 chars/word. */
 const COPY_SAMPLE_CHAR_BUDGET = 30_000;
 
@@ -80,19 +77,9 @@ export async function extractVoice(
   const corpus = buildCorpus(sampledPages, inputs.supplementalText);
   const signals = analyzeCopy(corpus);
 
-  const apiKey = process.env['ANTHROPIC_API_KEY'];
-  if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY is required for voice-extract.');
-  }
-  const anthropic = new Anthropic({ apiKey });
-
   const copySample = corpus.length > COPY_SAMPLE_CHAR_BUDGET
     ? corpus.slice(0, COPY_SAMPLE_CHAR_BUDGET)
     : corpus;
-
-  const systemBlocks: CacheableTextBlockParam[] = [
-    { type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } },
-  ];
 
   const userPrompt = buildUserPrompt({
     clientName: inputs.clientName,
@@ -102,14 +89,12 @@ export async function extractVoice(
     copySample,
   });
 
-  const result = await cachedClaudeCall({
-    anthropic,
+  const result = await claudeCliCall({
     slug: inputs.slug,
     command: 'voice-extract',
     model: MODEL,
-    maxTokens: MAX_TOKENS,
-    system: systemBlocks,
-    messages: [{ role: 'user', content: userPrompt }],
+    systemPrompt: SYSTEM_PROMPT,
+    userPrompt,
     log,
   });
 
@@ -129,8 +114,8 @@ export async function extractVoice(
     sampleRewritesMarkdown,
     signals,
     fromCache: result.fromCache,
-    inputTokens: result.usage.input_tokens,
-    outputTokens: result.usage.output_tokens,
+    inputTokens: result.inputTokens ?? 0,
+    outputTokens: result.outputTokens ?? 0,
   };
 }
 

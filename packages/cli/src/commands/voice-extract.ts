@@ -45,7 +45,6 @@ export default class VoiceExtract extends BaseCommand {
   async run(): Promise<void> {
     const { args, flags } = await this.parse(VoiceExtract);
     const { slug } = args;
-    this.requireEnv('ANTHROPIC_API_KEY');
 
     const dir = clientDir(slug);
     if (!existsSync(dir)) {
