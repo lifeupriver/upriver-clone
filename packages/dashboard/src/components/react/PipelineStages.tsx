@@ -338,10 +338,32 @@ function handleEvent(raw: string, opts: StreamCallbacks): void {
   const data = dataLines.join('\n');
   if (eventName === 'done') {
     try {
-      const parsed = JSON.parse(data) as { code?: number; status?: string };
+      const parsed = JSON.parse(data) as {
+        code?: number;
+        status?: string;
+        output?: { stdoutTail?: string; stderrTail?: string } | null;
+      };
       // Two payload shapes share this event name: legacy spawn endpoint uses
-      // `{ code }`, jobs endpoint uses `{ status }`. Either path collapses to
-      // a numeric code so the existing onDone signature stays stable.
+      // `{ code }`, jobs endpoint uses `{ status, output }`. Either path
+      // collapses to a numeric code so the existing onDone signature stays
+      // stable. The jobs path also carries stdout/stderr tails from the
+      // worker — surface those as log lines so operators see real CLI output
+      // rather than just status transitions.
+      const output = parsed.output;
+      if (output && typeof output === 'object') {
+        if (typeof output.stdoutTail === 'string' && output.stdoutTail.length > 0) {
+          opts.onLine('--- stdout (tail) ---');
+          for (const line of output.stdoutTail.split('\n')) {
+            opts.onLine(line);
+          }
+        }
+        if (typeof output.stderrTail === 'string' && output.stderrTail.length > 0) {
+          opts.onLine('--- stderr (tail) ---');
+          for (const line of output.stderrTail.split('\n')) {
+            opts.onLine(line);
+          }
+        }
+      }
       if (typeof parsed.code === 'number') {
         opts.onDone(parsed.code);
       } else if (typeof parsed.status === 'string') {
