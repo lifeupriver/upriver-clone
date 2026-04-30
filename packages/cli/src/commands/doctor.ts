@@ -66,11 +66,6 @@ export default class Doctor extends BaseCommand {
         'Integration is currently a stub — setting this only changes wording. No real API calls yet.',
       ),
       checkEnv(
-        'UPRIVER_RUN_TOKEN',
-        'auth gate on dashboard /api/run/*',
-        'Dashboard /api/run/* is open to any same-origin caller until this is set.',
-      ),
-      checkEnv(
         'UPRIVER_REPORT_HOST',
         '`upriver report send` share URLs',
         'Defaults to https://reports.upriverhudsonvalley.com — set explicitly if your hosted-report URL differs.',

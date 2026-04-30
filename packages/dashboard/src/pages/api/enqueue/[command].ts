@@ -102,17 +102,6 @@ function validateBody(raw: unknown): ParseResult {
  * dashboard is fronting a worker pool.
  */
 export const POST: APIRoute = async ({ params, request }) => {
-  const expectedToken = process.env['UPRIVER_RUN_TOKEN'];
-  if (expectedToken) {
-    const provided = request.headers.get('x-upriver-token');
-    if (!provided || provided !== expectedToken) {
-      return new Response(
-        JSON.stringify({ error: 'forbidden — missing or invalid X-Upriver-Token' }),
-        { status: 403, headers: { 'content-type': 'application/json' } },
-      );
-    }
-  }
-
   const command = params.command;
   if (typeof command !== 'string' || !ALLOWED_COMMANDS.includes(command)) {
     return new Response(JSON.stringify({ error: 'unknown command' }), {

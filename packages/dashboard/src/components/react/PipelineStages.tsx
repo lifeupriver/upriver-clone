@@ -277,18 +277,13 @@ async function runViaEnqueue(
  * without coverage is a larger move than F.2 needs.
  */
 /**
- * F.5 — read the optional `<meta name="upriver-run-token">` value from the
- * dashboard page and attach it as `X-Upriver-Token`. When the dashboard
- * server has UPRIVER_RUN_TOKEN unset, the meta tag isn't rendered and we
- * fall back to a plain content-type header (current dev behavior).
+ * Build request headers for /api/run (local mode) or /api/enqueue (hosted
+ * mode). Phase 4 retired the X-Upriver-Token shared-secret header — hosted
+ * mode authenticates via Supabase Auth cookies (set automatically by the
+ * browser), local mode trusts the operator's laptop.
  */
 function runHeaders(): Record<string, string> {
-  const headers: Record<string, string> = { 'content-type': 'application/json' };
-  if (typeof document === 'undefined') return headers;
-  const tag = document.querySelector('meta[name="upriver-run-token"]');
-  const token = tag?.getAttribute('content');
-  if (token) headers['x-upriver-token'] = token;
-  return headers;
+  return { 'content-type': 'application/json' };
 }
 
 async function consumeSSE(body: ReadableStream<Uint8Array>, opts: StreamCallbacks): Promise<void> {
