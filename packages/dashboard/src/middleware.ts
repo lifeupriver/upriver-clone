@@ -61,15 +61,25 @@ export const onRequest = defineMiddleware(async (context, next) => {
         // Strip other PKCE-flow params Supabase sometimes appends.
         dest.searchParams.delete('error');
         dest.searchParams.delete('error_description');
+        // /auth/callback exists only to receive the code; once exchanged,
+        // the path itself has nothing to render. Forward to ?next or
+        // /clients so the user lands somewhere useful.
+        let location = dest.pathname + dest.search + dest.hash;
+        if (dest.pathname === '/auth/callback') {
+          const nextParam = dest.searchParams.get('next');
+          location = nextParam && nextParam.startsWith('/') ? nextParam : '/clients';
+        }
         return new Response(null, {
           status: 302,
-          headers: { location: dest.pathname + dest.search + dest.hash },
+          headers: { location },
         });
       }
-      // Code exchange failed — fall through so the user sees whatever the
-      // page would normally render. exchangeCodeForSession errors are
-      // typically expired or already-used codes; treating as "no session"
-      // matches the user's intent.
+      // Code exchange failed (expired or already-used). Send to a branded
+      // error page rather than letting the page-route render a 400.
+      return new Response(null, {
+        status: 302,
+        headers: { location: '/auth/expired' },
+      });
     }
   }
 
