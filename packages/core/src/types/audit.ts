@@ -45,7 +45,10 @@ export type AuditDimension =
   | 'audit-website'
   | 'analytics'
   | 'cross-browser'
-  | 'trust-signals';
+  | 'trust-signals'
+  | 'media'
+  | 'gaps'
+  | 'video';
 
 export interface AuditPassResult {
   dimension: AuditDimension;

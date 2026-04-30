@@ -65,8 +65,13 @@ upriver init https://audreysfarmhouse.com --slug audreys --name "Audrey's Farmho
 # 2. Deep scrape (screenshots, raw HTML, design tokens, structured extraction)
 upriver scrape audreys
 
-# 3. Run all 10 audit passes in parallel
+# 3. Run all base audit passes in parallel (12+ heuristic passes incl. media)
 upriver audit audreys
+
+# 3a. (Optional) Deep media audit + replacement shot list (F01).
+#     Sets up the photography upsell — prints a one-day shoot plan with
+#     subject, composition, location, and a $X-$Y estimate per shot.
+upriver audit-media audreys
 
 # 4. Compile audit-package.json and write client-facing docs (voice guide, exec summary)
 upriver synthesize audreys

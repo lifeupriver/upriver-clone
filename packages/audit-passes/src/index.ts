@@ -10,6 +10,8 @@ export { run as runTypography } from './typography/index.js';
 export { run as runLocal } from './local/index.js';
 export { run as runBacklinks } from './backlinks/index.js';
 export { run as runCompetitors } from './competitors/index.js';
+export { run as runMedia, buildInventory, summarizeInventory } from './media/index.js';
+export type { ImageClassification, ImageRecord, MediaInventorySummary } from './media/index.js';
 
 export type { PageData, DesignTokens } from './shared/loader.js';
 export { loadPages, loadDesignTokens, loadRawHtml } from './shared/loader.js';

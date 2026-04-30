@@ -19,6 +19,7 @@ export type PipelineStageId =
   | 'discover'
   | 'scrape'
   | 'audit'
+  | 'audit-media'
   | 'synthesize'
   | 'voice-extract'
   | 'design-brief'
@@ -66,6 +67,7 @@ export const PIPELINE_STAGES: readonly PipelineStage[] = [
   { id: 'discover', label: 'Discover', command: null, describe: 'Scrape competitors + keyword discovery' },
   { id: 'scrape', label: 'Scrape', command: 'scrape', describe: 'Firecrawl scrape every page' },
   { id: 'audit', label: 'Audit', command: 'audit', describe: 'Run audit passes (--audit-mode threads through on `run all`)' },
+  { id: 'audit-media', label: 'Media audit', command: 'audit-media', optional: true, describe: 'F01 — image inventory + replacement shot list (sells the photography upsell)' },
   { id: 'synthesize', label: 'Synthesize', command: 'synthesize', describe: 'Compose audit-package.json' },
   { id: 'voice-extract', label: 'Voice Extract', command: 'voice-extract', optional: true, describe: 'Derive brand voice guide (F03) — feeds improve, blog topics, video audit, admin' },
   { id: 'design-brief', label: 'Design Brief', command: 'design-brief', describe: 'Render the operator design brief' },
