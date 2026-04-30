@@ -125,9 +125,15 @@ importers:
       '@upriver/core':
         specifier: workspace:*
         version: link:../core
+      '@upriver/worker':
+        specifier: workspace:*
+        version: link:../worker
       astro:
         specifier: ^5.0.0
         version: 5.18.1(@types/node@22.19.17)(@vercel/functions@2.2.13)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.2)(typescript@5.9.3)(yaml@2.8.3)
+      inngest:
+        specifier: ^3.27.0
+        version: 3.54.2(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.1))(h3@1.15.11)(typescript@5.9.3)(zod@3.25.76)
       react:
         specifier: ^18.3.0
         version: 18.3.1
