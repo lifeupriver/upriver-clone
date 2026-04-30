@@ -1,0 +1,40 @@
+name: Change request
+description: Ask Upriver to change something on the site.
+title: "[change] "
+labels: ["change-request"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What should change?
+      description: Plain English. As specific as you like, or just a sentence.
+      placeholder: "Add a section about our fall menu to the homepage. Include the duck dish photo Sarah took last week."
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: Where on the site?
+      description: A page, a section, or "not sure".
+      placeholder: "Homepage, below the hero. Or anywhere that makes sense."
+    validations:
+      required: false
+  - type: dropdown
+    id: priority
+    attributes:
+      label: How urgent is this?
+      options:
+        - "Low — next time you're working on the site"
+        - "Medium — within the week"
+        - "High — needed today"
+      default: 0
+    validations:
+      required: false
+  - type: textarea
+    id: assets
+    attributes:
+      label: Assets (optional)
+      description: Drag and drop photos, PDFs, or paste links here.
+      placeholder: "Photo URLs, file attachments, or 'I'll send them after.'"
+    validations:
+      required: false

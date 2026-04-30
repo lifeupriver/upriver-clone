@@ -1,0 +1,7 @@
+[
+  { "name": "change-request", "color": "0e8a16", "description": "New change request from a client (auto-applied by issue template)" },
+  { "name": "in-progress", "color": "fbca04", "description": "Upriver bot has started work on this issue" },
+  { "name": "awaiting-assets", "color": "d93f0b", "description": "Bot is paused waiting on a missing photo, PDF, or other asset from the client" },
+  { "name": "pending-review", "color": "1d76db", "description": "PR is open and ready for the operator to review" },
+  { "name": "voice-check-failed", "color": "b60205", "description": "Generated change failed the voice check; operator review required before merge" }
+]

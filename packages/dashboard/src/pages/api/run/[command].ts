@@ -32,6 +32,10 @@ const ALLOWED_COMMANDS: ReadonlyArray<string> = [
   'followup',
   'prototype-app',
   'custom-tools',
+  'admin-deploy',
+  'admin-status',
+  'admin-pause',
+  'admin-rotate-pin',
 ];
 
 /** Time to wait after SIGTERM before escalating to SIGKILL on client abort. */

@@ -38,7 +38,8 @@ export type PipelineStageId =
   | 'prototype-app'
   | 'custom-tools'
   | 'monitor'
-  | 'followup';
+  | 'followup'
+  | 'admin-deploy';
 
 /**
  * One stage in the pipeline. The `command` is the slash-allowlist name in
@@ -95,6 +96,7 @@ export const PIPELINE_STAGES: readonly PipelineStage[] = [
   { id: 'custom-tools', label: 'Custom tools', command: 'custom-tools', optional: true, describe: 'F11 — bespoke backend tool concepts (high-margin upsell)' },
   { id: 'monitor', label: 'Monitor', command: 'monitor', optional: true, describe: 'F06 — weekly delta report for retainer clients (invoked on schedule, not in linear pipeline)' },
   { id: 'followup', label: 'Followup', command: 'followup', optional: true, describe: 'F07 — 6-month re-audit + case study + re-engagement docs' },
+  { id: 'admin-deploy', label: 'Admin deploy', command: 'admin-deploy', optional: true, describe: 'F05 — set up the natural-language change-request admin (GitHub + optional Vercel form)' },
 ];
 
 /** O(1) lookup helper. */
