@@ -1,8 +1,14 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
 import { listClients } from '@/lib/fs-reader';
+import { getDataSource } from '@/lib/data-source';
 
 const clients = await listClients();
+const dataSource = getDataSource();
+const dataSourceHint =
+  dataSource === 'supabase'
+    ? 'Looking in: Supabase bucket clients/'
+    : `Looking in: ${import.meta.env.UPRIVER_CLIENTS_DIR ?? './clients'}`;
 
 const stageClass: Record<string, string> = {
   init:          'pill-muted',
@@ -31,7 +37,7 @@ const stageClass: Record<string, string> = {
   {clients.length === 0 ? (
     <div class="empty-state">
       <p>No clients found. Run <code>upriver init &lt;url&gt;</code> to add one.</p>
-      <p class="empty-hint mono">Looking in: {import.meta.env.UPRIVER_CLIENTS_DIR ?? './clients'}</p>
+      <p class="empty-hint mono">{dataSourceHint}</p>
     </div>
   ) : (
     <div class="table-wrap">
