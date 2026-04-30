@@ -94,7 +94,8 @@ export async function readAuditPasses(slug: string): Promise<AuditPassResult[]> 
     const text = await ds.readClientFileText(slug, `audit/${file}`);
     if (!text) continue;
     try {
-      passes.push(JSON.parse(text) as AuditPassResult);
+      const parsed = JSON.parse(text) as AuditPassResult;
+      if (typeof parsed?.dimension === 'string') passes.push(parsed);
     } catch {
       // skip malformed files
     }
