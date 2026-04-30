@@ -24,9 +24,24 @@ order before doing anything:
 3. `.planning/roadmap/DECISIONS-NEEDED.md` — open decisions and the
    resolved table. Reference only — most are already closed.
 
+## Verify state in the first 2 minutes
+
+```
+git log --oneline origin/main..HEAD | head    # 14 commits expected
+git status                                     # clean
+pnpm -r run typecheck                          # 0 errors
+pnpm --filter @upriver/cli run test            # 72/72
+pnpm --filter @upriver/core run test           # 21/21
+curl -sS -o /dev/null -w "%{http_code}\n" https://upriver-platform.vercel.app/clients
+                                               # → 200
+```
+
+If any step diverges, stop and surface — something has changed since
+this handoff was written.
+
 ## Headline state
 
-- Branch: `main`, 13 commits ahead of `origin/main`. Tests 72/72 (cli)
+- Branch: `main`, 14 commits ahead of `origin/main`. Tests 72/72 (cli)
   + 21/21 (core), typecheck clean across all packages. Working tree
   clean.
 - Supabase project `upriver-platform` (id `qavbpfmhgvkhrnbqalrp`)
@@ -65,27 +80,63 @@ Pipeline execution off the dashboard. Goal: trigger pipeline stages
 from the hosted dashboard without spawning child processes inside
 Vercel functions.
 
-Open architectural decisions to confirm before coding:
-- **Worker platform** — recommendation Inngest. Alternatives:
-  Trigger.dev, GitHub Actions, Vercel Functions w/ Fluid Compute,
-  Fly.io. See OPTION-B-MIGRATION.md Phase 3 table.
-- **Container image registry** — recommendation GitHub Container
-  Registry (free).
-- **Existing-client back-migration** — when do operators run
-  `upriver sync push` against existing local clients? Operator's
-  call.
+**Surface these three questions to the user FIRST. Do not start
+scaffolding `packages/worker/` until at least Q1 is answered.**
 
-Slices (per OPTION-B-MIGRATION.md):
+> Q1. **Worker platform** — pick one. My recommendation: **Inngest**.
+>     Alternatives in `OPTION-B-MIGRATION.md` Phase 3 table:
+>     Trigger.dev (similar shape, more control), GitHub Actions
+>     `workflow_dispatch` (free, slow startup, awkward SSE),
+>     Vercel Functions w/ Fluid Compute (one vendor, ephemeral disk),
+>     Fly.io machine (long-running container, manual provisioning).
+>
+> Q2. **Container image registry** — recommendation **GitHub Container
+>     Registry** (free, integrates with the existing repo).
+>     Alternative: Docker Hub.
+>
+> Q3. **Existing-client back-migration** — once Phase 3 is live and
+>     pipelines run against the bucket, do the existing local clients
+>     (currently in operator's local `clients/<slug>/`, none in the
+>     bucket as of this handoff) get migrated via `upriver sync push`?
+>     Operator's call. Default: only new clients live in the bucket.
+
+Slices once Q1 + Q2 are answered (per OPTION-B-MIGRATION.md):
 1. `packages/worker/` — one job per pipeline stage (scrape, audit,
    synthesize, design-brief, scaffold, clone, fixes-plan, qa).
 2. Replace `/api/run/<command>` with `/api/enqueue/<command>` —
-   posts to Inngest, returns a job-id.
-3. `/api/jobs/<id>` SSE endpoint streaming status from Inngest.
-4. Update `PipelineStages.tsx` to enqueue+stream.
+   posts a job to the worker platform, returns a job-id.
+3. `/api/jobs/<id>` SSE endpoint streaming status from the worker.
+4. Update `PipelineStages.tsx` to enqueue+stream instead of
+   spawn+stream.
 5. Worker container with `claude` CLI + Lighthouse + squirrelscan +
-   Playwright; baked into a GHCR image.
+   Playwright; baked into a registry image.
 
-Surface decision questions before scaffolding `packages/worker/`.
+Phase 3 estimate: 5–7 days. Reversible at the API boundary if the
+worker platform turns out to be a poor fit.
+
+## Where to find things
+
+```
+packages/core/src/data/
+  client-data-source.ts    # interface
+  local-fs.ts              # LocalFsClientDataSource
+  supabase.ts              # SupabaseClientDataSource + factory
+  *.test.ts                # 13 unit tests
+packages/core/scripts/smoke-data-source.mjs   # live-bucket E2E
+packages/dashboard/src/lib/
+  data-source.ts           # resolveClientDataSource() + assertLocalDataSource()
+  fs-reader.ts             # async; routes through the abstraction
+  report-reader.ts         # async
+  intake-writer.ts         # async
+  pipeline.ts              # async detectStage()
+  run-cli.ts               # still local-only (Phase 3 replaces this)
+packages/dashboard/src/middleware.ts          # 503 placeholder for run-cli paths
+packages/cli/src/commands/sync/{push,pull}.ts # the new sync commands
+.vercel/project.json       # links to upriver-platform on Vercel
+.env                       # operator-local secrets, gitignored
+```
+
+Phase 3 will add `packages/worker/` (does not exist yet).
 
 ## MCP servers
 
@@ -95,7 +146,12 @@ Already authenticated in this repo:
   `create_branch`.
 - `mcp__plugin_vercel_vercel__*` — full toolset. Note: no
   `create_team` (do it in dashboard if needed); no explicit
-  `create_project` (created implicitly by `deploy_to_vercel`).
+  `create_project` (created implicitly by `deploy_to_vercel` —
+  which actually delegates to `vercel deploy` CLI). For env vars,
+  use `vercel env add NAME production --value V --yes` via Bash;
+  preview-env adds need a git branch arg or get rejected even
+  with `--yes` (known CLI quirk; preview deploys aren't wired yet
+  anyway).
 
 If the deferred-tools list shows them but their schemas aren't loaded,
 use `ToolSearch` with `select:<tool_name>` to load before calling.
@@ -112,15 +168,16 @@ use `ToolSearch` with `select:<tool_name>` to load before calling.
 
 ## What's still operator-input-only (don't block on)
 
-- Service-role key from Supabase dashboard pasted into local `.env`
-  and into Vercel project env vars. Not exposed via MCP.
-- `RESEND_API_KEY` value + `upriverhudsonvalley.com` verified in
-  Resend dashboard.
-- `UPRIVER_RUN_TOKEN` value (or "local-only forever" — moot once
-  Phase 4 Supabase Auth lands).
-- Phase 3 worker-platform pick (recommended Inngest), container
-  registry pick (recommended GHCR), and operator email seed for
-  Phase 4 auth.
+- Service-role key — already in local `.env` and on Vercel for
+  Production + Development env. If a fresh checkout, paste from
+  Supabase dashboard → Settings → API.
+- `RESEND_API_KEY` + `upriverhudsonvalley.com` verified in Resend
+  dashboard. Not blocking Phase 3.
+- `UPRIVER_RUN_TOKEN` — currently unset; dashboard treats as
+  open same-origin. Will be replaced by Supabase Auth in Phase 4.
+- Phase 3 decisions (Q1, Q2, Q3 above).
+- Preview env vars on Vercel — empty by design until git
+  integration goes on.
 
 ## Auto-mode posture
 
