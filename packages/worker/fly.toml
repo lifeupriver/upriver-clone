@@ -1,0 +1,44 @@
+# Fly.io config for the upriver worker.
+#
+# Deploy from repo root:
+#   fly deploy --config packages/worker/fly.toml --dockerfile packages/worker/Dockerfile
+#
+# First-time setup is documented in packages/worker/DEPLOY.md.
+
+app = "upriver-worker"
+primary_region = "iad"
+
+[build]
+  dockerfile = "packages/worker/Dockerfile"
+
+[env]
+  PORT = "8288"
+  # Inngest needs the public-facing URL when generating signed callbacks.
+  # Override with `fly secrets set INNGEST_SERVE_HOST=https://upriver-worker.fly.dev`
+  # so signed URLs match what the dashboard sees.
+  NODE_ENV = "production"
+
+[http_service]
+  internal_port = 8288
+  force_https = true
+  # Idle workers stop to keep cost ~$0; Inngest's retry backoff covers the
+  # cold-start window when a job arrives. Crank min_machines_running to 1
+  # if you start seeing first-job latency complaints.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "get"
+    path = "/healthz"
+    protocol = "http"
+    timeout = "5s"
+
+[[vm]]
+  size = "shared-cpu-2x"
+  memory = "2gb"
+  cpu_kind = "shared"
+  cpus = 2
