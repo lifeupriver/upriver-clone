@@ -16,6 +16,7 @@ const ALLOWED_COMMANDS: ReadonlyArray<string> = [
   'audit',
   'audit-media',
   'gap-analysis',
+  'video-audit',
   'synthesize',
   'voice-extract',
   'schema-build',

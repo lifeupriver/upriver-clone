@@ -26,6 +26,7 @@ const ORCHESTRATED_IDS: ReadonlySet<string> = new Set([
   'audit',
   'audit-media',
   'gap-analysis',
+  'video-audit',
   'synthesize',
   'voice-extract',
   'schema-build',

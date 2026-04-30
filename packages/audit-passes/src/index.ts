@@ -20,6 +20,14 @@ export {
   VERTICAL_FEATURE_REQUIREMENTS,
 } from './gaps/index.js';
 export type { FeatureId, FeatureSpec, ExpectedPageMatch, DetectedFeatures } from './gaps/index.js';
+export {
+  run as runVideo,
+  classifyPageContext as classifyVideoPageContext,
+  suggestVideosForPage,
+  VIDEO_CATALOG,
+  VERTICAL_VIDEO_WEIGHTS,
+} from './video/index.js';
+export type { VideoTypeId, VideoTypeSpec, VideoSuggestion, PageContext } from './video/index.js';
 
 export type { PageData, DesignTokens } from './shared/loader.js';
 export { loadPages, loadDesignTokens, loadRawHtml } from './shared/loader.js';

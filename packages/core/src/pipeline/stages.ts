@@ -21,6 +21,7 @@ export type PipelineStageId =
   | 'audit'
   | 'audit-media'
   | 'gap-analysis'
+  | 'video-audit'
   | 'synthesize'
   | 'voice-extract'
   | 'schema-build'
@@ -71,6 +72,7 @@ export const PIPELINE_STAGES: readonly PipelineStage[] = [
   { id: 'audit', label: 'Audit', command: 'audit', describe: 'Run audit passes (--audit-mode threads through on `run all`)' },
   { id: 'audit-media', label: 'Media audit', command: 'audit-media', optional: true, describe: 'F01 — image inventory + replacement shot list (sells the photography upsell)' },
   { id: 'gap-analysis', label: 'Gap analysis', command: 'gap-analysis', optional: true, describe: 'F09 — missing pages/features + proposed-sitemap.json (drives rebuild IA + redirects)' },
+  { id: 'video-audit', label: 'Video audit', command: 'video-audit', optional: true, describe: 'F12 — page-by-page video plan with shot lists (sells the videography work)' },
   { id: 'synthesize', label: 'Synthesize', command: 'synthesize', describe: 'Compose audit-package.json' },
   { id: 'voice-extract', label: 'Voice Extract', command: 'voice-extract', optional: true, describe: 'Derive brand voice guide (F03) — feeds improve, blog topics, video audit, admin' },
   { id: 'schema-build', label: 'Schema Build', command: 'schema-build', optional: true, describe: 'Generate JSON-LD schemas + install guide (F02) — sellable as $500 standalone' },
