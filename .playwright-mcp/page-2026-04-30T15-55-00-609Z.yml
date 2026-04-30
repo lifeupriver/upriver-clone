@@ -1,0 +1,583 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - generic [ref=e14]: v0.1.0
+    - main [ref=e15]:
+      - generic [ref=e16]:
+        - link "Clients" [ref=e17] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e18]: /
+        - link "Little Friends Learning Loft" [ref=e19] [cursor=pointer]:
+          - /url: /clients/littlefriends
+        - generic [ref=e20]: /
+        - generic [ref=e21]: Audit
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - text: Audit Report
+          - heading "Little Friends Learning Loft" [level=1] [ref=e24]
+        - generic [ref=e26]: Overall
+      - generic [ref=e27]:
+        - generic [ref=e29]:
+          - generic [ref=e30]:
+            - generic [ref=e31]: "78"
+            - generic [ref=e32]: C
+            - generic [ref=e33]: aeo
+            - generic [ref=e34]: 2 findings
+          - generic [ref=e35]:
+            - generic [ref=e36]: "90"
+            - generic [ref=e37]: A
+            - generic [ref=e38]: backlinks
+            - generic [ref=e39]: 2 findings
+          - generic [ref=e40]:
+            - generic [ref=e41]: "83"
+            - generic [ref=e42]: B
+            - generic [ref=e43]: competitors
+            - generic [ref=e44]: 3 findings
+          - generic [ref=e45]:
+            - generic [ref=e46]: "72"
+            - generic [ref=e47]: C
+            - generic [ref=e48]: content
+            - generic [ref=e49]: 4 findings
+          - generic [ref=e50]:
+            - generic [ref=e51]: "85"
+            - generic [ref=e52]: B
+            - generic [ref=e53]: design
+            - generic [ref=e54]: 1 finding
+          - generic [ref=e55]:
+            - generic [ref=e56]: "46"
+            - generic [ref=e57]: F
+            - generic [ref=e58]: gaps
+            - generic [ref=e59]: 6 findings
+          - generic [ref=e60]:
+            - generic [ref=e61]: "71"
+            - generic [ref=e62]: C
+            - generic [ref=e63]: geo
+            - generic [ref=e64]: 3 findings
+          - generic [ref=e65]:
+            - generic [ref=e66]: "83"
+            - generic [ref=e67]: B
+            - generic [ref=e68]: links
+            - generic [ref=e69]: 3 findings
+          - generic [ref=e70]:
+            - generic [ref=e71]: "64"
+            - generic [ref=e72]: D
+            - generic [ref=e73]: local
+            - generic [ref=e74]: 4 findings
+          - generic [ref=e75]:
+            - generic [ref=e76]: "97"
+            - generic [ref=e77]: A
+            - generic [ref=e78]: media
+            - generic [ref=e79]: 1 finding
+          - generic [ref=e80]:
+            - generic [ref=e81]: "54"
+            - generic [ref=e82]: F
+            - generic [ref=e83]: sales
+            - generic [ref=e84]: 6 findings
+          - generic [ref=e85]:
+            - generic [ref=e86]: "72"
+            - generic [ref=e87]: C
+            - generic [ref=e88]: schema
+            - generic [ref=e89]: 4 findings
+          - generic [ref=e90]:
+            - generic [ref=e91]: "50"
+            - generic [ref=e92]: F
+            - generic [ref=e93]: seo
+            - generic [ref=e94]: 6 findings
+          - generic [ref=e95]:
+            - generic [ref=e96]: "86"
+            - generic [ref=e97]: B
+            - generic [ref=e98]: video
+            - generic [ref=e99]: 2 findings
+        - img "Audit score radar chart" [ref=e102]:
+          - generic [ref=e135]: AEO
+          - generic [ref=e136]: BACKLINKS
+          - generic [ref=e137]: COMPETITORS
+          - generic [ref=e138]: CONTENT
+          - generic [ref=e139]: DESIGN
+          - generic [ref=e140]: GAPS
+          - generic [ref=e141]: GEO
+          - generic [ref=e142]: LINKS
+          - generic [ref=e143]: LOCAL
+          - generic [ref=e144]: MEDIA
+          - generic [ref=e145]: SALES
+          - generic [ref=e146]: SCHEMA
+          - generic [ref=e147]: SEO
+          - generic [ref=e148]: VIDEO
+      - generic [ref=e149]:
+        - heading "Findings (47)" [level=3] [ref=e150]
+        - generic [ref=e152]:
+          - generic [ref=e153]:
+            - generic [ref=e154]:
+              - button "All" [ref=e155] [cursor=pointer]
+              - button "P09" [ref=e156] [cursor=pointer]
+              - button "P130" [ref=e157] [cursor=pointer]
+              - button "P28" [ref=e158] [cursor=pointer]
+            - generic [ref=e160]:
+              - button "All Effort" [ref=e161] [cursor=pointer]
+              - button "Light" [ref=e162] [cursor=pointer]
+              - button "Medium" [ref=e163] [cursor=pointer]
+              - button "Heavy" [ref=e164] [cursor=pointer]
+            - generic [ref=e166]:
+              - button "All Dims" [ref=e167] [cursor=pointer]
+              - button "aeo" [ref=e168] [cursor=pointer]
+              - button "backlinks" [ref=e169] [cursor=pointer]
+              - button "competitors" [ref=e170] [cursor=pointer]
+              - button "content" [ref=e171] [cursor=pointer]
+              - button "design" [ref=e172] [cursor=pointer]
+              - button "gaps" [ref=e173] [cursor=pointer]
+              - button "geo" [ref=e174] [cursor=pointer]
+              - button "links" [ref=e175] [cursor=pointer]
+              - button "local" [ref=e176] [cursor=pointer]
+              - button "media" [ref=e177] [cursor=pointer]
+              - button "sales" [ref=e178] [cursor=pointer]
+              - button "schema" [ref=e179] [cursor=pointer]
+              - button "seo" [ref=e180] [cursor=pointer]
+              - button "video" [ref=e181] [cursor=pointer]
+          - paragraph [ref=e182]: 47 findings
+          - generic [ref=e183]:
+            - generic [ref=e185]:
+              - generic [ref=e186]:
+                - generic [ref=e187]: P1
+                - generic [ref=e188]: medium
+              - generic [ref=e189]:
+                - button "1 preschool questions not explicitly answered" [ref=e190] [cursor=pointer]:
+                  - heading "1 preschool questions not explicitly answered" [level=3] [ref=e191]
+                - paragraph [ref=e192]: 1 common questions parents ask are not directly answered on the site.
+              - button "Expand" [ref=e193] [cursor=pointer]: +
+            - generic [ref=e195]:
+              - generic [ref=e196]:
+                - generic [ref=e197]: P0
+                - generic [ref=e198]: heavy
+              - generic [ref=e199]:
+                - button "Only 0 FAQ entries — far below what AI engines need to answer preschool questions" [ref=e200] [cursor=pointer]:
+                  - heading "Only 0 FAQ entries — far below what AI engines need to answer preschool questions" [level=3] [ref=e201]
+                - paragraph [ref=e202]: AI assistants and featured snippets favor sites with comprehensive Q&A content. A preschool site should answer 40-60 common questions to be competitive in AI search.
+              - button "Expand" [ref=e203] [cursor=pointer]: +
+            - generic [ref=e205]:
+              - generic [ref=e206]:
+                - generic [ref=e207]: P1
+                - generic [ref=e208]: light
+              - generic [ref=e209]:
+                - button "Backlink profile not analyzed — Ahrefs API key not configured" [ref=e210] [cursor=pointer]:
+                  - heading "Backlink profile not analyzed — Ahrefs API key not configured" [level=3] [ref=e211]
+                - paragraph [ref=e212]: Without an Ahrefs API key, domain authority, referring domains, and anchor text distribution cannot be assessed. Add AHREFS_API_KEY to your .env file to unlock full backlink analysis.
+              - button "Expand" [ref=e213] [cursor=pointer]: +
+            - generic [ref=e215]:
+              - generic [ref=e216]:
+                - generic [ref=e217]: P2
+                - generic [ref=e218]: light
+              - generic [ref=e219]:
+                - button "No wedding directory profiles linked — missing easy citation backlinks" [ref=e220] [cursor=pointer]:
+                  - heading "No wedding directory profiles linked — missing easy citation backlinks" [level=3] [ref=e221]
+                - paragraph [ref=e222]: WeddingWire, The Knot, and Zola profiles provide DA 70+ backlinks for free. No links to these directories were found.
+              - button "Expand" [ref=e223] [cursor=pointer]: +
+            - generic [ref=e225]:
+              - generic [ref=e226]:
+                - generic [ref=e227]: P1
+                - generic [ref=e228]: light
+              - generic [ref=e229]:
+                - button "No competitors defined in client configuration" [ref=e230] [cursor=pointer]:
+                  - heading "No competitors defined in client configuration" [level=3] [ref=e231]
+                - paragraph [ref=e232]: No competitor URLs were identified during discovery. Without competitor benchmarking, it is impossible to identify content and feature gaps.
+              - button "Expand" [ref=e233] [cursor=pointer]: +
+            - generic [ref=e235]:
+              - generic [ref=e236]:
+                - generic [ref=e237]: P1
+                - generic [ref=e238]: medium
+              - generic [ref=e239]:
+                - button "No virtual tour — increasingly standard among competing venues" [ref=e240] [cursor=pointer]:
+                  - heading "No virtual tour — increasingly standard among competing venues" [level=3] [ref=e241]
+                - paragraph [ref=e242]: Virtual tours (Matterport or 360° photos) are now a standard feature on competing venue websites. They let couples pre-qualify the venue remotely.
+              - button "Expand" [ref=e243] [cursor=pointer]: +
+            - generic [ref=e245]:
+              - generic [ref=e246]:
+                - generic [ref=e247]: P2
+                - generic [ref=e248]: medium
+              - generic [ref=e249]:
+                - button "No real weddings portfolio — common competitive differentiator" [ref=e250] [cursor=pointer]:
+                  - heading "No real weddings portfolio — common competitive differentiator" [level=3] [ref=e251]
+                - paragraph [ref=e252]: Top competing venues feature "Real Weddings" pages showing actual events. This content converts better than stock photography and also ranks well for long-tail searches.
+              - button "Expand" [ref=e253] [cursor=pointer]: +
+            - generic [ref=e255]:
+              - generic [ref=e256]:
+                - generic [ref=e257]: P1
+                - generic [ref=e258]: medium
+              - generic [ref=e259]:
+                - button "Banned marketing language detected" [ref=e260] [cursor=pointer]:
+                  - heading "Banned marketing language detected" [level=3] [ref=e261]
+                - paragraph [ref=e262]: "The site uses vague, overused words that signal low credibility: \"magical\" (1 page), \"seamlessly\" (1 page), \"transform\" (1 page), \"robust\" (1 page)."
+              - button "Expand" [ref=e263] [cursor=pointer]: +
+            - generic [ref=e265]:
+              - generic [ref=e266]:
+                - generic [ref=e267]: P1
+                - generic [ref=e268]: heavy
+              - generic [ref=e269]:
+                - button "Thin content pages" [ref=e270] [cursor=pointer]:
+                  - heading "Thin content pages" [level=3] [ref=e271]
+                - paragraph [ref=e272]: 5 pages have fewer than 150 words of content — not enough to answer a visitor's questions or rank well.
+              - button "Expand" [ref=e273] [cursor=pointer]: +
+            - generic [ref=e275]:
+              - generic [ref=e276]:
+                - generic [ref=e277]: P1
+                - generic [ref=e278]: medium
+              - generic [ref=e279]:
+                - button "Images missing alt text" [ref=e280] [cursor=pointer]:
+                  - heading "Images missing alt text" [level=3] [ref=e281]
+                - paragraph [ref=e282]: 4 pages have images with empty alt attributes, harming accessibility and image SEO.
+              - button "Expand" [ref=e283] [cursor=pointer]: +
+            - generic [ref=e285]:
+              - generic [ref=e286]:
+                - generic [ref=e287]: P1
+                - generic [ref=e288]: heavy
+              - generic [ref=e289]:
+                - button "Low FAQ coverage" [ref=e290] [cursor=pointer]:
+                  - heading "Low FAQ coverage" [level=3] [ref=e291]
+                - paragraph [ref=e292]: Only 0 FAQ entries detected. Parents have dozens of questions before enrolling — schedule, tuition, what to bring, drop-off — and each unanswered question is an objection.
+              - button "Expand" [ref=e293] [cursor=pointer]: +
+            - generic [ref=e295]:
+              - generic [ref=e296]:
+                - generic [ref=e297]: P0
+                - generic [ref=e298]: medium
+              - generic [ref=e299]:
+                - button "Heading hierarchy issues on 13/13 pages" [ref=e300] [cursor=pointer]:
+                  - heading "Heading hierarchy issues on 13/13 pages" [level=3] [ref=e301]
+                - paragraph [ref=e302]: Pages without a single H1, with multiple H1s, or with skipped heading levels — both a typography signal and an SEO/accessibility issue.
+              - button "Expand" [ref=e303] [cursor=pointer]: +
+            - generic [ref=e305]:
+              - generic [ref=e306]:
+                - generic [ref=e307]: P0
+                - generic [ref=e308]: medium
+              - generic [ref=e309]:
+                - 'button "Missing page: Tuition or pricing page" [ref=e310] [cursor=pointer]':
+                  - 'heading "Missing page: Tuition or pricing page" [level=3] [ref=e311]'
+                - paragraph [ref=e312]: The site does not have a tuition or pricing page. This is a P0 expectation for this industry.
+              - button "Expand" [ref=e313] [cursor=pointer]: +
+            - generic [ref=e315]:
+              - generic [ref=e316]:
+                - generic [ref=e317]: P1
+                - generic [ref=e318]: light
+              - generic [ref=e319]:
+                - 'button "Missing page: Photo gallery / classroom tour" [ref=e320] [cursor=pointer]':
+                  - 'heading "Missing page: Photo gallery / classroom tour" [level=3] [ref=e321]'
+                - paragraph [ref=e322]: The site does not have a photo gallery / classroom tour. This is a P1 expectation for this industry.
+              - button "Expand" [ref=e323] [cursor=pointer]: +
+            - generic [ref=e325]:
+              - generic [ref=e326]:
+                - generic [ref=e327]: P1
+                - generic [ref=e328]: light
+              - generic [ref=e329]:
+                - 'button "Missing page: Teachers / Staff page" [ref=e330] [cursor=pointer]':
+                  - 'heading "Missing page: Teachers / Staff page" [level=3] [ref=e331]'
+                - paragraph [ref=e332]: The site does not have a teachers / staff page. This is a P1 expectation for this industry.
+              - button "Expand" [ref=e333] [cursor=pointer]: +
+            - generic [ref=e335]:
+              - generic [ref=e336]:
+                - generic [ref=e337]: P2
+                - generic [ref=e338]: light
+              - generic [ref=e339]:
+                - 'button "Missing page: School calendar / hours page" [ref=e340] [cursor=pointer]':
+                  - 'heading "Missing page: School calendar / hours page" [level=3] [ref=e341]'
+                - paragraph [ref=e342]: The site does not have a school calendar / hours page. This is a P2 expectation for this industry.
+              - button "Expand" [ref=e343] [cursor=pointer]: +
+            - generic [ref=e345]:
+              - generic [ref=e346]:
+                - generic [ref=e347]: P0
+                - generic [ref=e348]: light
+              - generic [ref=e349]:
+                - 'button "Missing feature: Contact form" [ref=e350] [cursor=pointer]':
+                  - 'heading "Missing feature: Contact form" [level=3] [ref=e351]'
+                - paragraph [ref=e352]: Contact form was not detected on the site. Direct lead capture without phone friction. The single most consequential conversion path on a small-business site.
+              - button "Expand" [ref=e353] [cursor=pointer]: +
+            - generic [ref=e355]:
+              - generic [ref=e356]:
+                - generic [ref=e357]: P1
+                - generic [ref=e358]: light
+              - generic [ref=e359]:
+                - 'button "Missing feature: Embedded map" [ref=e360] [cursor=pointer]':
+                  - 'heading "Missing feature: Embedded map" [level=3] [ref=e361]'
+                - paragraph [ref=e362]: Embedded map was not detected on the site. Helps visitors confirm location at a glance and links straight into navigation apps.
+              - button "Expand" [ref=e363] [cursor=pointer]: +
+            - generic [ref=e365]:
+              - generic [ref=e366]:
+                - generic [ref=e367]: P0
+                - generic [ref=e368]: medium
+              - generic [ref=e369]:
+                - button "No TL;DR / summary blocks for AI extraction" [ref=e370] [cursor=pointer]:
+                  - heading "No TL;DR / summary blocks for AI extraction" [level=3] [ref=e371]
+                - paragraph [ref=e372]: 0 of 13 pages include a "TL;DR", "Summary", or "Key takeaways" heading. AI search crawlers preferentially quote concise summary blocks; without them they fall back to fragmentary copy.
+              - button "Expand" [ref=e373] [cursor=pointer]: +
+            - generic [ref=e375]:
+              - generic [ref=e376]:
+                - generic [ref=e377]: P1
+                - generic [ref=e378]: light
+              - generic [ref=e379]:
+                - 'button "No `public/llms.txt` published" [ref=e380] [cursor=pointer]':
+                  - 'heading "No `public/llms.txt` published" [level=3] [ref=e381]'
+                - paragraph [ref=e382]: "`llms.txt` is the emerging convention (analogous to `robots.txt`) for telling AI crawlers which URLs and summaries to ingest first. The site does not publish one."
+              - button "Expand" [ref=e383] [cursor=pointer]: +
+            - generic [ref=e385]:
+              - generic [ref=e386]:
+                - generic [ref=e387]: P1
+                - generic [ref=e388]: light
+              - generic [ref=e389]:
+                - 'button "Canonical fact missing: Service area / location qualifier" [ref=e390] [cursor=pointer]':
+                  - 'heading "Canonical fact missing: Service area / location qualifier" [level=3] [ref=e391]'
+                - paragraph [ref=e392]: Service area / location qualifier could not be detected anywhere on the site.
+              - button "Expand" [ref=e393] [cursor=pointer]: +
+            - generic [ref=e395]:
+              - generic [ref=e396]:
+                - generic [ref=e397]: P1
+                - generic [ref=e398]: medium
+              - generic [ref=e399]:
+                - button "12 orphaned pages with no internal links pointing to them" [ref=e400] [cursor=pointer]:
+                  - heading "12 orphaned pages with no internal links pointing to them" [level=3] [ref=e401]
+                - paragraph [ref=e402]: 12 pages are not linked from any other page on the site. Search engines may not discover them, and visitors have no path to find them.
+              - button "Expand" [ref=e403] [cursor=pointer]: +
+            - generic [ref=e405]:
+              - generic [ref=e406]:
+                - generic [ref=e407]: P2
+                - generic [ref=e408]: medium
+              - generic [ref=e409]:
+                - button "Most pages have very few internal links" [ref=e410] [cursor=pointer]:
+                  - heading "Most pages have very few internal links" [level=3] [ref=e411]
+                - paragraph [ref=e412]: 12 of 13 pages link to fewer than 3 other pages. Sparse internal linking limits crawl discovery and PageRank distribution.
+              - button "Expand" [ref=e413] [cursor=pointer]: +
+            - generic [ref=e415]:
+              - generic [ref=e416]:
+                - generic [ref=e417]: P1
+                - generic [ref=e418]: light
+              - generic [ref=e419]:
+                - button "Homepage has very few internal links" [ref=e420] [cursor=pointer]:
+                  - heading "Homepage has very few internal links" [level=3] [ref=e421]
+                - paragraph [ref=e422]: The homepage links to only 0 internal pages. The homepage should link to every primary section of the site.
+              - button "Expand" [ref=e423] [cursor=pointer]: +
+            - generic [ref=e425]:
+              - generic [ref=e426]:
+                - generic [ref=e427]: P1
+                - generic [ref=e428]: light
+              - generic [ref=e429]:
+                - button "Inconsistent phone numbers across pages" [ref=e430] [cursor=pointer]:
+                  - heading "Inconsistent phone numbers across pages" [level=3] [ref=e431]
+                - paragraph [ref=e432]: "3 different phone numbers found: (732) 343-0005 | (845) 561-6602 | 732-343-0005. NAP inconsistency hurts local search rankings."
+              - button "Expand" [ref=e433] [cursor=pointer]: +
+            - generic [ref=e435]:
+              - generic [ref=e436]:
+                - generic [ref=e437]: P1
+                - generic [ref=e438]: light
+              - generic [ref=e439]:
+                - button "Inconsistent address formats across pages" [ref=e440] [cursor=pointer]:
+                  - heading "Inconsistent address formats across pages" [level=3] [ref=e441]
+                - paragraph [ref=e442]: 2 different address formats found. Even formatting differences (abbreviations, suite formats) can signal inconsistency.
+              - button "Expand" [ref=e443] [cursor=pointer]: +
+            - generic [ref=e445]:
+              - generic [ref=e446]:
+                - generic [ref=e447]: P0
+                - generic [ref=e448]: heavy
+              - generic [ref=e449]:
+                - button "Low local keyword density — site not optimized for geographic search terms" [ref=e450] [cursor=pointer]:
+                  - heading "Low local keyword density — site not optimized for geographic search terms" [level=3] [ref=e451]
+                - paragraph [ref=e452]: The site rarely mentions specific location names (city, region, state). parents search for "Montessori preschool near me" — if those words aren't on the site, it won't rank.
+              - button "Expand" [ref=e453] [cursor=pointer]: +
+            - generic [ref=e455]:
+              - generic [ref=e456]:
+                - generic [ref=e457]: P1
+                - generic [ref=e458]: medium
+              - generic [ref=e459]:
+                - button "Missing links to 6 relevant local directories" [ref=e460] [cursor=pointer]:
+                  - heading "Missing links to 6 relevant local directories" [level=3] [ref=e461]
+                - paragraph [ref=e462]: "The site does not link to: Care.com, Winnie, GreatSchools, Yelp, Facebook, Instagram. Directory profiles are citation sources that strengthen local SEO."
+              - button "Expand" [ref=e463] [cursor=pointer]: +
+            - generic [ref=e465]:
+              - generic [ref=e466]:
+                - generic [ref=e467]: P2
+                - generic [ref=e468]: medium
+              - generic [ref=e469]:
+                - button "63 images could not be classified by URL alone" [ref=e470] [cursor=pointer]:
+                  - heading "63 images could not be classified by URL alone" [level=3] [ref=e471]
+                - paragraph [ref=e472]: A large share of images use neutral filenames so heuristic classification could not distinguish authentic from generic. Run "upriver audit-media" with a vision API key for deeper analysis.
+              - button "Expand" [ref=e473] [cursor=pointer]: +
+            - generic [ref=e475]:
+              - generic [ref=e476]:
+                - generic [ref=e477]: P0
+                - generic [ref=e478]: heavy
+              - generic [ref=e479]:
+                - 'button "Missing: Tuition or pricing page" [ref=e480] [cursor=pointer]':
+                  - 'heading "Missing: Tuition or pricing page" [level=3] [ref=e481]'
+                - paragraph [ref=e482]: No page matching "Tuition or pricing page" was found. Visitors looking for this information leave to find it elsewhere.
+              - button "Expand" [ref=e483] [cursor=pointer]: +
+            - generic [ref=e485]:
+              - generic [ref=e486]:
+                - generic [ref=e487]: P1
+                - generic [ref=e488]: heavy
+              - generic [ref=e489]:
+                - 'button "Missing: Photo gallery / classroom tour" [ref=e490] [cursor=pointer]':
+                  - 'heading "Missing: Photo gallery / classroom tour" [level=3] [ref=e491]'
+                - paragraph [ref=e492]: No page matching "Photo gallery / classroom tour" was found. Visitors looking for this information leave to find it elsewhere.
+              - button "Expand" [ref=e493] [cursor=pointer]: +
+            - generic [ref=e495]:
+              - generic [ref=e496]:
+                - generic [ref=e497]: P1
+                - generic [ref=e498]: heavy
+              - generic [ref=e499]:
+                - 'button "Missing: Teachers / Staff page" [ref=e500] [cursor=pointer]':
+                  - 'heading "Missing: Teachers / Staff page" [level=3] [ref=e501]'
+                - paragraph [ref=e502]: No page matching "Teachers / Staff page" was found. Visitors looking for this information leave to find it elsewhere.
+              - button "Expand" [ref=e503] [cursor=pointer]: +
+            - generic [ref=e505]:
+              - generic [ref=e506]:
+                - generic [ref=e507]: P2
+                - generic [ref=e508]: heavy
+              - generic [ref=e509]:
+                - 'button "Missing: School calendar / hours page" [ref=e510] [cursor=pointer]':
+                  - 'heading "Missing: School calendar / hours page" [level=3] [ref=e511]'
+                - paragraph [ref=e512]: No page matching "School calendar / hours page" was found. Visitors looking for this information leave to find it elsewhere.
+              - button "Expand" [ref=e513] [cursor=pointer]: +
+            - generic [ref=e515]:
+              - generic [ref=e516]:
+                - generic [ref=e517]: P1
+                - generic [ref=e518]: light
+              - generic [ref=e519]:
+                - button "Contact page not directly linked from homepage" [ref=e520] [cursor=pointer]:
+                  - heading "Contact page not directly linked from homepage" [level=3] [ref=e521]
+                - paragraph [ref=e522]: The contact/inquiry page is not in the homepage's direct internal links, adding friction to the conversion path.
+              - button "Expand" [ref=e523] [cursor=pointer]: +
+            - generic [ref=e525]:
+              - generic [ref=e526]:
+                - generic [ref=e527]: P1
+                - generic [ref=e528]: light
+              - generic [ref=e529]:
+                - button "No review platform badges visible" [ref=e530] [cursor=pointer]:
+                  - heading "No review platform badges visible" [level=3] [ref=e531]
+                - paragraph [ref=e532]: No links to Care.com, Winnie, GreatSchools, or Google reviews found. Review badges are trust signals that directly influence inquiry rates.
+              - button "Expand" [ref=e533] [cursor=pointer]: +
+            - generic [ref=e535]:
+              - generic [ref=e536]:
+                - generic [ref=e537]: P0
+                - generic [ref=e538]: medium
+              - generic [ref=e539]:
+                - button "No LocalBusiness or Organization schema markup" [ref=e540] [cursor=pointer]:
+                  - heading "No LocalBusiness or Organization schema markup" [level=3] [ref=e541]
+                - paragraph [ref=e542]: No JSON-LD schema for LocalBusiness, Organization, or a more specific subtype was found. This is the foundational schema for any local business website.
+              - button "Expand" [ref=e543] [cursor=pointer]: +
+            - generic [ref=e545]:
+              - generic [ref=e546]:
+                - generic [ref=e547]: P2
+                - generic [ref=e548]: light
+              - generic [ref=e549]:
+                - button "No Event schema for advertised event spaces" [ref=e550] [cursor=pointer]:
+                  - heading "No Event schema for advertised event spaces" [level=3] [ref=e551]
+                - paragraph [ref=e552]: Event spaces are described on the site but no Event or EventVenue schema is present.
+              - button "Expand" [ref=e553] [cursor=pointer]: +
+            - generic [ref=e555]:
+              - generic [ref=e556]:
+                - generic [ref=e557]: P2
+                - generic [ref=e558]: light
+              - generic [ref=e559]:
+                - button "No BreadcrumbList schema" [ref=e560] [cursor=pointer]:
+                  - heading "No BreadcrumbList schema" [level=3] [ref=e561]
+                - paragraph [ref=e562]: No breadcrumb schema detected. BreadcrumbList schema helps Google display site structure in search results.
+              - button "Expand" [ref=e563] [cursor=pointer]: +
+            - generic [ref=e565]:
+              - generic [ref=e566]:
+                - generic [ref=e567]: P1
+                - generic [ref=e568]: medium
+              - generic [ref=e569]:
+                - button "Testimonials present but no Review/AggregateRating schema" [ref=e570] [cursor=pointer]:
+                  - heading "Testimonials present but no Review/AggregateRating schema" [level=3] [ref=e571]
+                - paragraph [ref=e572]: The site has testimonials but no structured review markup. AggregateRating schema enables star ratings in search results.
+              - button "Expand" [ref=e573] [cursor=pointer]: +
+            - generic [ref=e575]:
+              - generic [ref=e576]:
+                - generic [ref=e577]: P1
+                - generic [ref=e578]: medium
+              - generic [ref=e579]:
+                - button "Missing canonical tags" [ref=e580] [cursor=pointer]:
+                  - heading "Missing canonical tags" [level=3] [ref=e581]
+                - paragraph [ref=e582]: 13 pages have no canonical tag, leaving duplicate content signals unresolved.
+              - button "Expand" [ref=e583] [cursor=pointer]: +
+            - generic [ref=e585]:
+              - generic [ref=e586]:
+                - generic [ref=e587]: P0
+                - generic [ref=e588]: light
+              - generic [ref=e589]:
+                - button "Pages missing title tags" [ref=e590] [cursor=pointer]:
+                  - heading "Pages missing title tags" [level=3] [ref=e591]
+                - paragraph [ref=e592]: 1 pages have no title tag.
+              - button "Expand" [ref=e593] [cursor=pointer]: +
+            - generic [ref=e595]:
+              - generic [ref=e596]:
+                - generic [ref=e597]: P1
+                - generic [ref=e598]: medium
+              - generic [ref=e599]:
+                - button "Most pages missing meta descriptions" [ref=e600] [cursor=pointer]:
+                  - heading "Most pages missing meta descriptions" [level=3] [ref=e601]
+                - paragraph [ref=e602]: 11 of 13 pages have no meta description.
+              - button "Expand" [ref=e603] [cursor=pointer]: +
+            - generic [ref=e605]:
+              - generic [ref=e606]:
+                - generic [ref=e607]: P1
+                - generic [ref=e608]: medium
+              - generic [ref=e609]:
+                - button "Pages missing H1 tags" [ref=e610] [cursor=pointer]:
+                  - heading "Pages missing H1 tags" [level=3] [ref=e611]
+                - paragraph [ref=e612]: 12 pages have no H1 heading, which weakens keyword signals for those pages.
+              - button "Expand" [ref=e613] [cursor=pointer]: +
+            - generic [ref=e615]:
+              - generic [ref=e616]:
+                - generic [ref=e617]: P1
+                - generic [ref=e618]: heavy
+              - generic [ref=e619]:
+                - button "Thin content pages (under 200 words)" [ref=e620] [cursor=pointer]:
+                  - heading "Thin content pages (under 200 words)" [level=3] [ref=e621]
+                - paragraph [ref=e622]: 6 pages have fewer than 200 words. Google considers these thin and may exclude them from rankings.
+              - button "Expand" [ref=e623] [cursor=pointer]: +
+            - generic [ref=e625]:
+              - generic [ref=e626]:
+                - generic [ref=e627]: P1
+                - generic [ref=e628]: medium
+              - generic [ref=e629]:
+                - button "Duplicate title tags across pages" [ref=e630] [cursor=pointer]:
+                  - heading "Duplicate title tags across pages" [level=3] [ref=e631]
+                - paragraph [ref=e632]: 1 title tag values are shared by multiple pages. Search engines may struggle to differentiate them.
+              - button "Expand" [ref=e633] [cursor=pointer]: +
+            - generic [ref=e635]:
+              - generic [ref=e636]:
+                - generic [ref=e637]: P1
+                - generic [ref=e638]: heavy
+              - generic [ref=e639]:
+                - button "Video opportunities identified across the site" [ref=e640] [cursor=pointer]:
+                  - heading "Video opportunities identified across the site" [level=3] [ref=e641]
+                - paragraph [ref=e642]: 7 video opportunities surfaced across 13 pages. The full prioritized plan with shot lists is in video-audit/plan.json.
+              - button "Expand" [ref=e643] [cursor=pointer]: +
+            - generic [ref=e645]:
+              - generic [ref=e646]:
+                - generic [ref=e647]: P1
+                - generic [ref=e648]: medium
+              - generic [ref=e649]:
+                - button "Homepage has no video" [ref=e650] [cursor=pointer]:
+                  - heading "Homepage has no video" [level=3] [ref=e651]
+                - paragraph [ref=e652]: No video element detected on the homepage. A hero video lifts homepage conversion 20-40% on emotional-purchase verticals.
+              - button "Expand" [ref=e653] [cursor=pointer]: +
+  - generic [ref=e656]:
+    - button "Menu" [ref=e657]:
+      - img [ref=e659]
+      - generic: Menu
+    - button "Inspect" [ref=e663]:
+      - img [ref=e665]
+      - generic: Inspect
+    - button "Audit" [ref=e667]:
+      - img [ref=e669]
+      - generic: Audit
+    - button "Settings" [ref=e672]:
+      - img [ref=e674]
+      - generic: Settings

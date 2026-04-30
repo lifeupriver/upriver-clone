@@ -1,0 +1,61 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - generic [ref=e14]: v0.1.0
+    - main [ref=e15]:
+      - generic [ref=e16]:
+        - link "Clients" [ref=e17] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e18]: /
+        - link "Little Friends Learning Loft" [ref=e19] [cursor=pointer]:
+          - /url: /clients/littlefriends
+        - generic [ref=e20]: /
+        - generic [ref=e21]: Share links
+      - generic [ref=e22]:
+        - text: Share links
+        - heading "Mint a share link" [level=1] [ref=e23]
+        - paragraph [ref=e24]:
+          - text: Share-link recipients see only
+          - code [ref=e25]: /deliverables/littlefriends/*
+          - text: for this client. They can't reach the operator dashboard or other clients' files.
+      - generic [ref=e27]:
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: Label (optional)
+            - textbox "Label (optional)" [ref=e33]:
+              - /placeholder: e.g. alex@client-co.com — launch review
+          - generic [ref=e34]:
+            - generic [ref=e35]: Expiry
+            - combobox "Expiry" [ref=e36]:
+              - option "7 days"
+              - option "30 days"
+              - option "90 days" [selected]
+              - option "1 year"
+              - option "No expiry"
+          - button "Mint share link" [ref=e37] [cursor=pointer]
+        - generic [ref=e38]:
+          - generic [ref=e39]: Active links · 0
+          - paragraph [ref=e40]: No share links minted yet. The form above creates one in a click.
+  - generic [ref=e43]:
+    - button "Menu" [ref=e44]:
+      - img [ref=e46]
+      - generic: Menu
+    - button "Inspect" [ref=e50]:
+      - img [ref=e52]
+      - generic: Inspect
+    - button "Audit" [ref=e54]:
+      - img [ref=e56]
+      - generic: Audit
+    - button "Settings" [ref=e59]:
+      - img [ref=e61]
+      - generic: Settings

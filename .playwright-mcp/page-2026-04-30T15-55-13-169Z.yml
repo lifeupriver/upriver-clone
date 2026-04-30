@@ -1,0 +1,347 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - generic [ref=e14]: v0.1.0
+    - main [ref=e15]:
+      - generic [ref=e16]:
+        - link "Clients" [ref=e17] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e18]: /
+        - link "Little Friends Learning Loft" [ref=e19] [cursor=pointer]:
+          - /url: /clients/littlefriends
+        - generic [ref=e20]: /
+        - generic [ref=e21]: Design Brief
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - text: Design Brief
+          - heading "Little Friends Learning Loft" [level=1] [ref=e24]
+        - link "Export for Client" [ref=e25] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/design-brief
+      - generic [ref=e26]:
+        - heading "Claude Design Brief — Little Friends Learning Loft" [level=1] [ref=e27]
+        - blockquote [ref=e28]: This file goes to Claude Design. Read it top to bottom before generating any deck output.
+        - heading "Use this base" [level=2] [ref=e29]
+        - text: Use the
+        - strong [ref=e30]: Upriver Consulting
+        - text: repo as your base design system. The blocks below are the per-client overrides — apply them on top of the Upriver shell. The audit deliverable is a Claude Design slide deck (cover → executive summary → scorecard → visual audit → findings → missing pages → brand voice → design system → competitor comparison → implementation plan → scope sign-off → what we need from you).
+        - heading "Client meta" [level=2] [ref=e31]
+        - list [ref=e32]:
+          - listitem [ref=e33]:
+            - text: "Client:"
+            - strong [ref=e34]: Little Friends Learning Loft
+            - text: (
+            - code [ref=e35]: littlefriends
+            - text: )
+          - listitem [ref=e36]: "Site: https://littlefriendslearningloft.com"
+          - listitem [ref=e37]: "Audit date: 2026-04-30T03:37:56.538Z"
+          - listitem [ref=e38]:
+            - text: "Overall score:"
+            - strong [ref=e39]: 73/100
+          - listitem [ref=e40]: "Total findings: 38 (P0: 7, P1: 25, P2: 6)"
+        - heading "Design system (per-client overrides)" [level=2] [ref=e41]
+        - heading "Colors" [level=3] [ref=e42]
+        - list [ref=e43]:
+          - listitem [ref=e44]:
+            - text: "primary:"
+            - code [ref=e45]: "#3374FF"
+          - listitem [ref=e46]:
+            - text: "secondary:"
+            - code [ref=e47]: "#666666"
+          - listitem [ref=e48]:
+            - text: "accent:"
+            - code [ref=e49]: "#3374FF"
+          - listitem [ref=e50]:
+            - text: "background:"
+            - code [ref=e51]: "#FFFFFF"
+          - listitem [ref=e52]:
+            - text: "textPrimary:"
+            - code [ref=e53]: "#000000"
+          - listitem [ref=e54]:
+            - text: "textSecondary:"
+            - code [ref=e55]: "#555555"
+          - listitem [ref=e56]:
+            - text: "link:"
+            - code [ref=e57]: "#3374FF"
+        - heading "Typography" [level=3] [ref=e58]
+        - list [ref=e59]:
+          - listitem [ref=e60]:
+            - text: "heading font:"
+            - code [ref=e61]: Arial
+          - listitem [ref=e62]:
+            - text: "body font:"
+            - code [ref=e63]: Arial
+          - listitem [ref=e64]:
+            - text: "mono font:"
+            - code [ref=e65]: monospace
+          - listitem [ref=e66]:
+            - text: "scale: h1="
+            - code [ref=e67]: 16px
+            - text: ", h2="
+            - code [ref=e68]: 25.0481px
+            - text: ", h3="
+            - code [ref=e69]: 1.5rem
+            - text: ", body="
+            - code [ref=e70]: 16px
+            - text: ", small="
+            - code [ref=e71]: 0.875rem
+        - heading "Spacing" [level=3] [ref=e72]
+        - list [ref=e73]:
+          - listitem [ref=e74]: "base unit: 4px"
+          - listitem [ref=e75]: "scale: [4, 8, 12, 16, 24, 32, 48, 64, 96, 128]"
+          - listitem [ref=e76]:
+            - text: "border radius:"
+            - code [ref=e77]: 0px
+        - heading "Components" [level=3] [ref=e78]
+        - list [ref=e79]:
+          - listitem [ref=e80]:
+            - text: "primary button:"
+            - code [ref=e81]: "{}"
+          - listitem [ref=e82]:
+            - text: "secondary button:"
+            - code [ref=e83]: "{}"
+          - listitem [ref=e84]:
+            - text: "input field:"
+            - code [ref=e85]: "{}"
+        - heading "Brand" [level=3] [ref=e86]
+        - list [ref=e87]:
+          - listitem [ref=e88]:
+            - text: "logo:"
+            - code [ref=e89]: https://0839461da4a9fc8ac7a8.cdn6.editmysite.com/uploads/b/0839461da4a9fc8ac7a805becad47d6302330e09de13453cd510f0a40d7fcdab/logo-yellow_1659581621.png?width=2400&optimize=medium
+          - listitem [ref=e90]:
+            - text: "favicon:"
+            - code [ref=e91]: https://www.littlefriendslearningloft.com/square.ico
+          - listitem [ref=e92]: "color scheme: light"
+          - listitem [ref=e93]: "personality: playful, medium, parents of young children"
+        - heading "Suggested deck structure (copy-paste prompts per slide)" [level=2] [ref=e94]
+        - heading "Slide 1 — Cover" [level=3] [ref=e95]
+        - blockquote [ref=e96]:
+          - text: Generate a cover slide for "Little Friends Learning Loft". Include the client name, the site URL (https://littlefriendslearningloft.com), the audit date (4/29/2026), the overall score
+          - code [ref=e97]: 73/100
+          - text: as a large number with a one-line interpretation, and the Upriver Consulting auditor mark. Use the design system above for colors and typography.
+        - heading "Slide 2 — Executive summary" [level=3] [ref=e98]
+        - blockquote [ref=e99]:
+          - text: Use the executive summary in
+          - code [ref=e100]: docs/brand-voice-guide.md
+          - text: "(the section after \"Executive summary (auto-drafted)\"). Format as three short cards: \"What's working\", \"What's costing you inquiries\", \"What we're recommending\". Plain language, no jargon."
+        - heading "Slide 3 — Scorecard (visual)" [level=3] [ref=e101]
+        - blockquote [ref=e102]: "Render a radar chart or grid showing the score (0-100) across all 10 dimensions:"
+        - list [ref=e103]:
+          - listitem [ref=e104]: "aeo: 78/100"
+          - listitem [ref=e105]: "backlinks: 90/100"
+          - listitem [ref=e106]: "competitors: 83/100"
+          - listitem [ref=e107]: "content: 72/100"
+          - listitem [ref=e108]: "design: 85/100"
+          - listitem [ref=e109]: "geo: 71/100"
+          - listitem [ref=e110]: "links: 83/100"
+          - listitem [ref=e111]: "local: 64/100"
+          - listitem [ref=e112]: "sales: 54/100"
+          - listitem [ref=e113]: "schema: 72/100"
+          - listitem [ref=e114]: "seo: 50/100"
+        - blockquote [ref=e115]: "Color-code: green ≥ 70, amber 40-69, red < 40."
+        - heading "Slide 4 — Visual audit (before photos)" [level=3] [ref=e116]
+        - blockquote [ref=e117]: Full-page screenshots of the homepage and 3-5 key pages with annotation overlays marking specific problems. Each annotation links to a finding card. Use the screenshots listed below.
+        - list [ref=e118]:
+          - listitem [ref=e119]:
+            - strong [ref=e120]: admissions
+            - text: (https://www.littlefriendslearningloft.com/admissions)
+          - listitem [ref=e121]:
+            - text: "desktop:"
+            - code [ref=e122]: clients/littlefriends/screenshots/desktop/admissions.png
+          - listitem [ref=e123]:
+            - text: "mobile:"
+            - code [ref=e124]: clients/littlefriends/screenshots/mobile/admissions.png
+          - listitem [ref=e125]:
+            - strong [ref=e126]: contact-us
+            - text: (https://www.littlefriendslearningloft.com/contact-us)
+          - listitem [ref=e127]:
+            - text: "desktop:"
+            - code [ref=e128]: clients/littlefriends/screenshots/desktop/contact-us.png
+          - listitem [ref=e129]:
+            - text: "mobile:"
+            - code [ref=e130]: clients/littlefriends/screenshots/mobile/contact-us.png
+          - listitem [ref=e131]:
+            - strong [ref=e132]: faqs-1
+            - text: (https://www.littlefriendslearningloft.com/faqs-1)
+          - listitem [ref=e133]:
+            - text: "desktop:"
+            - code [ref=e134]: clients/littlefriends/screenshots/desktop/faqs-1.png
+          - listitem [ref=e135]:
+            - text: "mobile:"
+            - code [ref=e136]: clients/littlefriends/screenshots/mobile/faqs-1.png
+          - listitem [ref=e137]:
+            - strong [ref=e138]: home
+            - text: (https://littlefriendslearningloft.com)
+          - listitem [ref=e139]:
+            - text: "desktop:"
+            - code [ref=e140]: clients/littlefriends/screenshots/desktop/home.png
+          - listitem [ref=e141]:
+            - text: "mobile:"
+            - code [ref=e142]: clients/littlefriends/screenshots/mobile/home.png
+          - listitem [ref=e143]:
+            - strong [ref=e144]: product-little-friends-donation-fund-4
+            - text: (https://www.littlefriendslearningloft.com/product/little-friends-donation-fund/4)
+          - listitem [ref=e145]:
+            - text: "desktop:"
+            - code [ref=e146]: clients/littlefriends/screenshots/desktop/product-little-friends-donation-fund-4.png
+          - listitem [ref=e147]:
+            - text: "mobile:"
+            - code [ref=e148]: clients/littlefriends/screenshots/mobile/product-little-friends-donation-fund-4.png
+          - listitem [ref=e149]:
+            - strong [ref=e150]: s-order
+            - text: (https://www.littlefriendslearningloft.com/s/order)
+          - listitem [ref=e151]:
+            - text: "desktop:"
+            - code [ref=e152]: clients/littlefriends/screenshots/desktop/s-order.png
+          - listitem [ref=e153]:
+            - text: "mobile:"
+            - code [ref=e154]: clients/littlefriends/screenshots/mobile/s-order.png
+          - listitem [ref=e155]:
+            - strong [ref=e156]: s-shop
+            - text: (https://www.littlefriendslearningloft.com/s/shop)
+          - listitem [ref=e157]:
+            - text: "desktop:"
+            - code [ref=e158]: clients/littlefriends/screenshots/desktop/s-shop.png
+          - listitem [ref=e159]:
+            - text: "mobile:"
+            - code [ref=e160]: clients/littlefriends/screenshots/mobile/s-shop.png
+          - listitem [ref=e161]:
+            - strong [ref=e162]: s-stories-story-title
+            - text: (https://www.littlefriendslearningloft.com/s/stories/story-title)
+          - listitem [ref=e163]:
+            - text: "desktop:"
+            - code [ref=e164]: clients/littlefriends/screenshots/desktop/s-stories-story-title.png
+          - listitem [ref=e165]:
+            - text: "mobile:"
+            - code [ref=e166]: clients/littlefriends/screenshots/mobile/s-stories-story-title.png
+          - listitem [ref=e167]:
+            - strong [ref=e168]: sitemap-xml
+            - text: (https://www.littlefriendslearningloft.com/sitemap.xml)
+          - listitem [ref=e169]:
+            - text: "desktop:"
+            - code [ref=e170]: clients/littlefriends/screenshots/desktop/sitemap-xml.png
+          - listitem [ref=e171]:
+            - text: "mobile:"
+            - code [ref=e172]: clients/littlefriends/screenshots/mobile/sitemap-xml.png
+          - listitem [ref=e173]:
+            - strong [ref=e174]: summer-1
+            - text: (https://www.littlefriendslearningloft.com/summer-1)
+          - listitem [ref=e175]:
+            - text: "desktop:"
+            - code [ref=e176]: clients/littlefriends/screenshots/desktop/summer-1.png
+          - listitem [ref=e177]:
+            - text: "mobile:"
+            - code [ref=e178]: clients/littlefriends/screenshots/mobile/summer-1.png
+          - listitem [ref=e179]:
+            - strong [ref=e180]: summerfall-2023-enrollment
+            - text: (https://www.littlefriendslearningloft.com/summerfall-2023-enrollment)
+          - listitem [ref=e181]:
+            - text: "desktop:"
+            - code [ref=e182]: clients/littlefriends/screenshots/desktop/summerfall-2023-enrollment.png
+          - listitem [ref=e183]:
+            - text: "mobile:"
+            - code [ref=e184]: clients/littlefriends/screenshots/mobile/summerfall-2023-enrollment.png
+          - listitem [ref=e185]:
+            - strong [ref=e186]: support
+            - text: (https://www.littlefriendslearningloft.com/support)
+          - listitem [ref=e187]:
+            - text: "desktop:"
+            - code [ref=e188]: clients/littlefriends/screenshots/desktop/support.png
+          - listitem [ref=e189]:
+            - text: "mobile:"
+            - code [ref=e190]: clients/littlefriends/screenshots/mobile/support.png
+        - blockquote [ref=e191]:
+          - strong [ref=e192]: "Note:"
+          - text: screenshots are local files. The human running the design pass uploads them manually to Claude Design — do not assume URLs.
+        - heading "Slides 5-14 — Findings by dimension (one per dimension)" [level=3] [ref=e193]
+        - blockquote [ref=e194]:
+          - text: "For each of the 10 dimensions, generate a section with: dimension score + letter grade, 2-3 sentence summary (use the"
+          - code [ref=e195]: summary
+          - text: field from each pass), and finding cards (title, severity badge P0/P1/P2, evidence, business impact, recommendation, estimated effort). Pull every finding from
+          - code [ref=e196]: audit-package.json#/findings
+          - text: filtered by dimension.
+        - paragraph
+        - paragraph [ref=e197]: "Top P0 findings to lead with:"
+        - list [ref=e198]:
+          - listitem [ref=e199]: "[aeo] Only 0 FAQ entries — far below what AI engines need to answer preschool questions"
+          - listitem [ref=e200]: "[design] Heading hierarchy issues on 13/13 pages"
+          - listitem [ref=e201]: "[geo] No TL;DR / summary blocks for AI extraction"
+          - listitem [ref=e202]: "[local] Low local keyword density — site not optimized for geographic search terms"
+          - listitem [ref=e203]: "[sales] Missing: Tuition or pricing page"
+        - heading "Slide 15 — Missing pages analysis" [level=3] [ref=e204]
+        - blockquote [ref=e205]: "Render as a table: page type → reason → priority. Every missing page is a P1 or P2 finding. Frame the gap as opportunity."
+        - list [ref=e206]:
+          - listitem [ref=e207]:
+            - strong [ref=e208]: Tuition or pricing page
+            - text: (p0) — No page matching "Tuition or pricing page" was found. Visitors looking for this information leave to find it elsewhere.
+          - listitem [ref=e209]:
+            - strong [ref=e210]: Photo gallery / classroom tour
+            - text: (p1) — No page matching "Photo gallery / classroom tour" was found. Visitors looking for this information leave to find it elsewhere.
+          - listitem [ref=e211]:
+            - strong [ref=e212]: Teachers / Staff page
+            - text: (p1) — No page matching "Teachers / Staff page" was found. Visitors looking for this information leave to find it elsewhere.
+          - listitem [ref=e213]:
+            - strong [ref=e214]: School calendar / hours page
+            - text: (p2) — No page matching "School calendar / hours page" was found. Visitors looking for this information leave to find it elsewhere.
+        - heading "Slide 16 — Brand voice analysis" [level=3] [ref=e215]
+        - blockquote [ref=e216]:
+          - text: "Side-by-side: \"How the site sounds now\" (3-5 verbatim site quotes) vs. \"How it could sound\" (rewrites in the proposed voice). Source:"
+          - code [ref=e217]: docs/brand-voice-guide.md
+          - text: and
+          - code [ref=e218]: audit-package.json#/brandVoiceDraft
+          - text: . Highlight any banned phrases that appear on the site.
+        - heading "Slide 17 — Design system audit" [level=3] [ref=e219]
+        - blockquote [ref=e220]: Show the current design system components (buttons, typography, color palette, form fields) using the design system block above, with commentary on consistency. Flag inconsistencies surfaced in the design audit pass.
+        - heading "Slide 18 — Competitor comparison" [level=3] [ref=e221]
+        - blockquote [ref=e222]:
+          - text: "Comparison table: Little Friends Learning Loft vs. 2-3 competitors. Rows: Domain Rating, referring domains, top keyword positions, page count, has pricing page (Y/N), has virtual tour (Y/N), has team page (Y/N), has FAQ page (Y/N), mobile score. Source:"
+          - code [ref=e223]: audit/competitors.json
+          - text: . Include one competitor homepage screenshot for visual contrast.
+        - heading "Slide 19 — Implementation plan" [level=3] [ref=e224]
+        - blockquote [ref=e225]:
+          - text: "Lay out the phased plan as a visual timeline. Source:"
+          - code [ref=e226]: audit-package.json#/implementationPlan
+          - text: ". Each phase = a card with name, what's included, estimated effort, estimated impact. Phase order: 1=Quick wins, 2=Structural fixes, 3=Content build-out, 4=AEO and authority."
+        - heading "Slide 20 — Scope sign-off" [level=3] [ref=e227]
+        - blockquote [ref=e228]: "Render a checklist where every material item in the implementation plan has three checkboxes: \"Include in rebuild scope\", \"Skip for now\", \"Needs discussion\". Below: proposed price (derived from what they check), proposed timeline, signature line. This is the decision point — when the client returns this page signed, we have a scoped agreement."
+        - heading "Slide 21 — What we need from you" [level=3] [ref=e229]
+        - blockquote [ref=e230]:
+          - text: List the items in
+          - code [ref=e231]: audit-package.json#/implementationPlan/requiresClientInput
+          - text: ","
+          - code [ref=e232]: /requiresNewContent
+          - text: ", and"
+          - code [ref=e233]: /requiresAssets
+          - text: . Frame as a checklist the client can work through after signing scope.
+        - heading "Content inventory snapshot (for reference)" [level=2] [ref=e234]
+        - list [ref=e235]:
+          - listitem [ref=e236]: "Testimonials: 6"
+          - listitem [ref=e237]: "Team members: 1"
+          - listitem [ref=e238]: "FAQs: 0"
+          - listitem [ref=e239]: "Pricing items: 13"
+          - listitem [ref=e240]: "Event spaces: 5"
+          - listitem [ref=e241]: "Social links: 1"
+          - listitem [ref=e242]: "Contact info: email ✓ · phone ✓ · address ✓"
+        - paragraph
+  - generic [ref=e245]:
+    - button "Menu" [ref=e246]:
+      - img [ref=e248]
+      - generic: Menu
+    - button "Inspect" [ref=e252]:
+      - img [ref=e254]
+      - generic: Inspect
+    - button "Audit" [ref=e256]:
+      - img [ref=e258]
+      - generic: Audit
+    - button "Settings" [ref=e261]:
+      - img [ref=e263]
+      - generic: Settings

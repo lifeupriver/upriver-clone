@@ -1,0 +1,72 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - generic [ref=e14]: v0.1.0
+    - main [ref=e15]:
+      - generic [ref=e16]:
+        - link "Clients" [ref=e17] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e18]: /
+        - link "Little Friends Learning Loft" [ref=e19] [cursor=pointer]:
+          - /url: /clients/littlefriends
+        - generic [ref=e20]: /
+        - generic [ref=e21]: Clone Fidelity
+      - generic [ref=e23]:
+        - text: Clone Fidelity
+        - heading "Little Friends Learning Loft" [level=1] [ref=e24]
+        - paragraph [ref=e25]: How closely the cloned site matches the original.
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - generic [ref=e28]: Overall fidelity
+          - paragraph [ref=e29]: Generated 12 hr ago
+        - generic [ref=e30]: "0"
+      - generic [ref=e31]:
+        - heading "Failed pages" [level=2] [ref=e32]
+        - generic [ref=e33]:
+          - article [ref=e34]:
+            - generic [ref=e35]:
+              - heading "about" [level=3] [ref=e36]
+              - generic [ref=e37]: No Live Shot
+          - article [ref=e38]:
+            - generic [ref=e39]:
+              - heading "contact" [level=3] [ref=e40]
+              - generic [ref=e41]: No Live Shot
+          - article [ref=e42]:
+            - generic [ref=e43]:
+              - heading "summer" [level=3] [ref=e44]
+              - generic [ref=e45]: No Live Shot
+          - article [ref=e46]:
+            - generic [ref=e47]:
+              - heading "what-is-montessori" [level=3] [ref=e48]
+              - generic [ref=e49]: No Live Shot
+          - article [ref=e50]:
+            - generic [ref=e51]:
+              - heading "home" [level=3] [ref=e52]
+              - generic [ref=e53]: No Clone Shot
+          - article [ref=e54]:
+            - generic [ref=e55]:
+              - heading "admissions" [level=3] [ref=e56]
+              - generic [ref=e57]: No Clone Shot
+  - generic [ref=e60]:
+    - button "Menu" [ref=e61]:
+      - img [ref=e63]
+      - generic: Menu
+    - button "Inspect" [ref=e67]:
+      - img [ref=e69]
+      - generic: Inspect
+    - button "Audit" [ref=e71]:
+      - img [ref=e73]
+      - generic: Audit
+    - button "Settings" [ref=e76]:
+      - img [ref=e78]
+      - generic: Settings

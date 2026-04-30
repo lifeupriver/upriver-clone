@@ -1,0 +1,55 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - generic [ref=e14]: v0.1.0
+    - main [ref=e15]:
+      - generic [ref=e16]:
+        - link "Clients" [ref=e17] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e18]: /
+        - generic [ref=e19]: New
+      - generic [ref=e20]:
+        - text: Onboarding
+        - heading "New client" [level=1] [ref=e21]
+        - paragraph [ref=e22]:
+          - text: Runs
+          - code [ref=e23]: upriver init <url> --slug <slug> --name <name>
+          - text: in the background and streams the output below. On success you'll be redirected to the client detail page.
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - generic [ref=e28]: Site URL
+          - textbox "Site URL" [ref=e29]:
+            - /placeholder: https://example.com
+        - generic [ref=e30]:
+          - generic [ref=e31]: Client name
+          - textbox "Client name" [ref=e32]:
+            - /placeholder: Audrey's Farmhouse
+        - generic [ref=e33]:
+          - generic [ref=e34]: Slug
+          - textbox "Slug Lowercase letters, digits, and dashes only." [ref=e35]:
+            - /placeholder: audreys
+          - generic [ref=e36]: Lowercase letters, digits, and dashes only.
+        - button "Create client" [ref=e38] [cursor=pointer]
+  - generic [ref=e41]:
+    - button "Menu" [ref=e42]:
+      - img [ref=e44]
+      - generic: Menu
+    - button "Inspect" [ref=e48]:
+      - img [ref=e50]
+      - generic: Inspect
+    - button "Audit" [ref=e52]:
+      - img [ref=e54]
+      - generic: Audit
+    - button "Settings" [ref=e57]:
+      - img [ref=e59]
+      - generic: Settings

@@ -1,0 +1,82 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - link "Back to Little Friends Learning Loft" [ref=e4] [cursor=pointer]:
+        - /url: /clients/littlefriends
+        - img [ref=e5]
+        - text: Back to Little Friends Learning Loft
+      - generic [ref=e7]: Audit Report
+      - button "Save as PDF" [ref=e8] [cursor=pointer]
+    - article [ref=e9]:
+      - navigation "Report sections" [ref=e10]:
+        - link "Overview" [ref=e11] [cursor=pointer]:
+          - /url: /deliverables/littlefriends
+        - link "Scorecard" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/scorecard
+        - link "Findings" [ref=e13] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/findings
+        - link "Next steps" [ref=e14] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/next-steps
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - img "Little Friends Learning Loft" [ref=e17]
+          - generic [ref=e18]:
+            - generic [ref=e19]: Website Audit
+            - generic [ref=e20]: April 30, 2026
+        - heading "Little Friends Learning Loft" [level=1] [ref=e21]
+        - paragraph [ref=e22]: https://littlefriendslearningloft.com
+        - generic [ref=e23]:
+          - generic [ref=e24]: Overall score
+          - generic [ref=e25]: "73"
+        - paragraph [ref=e26]: Audit by Upriver Consulting
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - generic [ref=e29]: "7"
+          - generic [ref=e30]: Critical issues blocking growth
+          - generic [ref=e31]: P0 findings = revenue-impacting problems we would fix in week one.
+        - generic [ref=e32]:
+          - generic [ref=e33]: 6 pages
+          - generic [ref=e34]: Pages too thin to rank in search
+          - generic [ref=e35]: Pages under 300 words rarely surface for any meaningful query.
+        - generic [ref=e36]:
+          - generic [ref=e37]: "10"
+          - generic [ref=e38]: Search visibility issues to fix
+          - generic [ref=e39]: Combined SEO, answer-engine, and structured-data findings that compound over time.
+      - generic [ref=e40]:
+        - generic [ref=e41]: Executive summary
+        - generic [ref=e42]:
+          - heading "What's working" [level=3] [ref=e43]
+          - paragraph [ref=e44]: The visual identity is solid — the logo, color palette, and warm photography read appropriately for a Montessori preschool, and the design audit scored 90/100. The site is also well-connected internally for a 13-page site, with a clean link structure (83/100) and no obvious broken navigation. A real Google Business Profile is in place with a 5.0 rating, and 37 calls-to-action are sprinkled across the site, so the wiring for inquiries exists — it just isn't pointed at the right pages.
+        - generic [ref=e45]:
+          - heading "What's costing you inquiries" [level=3] [ref=e46]
+          - paragraph [ref=e47]: "**Search engines can't tell what most of your pages are about.** 12 of 13 pages have no H1 heading, the homepage and 10 others are missing meta descriptions, and one page has no title tag at all. To Google, these pages look like a sitemap of unlabeled boxes — and they're being passed over for competitor preschools that label their content properly. **There's no LocalBusiness schema, no FAQ content, and no summary blocks.** That means the site is invisible in two of the highest-intent surfaces a Hudson Valley parent will use: Google's local pack (\"Montessori preschool near me\") and AI search (\"what Montessori schools take 3-year-olds in Newburgh?\"). With 0 detected FAQ entries on a school site, you're losing parents at the research stage before they ever see your phone number. **Your contact and trust signals are scattered.** Three different phone numbers appear on the site — (732) 343-0005, (845) 561-6602, and 732-343-0005 — which both confuses parents and tanks local search rankings. The contact page isn't directly linked from the homepage hero, and there are no Facebook or Instagram links visible despite an active Facebook page with 430+ followers."
+        - generic [ref=e48]:
+          - heading "What we're recommending" [level=3] [ref=e49]
+          - paragraph [ref=e50]: "A four-phase rebuild on a modern stack, replacing the current Square-based site. Phase 1 (1–2 weeks) ships the quick wins — fix titles, descriptions, H1s, NAP consistency, and the homepage CTA path. Phase 2 (2–4 weeks) rebuilds the structural layer: LocalBusiness schema, canonical tags, design system, and the missing About / Tuition / Day-in-the-life pages. Phases 3 and 4 (6–12 weeks) build the FAQ library, AI-search readiness (TL;DRs, llms.txt, Hudson Valley keyword density), and directory citations. The first two phases alone should move the overall score from 72 to the mid-80s and meaningfully increase tour requests within the first month live."
+      - generic [ref=e52]:
+        - generic [ref=e53]:
+          - heading "Ready to act on this?" [level=3] [ref=e54]
+          - paragraph [ref=e55]: Walk through the recommended fixes and pick the scope that fits.
+        - link "See what we'd do about it" [ref=e56] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/next-steps
+    - contentinfo [ref=e57]:
+      - img [ref=e58]
+      - generic [ref=e61]:
+        - text: Prepared by
+        - strong [ref=e62]: Upriver Consulting
+        - text: — April 30, 2026
+  - generic [ref=e65]:
+    - button "Menu" [ref=e66]:
+      - img [ref=e68]
+      - generic: Menu
+    - button "Inspect" [ref=e72]:
+      - img [ref=e74]
+      - generic: Inspect
+    - button "Audit" [ref=e76]:
+      - generic [ref=e77]:
+        - img [ref=e78]
+        - img [ref=e81]
+      - generic: Audit
+    - button "Settings" [ref=e84]:
+      - img [ref=e86]
+      - generic: Settings

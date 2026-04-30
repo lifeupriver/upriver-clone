@@ -1,0 +1,296 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - generic [ref=e14]: v0.1.0
+    - main [ref=e15]:
+      - generic [ref=e16]:
+        - link "Clients" [ref=e17] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e18]: /
+        - generic [ref=e19]: Little Friends Learning Loft
+      - generic [ref=e21]:
+        - text: Client
+        - heading "Little Friends Learning Loft" [level=1] [ref=e22]
+        - link "https://littlefriendslearningloft.com" [ref=e23] [cursor=pointer]:
+          - /url: https://littlefriendslearningloft.com
+          - text: https://littlefriendslearningloft.com
+          - img [ref=e24]
+      - generic [ref=e28]:
+        - complementary [ref=e29]:
+          - generic [ref=e30]:
+            - generic [ref=e31]: Details
+            - generic [ref=e32]:
+              - term [ref=e33]: Slug
+              - definition [ref=e34]: littlefriends
+              - term [ref=e35]: Created
+              - definition [ref=e36]: April 29, 2026
+          - generic [ref=e37]:
+            - generic [ref=e38]:
+              - generic [ref=e39]: Pipeline
+              - generic [ref=e40]: click Run to invoke
+            - generic [ref=e42]:
+              - list [ref=e43]:
+                - listitem [ref=e44]:
+                  - generic [ref=e46]: Init
+                  - generic [ref=e47]: —
+                - listitem [ref=e48]:
+                  - generic [ref=e50]: Discover
+                  - generic [ref=e51]: —
+                - listitem [ref=e52]:
+                  - generic [ref=e54]: Scrape
+                  - button "Run" [ref=e56] [cursor=pointer]
+                - listitem [ref=e57]:
+                  - generic [ref=e59]: Audit
+                  - button "Run" [ref=e61] [cursor=pointer]
+                - listitem [ref=e62]:
+                  - generic [ref=e64]: Media audit
+                  - button "Run" [ref=e66] [cursor=pointer]
+                - listitem [ref=e67]:
+                  - generic [ref=e69]: Gap analysis
+                  - button "Run" [ref=e71] [cursor=pointer]
+                - listitem [ref=e72]:
+                  - generic [ref=e74]: Video audit
+                  - button "Run" [ref=e76] [cursor=pointer]
+                - listitem [ref=e77]:
+                  - generic [ref=e79]: Synthesize
+                  - button "Run" [ref=e81] [cursor=pointer]
+                - listitem [ref=e82]:
+                  - generic [ref=e84]: Voice Extract
+                  - button "Run" [ref=e86] [cursor=pointer]
+                - listitem [ref=e87]:
+                  - generic [ref=e89]: Blog Topics
+                  - button "Run" [ref=e91] [cursor=pointer]
+                - listitem [ref=e92]:
+                  - generic [ref=e94]: Schema Build
+                  - button "Run" [ref=e96] [cursor=pointer]
+                - listitem [ref=e97]:
+                  - generic [ref=e99]: Design Brief
+                  - button "Run" [ref=e101] [cursor=pointer]
+                - listitem [ref=e102]:
+                  - generic [ref=e104]: Scaffold
+                  - button "Run" [ref=e106] [cursor=pointer]
+                - listitem [ref=e107]:
+                  - generic [ref=e109]: Clone
+                  - button "Run" [ref=e111] [cursor=pointer]
+                - listitem [ref=e112]:
+                  - generic [ref=e114]: Finalize
+                  - button "Run" [ref=e116] [cursor=pointer]
+                - listitem [ref=e117]:
+                  - generic [ref=e119]: Clone fidelity
+                  - button "Run" [ref=e121] [cursor=pointer]
+                - listitem [ref=e122]:
+                  - generic [ref=e124]: Fixes plan
+                  - button "Run" [ref=e126] [cursor=pointer]
+                - listitem [ref=e127]:
+                  - generic [ref=e129]: QA
+                  - button "Run" [ref=e131] [cursor=pointer]
+                - listitem [ref=e132]:
+                  - generic [ref=e134]: Improve
+                  - button "Run" [ref=e136] [cursor=pointer]
+                - listitem [ref=e137]:
+                  - generic [ref=e139]: Launch
+                  - generic [ref=e140]: —
+                - listitem [ref=e141]:
+                  - generic [ref=e143]: iOS prototype
+                  - button "Run" [ref=e145] [cursor=pointer]
+                - listitem [ref=e146]:
+                  - generic [ref=e148]: Custom tools
+                  - button "Run" [ref=e150] [cursor=pointer]
+                - listitem [ref=e151]:
+                  - generic [ref=e153]: Monitor
+                  - button "Run" [ref=e155] [cursor=pointer]
+                - listitem [ref=e156]:
+                  - generic [ref=e158]: Followup
+                  - button "Run" [ref=e160] [cursor=pointer]
+                - listitem [ref=e161]:
+                  - generic [ref=e163]: Admin deploy
+                  - button "Run" [ref=e165] [cursor=pointer]
+              - generic [ref=e166]:
+                - generic [ref=e168]: Output
+                - generic [ref=e169]: (no output yet — click a Run button)
+          - generic [ref=e170]:
+            - link "Audit Report" [ref=e171] [cursor=pointer]:
+              - /url: /clients/littlefriends/audit
+            - link "Brand Voice" [ref=e172] [cursor=pointer]:
+              - /url: /clients/littlefriends/voice
+            - link "Design Brief" [ref=e173] [cursor=pointer]:
+              - /url: /clients/littlefriends/design-brief
+            - link "Site Preview" [ref=e174] [cursor=pointer]:
+              - /url: /clients/littlefriends/site
+            - link "Clone Fidelity" [ref=e175] [cursor=pointer]:
+              - /url: /clients/littlefriends/clone-fidelity
+            - link "Intake" [ref=e176] [cursor=pointer]:
+              - /url: /clients/littlefriends/intake
+            - link "Fixes Plan" [ref=e177] [cursor=pointer]:
+              - /url: /clients/littlefriends/fixes
+            - link "QA Report" [ref=e178] [cursor=pointer]:
+              - /url: /clients/littlefriends/qa
+            - link "Launch Checklist" [ref=e179] [cursor=pointer]:
+              - /url: /clients/littlefriends/launch-checklist
+            - link "Export Audit" [ref=e180] [cursor=pointer]:
+              - /url: /deliverables/littlefriends
+            - link "Export Brief" [ref=e181] [cursor=pointer]:
+              - /url: /deliverables/littlefriends/design-brief
+            - link "Share Links" [ref=e182] [cursor=pointer]:
+              - /url: /clients/littlefriends/share
+        - generic [ref=e183]:
+          - generic [ref=e184]:
+            - generic [ref=e185]:
+              - heading "Audit Scores" [level=3] [ref=e186]
+              - generic [ref=e187]: "Overall:"
+            - generic [ref=e188]:
+              - link "78 C aeo 2 findings" [ref=e189] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit#aeo
+                - generic [ref=e190]: "78"
+                - generic [ref=e191]: C
+                - generic [ref=e192]: aeo
+                - generic [ref=e193]: 2 findings
+              - link "90 A backlinks 2 findings" [ref=e194] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit#backlinks
+                - generic [ref=e195]: "90"
+                - generic [ref=e196]: A
+                - generic [ref=e197]: backlinks
+                - generic [ref=e198]: 2 findings
+              - link "83 B competitors 3 findings" [ref=e199] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit#competitors
+                - generic [ref=e200]: "83"
+                - generic [ref=e201]: B
+                - generic [ref=e202]: competitors
+                - generic [ref=e203]: 3 findings
+              - link "72 C content 4 findings" [ref=e204] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit#content
+                - generic [ref=e205]: "72"
+                - generic [ref=e206]: C
+                - generic [ref=e207]: content
+                - generic [ref=e208]: 4 findings
+              - link "85 B design 1 finding" [ref=e209] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit#design
+                - generic [ref=e210]: "85"
+                - generic [ref=e211]: B
+                - generic [ref=e212]: design
+                - generic [ref=e213]: 1 finding
+              - link "46 F gaps 6 findings" [ref=e214] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit#gaps
+                - generic [ref=e215]: "46"
+                - generic [ref=e216]: F
+                - generic [ref=e217]: gaps
+                - generic [ref=e218]: 6 findings
+              - link "71 C geo 3 findings" [ref=e219] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit#geo
+                - generic [ref=e220]: "71"
+                - generic [ref=e221]: C
+                - generic [ref=e222]: geo
+                - generic [ref=e223]: 3 findings
+              - link "83 B links 3 findings" [ref=e224] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit#links
+                - generic [ref=e225]: "83"
+                - generic [ref=e226]: B
+                - generic [ref=e227]: links
+                - generic [ref=e228]: 3 findings
+              - link "64 D local 4 findings" [ref=e229] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit#local
+                - generic [ref=e230]: "64"
+                - generic [ref=e231]: D
+                - generic [ref=e232]: local
+                - generic [ref=e233]: 4 findings
+              - link "97 A media 1 finding" [ref=e234] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit#media
+                - generic [ref=e235]: "97"
+                - generic [ref=e236]: A
+                - generic [ref=e237]: media
+                - generic [ref=e238]: 1 finding
+              - link "54 F sales 6 findings" [ref=e239] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit#sales
+                - generic [ref=e240]: "54"
+                - generic [ref=e241]: F
+                - generic [ref=e242]: sales
+                - generic [ref=e243]: 6 findings
+              - link "72 C schema 4 findings" [ref=e244] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit#schema
+                - generic [ref=e245]: "72"
+                - generic [ref=e246]: C
+                - generic [ref=e247]: schema
+                - generic [ref=e248]: 4 findings
+              - link "50 F seo 6 findings" [ref=e249] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit#seo
+                - generic [ref=e250]: "50"
+                - generic [ref=e251]: F
+                - generic [ref=e252]: seo
+                - generic [ref=e253]: 6 findings
+              - link "86 B video 2 findings" [ref=e254] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit#video
+                - generic [ref=e255]: "86"
+                - generic [ref=e256]: B
+                - generic [ref=e257]: video
+                - generic [ref=e258]: 2 findings
+          - generic [ref=e259]:
+            - generic [ref=e260]:
+              - heading "Critical Findings" [level=3] [ref=e261]
+              - link "See all →" [ref=e262] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit
+            - table [ref=e264]:
+              - rowgroup [ref=e265]:
+                - row "Priority Dimension Finding Effort" [ref=e266]:
+                  - columnheader "Priority" [ref=e267]
+                  - columnheader "Dimension" [ref=e268]
+                  - columnheader "Finding" [ref=e269]
+                  - columnheader "Effort" [ref=e270]
+              - rowgroup [ref=e271]:
+                - row "P0 aeo Only 0 FAQ entries — far below what AI engines need to answer preschool questions heavy" [ref=e272]:
+                  - cell "P0" [ref=e273]:
+                    - generic [ref=e274]: P0
+                  - cell "aeo" [ref=e275]
+                  - cell "Only 0 FAQ entries — far below what AI engines need to answer preschool questions" [ref=e276]
+                  - cell "heavy" [ref=e277]:
+                    - generic [ref=e278]: heavy
+                - row "P0 design Heading hierarchy issues on 13/13 pages medium" [ref=e279]:
+                  - cell "P0" [ref=e280]:
+                    - generic [ref=e281]: P0
+                  - cell "design" [ref=e282]
+                  - cell "Heading hierarchy issues on 13/13 pages" [ref=e283]
+                  - cell "medium" [ref=e284]:
+                    - generic [ref=e285]: medium
+                - 'row "P0 gaps Missing page: Tuition or pricing page medium" [ref=e286]':
+                  - cell "P0" [ref=e287]:
+                    - generic [ref=e288]: P0
+                  - cell "gaps" [ref=e289]
+                  - 'cell "Missing page: Tuition or pricing page" [ref=e290]'
+                  - cell "medium" [ref=e291]:
+                    - generic [ref=e292]: medium
+                - 'row "P0 gaps Missing feature: Contact form light" [ref=e293]':
+                  - cell "P0" [ref=e294]:
+                    - generic [ref=e295]: P0
+                  - cell "gaps" [ref=e296]
+                  - 'cell "Missing feature: Contact form" [ref=e297]'
+                  - cell "light" [ref=e298]:
+                    - generic [ref=e299]: light
+                - row "P0 geo No TL;DR / summary blocks for AI extraction medium" [ref=e300]:
+                  - cell "P0" [ref=e301]:
+                    - generic [ref=e302]: P0
+                  - cell "geo" [ref=e303]
+                  - cell "No TL;DR / summary blocks for AI extraction" [ref=e304]
+                  - cell "medium" [ref=e305]:
+                    - generic [ref=e306]: medium
+  - generic [ref=e309]:
+    - button "Menu" [ref=e310]:
+      - img [ref=e312]
+      - generic: Menu
+    - button "Inspect" [ref=e316]:
+      - img [ref=e318]
+      - generic: Inspect
+    - button "Audit" [ref=e320]:
+      - img [ref=e322]
+      - generic: Audit
+    - button "Settings" [ref=e325]:
+      - img [ref=e327]
+      - generic: Settings

@@ -1,0 +1,806 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - generic [ref=e14]: v0.1.0
+    - main [ref=e15]:
+      - generic [ref=e16]:
+        - link "Clients" [ref=e17] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e18]: /
+        - link "Little Friends Learning Loft" [ref=e19] [cursor=pointer]:
+          - /url: /clients/littlefriends
+        - generic [ref=e20]: /
+        - generic [ref=e21]: Brand Voice
+      - generic [ref=e23]:
+        - text: Brand & Interview Synthesis
+        - heading "Little Friends Learning Loft" [level=1] [ref=e24]
+      - navigation [ref=e25]:
+        - link "Brand Voice" [ref=e26] [cursor=pointer]:
+          - /url: "#voice"
+        - link "FAQ Bank" [ref=e27] [cursor=pointer]:
+          - /url: "#faqs"
+        - link "Overrides" [ref=e28] [cursor=pointer]:
+          - /url: "#overrides"
+        - link "Asset Gaps" [ref=e29] [cursor=pointer]:
+          - /url: "#assets"
+      - generic [ref=e31]:
+        - heading "Brand Voice Guide — Little Friends Learning Loft" [level=1] [ref=e32]
+        - blockquote [ref=e33]:
+          - strong [ref=e34]: "Status: Draft (pre-interview)."
+          - text: Built from the audit, mined Google reviews, and the public site. The live interview (use
+          - code [ref=e35]: interview-guide.md
+          - text: ) will overwrite the speculative parts. Sections marked
+          - strong [ref=e36]: "[CONFIRM]"
+          - text: need explicit client validation.
+        - heading "Who is the audience" [level=2] [ref=e37]
+        - paragraph [ref=e38]: Hudson Valley parents of children ages 2.5 to 6 who are actively researching Montessori or full-day preschool options. They're reading several school websites in parallel, comparing schedules, philosophy, and tuition. Most are dual-income, looking for full-day coverage with credible educational substance — not just childcare. Many are first-time preschool parents and underestimate how often they'll Google specific questions ("nap time," "potty training," "what to bring on day one") between tour and enrollment.
+        - paragraph [ref=e39]:
+          - text: A meaningful minority are second-time parents who were burned by a prior preschool experience and are looking for adults who understand child development without being preachy.
+          - strong [ref=e40]: "[CONFIRM]"
+          - text: — confirm whether you market to first-time vs. second-time parents differently.
+        - heading "Tone in one sentence" [level=2] [ref=e41]
+        - paragraph [ref=e42]: Warm, grounded, and respectful of parents — practical and specific about what Montessori practice looks like at Little Friends, never saccharine, never marketing-heavy, and never coy about logistics.
+        - heading "Voice characteristics" [level=2] [ref=e43]
+        - list [ref=e44]:
+          - listitem [ref=e45]:
+            - strong [ref=e46]: Concrete and observational.
+            - text: Describe what a child does in the classroom, not what they "experience."
+          - listitem [ref=e47]:
+            - strong [ref=e48]: Respectful of parents' intelligence.
+            - text: No baby-talk in adult-facing copy. Trust the reader to handle a real schedule, a real number, a real policy.
+          - listitem [ref=e49]:
+            - strong [ref=e50]: Calm, never breathless.
+            - text: No exclamation points. No "We're SO excited about…" energy.
+          - listitem [ref=e51]:
+            - strong [ref=e52]: Specific about Montessori method.
+            - text: When you say "Montessori-inspired," explain in the same sentence what that means at LFLL.
+          - listitem [ref=e53]:
+            - strong [ref=e54]: Rooted in place.
+            - text: Newburgh, the Hudson Valley, the JCC building — anchor copy in real geography.
+          - listitem [ref=e55]:
+            - strong [ref=e56]: Honest about what we are and aren't.
+            - text: "\"We're a small school by design\" is more compelling than \"world-class.\""
+          - listitem [ref=e57]:
+            - strong [ref=e58]: Warm without being sugary.
+            - text: Children are children — not "tiny scholars," "little learners," or "loved ones."
+        - heading "Keywords / repeated phrases (use these — they are us)" [level=2] [ref=e59]
+        - list [ref=e60]:
+          - listitem [ref=e61]: Montessori-inspired
+          - listitem [ref=e62]: prepared environment
+          - listitem [ref=e63]: mixed-age classroom
+          - listitem [ref=e64]: hands-on learning
+          - listitem [ref=e65]: ages 2.5–6 (or 2.5 to 6)
+          - listitem [ref=e66]: full-day preschool
+          - listitem [ref=e67]: before-care and after-care
+          - listitem [ref=e68]: Newburgh
+          - listitem [ref=e69]: Hudson Valley
+          - listitem [ref=e70]: Newburgh JCC
+          - listitem [ref=e71]: guided independence
+          - listitem [ref=e72]: practical life
+        - heading "Banned words / phrases (do not use these — they are not us)" [level=2] [ref=e73]
+        - list [ref=e74]:
+          - listitem [ref=e75]: magical
+          - listitem [ref=e76]: transform / transformative
+          - listitem [ref=e77]: world-class
+          - listitem [ref=e78]: premier
+          - listitem [ref=e79]: robust
+          - listitem [ref=e80]: seamlessly
+          - listitem [ref=e81]: nurturing journey
+          - listitem [ref=e82]: endless possibilities
+          - listitem [ref=e83]: tiny scholars / little learners / little ones
+          - listitem [ref=e84]: "\"unlock your child's potential\""
+          - listitem [ref=e85]: "\"We are so excited / proud / passionate to…\""
+        - strong [ref=e86]: "[CONFIRM during interview]"
+        - text: — head of school may want to defend "magical" in one specific context (Probe 3 in interview guide). Allow that one use; clean the rest.
+        - heading "Sentence rhythm" [level=2] [ref=e87]
+        - list [ref=e88]:
+          - listitem [ref=e89]: Short sentences earn the long ones. Mix 6-word and 22-word sentences. Avoid the metronome of always-15-word marketing prose.
+          - listitem [ref=e90]: Lead with the noun, not the adjective. "A 4-year-old learning to tie shoes" beats "A delightful learning moment."
+          - listitem [ref=e91]: "Active voice, present tense for classroom descriptions: \"Children pour their own water,\" not \"Water is poured by children.\""
+        - heading "Headlines — yes / no examples" [level=2] [ref=e92]
+        - paragraph [ref=e93]: "| Right (use) | Wrong (avoid) | |---|---| | A full-day Montessori preschool in Newburgh, NY | Where Little Hearts Bloom | | What a Montessori day looks like at Little Friends | Discover the Magic of Montessori | | Mixed-age classrooms for children 2.5 to 6 | Ages 2.5 to 6 — Where Little Friends Become Big Friends | | Tour the classroom: 290 North Street, Newburgh | Come See What Makes Us Special | | Enrollment for Fall 2026 is open | Join Our Family! | | How we teach reading, math, and practical life | A Holistic Approach to Early Learning |"
+        - heading "Body copy — yes / no examples" [level=2] [ref=e94]
+        - strong [ref=e95]: Right (use)
+        - text: ":"
+        - blockquote [ref=e96]: Little Friends Learning Loft is a Montessori-inspired preschool at the Newburgh JCC, serving children ages 2.5 to 6. We run mixed-age classrooms, full-day schedules, and before- and after-care so working families don't have to piece together coverage. Tours run on Tuesdays and Thursdays — book one below or call (845) 561-6602.
+        - strong [ref=e97]: Wrong (avoid)
+        - text: ":"
+        - blockquote [ref=e98]: At Little Friends Learning Loft, we believe every child is born with a natural curiosity that, when nurtured in the right environment, can blossom into a lifelong love of learning. Our state-of-the-art Montessori-inspired program is designed to unlock each child's unique potential through a holistic, whole-child approach.
+        - heading "How we talk about Montessori" [level=2] [ref=e99]
+        - list [ref=e100]:
+          - listitem [ref=e101]: Always couple "Montessori-inspired" with one concrete detail in the same paragraph (e.g., "Montessori-inspired — our guides use sandpaper letters, golden beads, and a three-hour uninterrupted work cycle").
+          - listitem [ref=e102]:
+            - text: We are not AMI- or AMS-certified [
+            - strong [ref=e103]: CONFIRM
+            - text: "]. Be honest about scope: \"We draw from the Montessori method without claiming full AMI/AMS accreditation.\" Parents who care about the distinction will respect this; parents who don't will skim past it."
+          - listitem [ref=e104]: Never use "Montessori" as a vague vibe word. If you can't show the practice, don't use the word.
+        - heading "How we talk about the JCC" [level=2] [ref=e105]
+        - paragraph [ref=e106]:
+          - text: The school is physically located inside the Newburgh JCC.
+          - strong [ref=e107]: "[CONFIRM]"
+          - text: — confirm whether LFLL is a JCC program, a JCC tenant, or a JCC partnership.
+        - list [ref=e108]:
+          - listitem [ref=e109]: "Default framing: \"Little Friends Learning Loft is housed inside the Newburgh JCC at 290 North Street.\" Location anchor first; affiliation question handled in a dedicated FAQ."
+          - listitem [ref=e110]: Address parental concern about religious affiliation in the FAQ, not in marketing prose. Do not over-explain or sound apologetic.
+          - listitem [ref=e111]: Use the JCC for discoverability (LocalBusiness schema, geo coordinates, footer address) — not as a brand identity.
+        - heading "How we talk about tuition (if approved)" [level=2] [ref=e112]
+        - strong [ref=e113]: "[CONFIRM]"
+        - text: — whether tuition publishes publicly, gates behind a form, or stays "contact us only."
+        - paragraph
+        - paragraph [ref=e114]: "If publishing:"
+        - list [ref=e115]:
+          - listitem [ref=e116]: State a single specific number, not a range. "Full-day five days a week is $X for 2026–27."
+          - listitem [ref=e117]: Always pair with what's included (lunch, materials, before/after-care).
+          - listitem [ref=e118]: Pair with the deposit, payment cadence, and any sibling discount in the same block.
+          - listitem [ref=e119]: Avoid "tuition" alone as a heading; use "Tuition & Schedule."
+        - heading "How we talk about competitors" [level=2] [ref=e120]
+        - paragraph [ref=e121]: "We don't, by name. But we do answer \"how is LFLL different from the JCC's other programs / public pre-K / a daycare\" in indirect language:"
+        - list [ref=e122]:
+          - listitem [ref=e123]: "Right: \"We're a small school by design. Two mixed-age classrooms, two trained guides, and a three-hour work cycle that doesn't get interrupted by classroom transitions.\""
+          - listitem [ref=e124]: "Wrong: \"Unlike public pre-K, where children sit at desks…\""
+        - heading "What we never say" [level=2] [ref=e125]
+        - list [ref=e126]:
+          - listitem [ref=e127]: "\"Family.\" (We're a school, not a family.) Replace with \"community,\" \"school community,\" or \"current families.\""
+          - listitem [ref=e128]: "\"Journey.\" (Inflated and overused.) Replace with the specific phase: \"the year before kindergarten,\" \"the toddler year.\""
+          - listitem [ref=e129]: Anything that implies guaranteed academic outcomes. We educate; we don't guarantee.
+        - heading "Checking voice — quick test" [level=2] [ref=e130]
+        - paragraph [ref=e131]: If you'd be embarrassed to read the sentence aloud to a parent in the doorway, it's wrong. If a guide could deliver it as part of a tour without changing a word, it's right.
+      - generic [ref=e133]:
+        - heading "FAQ Bank — Little Friends Learning Loft" [level=1] [ref=e134]
+        - blockquote [ref=e135]:
+          - strong [ref=e136]: "Status: Draft (pre-interview)."
+          - text: Question set generated from the audit (AEO topic gaps + sales-conversion gaps). Answers are placeholders or partial drafts. The live interview fills in real numbers, policies, and voice. Treat each blank as a TODO until the head of school provides the figure or policy.
+        - paragraph
+        - paragraph [ref=e137]: "Each Q&A is 50–80 words: short enough for an FAQ accordion, long enough to qualify for AI-search citation and featured-snippet eligibility."
+        - separator [ref=e138]
+        - heading "Group A — Enrollment & tours" [level=2] [ref=e139]
+        - heading "What ages do you take?" [level=3] [ref=e140]
+        - text: Little Friends Learning Loft serves children ages 2.5 through 6. Children typically join in the toddler/young-3 year and stay through their kindergarten year.
+        - strong [ref=e141]: "[CONFIRM]"
+        - text: the readiness criterion you actually apply — birthday cutoff, potty-training threshold, or developmental observation.
+        - heading "When does enrollment open for the 2026–27 school year?" [level=3] [ref=e142]
+        - strong [ref=e143]: "[FILL IN]"
+        - text: — date enrollment opens, date it typically fills, and whether priority goes to current families and siblings first.
+        - heading "How do I book a tour?" [level=3] [ref=e144]
+        - text: Tours run
+        - strong [ref=e145]: "[DAYS / TIMES]"
+        - text: . Book a tour by calling (845) 561-6602 or filling out the inquiry form on our Contact page. We'll confirm a slot within one business day.
+        - heading "What happens at a tour?" [level=3] [ref=e146]
+        - text: Plan on 30–45 minutes. You'll see the classroom mid-morning, meet a lead guide, and watch the work cycle in action. Parents are encouraged to bring questions — and the child being enrolled, if scheduling allows.
+        - heading "What's the application process after the tour?" [level=3] [ref=e147]
+        - strong [ref=e148]: "[FILL IN]"
+        - text: — application form, application fee (refundable?), decision timeline, deposit and seat-lock window.
+        - heading "Is there a waitlist?" [level=3] [ref=e149]
+        - strong [ref=e150]: "[FILL IN]"
+        - text: — whether you keep a formal waitlist, what year-group it's longest for, and how families progress.
+        - heading "Do you offer sibling priority?" [level=3] [ref=e151]
+        - strong [ref=e152]: "[CONFIRM]"
+        - text: — yes / no, and what date sibling enrollment closes before opening to new families.
+        - separator [ref=e153]
+        - heading "Group B — Tuition & fees" [level=2] [ref=e154]
+        - heading "How much does Little Friends cost?" [level=3] [ref=e155]
+        - strong [ref=e156]: "[FILL IN — pending pricing-publish decision (Override 1)]"
+        - text: . Full-day five days a week is
+        - strong [ref=e157]: $X
+        - text: for 2026–27. Half-day is
+        - strong [ref=e158]: $Y
+        - text: . Before-care and after-care are
+        - strong [ref=e159]: $Z
+        - text: extra per week.
+        - heading "What's included in tuition?" [level=3] [ref=e160]
+        - strong [ref=e161]: "[FILL IN]"
+        - text: — typically lunch / snacks / materials / extended-day options. Be explicit about what is and isn't part of the base figure.
+        - heading "Is there a sibling discount?" [level=3] [ref=e162]
+        - strong [ref=e163]: "[CONFIRM]"
+        - text: — percentage and which child gets the discount.
+        - heading "Do you offer scholarships or sliding-scale tuition?" [level=3] [ref=e164]
+        - strong [ref=e165]: "[CONFIRM]"
+        - text: — eligibility, application timing, and how to ask without feeling awkward.
+        - heading "What's the deposit and refund policy?" [level=3] [ref=e166]
+        - strong [ref=e167]: "[FILL IN]"
+        - text: — deposit amount, when due, what's refundable when, and what happens if a family withdraws mid-year.
+        - heading "Do you accept HSA / dependent-care FSA / employer benefits?" [level=3] [ref=e168]
+        - strong [ref=e169]: "[CONFIRM]"
+        - text: — and whether you provide receipts compatible with each.
+        - separator [ref=e170]
+        - heading "Group C — Daily schedule & logistics" [level=2] [ref=e171]
+        - heading "What time is drop-off and pickup?" [level=3] [ref=e172]
+        - strong [ref=e173]: "[FILL IN]"
+        - text: — drop-off window, pickup window, late-pickup grace period and fee.
+        - heading "Do you offer before-care and after-care?" [level=3] [ref=e174]
+        - text: Yes. Before-care begins at
+        - strong [ref=e175]: "[TIME]"
+        - text: and after-care runs until
+        - strong [ref=e176]: "[TIME]"
+        - text: . Both are flat add-ons to the standard schedule.
+        - strong [ref=e177]: "[CONFIRM]"
+        - text: pricing.
+        - heading "What does a typical day look like?" [level=3] [ref=e178]
+        - text: A typical day at Little Friends starts with arrival and a settling-in period, followed by a three-hour uninterrupted work cycle, lunch, outdoor time, and a quiet/rest period before the afternoon work cycle and dismissal.
+        - strong [ref=e179]: "[FILL IN]"
+        - text: specific times.
+        - heading "Do you have a nap or rest time?" [level=3] [ref=e180]
+        - strong [ref=e181]: "[CONFIRM]"
+        - text: — yes / no, length, whether children must nap or can do quiet work, and whether parents send mats / blankets.
+        - heading "What do children eat?" [level=3] [ref=e182]
+        - strong [ref=e183]: "[FILL IN]"
+        - text: — what the school provides, what parents pack, and whether you're nut-free / allergen-flexible.
+        - heading "Is the school nut-free?" [level=3] [ref=e184]
+        - strong [ref=e185]: "[CONFIRM]"
+        - text: — yes / no, and how you handle a child with a severe allergy.
+        - heading "What's your sick policy?" [level=3] [ref=e186]
+        - text: Children stay home with fever (over 100.4°F), vomiting, or anything contagious within the past 24 hours.
+        - strong [ref=e187]: "[CONFIRM]"
+        - text: specific return-to-school window and any required doctor's note.
+        - heading "What's your snow / weather-day policy?" [level=3] [ref=e188]
+        - strong [ref=e189]: "[CONFIRM]"
+        - text: — whether you follow the Newburgh public-school closures or make your own call, and how you communicate.
+        - heading "What's the parent communication tool?" [level=3] [ref=e190]
+        - strong [ref=e191]: "[CONFIRM]"
+        - text: — Brightwheel / Procare / ClassDojo / email / paper folder. Parents typically receive an end-of-day note plus weekly summary.
+        - separator [ref=e192]
+        - heading "Group D — Curriculum & approach" [level=2] [ref=e193]
+        - heading "What does \"Montessori-inspired\" mean here?" [level=3] [ref=e194]
+        - text: We draw from the Montessori method without claiming full AMI or AMS accreditation. In practice, that means a prepared environment, mixed-age classrooms, hands-on materials (sandpaper letters, golden beads, practical-life shelves), a three-hour uninterrupted work cycle, and guides trained to observe and introduce lessons when a child is ready.
+        - heading "How is the classroom set up?" [level=3] [ref=e195]
+        - text: The room is set up so a 3-year-old can pour their own water, choose their own work, and put materials back. Materials are arranged by area — practical life, sensorial, language, math, geography, art — and children move freely between them.
+        - heading "What ages share a classroom?" [level=3] [ref=e196]
+        - text: Children of mixed ages 2.5 to 6 share the classroom — not split into traditional grade levels. Younger children learn from older ones modeling work; older children consolidate skills by teaching.
+        - heading "What's the child-to-guide ratio?" [level=3] [ref=e197]
+        - strong [ref=e198]: "[CONFIRM]"
+        - text: — ratio, maximum class size, and number of trained guides per room.
+        - heading "Are your guides AMI- or AMS-certified?" [level=3] [ref=e199]
+        - strong [ref=e200]: "[CONFIRM]"
+        - text: "— credential level for each lead guide. Be specific: \"Lead guide [Name] is AMS-certified at the Early Childhood level. Assistant guide [Name] is in training.\""
+        - heading "How do you teach reading?" [level=3] [ref=e201]
+        - strong [ref=e202]: "[FILL IN]"
+        - text: "— typically the Montessori path: sandpaper letters, sound games, movable alphabet, then early reading. Be explicit if you supplement with phonics, sight words, or a non-Montessori curriculum."
+        - heading "How do you teach math?" [level=3] [ref=e203]
+        - strong [ref=e204]: "[FILL IN]"
+        - text: — number rods, sandpaper numbers, golden beads, decimal system materials.
+        - heading "Do you do science, geography, art, music?" [level=3] [ref=e205]
+        - text: Yes. The classroom includes a continents map, plant and animal materials, easel work and clay, and weekly music.
+        - strong [ref=e206]: "[CONFIRM]"
+        - text: whether music is in-house or by a visiting teacher.
+        - heading "What's your screen and tech policy?" [level=3] [ref=e207]
+        - text: We do not use screens in the classroom.
+        - strong [ref=e208]: "[CONFIRM]"
+        - text: whether parents have classroom-photo access via a private app and whether older children encounter any tech.
+        - separator [ref=e209]
+        - heading "Group E — Toilet learning & development" [level=2] [ref=e210]
+        - heading "Do children need to be fully potty-trained to enroll?" [level=3] [ref=e211]
+        - strong [ref=e212]: "[CONFIRM]"
+        - text: "— most likely no, given Montessori philosophy. State the floor explicitly: \"We accept children who are mid-toilet-learning. We don't require full daytime training before the first day.\""
+        - heading "How do you handle accidents?" [level=3] [ref=e213]
+        - text: Calmly. Each child has a labeled extra-clothes bag in their cubby. Guides change a child without making it a moment.
+        - heading "Do you support a child mid-toilet-learning?" [level=3] [ref=e214]
+        - text: Yes.
+        - strong [ref=e215]: "[FILL IN]"
+        - text: — what you ask of parents, frequency of bathroom breaks, and how you communicate progress home.
+        - separator [ref=e216]
+        - heading "Group F — Behavior & development" [level=2] [ref=e217]
+        - heading "How do you handle separation anxiety?" [level=3] [ref=e218]
+        - strong [ref=e219]: "[FILL IN]"
+        - text: — phased ramp-up over the first two weeks, parent-stays-with-child option, and what the typical adjustment timeline looks like.
+        - heading "How do you handle behavior challenges like biting or hitting?" [level=3] [ref=e220]
+        - strong [ref=e221]: "[FILL IN]"
+        - text: — observe first, redirect, communicate with parents within 24 hours. Be explicit about your escalation path.
+        - heading "Do you do parent-teacher conferences?" [level=3] [ref=e222]
+        - strong [ref=e223]: "[CONFIRM]"
+        - text: — yes / no, frequency (typically twice yearly), and whether you provide written observation reports.
+        - heading "How often do parents hear from the school?" [level=3] [ref=e224]
+        - strong [ref=e225]: "[FILL IN]"
+        - text: "— typical frequency: end-of-day check-in at pickup, weekly summary in the parent app, and twice-yearly conferences."
+        - heading "What happens if a child isn't a fit?" [level=3] [ref=e226]
+        - strong [ref=e227]: "[FILL IN]"
+        - text: — the school's expulsion / unenrollment policy, including the typical communication and timeline.
+        - separator [ref=e228]
+        - heading "Group G — Summer & extended" [level=2] [ref=e229]
+        - heading "What is summer programming at Little Friends?" [level=3] [ref=e230]
+        - strong [ref=e231]: "[CONFIRM]"
+        - text: — is summer the same school continued, a separate camp, or different curriculum entirely? Override 9 in the interview guide flags this for explicit decision.
+        - heading "Is summer included in tuition or separate?" [level=3] [ref=e232]
+        - strong [ref=e233]: "[FILL IN]"
+        - text: — typically separate enrollment.
+        - heading "Do current families get priority for summer?" [level=3] [ref=e234]
+        - strong [ref=e235]: "[CONFIRM]"
+        - text: .
+        - separator [ref=e236]
+        - heading "Group H — The school itself" [level=2] [ref=e237]
+        - heading "Who runs Little Friends Learning Loft?" [level=3] [ref=e238]
+        - strong [ref=e239]: "[FILL IN]"
+        - text: — head of school name, credential, years at the school. One sentence on philosophy.
+        - heading "When was the school founded?" [level=3] [ref=e240]
+        - strong [ref=e241]: "[FILL IN]"
+        - text: — year founded, and one-line story about why.
+        - heading "Are you affiliated with the Newburgh JCC?" [level=3] [ref=e242]
+        - text: The school is physically located at the Newburgh JCC, 290 North Street.
+        - strong [ref=e243]: "[CONFIRM]"
+        - text: whether LFLL is a JCC program, a JCC tenant, or a JCC partnership. We welcome families of all backgrounds.
+        - heading "Are you New York State licensed?" [level=3] [ref=e244]
+        - strong [ref=e245]: "[CONFIRM]"
+        - text: — yes, license number
+        - strong [ref=e246]: "[NUMBER]"
+        - text: .
+        - heading "Are you accredited?" [level=3] [ref=e247]
+        - strong [ref=e248]: "[CONFIRM]"
+        - text: — NAEYC, AMS, NYS QUALITYstarsNY, or none.
+        - separator [ref=e249]
+        - heading "Group I — Logistics & visits" [level=2] [ref=e250]
+        - heading "Where exactly is the school?" [level=3] [ref=e251]
+        - text: Inside the Newburgh JCC at 290 North Street, Newburgh, NY 12550. The classroom is on the upper floor — hence "Loft."
+        - heading "Where do I park?" [level=3] [ref=e252]
+        - strong [ref=e253]: "[CONFIRM]"
+        - text: — JCC lot location, drop-off lane, accessibility.
+        - heading "Do you have outdoor space?" [level=3] [ref=e254]
+        - strong [ref=e255]: "[CONFIRM]"
+        - text: — on-site outdoor area, JCC-shared space, or off-site walks. Specify daily-outdoor minimum minutes.
+        - heading "Can I bring my child to the tour?" [level=3] [ref=e256]
+        - text: Yes — but if you can come without them first, you'll see more of the classroom in motion. We're happy to host a follow-up with the child to confirm fit.
+        - heading "What should my child wear?" [level=3] [ref=e257]
+        - text: Closed-toe shoes that allow running and stair-climbing. Easy-on layers (children dress and undress themselves). All clothing labeled with name.
+        - strong [ref=e258]: "[CONFIRM]"
+        - text: any specific brand recommendations or banned items.
+        - heading "What do I send on day one?" [level=3] [ref=e259]
+        - strong [ref=e260]: "[FILL IN]"
+        - text: "— typical list: extra clothes bag, water bottle, lunchbox if applicable, comfort item if needed, indoor shoes if used."
+        - separator [ref=e261]
+        - heading "Group J — Advanced / nuanced" [level=2] [ref=e262]
+        - heading "What kind of parent thrives at Little Friends?" [level=3] [ref=e263]
+        - text: A parent who wants their child to be a little independent. Who doesn't need a daily report on every diaper. The parents who struggle here are usually expecting more academic worksheets — that's not what we do.
+        - strong [ref=e264]: "[CONFIRM]"
+        - text: with head of school during interview Probe 4.
+        - heading "How is Little Friends different from public pre-K or a JCC sibling program?" [level=3] [ref=e265]
+        - strong [ref=e266]: "[CONFIRM with client — Override 5]"
+        - text: ". Default framing: \"We're a small school by design. Two mixed-age classrooms, two trained guides, a three-hour work cycle that doesn't get interrupted by classroom transitions.\""
+        - heading "Where do children go after Little Friends?" [level=3] [ref=e267]
+        - strong [ref=e268]: "[FILL IN]"
+        - text: — list of kindergartens children typically go to (public Newburgh, Newburgh charter, private).
+        - strong [ref=e269]: "[CONFIRM]"
+        - text: whether you write recommendation letters and how the transition is supported.
+        - heading "Do you do kindergarten-readiness assessments?" [level=3] [ref=e270]
+        - strong [ref=e271]: "[CONFIRM]"
+        - text: — yes / no and what that looks like in a Montessori frame.
+        - heading "Can I volunteer in the classroom?" [level=3] [ref=e272]
+        - strong [ref=e273]: "[CONFIRM]"
+        - text: — what background-check is required, what kinds of volunteering are welcome (field-trip chaperone, art-day helper) vs. not appropriate (in-class observation that disrupts the work cycle).
+        - heading "How do I support the school financially beyond tuition?" [level=3] [ref=e274]
+        - text: We accept tax-deductible donations through our
+        - strong [ref=e275]: "[CONFIRM — donation fund / 501(c)(3) status]"
+        - text: . One-time contributions, monthly giving, and corporate sponsorship are all welcome — see the Support page for details.
+        - heading "What's the school's fundraising for?" [level=3] [ref=e276]
+        - strong [ref=e277]: "[FILL IN]"
+        - text: — typically scholarships, classroom materials, training. Override 10 in the interview guide flags how prominent giving should be in the navigation.
+        - paragraph
+      - generic [ref=e279]:
+        - heading "Aesthetic & Strategic Overrides — Little Friends Learning Loft" [level=1] [ref=e280]
+        - blockquote [ref=e281]:
+          - strong [ref=e282]: "Status: Draft (pre-interview)."
+          - text: Records the audit's strong opinions and where the client may push back. After the interview, this doc captures *the client's actual decisions* — the audit's recommendation, what the client decided, and why. Treat each row as TBD until the head of school weighs in.
+        - paragraph
+        - paragraph [ref=e283]: The rebuild reflects the client's business, not the audit template. Where the audit and the client disagree, the client wins — and we record the decision so future automations don't re-litigate it.
+        - heading "Format" [level=2] [ref=e284]
+        - paragraph [ref=e285]: "For each contested decision: the audit position, the client's decision, the implementation impact."
+        - separator [ref=e286]
+        - heading "1. Tuition transparency" [level=2] [ref=e287]
+        - strong [ref=e288]: Audit position (sales-011, P0)
+        - text: ": Publish full tuition publicly. Pricing transparency is the highest-leverage single change a service site can make."
+        - strong [ref=e289]: Audit assumed
+        - text: ": A clear public number reduces low-quality inquiries and increases tour-bookings from qualified families."
+        - strong [ref=e290]: Client decision
+        - text: ":"
+        - strong [ref=e291]: "[PENDING — interview Override 1]"
+        - strong [ref=e292]: Options recorded
+        - text: ":"
+        - list [ref=e293]:
+          - listitem [ref=e294]: (a) Publish full table publicly — preferred default
+          - listitem [ref=e295]: (b) "Starting at $X" with a CTA to inquire
+          - listitem [ref=e296]: (c) Gate behind an inquiry form ("get our 2026 tuition guide")
+          - listitem [ref=e297]: (d) Phone-only — keep figure off the site entirely
+        - strong [ref=e298]: Implementation impact
+        - text: ":"
+        - list [ref=e299]:
+          - listitem [ref=e300]: "(a/b): Build a Tuition page with the figure(s) above the fold. AggregateRating + LocalBusiness schema includes priceRange."
+          - listitem [ref=e301]: "(c): Build a Tuition page, but the figure renders only after form submit. Add an autoresponder."
+          - listitem [ref=e302]: "(d): Skip the page; embed phone-only line on Contact page."
+        - separator [ref=e303]
+        - heading "2. Montessori certification framing" [level=2] [ref=e304]
+        - strong [ref=e305]: Audit position (aeo, content)
+        - text: ": Be specific about what \"Montessori-inspired\" means at LFLL. AI search treats vague Montessori-language as low-confidence."
+        - strong [ref=e306]: Audit assumed
+        - text: ": An honest \"we draw from Montessori without claiming AMI/AMS\" is more credible than vague claims."
+        - strong [ref=e307]: Client decision
+        - text: ":"
+        - strong [ref=e308]: "[PENDING — interview Override 2]"
+        - strong [ref=e309]: Options recorded
+        - text: ":"
+        - list [ref=e310]:
+          - listitem [ref=e311]: (a) "Montessori-inspired" with explicit detail in the same paragraph (recommended default)
+          - listitem [ref=e312]: (b) "Authentic Montessori practice" if guides are AMI/AMS-certified
+          - listitem [ref=e313]: (c) "Inspired by Montessori, Reggio, and our own observations" if they actively blend
+        - strong [ref=e314]: Implementation impact
+        - text: ":"
+        - list [ref=e315]:
+          - listitem [ref=e316]: The Curriculum / "What is Montessori at LFLL" page has one of these as its headline framing.
+          - listitem [ref=e317]:
+            - text: The schema markup uses
+            - code [ref=e318]: educationalCredentialAwarded
+            - text: if (b).
+        - separator [ref=e319]
+        - heading "3. \"Magical\" and other banned words" [level=2] [ref=e320]
+        - strong [ref=e321]: Audit position (content-001)
+        - text: ": Remove vague superlatives — \"magical,\" \"transform,\" \"robust,\" \"seamlessly.\""
+        - strong [ref=e322]: Audit assumed
+        - text: ": Specific claims are more memorable and credible than abstract ones."
+        - strong [ref=e323]: Client decision
+        - text: ":"
+        - strong [ref=e324]: "[PENDING — interview Override 3]"
+        - strong [ref=e325]: Default
+        - text: ": Strip from all body copy. Allow up to 2 uses if the head of school defends them in the interview, in places where they're earned (a story, a quote — not filler)."
+        - strong [ref=e326]: Implementation impact
+        - text: ":"
+        - list [ref=e327]:
+          - listitem [ref=e328]: Brand voice guide's banned-words list is treated as a hard rule by the content-team agent.
+          - listitem [ref=e329]: A single allowed use is annotated inline so it survives subsequent rewrites.
+        - separator [ref=e330]
+        - heading "4. Photo gallery — public or private" [level=2] [ref=e331]
+        - strong [ref=e332]: Audit position (sales-012, P1)
+        - text: ": Build a photo gallery page. Visual proof is among the strongest conversion drivers."
+        - strong [ref=e333]: Audit assumed
+        - text: ": A public gallery converts better than a gated one."
+        - strong [ref=e334]: Client decision
+        - text: ":"
+        - strong [ref=e335]: "[PENDING — interview Override 4]"
+        - strong [ref=e336]: Options recorded
+        - text: ":"
+        - list [ref=e337]:
+          - listitem [ref=e338]: (a) Public gallery, classroom + facility, no identifiable child faces — recommended default
+          - listitem [ref=e339]: (b) Public gallery with student photos (requires explicit per-child media releases)
+          - listitem [ref=e340]: (c) Gated parent portal only; no public photos
+        - strong [ref=e341]: Implementation impact
+        - text: ":"
+        - list [ref=e342]:
+          - listitem [ref=e343]:
+            - text: (a) and (b) build the same
+            - code [ref=e344]: /photos
+            - text: "route; (c) replaces the page with a \"Current families: log in for photo album\" stub and an authentication redirect."
+          - listitem [ref=e345]: (b) requires the team to track media-release status per family.
+        - separator [ref=e346]
+        - heading "5. Comparison content" [level=2] [ref=e347]
+        - strong [ref=e348]: Audit position (competitors)
+        - text: ": Address how LFLL differs from the JCC's other programs and public pre-K."
+        - strong [ref=e349]: Audit assumed
+        - text: ": Buyers compare 3–5 options. Sites that handle the comparison (without naming names) own the conversation."
+        - strong [ref=e350]: Client decision
+        - text: ":"
+        - strong [ref=e351]: "[PENDING — interview Override 5]"
+        - strong [ref=e352]: Options recorded
+        - text: ":"
+        - list [ref=e353]:
+          - listitem [ref=e354]: (a) "How to choose a preschool in Newburgh" content piece — helpful first, comparative second
+          - listitem [ref=e355]: (b) Skip comparison content entirely
+          - listitem [ref=e356]: (c) Comparison but only on the FAQ page (not as its own page)
+        - strong [ref=e357]: Implementation impact
+        - text: ":"
+        - list [ref=e358]:
+          - listitem [ref=e359]:
+            - text: (a) adds a
+            - code [ref=e360]: /how-to-choose
+            - text: long-form piece to navigation; helps with SEO long-tail.
+          - listitem [ref=e361]: (b) removes the entry from the implementation plan.
+          - listitem [ref=e362]: (c) adds 2–3 FAQ Q&As that handle "how is LFLL different from…" indirectly.
+        - separator [ref=e363]
+        - heading "6. FAQ scale — wide or deep" [level=2] [ref=e364]
+        - strong [ref=e365]: Audit position (aeo-028, content-010)
+        - text: ": Build 40–60 FAQ entries."
+        - strong [ref=e366]: Audit assumed
+        - text: ": AI search and featured-snippet eligibility favor breadth."
+        - strong [ref=e367]: Client decision
+        - text: ":"
+        - strong [ref=e368]: "[PENDING — interview Override 6]"
+        - strong [ref=e369]: Options recorded
+        - text: ":"
+        - list [ref=e370]:
+          - listitem [ref=e371]: (a) Wide — 50 short Q&As (50–80 words each)
+          - listitem [ref=e372]: (b) Deep — 12 long-form Q&As (200–400 words each)
+          - listitem [ref=e373]: (c) Hybrid — 30 short + 8 long
+        - strong [ref=e374]: Implementation impact
+        - text: ":"
+        - list [ref=e375]:
+          - listitem [ref=e376]: "(a) maximizes AEO score; risk: thin voice."
+          - listitem [ref=e377]: "(b) maximizes voice fidelity; risk: AEO score loss of ~6–10 points."
+          - listitem [ref=e378]: (c) recommended default. Routes the long Q&As through brand-voice review; auto-builds schema for both.
+        - separator [ref=e379]
+        - heading "7. Primary homepage CTA" [level=2] [ref=e380]
+        - strong [ref=e381]: Audit position (sales-018)
+        - text: ": Hero CTA must be unambiguous and route to the highest-intent action."
+        - strong [ref=e382]: Audit assumed
+        - text: ": \"Book a Tour\" is the highest-quality conversion event."
+        - strong [ref=e383]: Client decision
+        - text: ":"
+        - strong [ref=e384]: "[PENDING — interview Override 7]"
+        - strong [ref=e385]: Options recorded
+        - text: ":"
+        - list [ref=e386]:
+          - listitem [ref=e387]: (a) "Book a Tour" — recommended default
+          - listitem [ref=e388]: (b) "Start Your Application"
+          - listitem [ref=e389]: (c) "See Our 2026 Schedule"
+        - strong [ref=e390]: Implementation impact
+        - text: ":"
+        - list [ref=e391]:
+          - listitem [ref=e392]: (a) primary, (b) secondary on the homepage. Both route to the Contact page with prefilled form context.
+        - separator [ref=e393]
+        - heading "8. JCC affiliation visibility" [level=2] [ref=e394]
+        - strong [ref=e395]: Audit position (geo-031)
+        - text: ": Anchor the school to its location for AI disambiguation. The JCC is the strongest geo signal."
+        - strong [ref=e396]: Audit assumed
+        - text: ": Strong location anchoring helps AI search and local SEO."
+        - strong [ref=e397]: Client decision
+        - text: ":"
+        - strong [ref=e398]: "[PENDING — interview Override 8]"
+        - strong [ref=e399]: Options recorded
+        - text: ":"
+        - list [ref=e400]:
+          - listitem [ref=e401]: (a) Hero says "at the Newburgh JCC" prominently
+          - listitem [ref=e402]: (b) Footer + meta only; hero stays school-first
+          - listitem [ref=e403]: (c) JCC is invisible on the public site (only present in schema and address)
+        - strong [ref=e404]: Implementation impact
+        - text: ":"
+        - list [ref=e405]:
+          - listitem [ref=e406]: (a/b) — LocalBusiness schema includes parentOrganization or containedInPlace pointing to the JCC.
+          - listitem [ref=e407]: (c) drops the structured-data link and accepts a small AEO-disambiguation hit.
+        - separator [ref=e408]
+        - heading "9. Summer programming branding" [level=2] [ref=e409]
+        - strong [ref=e410]: Audit position (content-008, seo-005)
+        - text: ": The /summer-1 and /summerfall-2023-enrollment pages are stale and confusing."
+        - strong [ref=e411]: Audit assumed
+        - text: ": Summer is a sub-program of LFLL and should live under the same brand."
+        - strong [ref=e412]: Client decision
+        - text: ":"
+        - strong [ref=e413]: "[PENDING — interview Override 9]"
+        - strong [ref=e414]: Options recorded
+        - text: ":"
+        - list [ref=e415]:
+          - listitem [ref=e416]:
+            - text: (a) Same brand, dedicated
+            - code [ref=e417]: /summer
+            - text: page with hero, schedule, tuition (recommended default)
+          - listitem [ref=e418]: (b) Sub-brand ("Loft Summer Camp") on a sibling page or sub-domain
+          - listitem [ref=e419]: (c) Drop summer entirely from the public site this year
+        - strong [ref=e420]: Implementation impact
+        - text: ":"
+        - list [ref=e421]:
+          - listitem [ref=e422]: (a) cleanest, lowest-cost.
+          - listitem [ref=e423]: (b) requires its own design system page and separate analytics goals.
+          - listitem [ref=e424]: (c) requires redirects for the legacy /summer-1 and /summerfall-2023-enrollment URLs to the homepage.
+        - separator [ref=e425]
+        - heading "10. Donation / fundraising prominence" [level=2] [ref=e426]
+        - strong [ref=e427]: Audit position (links pass)
+        - text: ": /support and /product/little-friends-donation-fund/4 are orphan pages and rarely convert."
+        - strong [ref=e428]: Audit assumed
+        - text: ": Either integrate giving into the navigation, or remove the orphan pages."
+        - strong [ref=e429]: Client decision
+        - text: ":"
+        - strong [ref=e430]: "[PENDING — interview Override 10]"
+        - strong [ref=e431]: Options recorded
+        - text: ":"
+        - list [ref=e432]:
+          - listitem [ref=e433]: (a) Footer link only
+          - listitem [ref=e434]:
+            - text: (b) Dedicated
+            - code [ref=e435]: /support
+            - text: page in the secondary nav, with a story-led pitch
+          - listitem [ref=e436]: (c) Integrated as a homepage section ("Give to LFLL")
+        - strong [ref=e437]: Implementation impact
+        - text: ":"
+        - list [ref=e438]:
+          - listitem [ref=e439]: (a) keeps the page but accepts low conversion.
+          - listitem [ref=e440]: (b) recommended default — story-led, scholarship-funding angle.
+          - listitem [ref=e441]: (c) only if giving is a major revenue line for the school.
+        - separator [ref=e442]
+        - heading "11. Visual identity" [level=2] [ref=e443]
+        - strong [ref=e444]: Audit position (design pass)
+        - text: ": 90/100 — visual identity is solid. Logo, color palette, photography all read as appropriate."
+        - strong [ref=e445]: Audit assumed
+        - text: ": The brand identity is keepers; the rebuild should preserve it."
+        - strong [ref=e446]: Client decision
+        - text: ":"
+        - strong [ref=e447]: "[PENDING — interview]"
+        - strong [ref=e448]: Options recorded
+        - text: ":"
+        - list [ref=e449]:
+          - listitem [ref=e450]: (a) Keep current logo and palette as-is (recommended default)
+          - listitem [ref=e451]: (b) Refresh logo (commission new) — adds 1–2 weeks to timeline
+          - listitem [ref=e452]: (c) New visual identity entirely — turns the rebuild into a rebrand
+        - strong [ref=e453]: Implementation impact
+        - text: ":"
+        - list [ref=e454]:
+          - listitem [ref=e455]: (a) just need higher-resolution source files (asset gap).
+          - listitem [ref=e456]: (b) blocks scaffold's design tokens until new logo lands.
+          - listitem [ref=e457]: (c) makes the audit's design tokens irrelevant and resets the design system phase.
+        - separator [ref=e458]
+        - heading "12. Tone in classroom descriptions" [level=2] [ref=e459]
+        - strong [ref=e460]: Audit position (brand voice)
+        - text: ": Concrete, observational, present-tense."
+        - strong [ref=e461]: Audit assumed
+        - text: ": Parents prefer real classroom verbs over abstract benefits."
+        - strong [ref=e462]: Client decision
+        - text: ":"
+        - strong [ref=e463]: "[PENDING — interview Probes 1, 2, 5]"
+        - strong [ref=e464]: Options recorded
+        - text: ":"
+        - list [ref=e465]:
+          - listitem [ref=e466]: "(a) Concrete-only: \"Children pour their own water\" (recommended default)"
+          - listitem [ref=e467]: "(b) Mix: 80% concrete, 20% reflective (\"…and the room hums when the work cycle is going well\")"
+          - listitem [ref=e468]: "(c) Reflective-leaning: more atmosphere, less verbs"
+        - strong [ref=e469]: Implementation impact
+        - text: ":"
+        - list [ref=e470]:
+          - listitem [ref=e471]: The brand voice guide's "How we talk about Montessori" section reflects the chosen ratio.
+          - listitem [ref=e472]: The content-team agent enforces it on every page rewrite.
+        - separator [ref=e473]
+        - heading "How to use this document going forward" [level=2] [ref=e474]
+        - paragraph [ref=e475]: "After the interview:"
+        - list [ref=e476]:
+          - listitem [ref=e477]: The consultant updates each row with the client's actual decision.
+          - listitem [ref=e478]:
+            - text: The implementation plan in
+            - code [ref=e479]: audit-package.json
+            - text: is updated to reflect the chosen path for each contested item.
+          - listitem [ref=e480]: This file becomes the source of truth — when an automation later asks "should pricing be public?", it looks here.
+          - listitem [ref=e481]: Any decision the client wants to revisit later should be re-opened here, not changed silently.
+        - paragraph
+      - generic [ref=e483]:
+        - heading "Asset Gaps — Little Friends Learning Loft" [level=1] [ref=e484]
+        - blockquote [ref=e485]:
+          - strong [ref=e486]: "Status: Draft (pre-interview)."
+          - text: This is the asset shopping list. Sourced from the audit's missing-page analysis (sales-011 through sales-017), the brand voice guide's image needs, and the content inventory. The interview confirms what already exists vs. what we need to commission.
+        - paragraph
+        - paragraph [ref=e487]: "The format: each gap is one item, who provides it, and which page it unblocks."
+        - separator [ref=e488]
+        - heading "Photography" [level=2] [ref=e489]
+        - heading "Required (blocks production)" [level=3] [ref=e490]
+        - paragraph [ref=e491]: "| # | Asset | Provider | Unblocks | |---|---|---|---| | P1 | Hero classroom photo — wide, mid-morning, work cycle in motion | Client photo day | Homepage hero | | P2 | Drop-off / arrival sequence (3–4 frames) | Client photo day | \"A Day at LFLL\" page | | P3 | Practical-life shelf close-up — pouring, spooning, sweeping | Client photo day | \"What is Montessori\" page | | P4 | Math / language shelf close-up — sandpaper letters, golden beads | Client photo day | Curriculum page | | P5 | Outdoor play — both warm and cold weather | Client photo day | Curriculum / outdoor-policy section | | P6 | Lunch — children serving themselves | Client photo day | Meals & policy section | | P7 | Building exterior — JCC entrance from the parking-lot angle | Client photo day | Contact / Visit page | | P8 | Loft / classroom from doorway as parent first sees it | Client photo day | Hero supplement / About page | | P9 | Headshot — head of school | Client photo day | About hero | | P10 | Headshots — each lead guide | Client photo day | Team page | | P11 | Group photo — full team | Client photo day | Team page secondary |"
+        - heading "Recommended (raises conversion but not blocking)" [level=3] [ref=e492]
+        - paragraph [ref=e493]:
+          - text: "| # | Asset | Provider | Unblocks | |---|---|---|---| | P12 | Quiet / nap-time photo (with parental permission) | Client photo day | AEO nap-policy answer | | P13 | Art-wall — children's work in progress | Client photo day | Curriculum page | | P14 | Stroller / bag drop-off zone at the front door | Client photo day | Visit-prep section | | P15 | After-school pickup scene | Client photo day | Schedule section | | P16 | A guide kneeling with a child at a work — full shot | Client photo day | Marketing imagery generally |"
+          - strong [ref=e494]: Photo-day notes
+          - text: ": Plan one half-day (3–4 hours) on a typical Tuesday or Wednesday morning when the work cycle is most active. Bring a wide-angle prime lens for classroom shots. All children's parents must sign a media release before that day. Identify any opted-out children in advance so the photographer can frame around them."
+        - separator [ref=e495]
+        - heading "Video" [level=2] [ref=e496]
+        - heading "Required (blocks \"About\" launch)" [level=3] [ref=e497]
+        - paragraph [ref=e498]: "| # | Asset | Provider | Unblocks | |---|---|---|---| | V1 | 30–60s b-roll — morning work cycle | Client video day | Homepage / About hero loop | | V2 | 60s head-of-school direct-to-camera intro | Client video day | About page | | V3 | 30s parent testimonial b-roll, 2–3 parents | Client video day | Trust signals on homepage |"
+        - heading "Recommended" [level=3] [ref=e499]
+        - paragraph [ref=e500]:
+          - text: "| # | Asset | Provider | Unblocks | |---|---|---|---| | V4 | 90s \"day-in-the-life\" timelapse | Client video day | About / curriculum page | | V5 | 30s tour-the-building walkthrough | Client video day | Visit / Contact page |"
+          - strong [ref=e501]: Video-day notes
+          - text: ": Best paired with the photo day — same lighting setup, same children. Lavalier mic for the head-of-school clip. Hosting on Vimeo (private with embed token) or YouTube unlisted, depending on Override decision about media privacy."
+        - separator [ref=e502]
+        - heading "Logo and brand files" [level=2] [ref=e503]
+        - paragraph [ref=e504]:
+          - text: "| # | Asset | Provider | Status | |---|---|---|---| | L1 | Logo SVG (vector source) | Client |"
+          - strong [ref=e505]: Missing
+          - text: — current site uses a low-res PNG from the editmysite CDN | | L2 | Logo on light + dark background versions | Client |
+          - strong [ref=e506]: Missing
+          - text: "| | L3 | Logo lockup with \"Little Friends Learning Loft\" wordmark | Client |"
+          - strong [ref=e507]: "[CONFIRM]"
+          - text: — current logo includes wordmark; need clean source | | L4 | Favicon SVG + multi-resolution set (16/32/180/512) | Client |
+          - strong [ref=e508]: Missing
+          - text: — current is
+          - code [ref=e509]: square.ico
+          - text: "| | L5 | Brand color palette source | Client |"
+          - strong [ref=e510]: "[CONFIRM]"
+          - text: "— we have approximate hex values: primary"
+          - code [ref=e511]: "#3374FF"
+          - text: ", accent"
+          - code [ref=e512]: "#3374FF"
+          - text: ", background"
+          - code [ref=e513]: "#FFFFFF"
+          - text: ", text"
+          - code [ref=e514]: "#000000"
+          - text: ", link"
+          - code [ref=e515]: "#3374FF"
+          - text: . These look mostly default; confirm whether intentional. | | L6 | Typography license — for "Square Market," currently used | Client |
+          - strong [ref=e516]: "[CONFIRM]"
+          - text: — likely a Square Online default, not a licensed brand font | | L7 | Any existing brand guideline or style sheet | Client |
+          - strong [ref=e517]: "[CONFIRM]"
+          - text: — even a one-pager helps |
+          - strong [ref=e518]: Branding notes
+          - text: ": If the answer to L1 is \"we don't have one,\" budget time for a logo redraw (vector tracing of the existing PNG is acceptable for week one; commissioned redraw is a multi-week add). Mark Override 11 in the aesthetic decisions as decided before scaffold finalization."
+        - separator [ref=e519]
+        - heading "Testimonials and social proof" [level=2] [ref=e520]
+        - paragraph [ref=e521]:
+          - text: "| # | Asset | Provider | Status | |---|---|---|---| | T1 | Permission to use the 2 public Google reviews verbatim on-site | Client |"
+          - strong [ref=e522]: "[CONFIRM]"
+          - text: "| | T2 | 4–6 written quotes from current families | Client |"
+          - strong [ref=e523]: Missing
+          - text: — collect via email after interview | | T3 | At least 2 multi-year-family quotes | Client |
+          - strong [ref=e524]: Missing
+          - text: "| | T4 | One alumni-family quote (where the child went next) | Client |"
+          - strong [ref=e525]: Missing
+          - text: "| | T5 | One \"almost didn't choose us\" honest quote | Client |"
+          - strong [ref=e526]: Missing
+          - text: "| | T6 | Permission to display the 5.0 Google rating + review count as a trust badge | Client |"
+          - strong [ref=e527]: "[CONFIRM]"
+          - text: "| | T7 | Decision: link to Google Business Profile from footer? | Client |"
+          - strong [ref=e528]: "[CONFIRM]"
+          - text: "| | T8 | Photo permissions for testimonial families (headshot or scene) | Client |"
+          - strong [ref=e529]: Missing
+          - text: "|"
+          - strong [ref=e530]: Testimonials process notes
+          - text: ": After the interview, send a short email to current families requesting a 1–2 sentence quote. Provide a one-line release (\"OK to publish on the LFLL website with my first name and child's age\"). Aim for return within 2 weeks; usually 50–60% reply rate."
+        - separator [ref=e531]
+        - heading "Documents and copy" [level=2] [ref=e532]
+        - paragraph [ref=e533]: "| # | Asset | Provider | Unblocks | |---|---|---|---| | D1 | 2026–27 tuition figures (or last year's, if confirmed unchanged) | Client | Tuition page | | D2 | 2026–27 academic calendar | Client | Schedule / Calendar page | | D3 | Sample weekly schedule for one age group | Client | \"A Day at LFLL\" page | | D4 | Application form (PDF or digital) | Client | Admissions page | | D5 | Parent handbook / family agreement | Client | Brand voice reference; not on public site | | D6 | NYS license certificate | Client | Trust badges + LocalBusiness schema | | D7 | Any accreditation certificates | Client | Trust badges + LocalBusiness schema | | D8 | Bios for head of school + each lead guide | Client | Team / About page | | D9 | School founding story (1–2 paragraphs) | Client | About page | | D10 | Mission / philosophy statement, if formalized | Client | About page | | D11 | Curriculum outline by age group | Client | Curriculum page | | D12 | Sample observation report (anonymized) | Client | \"What parents get\" section, optional | | D13 | Pickup / dropoff map of the JCC parking lot | Client | Visit / Contact page |"
+        - separator [ref=e534]
+        - heading "Assets the audit derived (already in clients/littlefriends/)" [level=2] [ref=e535]:
+          - text: Assets the audit derived (already in
+          - code [ref=e536]: clients/littlefriends/
+          - text: )
+        - paragraph [ref=e537]: These don't need re-collecting; they're already extracted. Listed for inventory completeness.
+        - paragraph [ref=e538]:
+          - text: "| # | Asset | Source | Used by | |---|---|---|---| | E1 | Design tokens (colors, fonts, typography) |"
+          - code [ref=e539]: design-tokens.json
+          - text: "| Scaffold + style system | | E2 | 686 images downloaded from CDN |"
+          - code [ref=e540]: assets/images/
+          - text: "| Image rewriting + scaffold seeding | | E3 | 13 page screenshots (desktop + mobile) |"
+          - code [ref=e541]: screenshots/
+          - text: "| Clone reference + side-by-side QA | | E4 | 13 page markdown extracts |"
+          - code [ref=e542]: pages/*.json
+          - text: "| Content inventory + clone source | | E5 | 2 mined Google reviews |"
+          - code [ref=e543]: reviews/google.json
+          - text: "| Voc + testimonial seed |"
+        - separator [ref=e544]
+        - heading "Total ask of the client" [level=2] [ref=e545]
+        - paragraph [ref=e546]: "In rough order of importance:"
+        - list [ref=e547]:
+          - listitem [ref=e548]:
+            - strong [ref=e549]: Decide on Override 11 (visual identity).
+            - text: Keep / refresh / rebrand. This unlocks every asset downstream.
+          - listitem [ref=e550]:
+            - strong [ref=e551]: One photo day
+            - text: (half-day on-site).
+          - listitem [ref=e552]:
+            - strong [ref=e553]: One video day
+            - text: (half-day, can be combined with photo day).
+          - listitem [ref=e554]:
+            - strong [ref=e555]: The 13 documents in section "Documents and copy."
+          - listitem [ref=e556]:
+            - strong [ref=e557]: Testimonial collection
+            - text: (4–6 quotes) by week 3 of engagement.
+          - listitem [ref=e558]:
+            - strong [ref=e559]: Logo source files
+            - text: by week 1 if available, by week 3 if redrawn.
+          - listitem [ref=e560]:
+            - strong [ref=e561]: A short email to all families
+            - text: introducing the project and asking for testimonial / photo participation.
+        - paragraph
+        - paragraph [ref=e562]:
+          - text: If any of these is unrealistic for this engagement, note it in the corresponding Override row of
+          - code [ref=e563]: aesthetic-overrides.md
+          - text: and the implementation plan in
+          - code [ref=e564]: audit-package.json
+          - text: will adjust accordingly.
+  - generic [ref=e567]:
+    - button "Menu" [ref=e568]:
+      - img [ref=e570]
+      - generic: Menu
+    - button "Inspect" [ref=e574]:
+      - img [ref=e576]
+      - generic: Inspect
+    - button "Audit" [ref=e578]:
+      - img [ref=e580]
+      - generic: Audit
+    - button "Settings" [ref=e583]:
+      - img [ref=e585]
+      - generic: Settings

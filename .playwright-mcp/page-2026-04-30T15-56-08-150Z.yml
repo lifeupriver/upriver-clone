@@ -1,0 +1,167 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - generic [ref=e14]: v0.1.0
+    - main [ref=e15]:
+      - generic [ref=e16]:
+        - link "Clients" [ref=e17] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e18]: /
+        - link "Little Friends Learning Loft" [ref=e19] [cursor=pointer]:
+          - /url: /clients/littlefriends
+        - generic [ref=e20]: /
+        - generic [ref=e21]: Site Preview
+      - generic [ref=e23]:
+        - text: Site Preview
+        - heading "Little Friends Learning Loft" [level=1] [ref=e24]
+        - paragraph [ref=e25]:
+          - text: Cloned site at
+          - link "http://localhost:4322/" [ref=e26] [cursor=pointer]:
+            - /url: http://localhost:4322/
+          - generic [ref=e27]: offline
+      - paragraph [ref=e28]:
+        - text: Showing the static
+        - code [ref=e29]: dist/client/
+        - text: build (dev server is offline).
+      - iframe [ref=e30]:
+        - generic [active] [ref=f1e1]:
+          - banner [ref=f1e2]:
+            - generic [ref=f1e3]:
+              - link "Little Friends Learning Loft — home" [ref=f1e4] [cursor=pointer]:
+                - /url: /
+                - img "Little Friends Learning Loft logo" [ref=f1e5]
+              - navigation "Primary" [ref=f1e6]:
+                - link "Little Friends Learning Loft" [ref=f1e7] [cursor=pointer]:
+                  - /url: /
+                - link "What is Montessori?" [ref=f1e8] [cursor=pointer]:
+                  - /url: /what-is-montessori-1
+                - link "Admissions" [ref=f1e9] [cursor=pointer]:
+                  - /url: /admissions
+                - link "About us" [ref=f1e10] [cursor=pointer]:
+                  - /url: /faqs-1
+                - link "Contact" [ref=f1e11] [cursor=pointer]:
+                  - /url: /contact-us
+                - link "Summer" [ref=f1e12] [cursor=pointer]:
+                  - /url: /summer-1
+                - link "Enrollment" [ref=f1e13] [cursor=pointer]:
+                  - /url: /summerfall-2023-enrollment
+          - main [ref=f1e14]:
+            - generic [ref=f1e15]:
+              - img "Children at Little Friends practicing yoga in the grass outside the Newburgh JCC" [ref=f1e16]
+              - generic [ref=f1e18]:
+                - heading "Welcome to Little Friends Learning Loft!" [level=1] [ref=f1e19]
+                - paragraph [ref=f1e20]:
+                  - text: A Full Day, Montessori inspired Preschool at
+                  - text: the Newburgh JCC serving children ages 2.5 - 6
+                  - text: "Offering extended day: before care, after care and half day"
+            - generic [ref=f1e21]:
+              - img "The Newburgh JCC building exterior, home of Little Friends Learning Loft" [ref=f1e22]
+              - generic [ref=f1e23]:
+                - heading "Our Mission" [level=2] [ref=f1e24]
+                - paragraph [ref=f1e25]: At Little Friends Learning Loft, we are all passionate about providing a safe setting that ensures peace, empathy and compassion. Respect is modeled, taught and practiced. Our intentional and nurturing environment is founded on the Montessori principles of hands-on learning, self-discovery, cooperation and independence. The multi-age group benefits apply to all; younger children learn by observing their older classmates and older children gain the satisfaction and confidence that comes from providing support and encouragement. Years 1, 2 and 3 are designed to help students reach multiple tiers of educational, social and emotional goals at a pace befitting each individual learner.
+            - generic [ref=f1e27]:
+              - img "Children working in the Little Friends Learning Loft classroom" [ref=f1e29]
+              - generic [ref=f1e30]:
+                - heading "Child-led play" [level=2] [ref=f1e31]
+                - paragraph [ref=f1e32]: We invite individually motivated experiences and practice exploration in our playground, garden, yoga studio, gymnasium, art room and library all while nourishing a spiritual sense of wonder and respect for our natural world and its inhabitants. Providing these introductions and promoting self-paced learning environments encourages autonomy, character development and helps raise good citizens for our future.
+            - generic [ref=f1e34]:
+              - blockquote [ref=f1e35]: “We had heard how wonderful Little Friends Learning Loft was, but seeing it in action blew us away. As parents, you want your child to find a place that fosters curiosity but still maintains a sense of control, teaches compassion and connectedness, but still encourages individuality. What they’ve built here is a special kind of magic, and we’re just thrilled that our son can be part of it. He truly loves being there!”
+              - paragraph [ref=f1e36]: — Renata Kero, Cold Spring
+            - generic [ref=f1e38]:
+              - generic [ref=f1e39]:
+                - heading "Follow us on Instagram! @littlefriendslearningloft" [level=2] [ref=f1e40]:
+                  - text: Follow us on Instagram!
+                  - link "@littlefriendslearningloft" [ref=f1e41] [cursor=pointer]:
+                    - /url: https://www.instagram.com/littlefriendslearningloft/
+                - generic [ref=f1e42]:
+                  - button "Previous" [ref=f1e43]: ‹
+                  - button "Next" [ref=f1e44]: ›
+              - generic [ref=f1e45]:
+                - link "Instagram post from Little Friends Learning Loft" [ref=f1e46] [cursor=pointer]:
+                  - /url: https://www.instagram.com/littlefriendslearningloft/
+                  - img "Instagram post from Little Friends Learning Loft" [ref=f1e47]
+                - link "Instagram post from Little Friends Learning Loft" [ref=f1e48] [cursor=pointer]:
+                  - /url: https://www.instagram.com/littlefriendslearningloft/
+                  - img "Instagram post from Little Friends Learning Loft" [ref=f1e49]
+                - link "Instagram post from Little Friends Learning Loft" [ref=f1e50] [cursor=pointer]:
+                  - /url: https://www.instagram.com/littlefriendslearningloft/
+                  - img "Instagram post from Little Friends Learning Loft" [ref=f1e51]
+                - link "Instagram post from Little Friends Learning Loft" [ref=f1e52] [cursor=pointer]:
+                  - /url: https://www.instagram.com/littlefriendslearningloft/
+                  - img "Instagram post from Little Friends Learning Loft" [ref=f1e53]
+            - paragraph [ref=f1e56]:
+              - text: Don’t be shy and stop by little friends! For 10am visits, you can call
+              - link "(845) 561-6602" [ref=f1e57] [cursor=pointer]:
+                - /url: tel:+18455616602
+              - text: or email
+              - link "littlefriends@learningloft.com" [ref=f1e58] [cursor=pointer]:
+                - /url: mailto:littlefriends@learningloft.com
+              - text: to book your virtual tour. We’d love to meet you!
+            - generic [ref=f1e60]:
+              - generic [ref=f1e61]:
+                - heading "About the Newburgh JCC Community" [level=2] [ref=f1e62]
+                - paragraph [ref=f1e63]:
+                  - strong [ref=f1e64]: Building Bonds. Building lives.
+                  - text: The Newburgh JCC is a warm, welcoming community center serving families across the Hudson Valley. From early childhood through adulthood, the JCC offers programs rooted in connection, learning and care. Little Friends Learning Loft is proud to call this campus home.
+                - link "newburghjcc.org" [ref=f1e65] [cursor=pointer]:
+                  - /url: https://www.newburghjcc.org/
+              - img "Little Friends Learning Loft on the Newburgh JCC campus" [ref=f1e67]
+            - generic [ref=f1e69]:
+              - generic [ref=f1e70]:
+                - heading "Location & Hours" [level=2] [ref=f1e71]
+                - generic [ref=f1e72]:
+                  - text: Little Friends Learning Loft
+                  - text: 290 North Street
+                  - text: Newburgh, NY 12550
+                  - link "(845) 561-6602" [ref=f1e73] [cursor=pointer]:
+                    - /url: tel:+18455616602
+                  - link "littlefriends@learningloft.com" [ref=f1e74] [cursor=pointer]:
+                    - /url: mailto:littlefriends@learningloft.com
+              - generic [ref=f1e75]:
+                - generic [ref=f1e76]:
+                  - term [ref=f1e77]: Monday
+                  - definition [ref=f1e78]: 9:00 am - 5:00 pm
+                - generic [ref=f1e79]:
+                  - term [ref=f1e80]: Tuesday
+                  - definition [ref=f1e81]: 9:00 am - 5:00 pm
+                - generic [ref=f1e82]:
+                  - term [ref=f1e83]: Wednesday
+                  - definition [ref=f1e84]: 9:00 am - 5:00 pm
+                - generic [ref=f1e85]:
+                  - term [ref=f1e86]: Thursday
+                  - definition [ref=f1e87]: 9:00 am - 5:00 pm
+                - generic [ref=f1e88]:
+                  - term [ref=f1e89]: Friday
+                  - definition [ref=f1e90]: 9:00 am - 5:00 pm
+                - generic [ref=f1e91]:
+                  - term [ref=f1e92]: Saturday
+                  - definition [ref=f1e93]: Closed
+                - generic [ref=f1e94]:
+                  - term [ref=f1e95]: Sunday
+                  - definition [ref=f1e96]: Closed
+              - iframe [ref=f1e98]
+          - contentinfo [ref=f1e99]:
+            - generic [ref=f1e100]: © 2026 littlefriendslearningloft.com
+  - generic [ref=e33]:
+    - button "Menu" [ref=e34]:
+      - img [ref=e36]
+      - generic: Menu
+    - button "Inspect" [ref=e40]:
+      - img [ref=e42]
+      - generic: Inspect
+    - button "Audit" [ref=e44]:
+      - img [ref=e46]
+      - generic: Audit
+    - button "Settings" [ref=e49]:
+      - img [ref=e51]
+      - generic: Settings

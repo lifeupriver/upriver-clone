@@ -1,0 +1,24 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: "#"
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - generic [ref=e9]: Audit deliverables
+      - heading "This share link has expired." [level=1] [ref=e10]
+      - paragraph [ref=e11]: The audit deliverables behind this link are no longer available with this URL. Get in touch with your Upriver contact for a fresh link.
+      - paragraph [ref=e12]: Share links are time-limited so review materials don't stay open on the public web indefinitely.
+  - generic [ref=e15]:
+    - button "Menu" [ref=e16]:
+      - img [ref=e18]
+      - generic: Menu
+    - button "Inspect" [ref=e22]:
+      - img [ref=e24]
+      - generic: Inspect
+    - button "Audit" [ref=e26]:
+      - img [ref=e28]
+      - generic: Audit
+    - button "Settings" [ref=e31]:
+      - img [ref=e33]
+      - generic: Settings

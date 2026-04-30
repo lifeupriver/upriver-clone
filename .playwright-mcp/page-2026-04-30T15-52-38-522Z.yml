@@ -1,0 +1,26 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - generic [ref=e9]: Sign-in
+      - heading "This link has expired." [level=1] [ref=e10]
+      - paragraph [ref=e11]: Magic links are single-use and expire after about an hour. Request a fresh one and we'll get you back in.
+      - link "Send a new link" [ref=e12] [cursor=pointer]:
+        - /url: /login
+      - paragraph [ref=e13]: If you keep seeing this, double-check the email address and that the link wasn't already clicked from a different browser.
+  - generic [ref=e16]:
+    - button "Menu" [ref=e17]:
+      - img [ref=e19]
+      - generic: Menu
+    - button "Inspect" [ref=e23]:
+      - img [ref=e25]
+      - generic: Inspect
+    - button "Audit" [ref=e27]:
+      - img [ref=e29]
+      - generic: Audit
+    - button "Settings" [ref=e32]:
+      - img [ref=e34]
+      - generic: Settings

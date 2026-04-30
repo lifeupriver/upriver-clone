@@ -1,0 +1,212 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - link "Back to Little Friends Learning Loft" [ref=e4] [cursor=pointer]:
+        - /url: /clients/littlefriends
+        - img [ref=e5]
+        - text: Back to Little Friends Learning Loft
+      - generic [ref=e7]: Audit Report
+      - button "Save as PDF" [ref=e8] [cursor=pointer]
+    - article [ref=e9]:
+      - navigation "Report sections" [ref=e10]:
+        - link "Overview" [ref=e11] [cursor=pointer]:
+          - /url: /deliverables/littlefriends
+        - link "Scorecard" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/scorecard
+        - link "Findings" [ref=e13] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/findings
+        - link "Next steps" [ref=e14] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/next-steps
+      - generic [ref=e15]:
+        - text: Next steps
+        - heading "What we'd do about it" [level=1] [ref=e16]
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - heading "Polish" [level=3] [ref=e20]
+            - generic [ref=e21]: $2,800
+          - generic [ref=e22]: 2-week project
+          - paragraph [ref=e23]: Fix every critical finding in this audit on your existing platform — no replatform, no design changes. For sites that mostly work but have a handful of issues blocking conversions or search visibility.
+        - generic [ref=e24]:
+          - generic [ref=e25]:
+            - heading "Rebuild" [level=3] [ref=e26]
+            - generic [ref=e27]: $9,500
+          - generic [ref=e28]: 4–6 week build
+          - paragraph [ref=e29]: Start fresh on a fast, modern stack with every P0 and P1 finding resolved as we build. The new site scores measurably higher on technical and SEO audits the day it ships.
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - heading "Rebuild + content" [level=3] [ref=e32]
+            - generic [ref=e33]: $18,500
+          - generic [ref=e34]: 6–8 week engagement
+          - paragraph [ref=e35]: Everything in Rebuild plus a copy rewrite informed by your brand voice and a programmatic-SEO layer that publishes pillar content alongside the new site. For venues and service businesses that want to compete on search.
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - heading "Tell us what to fix for Little Friends Learning Loft" [level=2] [ref=e41]
+          - paragraph [ref=e42]: Walk through the findings, mark which ones matter, and tell us what you want each page to do better. Takes about 5 minutes.
+        - group "1. Scope tier" [ref=e43]:
+          - generic [ref=e44]: 1. Scope tier
+          - generic [ref=e45]:
+            - generic [ref=e46] [cursor=pointer]:
+              - radio "Polish Fix the critical findings only. Existing site stays in place." [ref=e47]
+              - text: Polish
+              - paragraph [ref=e48]: Fix the critical findings only. Existing site stays in place.
+            - generic [ref=e49] [cursor=pointer]:
+              - radio "Rebuild Replatform to Astro and apply every recommended fix as we go." [ref=e50]
+              - text: Rebuild
+              - paragraph [ref=e51]: Replatform to Astro and apply every recommended fix as we go.
+            - generic [ref=e52] [cursor=pointer]:
+              - radio "Rebuild + content Everything in Rebuild plus a copy and SEO improvement layer." [ref=e53]
+              - text: Rebuild + content
+              - paragraph [ref=e54]: Everything in Rebuild plus a copy and SEO improvement layer.
+        - group "2. Findings — fix, skip, or discuss?" [ref=e55]:
+          - generic [ref=e56]: 2. Findings — fix, skip, or discuss?
+          - generic [ref=e57]:
+            - generic [ref=e58]:
+              - generic [ref=e59]: Critical
+              - generic "Only 0 FAQ entries — far below what AI engines need to answer preschool questions" [ref=e60]
+              - generic [ref=e61]:
+                - button "Fix it" [ref=e62] [cursor=pointer]
+                - button "Skip it" [ref=e63] [cursor=pointer]
+                - button "Discuss" [ref=e64] [cursor=pointer]
+            - generic [ref=e65]:
+              - generic [ref=e66]: Critical
+              - generic "Heading hierarchy issues on 13/13 pages" [ref=e67]
+              - generic [ref=e68]:
+                - button "Fix it" [ref=e69] [cursor=pointer]
+                - button "Skip it" [ref=e70] [cursor=pointer]
+                - button "Discuss" [ref=e71] [cursor=pointer]
+            - generic [ref=e72]:
+              - generic [ref=e73]: Critical
+              - generic "No TL;DR / summary blocks for AI extraction" [ref=e74]
+              - generic [ref=e75]:
+                - button "Fix it" [ref=e76] [cursor=pointer]
+                - button "Skip it" [ref=e77] [cursor=pointer]
+                - button "Discuss" [ref=e78] [cursor=pointer]
+            - generic [ref=e79]:
+              - generic [ref=e80]: Critical
+              - generic "Low local keyword density — site not optimized for geographic search terms" [ref=e81]
+              - generic [ref=e82]:
+                - button "Fix it" [ref=e83] [cursor=pointer]
+                - button "Skip it" [ref=e84] [cursor=pointer]
+                - button "Discuss" [ref=e85] [cursor=pointer]
+            - generic [ref=e86]:
+              - generic [ref=e87]: Critical
+              - 'generic "Missing: Tuition or pricing page" [ref=e88]'
+              - generic [ref=e89]:
+                - button "Fix it" [ref=e90] [cursor=pointer]
+                - button "Skip it" [ref=e91] [cursor=pointer]
+                - button "Discuss" [ref=e92] [cursor=pointer]
+            - generic [ref=e93]:
+              - generic [ref=e94]: Critical
+              - generic "No LocalBusiness or Organization schema markup" [ref=e95]
+              - generic [ref=e96]:
+                - button "Fix it" [ref=e97] [cursor=pointer]
+                - button "Skip it" [ref=e98] [cursor=pointer]
+                - button "Discuss" [ref=e99] [cursor=pointer]
+            - generic [ref=e100]:
+              - generic [ref=e101]: Critical
+              - generic "Pages missing title tags" [ref=e102]
+              - generic [ref=e103]:
+                - button "Fix it" [ref=e104] [cursor=pointer]
+                - button "Skip it" [ref=e105] [cursor=pointer]
+                - button "Discuss" [ref=e106] [cursor=pointer]
+            - generic [ref=e107]:
+              - generic [ref=e108]: Important
+              - generic "1 preschool questions not explicitly answered" [ref=e109]
+              - generic [ref=e110]:
+                - button "Fix it" [ref=e111] [cursor=pointer]
+                - button "Skip it" [ref=e112] [cursor=pointer]
+                - button "Discuss" [ref=e113] [cursor=pointer]
+            - generic [ref=e114]:
+              - generic [ref=e115]: Important
+              - generic "Backlink profile not analyzed — Ahrefs API key not configured" [ref=e116]
+              - generic [ref=e117]:
+                - button "Fix it" [ref=e118] [cursor=pointer]
+                - button "Skip it" [ref=e119] [cursor=pointer]
+                - button "Discuss" [ref=e120] [cursor=pointer]
+            - generic [ref=e121]:
+              - generic [ref=e122]: Important
+              - generic "No competitors defined in client configuration" [ref=e123]
+              - generic [ref=e124]:
+                - button "Fix it" [ref=e125] [cursor=pointer]
+                - button "Skip it" [ref=e126] [cursor=pointer]
+                - button "Discuss" [ref=e127] [cursor=pointer]
+            - generic [ref=e128]:
+              - generic [ref=e129]: Important
+              - generic "No virtual tour — increasingly standard among competing venues" [ref=e130]
+              - generic [ref=e131]:
+                - button "Fix it" [ref=e132] [cursor=pointer]
+                - button "Skip it" [ref=e133] [cursor=pointer]
+                - button "Discuss" [ref=e134] [cursor=pointer]
+            - generic [ref=e135]:
+              - generic [ref=e136]: Important
+              - generic "Banned marketing language detected" [ref=e137]
+              - generic [ref=e138]:
+                - button "Fix it" [ref=e139] [cursor=pointer]
+                - button "Skip it" [ref=e140] [cursor=pointer]
+                - button "Discuss" [ref=e141] [cursor=pointer]
+            - paragraph [ref=e142]: Showing top 12 findings.
+        - group "3. Pages — what would you want different?" [ref=e143]:
+          - generic [ref=e144]: 3. Pages — what would you want different?
+          - generic [ref=e145]:
+            - generic [ref=e146]:
+              - generic [ref=e147]:
+                - strong [ref=e148]: Admissions | Little Friends Learning Loft
+                - text: https://www.littlefriendslearningloft.com/admissions
+              - textbox "Admissions | Little Friends Learning Lofthttps://www.littlefriendslearningloft.com/admissions" [ref=e149]:
+                - /placeholder: What do you want this page to do better?
+            - generic [ref=e150]:
+              - generic [ref=e151]:
+                - strong [ref=e152]: Contact Us | Little Friends Learning Loft
+                - text: https://www.littlefriendslearningloft.com/contact-us
+              - textbox "Contact Us | Little Friends Learning Lofthttps://www.littlefriendslearningloft.com/contact-us" [ref=e153]:
+                - /placeholder: What do you want this page to do better?
+            - generic [ref=e154]:
+              - generic [ref=e155]:
+                - strong [ref=e156]: FAQs | Little Friends Learning Loft
+                - text: https://www.littlefriendslearningloft.com/faqs-1
+              - textbox "FAQs | Little Friends Learning Lofthttps://www.littlefriendslearningloft.com/faqs-1" [ref=e157]:
+                - /placeholder: What do you want this page to do better?
+            - generic [ref=e158]:
+              - generic [ref=e159]:
+                - strong [ref=e160]: Little Friends Learning Loft | Little Friends Learning Loft
+                - text: https://littlefriendslearningloft.com
+              - textbox "Little Friends Learning Loft | Little Friends Learning Lofthttps://littlefriendslearningloft.com" [ref=e161]:
+                - /placeholder: What do you want this page to do better?
+            - generic [ref=e162]:
+              - generic [ref=e163]:
+                - strong [ref=e164]: Little Friends Donation Fund | Little Friends Learning Loft
+                - text: https://www.littlefriendslearningloft.com/product/little-friends-donation-fund/4
+              - textbox "Little Friends Donation Fund | Little Friends Learning Lofthttps://www.littlefriendslearningloft.com/product/little-friends-donation-fund/4" [ref=e165]:
+                - /placeholder: What do you want this page to do better?
+            - generic [ref=e166]:
+              - generic [ref=e167]:
+                - strong [ref=e168]: Little Friends Learning Loft
+                - text: https://www.littlefriendslearningloft.com/s/order
+              - textbox "Little Friends Learning Lofthttps://www.littlefriendslearningloft.com/s/order" [ref=e169]:
+                - /placeholder: What do you want this page to do better?
+        - group "4. Reference sites you admire" [ref=e170]:
+          - generic [ref=e171]: 4. Reference sites you admire
+          - generic [ref=e172]:
+            - paragraph [ref=e173]: Add a few URLs you'd like us to draw inspiration from.
+            - button "+ Add another" [ref=e175] [cursor=pointer]
+        - button "Submit intake" [ref=e177] [cursor=pointer]
+    - contentinfo [ref=e178]:
+      - img [ref=e179]
+      - generic [ref=e182]:
+        - text: Prepared by
+        - strong [ref=e183]: Upriver Consulting
+        - text: — April 30, 2026
+  - generic [ref=e186]:
+    - button "Menu" [ref=e187]:
+      - img [ref=e189]
+      - generic: Menu
+    - button "Inspect" [ref=e193]:
+      - img [ref=e195]
+      - generic: Inspect
+    - button "Audit" [ref=e197]:
+      - img [ref=e199]
+      - generic: Audit
+    - button "Settings" [ref=e202]:
+      - img [ref=e204]
+      - generic: Settings

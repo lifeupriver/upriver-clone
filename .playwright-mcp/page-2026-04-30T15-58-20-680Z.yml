@@ -1,0 +1,164 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - link "Back to Little Friends Learning Loft" [ref=e4] [cursor=pointer]:
+        - /url: /clients/littlefriends
+        - img [ref=e5]
+        - text: Back to Little Friends Learning Loft
+      - generic [ref=e7]: Audit Report
+      - button "Save as PDF" [ref=e8] [cursor=pointer]
+    - article [ref=e9]:
+      - navigation "Report sections" [ref=e10]:
+        - link "Overview" [ref=e11] [cursor=pointer]:
+          - /url: /deliverables/littlefriends
+        - link "Scorecard" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/scorecard
+        - link "Findings" [ref=e13] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/findings
+        - link "Next steps" [ref=e14] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/next-steps
+      - generic [ref=e15]:
+        - text: Scorecard
+        - heading "How your site scores" [level=1] [ref=e16]
+      - generic [ref=e17]:
+        - heading "Overall" [level=2] [ref=e18]
+        - img "Audit score radar chart" [ref=e21]:
+          - generic [ref=e54]: AEO
+          - generic [ref=e55]: BACKLINKS
+          - generic [ref=e56]: COMPETITORS
+          - generic [ref=e57]: CONTENT
+          - generic [ref=e58]: DESIGN
+          - generic [ref=e59]: GAPS
+          - generic [ref=e60]: GEO
+          - generic [ref=e61]: LINKS
+          - generic [ref=e62]: LOCAL
+          - generic [ref=e63]: MEDIA
+          - generic [ref=e64]: SALES
+          - generic [ref=e65]: SCHEMA
+          - generic [ref=e66]: SEO
+          - generic [ref=e67]: VIDEO
+      - generic [ref=e68]:
+        - heading "Dimensions" [level=2] [ref=e69]
+        - generic [ref=e70]:
+          - generic [ref=e71]:
+            - generic [ref=e72]: "78"
+            - generic [ref=e73]: C
+            - generic [ref=e74]: aeo
+            - generic [ref=e75]: 2 findings
+          - generic [ref=e76]:
+            - generic [ref=e77]: "90"
+            - generic [ref=e78]: A
+            - generic [ref=e79]: backlinks
+            - generic [ref=e80]: 2 findings
+          - generic [ref=e81]:
+            - generic [ref=e82]: "83"
+            - generic [ref=e83]: B
+            - generic [ref=e84]: competitors
+            - generic [ref=e85]: 3 findings
+          - generic [ref=e86]:
+            - generic [ref=e87]: "72"
+            - generic [ref=e88]: C
+            - generic [ref=e89]: content
+            - generic [ref=e90]: 4 findings
+          - generic [ref=e91]:
+            - generic [ref=e92]: "85"
+            - generic [ref=e93]: B
+            - generic [ref=e94]: design
+            - generic [ref=e95]: 1 finding
+          - generic [ref=e96]:
+            - generic [ref=e97]: "46"
+            - generic [ref=e98]: F
+            - generic [ref=e99]: gaps
+            - generic [ref=e100]: 6 findings
+          - generic [ref=e101]:
+            - generic [ref=e102]: "71"
+            - generic [ref=e103]: C
+            - generic [ref=e104]: geo
+            - generic [ref=e105]: 3 findings
+          - generic [ref=e106]:
+            - generic [ref=e107]: "83"
+            - generic [ref=e108]: B
+            - generic [ref=e109]: links
+            - generic [ref=e110]: 3 findings
+          - generic [ref=e111]:
+            - generic [ref=e112]: "64"
+            - generic [ref=e113]: D
+            - generic [ref=e114]: local
+            - generic [ref=e115]: 4 findings
+          - generic [ref=e116]:
+            - generic [ref=e117]: "97"
+            - generic [ref=e118]: A
+            - generic [ref=e119]: media
+            - generic [ref=e120]: 1 finding
+          - generic [ref=e121]:
+            - generic [ref=e122]: "54"
+            - generic [ref=e123]: F
+            - generic [ref=e124]: sales
+            - generic [ref=e125]: 6 findings
+          - generic [ref=e126]:
+            - generic [ref=e127]: "72"
+            - generic [ref=e128]: C
+            - generic [ref=e129]: schema
+            - generic [ref=e130]: 4 findings
+          - generic [ref=e131]:
+            - generic [ref=e132]: "50"
+            - generic [ref=e133]: F
+            - generic [ref=e134]: seo
+            - generic [ref=e135]: 6 findings
+          - generic [ref=e136]:
+            - generic [ref=e137]: "86"
+            - generic [ref=e138]: B
+            - generic [ref=e139]: video
+            - generic [ref=e140]: 2 findings
+      - generic [ref=e141]:
+        - heading "Page snapshots" [level=2] [ref=e142]
+        - generic [ref=e143]:
+          - generic [ref=e144]:
+            - generic [ref=e146]: Little Friends Learning Loft | Little Friends Learning Loft
+            - generic [ref=e147]:
+              - heading "Little Friends Learning Loft | Little Friends Learning Loft" [level=3] [ref=e148]
+              - paragraph [ref=e149]: https://littlefriendslearningloft.com
+          - generic [ref=e150]:
+            - generic [ref=e152]: Summer | Little Friends Learning Loft
+            - generic [ref=e153]:
+              - heading "Summer | Little Friends Learning Loft" [level=3] [ref=e154]
+              - paragraph [ref=e155]: https://www.littlefriendslearningloft.com/summer-1
+          - generic [ref=e156]:
+            - generic [ref=e158]: What is Montessori | Little Friends Learning Loft
+            - generic [ref=e159]:
+              - heading "What is Montessori | Little Friends Learning Loft" [level=3] [ref=e160]
+              - paragraph [ref=e161]: https://www.littlefriendslearningloft.com/what-is-montessori-1
+          - generic [ref=e162]:
+            - generic [ref=e164]: Admissions | Little Friends Learning Loft
+            - generic [ref=e165]:
+              - heading "Admissions | Little Friends Learning Loft" [level=3] [ref=e166]
+              - paragraph [ref=e167]: https://www.littlefriendslearningloft.com/admissions
+          - generic [ref=e168]:
+            - generic [ref=e170]: Contact Us | Little Friends Learning Loft
+            - generic [ref=e171]:
+              - heading "Contact Us | Little Friends Learning Loft" [level=3] [ref=e172]
+              - paragraph [ref=e173]: https://www.littlefriendslearningloft.com/contact-us
+          - generic [ref=e174]:
+            - generic [ref=e176]: FAQs | Little Friends Learning Loft
+            - generic [ref=e177]:
+              - heading "FAQs | Little Friends Learning Loft" [level=3] [ref=e178]
+              - paragraph [ref=e179]: https://www.littlefriendslearningloft.com/faqs-1
+    - contentinfo [ref=e180]:
+      - img [ref=e181]
+      - generic [ref=e184]:
+        - text: Prepared by
+        - strong [ref=e185]: Upriver Consulting
+        - text: — April 30, 2026
+  - generic [ref=e188]:
+    - button "Menu" [ref=e189]:
+      - img [ref=e191]
+      - generic: Menu
+    - button "Inspect" [ref=e195]:
+      - img [ref=e197]
+      - generic: Inspect
+    - button "Audit" [ref=e199]:
+      - img [ref=e201]
+      - generic: Audit
+    - button "Settings" [ref=e204]:
+      - img [ref=e206]
+      - generic: Settings

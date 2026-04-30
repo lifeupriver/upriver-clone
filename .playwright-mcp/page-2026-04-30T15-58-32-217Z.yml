@@ -1,0 +1,531 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - link "Back to Little Friends Learning Loft" [ref=e4] [cursor=pointer]:
+        - /url: /clients/littlefriends
+        - img [ref=e5]
+        - text: Back to Little Friends Learning Loft
+      - generic [ref=e7]: Audit Report
+      - button "Save as PDF" [ref=e8] [cursor=pointer]
+    - article [ref=e9]:
+      - navigation "Report sections" [ref=e10]:
+        - link "Overview" [ref=e11] [cursor=pointer]:
+          - /url: /deliverables/littlefriends
+        - link "Scorecard" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/scorecard
+        - link "Findings" [ref=e13] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/findings
+        - link "Next steps" [ref=e14] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/next-steps
+      - generic [ref=e15]:
+        - text: Findings
+        - heading "What's holding your site back" [level=1] [ref=e16]
+      - generic [ref=e17]:
+        - heading "What this means" [level=2] [ref=e18]
+        - paragraph [ref=e19]: We grade every site on 14 dimensions. Items below are written for you, not for engineers — pick the ones that match your priorities and we'll fix them.
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - heading "Critical — fix immediately" [level=2] [ref=e22]
+          - generic [ref=e23]: "9"
+        - generic [ref=e24]:
+          - generic [ref=e25]:
+            - generic [ref=e26]:
+              - generic [ref=e27]: Critical
+              - generic [ref=e28]: Heavy
+            - heading "Only 0 FAQ entries — far below what AI engines need to answer preschool questions" [level=3] [ref=e29]
+            - paragraph [ref=e30]: AI assistants and featured snippets favor sites with comprehensive Q&A content. A preschool site should answer 40-60 common questions to be competitive in AI search.
+            - paragraph [ref=e31]: When Google's AI Overview or ChatGPT answers a preschool-related question, it pulls from structured Q&A content. Sites without it are invisible to AI search.
+            - generic [ref=e32]:
+              - strong [ref=e33]: Recommendation
+              - text: Build a comprehensive FAQ section with at least 40 questions grouped by relevant topic for this business.
+          - generic [ref=e34]:
+            - generic [ref=e35]:
+              - generic [ref=e36]: Critical
+              - generic [ref=e37]: Medium
+            - heading "Heading hierarchy issues on 13/13 pages" [level=3] [ref=e38]
+            - paragraph [ref=e39]: Pages without a single H1, with multiple H1s, or with skipped heading levels — both a typography signal and an SEO/accessibility issue.
+            - paragraph [ref=e40]: Search engines and screen readers infer document structure from heading order. A skipped level or duplicate H1 confuses both, and the typographic system breaks visually too.
+            - generic [ref=e41]:
+              - strong [ref=e42]: Recommendation
+              - text: Restructure each page so it has exactly one H1 (the page title), with H2s for top-level sections and H3+ for nested groups. Avoid jumping from H1 directly to H3.
+          - generic [ref=e43]:
+            - generic [ref=e44]:
+              - generic [ref=e45]: Critical
+              - generic [ref=e46]: Medium
+            - 'heading "Missing page: Tuition or pricing page" [level=3] [ref=e47]'
+            - paragraph [ref=e48]: The site does not have a tuition or pricing page. This is a P0 expectation for this industry.
+            - paragraph [ref=e49]: The site does not have a tuition or pricing page. This is a P0 expectation for this industry.
+            - generic [ref=e50]:
+              - strong [ref=e51]: Recommendation
+              - text: Add a Tuition or pricing page during the rebuild. The proposed sitemap (proposed-sitemap.json) places this page in the primary navigation when applicable.
+          - generic [ref=e52]:
+            - generic [ref=e53]:
+              - generic [ref=e54]: Critical
+              - generic [ref=e55]: Light
+            - 'heading "Missing feature: Contact form" [level=3] [ref=e56]'
+            - paragraph [ref=e57]: Contact form was not detected on the site. Direct lead capture without phone friction. The single most consequential conversion path on a small-business site.
+            - paragraph [ref=e58]: Contact form was not detected on the site. Direct lead capture without phone friction. The single most consequential conversion path on a small-business site.
+            - generic [ref=e59]:
+              - strong [ref=e60]: Recommendation
+              - text: "Wire in contact form during the rebuild. Recommended implementations: Tally.so embed, Astro form + Resend, HoneyBook for venues."
+          - generic [ref=e61]:
+            - generic [ref=e62]:
+              - generic [ref=e63]: Critical
+              - generic [ref=e64]: Medium
+            - heading "No TL;DR / summary blocks for AI extraction" [level=3] [ref=e65]
+            - paragraph [ref=e66]: 0 of 13 pages include a "TL;DR", "Summary", or "Key takeaways" heading. AI search crawlers preferentially quote concise summary blocks; without them they fall back to fragmentary copy.
+            - paragraph [ref=e67]: ChatGPT and Perplexity preferentially surface a single dense paragraph when answering "what is X". Pages without one get summarized via heuristics that often miss the value prop.
+            - generic [ref=e68]:
+              - strong [ref=e69]: Recommendation
+              - text: "Add a 2–4 sentence TL;DR or \"At a glance\" block near the top of each pillar page. Use a heading the crawler can latch onto (`## Summary`, `## At a glance`, or `## Key facts`)."
+          - generic [ref=e70]:
+            - generic [ref=e71]:
+              - generic [ref=e72]: Critical
+              - generic [ref=e73]: Heavy
+            - heading "Low local keyword density — site not optimized for geographic search terms" [level=3] [ref=e74]
+            - paragraph [ref=e75]: The site rarely mentions specific location names (city, region, state). parents search for "Montessori preschool near me" — if those words aren't on the site, it won't rank.
+            - paragraph [ref=e76]: "\"Montessori preschool near me\" is one of the highest-volume search terms for preschool discovery. Ranking for these phrases is the #1 traffic opportunity."
+            - generic [ref=e77]:
+              - strong [ref=e78]: Recommendation
+              - text: "Naturally incorporate location keywords throughout the site: city/town name, region name, and state. Target phrases like \"preschool in {city}, {state}\" in title tags and H1s."
+          - generic [ref=e79]:
+            - generic [ref=e80]:
+              - generic [ref=e81]: Critical
+              - generic [ref=e82]: Heavy
+            - 'heading "Missing: Tuition or pricing page" [level=3] [ref=e83]'
+            - paragraph [ref=e84]: No page matching "Tuition or pricing page" was found. Visitors looking for this information leave to find it elsewhere.
+            - paragraph [ref=e85]: Every missing page is a prospect who hit a dead end and went to a competitor instead.
+            - generic [ref=e86]:
+              - strong [ref=e87]: Recommendation
+              - text: Create a dedicated page for tuition or pricing page. This is a baseline page for any preschool site.
+          - generic [ref=e88]:
+            - generic [ref=e89]:
+              - generic [ref=e90]: Critical
+              - generic [ref=e91]: Medium
+            - heading "No LocalBusiness or Organization schema markup" [level=3] [ref=e92]
+            - paragraph [ref=e93]: No JSON-LD schema for LocalBusiness, Organization, or a more specific subtype was found. This is the foundational schema for any local business website.
+            - paragraph [ref=e94]: LocalBusiness schema enables rich results in Google Search and Google Maps, directly increasing click-through rates for local searches.
+            - generic [ref=e95]:
+              - strong [ref=e96]: Recommendation
+              - text: "Add LocalBusiness JSON-LD (or the most specific Schema.org subtype that applies — EventVenue, Restaurant, Preschool, etc.) to the homepage and every page. Include: name, address, telephone, url, openingHours, geo coordinates."
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - generic [ref=e99]: Critical
+              - generic [ref=e100]: Light
+            - heading "Pages missing title tags" [level=3] [ref=e101]
+            - paragraph [ref=e102]: 1 pages have no title tag.
+            - paragraph [ref=e103]: Title tags are the single most important on-page SEO element. Missing titles mean Google writes its own — usually worse.
+            - generic [ref=e104]:
+              - strong [ref=e105]: Recommendation
+              - text: Add a unique, descriptive title tag (50-60 characters) to every page.
+      - generic [ref=e106]:
+        - generic [ref=e107]:
+          - heading "Important — fix soon" [level=2] [ref=e108]
+          - generic [ref=e109]: "30"
+        - generic [ref=e110]:
+          - generic [ref=e111]:
+            - generic [ref=e112]:
+              - generic [ref=e113]: Important
+              - generic [ref=e114]: Medium
+            - heading "1 preschool questions not explicitly answered" [level=3] [ref=e115]
+            - paragraph [ref=e116]: 1 common questions parents ask are not directly answered on the site.
+            - paragraph [ref=e117]: 1 common questions parents ask are not directly answered on the site.
+            - generic [ref=e118]:
+              - strong [ref=e119]: Recommendation
+              - text: "Add content addressing: Sick policy and emergency procedures."
+          - generic [ref=e120]:
+            - generic [ref=e121]:
+              - generic [ref=e122]: Important
+              - generic [ref=e123]: Light
+            - heading "Backlink profile not analyzed — Ahrefs API key not configured" [level=3] [ref=e124]
+            - paragraph [ref=e125]: Without an Ahrefs API key, domain authority, referring domains, and anchor text distribution cannot be assessed. Add AHREFS_API_KEY to your .env file to unlock full backlink analysis.
+            - paragraph [ref=e126]: Backlink authority is a top-3 Google ranking factor. Sites with more referring domains from quality sources consistently outrank competitors with better on-page SEO.
+            - generic [ref=e127]:
+              - strong [ref=e128]: Recommendation
+              - text: "Set AHREFS_API_KEY in .env, then re-run: upriver audit littlefriends --pass backlinks"
+          - generic [ref=e129]:
+            - generic [ref=e130]:
+              - generic [ref=e131]: Important
+              - generic [ref=e132]: Light
+            - heading "No competitors defined in client configuration" [level=3] [ref=e133]
+            - paragraph [ref=e134]: No competitor URLs were identified during discovery. Without competitor benchmarking, it is impossible to identify content and feature gaps.
+            - paragraph [ref=e135]: Knowing what your top 3 competitors do better (more pages, better pricing page, more reviews) is the fastest route to identifying high-ROI improvements.
+            - generic [ref=e136]:
+              - strong [ref=e137]: Recommendation
+              - text: "Add 3-5 competitor venue URLs to the client-config.yaml under the \"competitors:\" key, then re-run: upriver audit littlefriends --pass competitors"
+          - generic [ref=e138]:
+            - generic [ref=e139]:
+              - generic [ref=e140]: Important
+              - generic [ref=e141]: Medium
+            - heading "No virtual tour — increasingly standard among competing venues" [level=3] [ref=e142]
+            - paragraph [ref=e143]: Virtual tours (Matterport or 360° photos) are now a standard feature on competing venue websites. They let couples pre-qualify the venue remotely.
+            - paragraph [ref=e144]: Post-pandemic, couples expect to do significant venue research remotely. Competitors with virtual tours capture couples who won't make a speculative drive.
+            - generic [ref=e145]:
+              - strong [ref=e146]: Recommendation
+              - text: Add a virtual tour using Matterport or a 360° photo service. Embed it on the venue spaces page and homepage. This feature alone can eliminate the need for an initial site visit.
+          - generic [ref=e147]:
+            - generic [ref=e148]:
+              - generic [ref=e149]: Important
+              - generic [ref=e150]: Medium
+            - heading "Banned marketing language detected" [level=3] [ref=e151]
+            - paragraph [ref=e152]: "The site uses vague, overused words that signal low credibility: \"magical\" (1 page), \"seamlessly\" (1 page), \"transform\" (1 page), \"robust\" (1 page)."
+            - paragraph [ref=e153]: Vague superlatives are invisible to readers — they've been trained to skip them. Specific claims are memorable and credible.
+            - generic [ref=e154]:
+              - strong [ref=e155]: Recommendation
+              - text: "Replace banned words with specific, evidence-based language. Instead of \"nurturing environment,\" describe the actual classroom: \"mixed-age classrooms of 12 children with two trained Montessori guides.\""
+          - generic [ref=e156]:
+            - generic [ref=e157]:
+              - generic [ref=e158]: Important
+              - generic [ref=e159]: Heavy
+            - heading "Thin content pages" [level=3] [ref=e160]
+            - paragraph [ref=e161]: 5 pages have fewer than 150 words of content — not enough to answer a visitor's questions or rank well.
+            - paragraph [ref=e162]: 5 pages have fewer than 150 words of content — not enough to answer a visitor's questions or rank well.
+            - generic [ref=e163]:
+              - strong [ref=e164]: Recommendation
+              - text: "Add genuine, helpful content: specific descriptions, FAQs, what to expect, what's included. Aim for at least 300 words on key pages."
+          - generic [ref=e165]:
+            - generic [ref=e166]:
+              - generic [ref=e167]: Important
+              - generic [ref=e168]: Medium
+            - heading "Images missing alt text" [level=3] [ref=e169]
+            - paragraph [ref=e170]: 4 pages have images with empty alt attributes, harming accessibility and image SEO.
+            - paragraph [ref=e171]: 4 pages have images with empty alt attributes, harming accessibility and image SEO.
+            - generic [ref=e172]:
+              - strong [ref=e173]: Recommendation
+              - text: Write descriptive alt text for every image. Describe what is shown and why it matters in context.
+          - generic [ref=e174]:
+            - generic [ref=e175]:
+              - generic [ref=e176]: Important
+              - generic [ref=e177]: Heavy
+            - heading "Low FAQ coverage" [level=3] [ref=e178]
+            - paragraph [ref=e179]: Only 0 FAQ entries detected. Parents have dozens of questions before enrolling — schedule, tuition, what to bring, drop-off — and each unanswered question is an objection.
+            - paragraph [ref=e180]: "FAQ pages serve dual purpose: they reduce inquiry friction for prospects and they rank for long-tail \"can I\" and \"do you\" searches."
+            - generic [ref=e181]:
+              - strong [ref=e182]: Recommendation
+              - text: Build a dedicated FAQ page with at least 30-50 questions. Group by topic relevant to this business (e.g. pricing, scheduling, logistics, what to expect, what is included).
+          - generic [ref=e183]:
+            - generic [ref=e184]:
+              - generic [ref=e185]: Important
+              - generic [ref=e186]: Light
+            - 'heading "Missing page: Photo gallery / classroom tour" [level=3] [ref=e187]'
+            - paragraph [ref=e188]: The site does not have a photo gallery / classroom tour. This is a P1 expectation for this industry.
+            - paragraph [ref=e189]: The site does not have a photo gallery / classroom tour. This is a P1 expectation for this industry.
+            - generic [ref=e190]:
+              - strong [ref=e191]: Recommendation
+              - text: Add a Photo gallery / classroom tour during the rebuild. The proposed sitemap (proposed-sitemap.json) places this page in the primary navigation when applicable.
+          - generic [ref=e192]:
+            - generic [ref=e193]:
+              - generic [ref=e194]: Important
+              - generic [ref=e195]: Light
+            - 'heading "Missing page: Teachers / Staff page" [level=3] [ref=e196]'
+            - paragraph [ref=e197]: The site does not have a teachers / staff page. This is a P1 expectation for this industry.
+            - paragraph [ref=e198]: The site does not have a teachers / staff page. This is a P1 expectation for this industry.
+            - generic [ref=e199]:
+              - strong [ref=e200]: Recommendation
+              - text: Add a Teachers / Staff page during the rebuild. The proposed sitemap (proposed-sitemap.json) places this page in the primary navigation when applicable.
+          - generic [ref=e201]:
+            - generic [ref=e202]:
+              - generic [ref=e203]: Important
+              - generic [ref=e204]: Light
+            - 'heading "Missing feature: Embedded map" [level=3] [ref=e205]'
+            - paragraph [ref=e206]: Embedded map was not detected on the site. Helps visitors confirm location at a glance and links straight into navigation apps.
+            - paragraph [ref=e207]: Embedded map was not detected on the site. Helps visitors confirm location at a glance and links straight into navigation apps.
+            - generic [ref=e208]:
+              - strong [ref=e209]: Recommendation
+              - text: "Wire in embedded map during the rebuild. Recommended implementations: Google Maps embed on contact page, Static map image with link to directions."
+          - generic [ref=e210]:
+            - generic [ref=e211]:
+              - generic [ref=e212]: Important
+              - generic [ref=e213]: Light
+            - 'heading "No `public/llms.txt` published" [level=3] [ref=e214]'
+            - paragraph [ref=e215]: "`llms.txt` is the emerging convention (analogous to `robots.txt`) for telling AI crawlers which URLs and summaries to ingest first. The site does not publish one."
+            - paragraph [ref=e216]: "`llms.txt` is the emerging convention (analogous to `robots.txt`) for telling AI crawlers which URLs and summaries to ingest first. The site does not publish one."
+            - generic [ref=e217]:
+              - strong [ref=e218]: Recommendation
+              - text: "Generate `public/llms.txt` listing the canonical pages, business description, and key facts. The `upriver improve <slug> --track ai-search` track produces a deterministic version."
+          - generic [ref=e219]:
+            - generic [ref=e220]:
+              - generic [ref=e221]: Important
+              - generic [ref=e222]: Light
+            - 'heading "Canonical fact missing: Service area / location qualifier" [level=3] [ref=e223]'
+            - paragraph [ref=e224]: Service area / location qualifier could not be detected anywhere on the site.
+            - paragraph [ref=e225]: Service area / location qualifier could not be detected anywhere on the site.
+            - generic [ref=e226]:
+              - strong [ref=e227]: Recommendation
+              - text: Add service area / location qualifier to the visible copy and the Organization JSON-LD block.
+          - generic [ref=e228]:
+            - generic [ref=e229]:
+              - generic [ref=e230]: Important
+              - generic [ref=e231]: Medium
+            - heading "12 orphaned pages with no internal links pointing to them" [level=3] [ref=e232]
+            - paragraph [ref=e233]: 12 pages are not linked from any other page on the site. Search engines may not discover them, and visitors have no path to find them.
+            - paragraph [ref=e234]: Orphaned pages receive no PageRank flow and may be deindexed over time. They also represent wasted content investment.
+            - generic [ref=e235]:
+              - strong [ref=e236]: Recommendation
+              - text: Add internal links to these pages from relevant parent pages, the navigation, or a sitemap page.
+          - generic [ref=e237]:
+            - generic [ref=e238]:
+              - generic [ref=e239]: Important
+              - generic [ref=e240]: Light
+            - heading "Homepage has very few internal links" [level=3] [ref=e241]
+            - paragraph [ref=e242]: The homepage links to only 0 internal pages. The homepage should link to every primary section of the site.
+            - paragraph [ref=e243]: The homepage links to only 0 internal pages. The homepage should link to every primary section of the site.
+            - generic [ref=e244]:
+              - strong [ref=e245]: Recommendation
+              - text: Ensure the homepage navigation links to every primary page (services/products, pricing, about, contact). Add footer links to secondary pages.
+            - generic [ref=e246]: "Page: https://littlefriendslearningloft.com"
+          - generic [ref=e247]:
+            - generic [ref=e248]:
+              - generic [ref=e249]: Important
+              - generic [ref=e250]: Light
+            - heading "Inconsistent phone numbers across pages" [level=3] [ref=e251]
+            - paragraph [ref=e252]: "3 different phone numbers found: (732) 343-0005 | (845) 561-6602 | 732-343-0005. NAP inconsistency hurts local search rankings."
+            - paragraph [ref=e253]: Google's local algorithm penalizes NAP inconsistency between the website and directory listings.
+            - generic [ref=e254]:
+              - strong [ref=e255]: Recommendation
+              - text: Standardize to a single primary phone number and use it consistently everywhere — website, GBP, directories.
+          - generic [ref=e256]:
+            - generic [ref=e257]:
+              - generic [ref=e258]: Important
+              - generic [ref=e259]: Light
+            - heading "Inconsistent address formats across pages" [level=3] [ref=e260]
+            - paragraph [ref=e261]: 2 different address formats found. Even formatting differences (abbreviations, suite formats) can signal inconsistency.
+            - paragraph [ref=e262]: 2 different address formats found. Even formatting differences (abbreviations, suite formats) can signal inconsistency.
+            - generic [ref=e263]:
+              - strong [ref=e264]: Recommendation
+              - text: Use a single canonical address format everywhere. Match exactly what is on your Google Business Profile.
+          - generic [ref=e265]:
+            - generic [ref=e266]:
+              - generic [ref=e267]: Important
+              - generic [ref=e268]: Medium
+            - heading "Missing links to 6 relevant local directories" [level=3] [ref=e269]
+            - paragraph [ref=e270]: "The site does not link to: Care.com, Winnie, GreatSchools, Yelp, Facebook, Instagram. Directory profiles are citation sources that strengthen local SEO."
+            - paragraph [ref=e271]: Each quality citation (consistent NAP on a reputable directory) is a local ranking signal. Industry-specific directories matter most for preschool discovery.
+            - generic [ref=e272]:
+              - strong [ref=e273]: Recommendation
+              - text: Create or claim profiles on Care.com, Winnie, GreatSchools, Yelp. Link to them from the site footer or contact page. Keep NAP consistent across all profiles.
+          - generic [ref=e274]:
+            - generic [ref=e275]:
+              - generic [ref=e276]: Important
+              - generic [ref=e277]: Heavy
+            - 'heading "Missing: Photo gallery / classroom tour" [level=3] [ref=e278]'
+            - paragraph [ref=e279]: No page matching "Photo gallery / classroom tour" was found. Visitors looking for this information leave to find it elsewhere.
+            - paragraph [ref=e280]: Every missing page is a prospect who hit a dead end and went to a competitor instead.
+            - generic [ref=e281]:
+              - strong [ref=e282]: Recommendation
+              - text: Create a dedicated page for photo gallery / classroom tour. This is a baseline page for any preschool site.
+          - generic [ref=e283]:
+            - generic [ref=e284]:
+              - generic [ref=e285]: Important
+              - generic [ref=e286]: Heavy
+            - 'heading "Missing: Teachers / Staff page" [level=3] [ref=e287]'
+            - paragraph [ref=e288]: No page matching "Teachers / Staff page" was found. Visitors looking for this information leave to find it elsewhere.
+            - paragraph [ref=e289]: Every missing page is a prospect who hit a dead end and went to a competitor instead.
+            - generic [ref=e290]:
+              - strong [ref=e291]: Recommendation
+              - text: Create a dedicated page for teachers / staff page. This is a baseline page for any preschool site.
+          - generic [ref=e292]:
+            - generic [ref=e293]:
+              - generic [ref=e294]: Important
+              - generic [ref=e295]: Light
+            - heading "Contact page not directly linked from homepage" [level=3] [ref=e296]
+            - paragraph [ref=e297]: The contact/inquiry page is not in the homepage's direct internal links, adding friction to the conversion path.
+            - paragraph [ref=e298]: The contact/inquiry page is not in the homepage's direct internal links, adding friction to the conversion path.
+            - generic [ref=e299]:
+              - strong [ref=e300]: Recommendation
+              - text: Add a "Contact Us" or primary-action link directly in the homepage navigation and in the hero CTA.
+            - generic [ref=e301]: "Page: https://littlefriendslearningloft.com"
+          - generic [ref=e302]:
+            - generic [ref=e303]:
+              - generic [ref=e304]: Important
+              - generic [ref=e305]: Light
+            - heading "No review platform badges visible" [level=3] [ref=e306]
+            - paragraph [ref=e307]: No links to Care.com, Winnie, GreatSchools, or Google reviews found. Review badges are trust signals that directly influence inquiry rates.
+            - paragraph [ref=e308]: Third-party review badges convert better than on-site testimonials — they are perceived as unbiased.
+            - generic [ref=e309]:
+              - strong [ref=e310]: Recommendation
+              - text: Add review badges from Care.com, Winnie, GreatSchools or Google to the homepage and contact page, ideally showing star rating and review count.
+          - generic [ref=e311]:
+            - generic [ref=e312]:
+              - generic [ref=e313]: Important
+              - generic [ref=e314]: Medium
+            - heading "Testimonials present but no Review/AggregateRating schema" [level=3] [ref=e315]
+            - paragraph [ref=e316]: The site has testimonials but no structured review markup. AggregateRating schema enables star ratings in search results.
+            - paragraph [ref=e317]: Star ratings in search results increase click-through rates by 15-30% on average. Social proof in SERPs is a significant competitive advantage for any local-business listing.
+            - generic [ref=e318]:
+              - strong [ref=e319]: Recommendation
+              - text: Add AggregateRating schema with review count and average score. Gather and display verified reviews to qualify for rich results.
+          - generic [ref=e320]:
+            - generic [ref=e321]:
+              - generic [ref=e322]: Important
+              - generic [ref=e323]: Medium
+            - heading "Missing canonical tags" [level=3] [ref=e324]
+            - paragraph [ref=e325]: 13 pages have no canonical tag, leaving duplicate content signals unresolved.
+            - paragraph [ref=e326]: Without canonical tags, search engines may index duplicate or near-duplicate versions of the same page, splitting ranking signals.
+            - generic [ref=e327]:
+              - strong [ref=e328]: Recommendation
+              - text: Add a self-referencing canonical tag to every page.
+          - generic [ref=e329]:
+            - generic [ref=e330]:
+              - generic [ref=e331]: Important
+              - generic [ref=e332]: Medium
+            - heading "Most pages missing meta descriptions" [level=3] [ref=e333]
+            - paragraph [ref=e334]: 11 of 13 pages have no meta description.
+            - paragraph [ref=e335]: Meta descriptions are the primary copy in search results. Missing ones cause Google to pull random body text — usually a worse click-through rate.
+            - generic [ref=e336]:
+              - strong [ref=e337]: Recommendation
+              - text: Write unique meta descriptions (140-160 characters) for every page. Include the primary keyword and a call to action.
+          - generic [ref=e338]:
+            - generic [ref=e339]:
+              - generic [ref=e340]: Important
+              - generic [ref=e341]: Medium
+            - heading "Pages missing H1 tags" [level=3] [ref=e342]
+            - paragraph [ref=e343]: 12 pages have no H1 heading, which weakens keyword signals for those pages.
+            - paragraph [ref=e344]: 12 pages have no H1 heading, which weakens keyword signals for those pages.
+            - generic [ref=e345]:
+              - strong [ref=e346]: Recommendation
+              - text: Add one H1 to every page that clearly states the primary topic and includes the target keyword.
+          - generic [ref=e347]:
+            - generic [ref=e348]:
+              - generic [ref=e349]: Important
+              - generic [ref=e350]: Heavy
+            - heading "Thin content pages (under 200 words)" [level=3] [ref=e351]
+            - paragraph [ref=e352]: 6 pages have fewer than 200 words. Google considers these thin and may exclude them from rankings.
+            - paragraph [ref=e353]: Thin content pages can drag down the overall quality assessment of the entire site, not just the individual pages.
+            - generic [ref=e354]:
+              - strong [ref=e355]: Recommendation
+              - text: Expand thin pages to at least 300 words with useful, specific content. Alternatively, noindex pages that can't be meaningfully expanded.
+          - generic [ref=e356]:
+            - generic [ref=e357]:
+              - generic [ref=e358]: Important
+              - generic [ref=e359]: Medium
+            - heading "Duplicate title tags across pages" [level=3] [ref=e360]
+            - paragraph [ref=e361]: 1 title tag values are shared by multiple pages. Search engines may struggle to differentiate them.
+            - paragraph [ref=e362]: 1 title tag values are shared by multiple pages. Search engines may struggle to differentiate them.
+            - generic [ref=e363]:
+              - strong [ref=e364]: Recommendation
+              - text: Write a unique, keyword-specific title tag for every page. No two pages should share a title.
+          - generic [ref=e365]:
+            - generic [ref=e366]:
+              - generic [ref=e367]: Important
+              - generic [ref=e368]: Heavy
+            - heading "Video opportunities identified across the site" [level=3] [ref=e369]
+            - paragraph [ref=e370]: 7 video opportunities surfaced across 13 pages. The full prioritized plan with shot lists is in video-audit/plan.json.
+            - paragraph [ref=e371]: 7 video opportunities surfaced across 13 pages. The full prioritized plan with shot lists is in video-audit/plan.json.
+            - generic [ref=e372]:
+              - strong [ref=e373]: Recommendation
+              - text: "Run `upriver video-audit <slug>` for a shoot-ready plan with shot lists, scripts, and a budget per video."
+          - generic [ref=e374]:
+            - generic [ref=e375]:
+              - generic [ref=e376]: Important
+              - generic [ref=e377]: Medium
+            - heading "Homepage has no video" [level=3] [ref=e378]
+            - paragraph [ref=e379]: No video element detected on the homepage. A hero video lifts homepage conversion 20-40% on emotional-purchase verticals.
+            - paragraph [ref=e380]: No video element detected on the homepage. A hero video lifts homepage conversion 20-40% on emotional-purchase verticals.
+            - generic [ref=e381]:
+              - strong [ref=e382]: Recommendation
+              - text: Capture a real-moments compilation or brand film as Phase 1 of the video plan.
+      - generic [ref=e383]:
+        - generic [ref=e384]:
+          - heading "Polish — when there's time" [level=2] [ref=e385]
+          - generic [ref=e386]: "8"
+        - generic [ref=e387]:
+          - generic [ref=e388]:
+            - generic [ref=e389]:
+              - generic [ref=e390]: Polish
+              - generic [ref=e391]: Light
+            - heading "No wedding directory profiles linked — missing easy citation backlinks" [level=3] [ref=e392]
+            - paragraph [ref=e393]: WeddingWire, The Knot, and Zola profiles provide DA 70+ backlinks for free. No links to these directories were found.
+            - paragraph [ref=e394]: A complete WeddingWire profile typically provides a DA 73 backlink. These are the highest-authority free links available to venue businesses.
+            - generic [ref=e395]:
+              - strong [ref=e396]: Recommendation
+              - text: Create and fully complete profiles on WeddingWire, The Knot, Zola, and wedding.com. These are the easiest high-authority backlinks in the industry.
+          - generic [ref=e397]:
+            - generic [ref=e398]:
+              - generic [ref=e399]: Polish
+              - generic [ref=e400]: Medium
+            - heading "No real weddings portfolio — common competitive differentiator" [level=3] [ref=e401]
+            - paragraph [ref=e402]: Top competing venues feature "Real Weddings" pages showing actual events. This content converts better than stock photography and also ranks well for long-tail searches.
+            - paragraph [ref=e403]: Real weddings pages generate organic traffic from searches like "winter wedding [venue name]" and provide the specific social proof that drives inquiry decisions.
+            - generic [ref=e404]:
+              - strong [ref=e405]: Recommendation
+              - text: Create a "Real Weddings" section with 6-10 featured weddings. Include ceremony photos, reception photos, couple name, date, photographer credit. Add Schema Event markup.
+          - generic [ref=e406]:
+            - generic [ref=e407]:
+              - generic [ref=e408]: Polish
+              - generic [ref=e409]: Light
+            - 'heading "Missing page: School calendar / hours page" [level=3] [ref=e410]'
+            - paragraph [ref=e411]: The site does not have a school calendar / hours page. This is a P2 expectation for this industry.
+            - paragraph [ref=e412]: The site does not have a school calendar / hours page. This is a P2 expectation for this industry.
+            - generic [ref=e413]:
+              - strong [ref=e414]: Recommendation
+              - text: Add a School calendar / hours page during the rebuild. The proposed sitemap (proposed-sitemap.json) places this page in the primary navigation when applicable.
+          - generic [ref=e415]:
+            - generic [ref=e416]:
+              - generic [ref=e417]: Polish
+              - generic [ref=e418]: Medium
+            - heading "Most pages have very few internal links" [level=3] [ref=e419]
+            - paragraph [ref=e420]: 12 of 13 pages link to fewer than 3 other pages. Sparse internal linking limits crawl discovery and PageRank distribution.
+            - paragraph [ref=e421]: Internal links are free PageRank transfers. A well-linked site ranks better and is easier for both users and crawlers to navigate.
+            - generic [ref=e422]:
+              - strong [ref=e423]: Recommendation
+              - text: Add contextual internal links throughout body copy. Every page should link to at least 3-5 related pages.
+          - generic [ref=e424]:
+            - generic [ref=e425]:
+              - generic [ref=e426]: Polish
+              - generic [ref=e427]: Medium
+            - heading "63 images could not be classified by URL alone" [level=3] [ref=e428]
+            - paragraph [ref=e429]: A large share of images use neutral filenames so heuristic classification could not distinguish authentic from generic. Run "upriver audit-media" with a vision API key for deeper analysis.
+            - paragraph [ref=e430]: Reverse image lookup catches stock photos that descriptive filenames disguise.
+            - generic [ref=e431]:
+              - strong [ref=e432]: Recommendation
+              - text: Set TINEYE_API_KEY or GOOGLE_VISION_API_KEY (or both) to enable reverse-image lookup, then re-run the pass.
+          - generic [ref=e433]:
+            - generic [ref=e434]:
+              - generic [ref=e435]: Polish
+              - generic [ref=e436]: Heavy
+            - 'heading "Missing: School calendar / hours page" [level=3] [ref=e437]'
+            - paragraph [ref=e438]: No page matching "School calendar / hours page" was found. Visitors looking for this information leave to find it elsewhere.
+            - paragraph [ref=e439]: Every missing page is a prospect who hit a dead end and went to a competitor instead.
+            - generic [ref=e440]:
+              - strong [ref=e441]: Recommendation
+              - text: Create a dedicated page for school calendar / hours page. This is a baseline page for any preschool site.
+          - generic [ref=e442]:
+            - generic [ref=e443]:
+              - generic [ref=e444]: Polish
+              - generic [ref=e445]: Light
+            - heading "No Event schema for advertised event spaces" [level=3] [ref=e446]
+            - paragraph [ref=e447]: Event spaces are described on the site but no Event or EventVenue schema is present.
+            - paragraph [ref=e448]: Event schema can surface pages in Google's Events panel for location-based searches.
+            - generic [ref=e449]:
+              - strong [ref=e450]: Recommendation
+              - text: Consider adding Event schema for recurring or sample events, and EventVenue schema for the spaces themselves.
+          - generic [ref=e451]:
+            - generic [ref=e452]:
+              - generic [ref=e453]: Polish
+              - generic [ref=e454]: Light
+            - heading "No BreadcrumbList schema" [level=3] [ref=e455]
+            - paragraph [ref=e456]: No breadcrumb schema detected. BreadcrumbList schema helps Google display site structure in search results.
+            - paragraph [ref=e457]: Breadcrumbs in search results improve click-through rates and help users understand site structure.
+            - generic [ref=e458]:
+              - strong [ref=e459]: Recommendation
+              - text: Add BreadcrumbList JSON-LD to all non-homepage pages. This is typically handled automatically by CMS plugins.
+    - contentinfo [ref=e460]:
+      - img [ref=e461]
+      - generic [ref=e464]:
+        - text: Prepared by
+        - strong [ref=e465]: Upriver Consulting
+        - text: — April 30, 2026
+  - generic [ref=e468]:
+    - button "Menu" [ref=e469]:
+      - img [ref=e471]
+      - generic: Menu
+    - button "Inspect" [ref=e475]:
+      - img [ref=e477]
+      - generic: Inspect
+    - button "Audit" [ref=e479]:
+      - img [ref=e481]
+      - generic: Audit
+    - button "Settings" [ref=e484]:
+      - img [ref=e486]
+      - generic: Settings

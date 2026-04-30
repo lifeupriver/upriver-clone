@@ -1,0 +1,58 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - generic [ref=e14]: v0.1.0
+    - main [ref=e15]:
+      - generic [ref=e16]:
+        - text: Upriver Dashboard
+        - heading "Clients" [level=1] [ref=e17]
+        - paragraph [ref=e18]: 1 client in the pipeline
+      - table [ref=e20]:
+        - rowgroup [ref=e21]:
+          - row "Client Platform Stage Score P0 P1 P2 Created" [ref=e22]:
+            - columnheader "Client" [ref=e23]
+            - columnheader "Platform" [ref=e24]
+            - columnheader "Stage" [ref=e25]
+            - columnheader "Score" [ref=e26]
+            - columnheader "P0" [ref=e27]
+            - columnheader "P1" [ref=e28]
+            - columnheader "P2" [ref=e29]
+            - columnheader "Created" [ref=e30]
+        - rowgroup [ref=e31]:
+          - row "Little Friends Learning Loft https://littlefriendslearningloft.com — clone — 0 0 0 Apr 29, 2026" [ref=e32]:
+            - cell "Little Friends Learning Loft https://littlefriendslearningloft.com" [ref=e33]:
+              - generic [ref=e34]:
+                - link "Little Friends Learning Loft" [ref=e35] [cursor=pointer]:
+                  - /url: /clients/littlefriends
+                - generic [ref=e36]: https://littlefriendslearningloft.com
+            - cell "—" [ref=e37]
+            - cell "clone" [ref=e38]:
+              - generic [ref=e39]: clone
+            - cell "—" [ref=e40]
+            - cell "0" [ref=e41]
+            - cell "0" [ref=e42]
+            - cell "0" [ref=e43]
+            - cell "Apr 29, 2026" [ref=e44]
+  - generic [ref=e47]:
+    - button "Menu" [ref=e48]:
+      - img [ref=e50]
+      - generic: Menu
+    - button "Inspect" [ref=e54]:
+      - img [ref=e56]
+      - generic: Inspect
+    - button "Audit" [ref=e58]:
+      - img [ref=e60]
+      - generic: Audit
+    - button "Settings" [ref=e63]:
+      - img [ref=e65]
+      - generic: Settings
