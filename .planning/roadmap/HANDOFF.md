@@ -1,9 +1,9 @@
 # Handoff — current state, pending work
 
-**Last commit:** `79429ea feat(option-b): phase 1 — vercel adapter + UPRIVER_DATA_SOURCE guard`
-**Branch:** `main` (5 commits ahead of `origin/main`)
+**Last commit:** `8e5b143 feat(option-b): phase 2.4+2.5 — upriver sync push/pull CLI`
+**Branch:** `main` (10 commits ahead of `origin/main`)
 **Working tree:** clean
-**Tests:** `pnpm --filter @upriver/cli run test` → 72/72 green
+**Tests:** `pnpm --filter @upriver/cli run test` → 72/72 green; `pnpm --filter @upriver/core run test` → 21/21 green
 **Typecheck:** `pnpm -r run typecheck` → clean across all packages
 **Dashboard build:** `pnpm --filter @upriver/dashboard run build` → produces valid `.vercel/output/` with `_render.func`
 
@@ -62,14 +62,30 @@ was triggered. Everything below is current as of this commit.
   HTML placeholder (or JSON when `accept: application/json`).
 - `.gitignore` now ignores `.vercel/`.
 
-**Phase 1 deferred (slices 4–6):**
-- Vercel project creation + env-var setup deferred per operator call.
-  Reasoning: `deploy_to_vercel` MCP is the only project-creation path,
-  and the first deploy would only render 503s for filesystem routes
-  until Phase 2 ships. Defer until Phase 2 is ready so the first
-  hosted deployment is a working one.
-- Vercel team `Upriver` (id `team_FIxyAOaCMqi7KGYQntQeCbuW`) is ready
-  to receive the project when Phase 2 lands.
+**Phase 2 complete (commits `e6a9f8f`, `bc8212e`, `9f126d6`, `8e5b143`):**
+- `@upriver/core/data` exports `ClientDataSource` interface +
+  `LocalFsClientDataSource` and `SupabaseClientDataSource` impls.
+  `createSupabaseClientDataSourceFromEnv()` factory pulls
+  `UPRIVER_SUPABASE_URL` + `_SERVICE_KEY`/`_PUBLISHABLE_KEY` +
+  `_BUCKET` (default `upriver`).
+- Dashboard fs-reader/report-reader/intake-writer/pipeline now async
+  and route through the configured data source. 18 .astro pages and
+  2 API endpoints updated.
+- `upriver sync push <slug>` and `upriver sync pull <slug>` CLI
+  commands (atomic upsert; `--exclude` and `--dry-run` flags).
+  Default skip: `node_modules/`, `.git/`, `.DS_Store`.
+- Local dev unchanged (`UPRIVER_DATA_SOURCE` defaults to `local`).
+
+**Phase 1 deferred slices (4–6) — now ready to land:**
+- Phase 2 storage abstraction is in place, so a Vercel project created
+  with `UPRIVER_DATA_SOURCE=supabase` can render real data the
+  operator has pushed via `sync push`.
+- Create Vercel project via `mcp__plugin_vercel_vercel__deploy_to_vercel`
+  scoped to team `team_FIxyAOaCMqi7KGYQntQeCbuW`, root directory
+  `packages/dashboard`.
+- Env vars: `UPRIVER_SUPABASE_URL`, `UPRIVER_SUPABASE_PUBLISHABLE_KEY`,
+  `UPRIVER_SUPABASE_SERVICE_KEY`, `UPRIVER_DATA_SOURCE=supabase`,
+  `ANTHROPIC_API_KEY`, `UPRIVER_RUN_TOKEN` placeholder.
 
 ---
 
@@ -145,12 +161,13 @@ Full detail in `.planning/roadmap/OPTION-B-MIGRATION.md`.
 5. ⏸ Set env vars on the Vercel project — deferred with #4
 6. ⏸ Don't deploy — moot until #4–5
 
-### Phase 2 — storage abstraction (2–3 days)
-- `ClientDataSource` interface in `packages/core/src/data/`
-- `LocalFsClientDataSource` (current) + `SupabaseClientDataSource` (new)
-- Refactor `dashboard/src/lib/fs-reader.ts` to use the abstraction
-- New `upriver sync push|pull <slug>` CLI commands
-- Vercel deploy uses `UPRIVER_DATA_SOURCE=supabase`
+### Phase 2 — storage abstraction (DONE)
+- ✅ `ClientDataSource` interface in `packages/core/src/data/`
+- ✅ `LocalFsClientDataSource` + `SupabaseClientDataSource`
+- ✅ Dashboard libs refactored to use the abstraction
+- ✅ `upriver sync push|pull <slug>` CLI commands
+- ⏸ Vercel deploy with `UPRIVER_DATA_SOURCE=supabase` (deferred Phase 1
+  slices 4–6 — ready to land)
 
 ### Phase 3 — pipeline execution off the dashboard (5–7 days)
 - Inngest jobs per pipeline stage in `packages/worker/`
