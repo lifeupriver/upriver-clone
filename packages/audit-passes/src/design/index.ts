@@ -2,8 +2,14 @@
 import type { AuditPassResult } from '@upriver/core';
 import { loadPages, loadDesignTokens } from '../shared/loader.js';
 import { finding, scoreFromFindings } from '../shared/finding-builder.js';
+import { getVerticalPack, type PassOptions } from '../shared/vertical-pack.js';
 
-export async function run(slug: string, clientDir: string): Promise<AuditPassResult> {
+export async function run(
+  slug: string,
+  clientDir: string,
+  opts: PassOptions = {},
+): Promise<AuditPassResult> {
+  const pack = getVerticalPack(opts.vertical);
   const pages = loadPages(clientDir);
   const tokens = loadDesignTokens(clientDir);
   const findings = [];
@@ -68,7 +74,7 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
       'No mobile screenshots captured',
       'Mobile screenshots are missing. Without them, mobile design quality cannot be assessed.',
       'Re-run upriver scrape (mobile screenshots are in Phase 4). Review every page at 375px width.',
-      { why: 'Over 60% of wedding venue traffic comes from mobile. A broken mobile experience directly costs inquiries.' },
+      { why: pack.mobileWhy },
     ));
   }
 

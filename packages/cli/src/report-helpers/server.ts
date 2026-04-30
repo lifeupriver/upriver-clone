@@ -121,6 +121,7 @@ async function runDashboardBuild(dashboardDir: string): Promise<void> {
     const child = spawn('pnpm', ['run', 'build'], {
       cwd: dashboardDir,
       stdio: 'inherit',
+      env: { ...process.env, UPRIVER_ASTRO_ADAPTER: 'node' },
     });
     child.on('error', (err) => {
       rejectPromise(

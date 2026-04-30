@@ -11,6 +11,7 @@ import type { AuditPassResult } from '@upriver/core';
 
 import { finding, scoreFromFindings } from '../shared/finding-builder.js';
 import { loadPages, type PageData } from '../shared/loader.js';
+import { getVerticalPack, type PassOptions } from '../shared/vertical-pack.js';
 
 /**
  * Headings that indicate the page provides an AI-friendly TL;DR / summary
@@ -44,11 +45,6 @@ const FACTOID_PATTERNS: Array<{ key: string; label: string; pattern: RegExp }> =
   },
 ];
 
-interface LoadOpts {
-  /** Where to look for `public/llms.txt`. Defaults to `<clientDir>/repo`. */
-  cloneRepoDir?: string;
-}
-
 /**
  * Run the GEO base pass.
  *
@@ -59,7 +55,7 @@ interface LoadOpts {
 export async function run(
   slug: string,
   clientDir: string,
-  opts: LoadOpts = {},
+  opts: PassOptions = {},
 ): Promise<AuditPassResult> {
   void slug;
   const pages = loadPages(clientDir);
@@ -164,7 +160,7 @@ export async function run(
         'light',
         'Business name not disambiguated by location',
         `"${businessName}" appears across the site but no nearby copy ties it to a city, region, or address. AI crawlers can confuse it with similarly-named businesses elsewhere.`,
-        'Pair the business name with a city/region in the homepage hero, footer address block, and `<title>` tag (e.g. "Audrey\'s — wedding venue in Sebastopol, CA").',
+        getVerticalPack(opts.vertical).entityDisambiguationExample,
         {
           why:
             'When ChatGPT and Google\'s AI Overview see an ambiguous brand name, they often cite the wrong entity or refuse to answer. Location anchoring is the cheapest disambiguator.',

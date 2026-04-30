@@ -51,9 +51,15 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
     );
   }
 
-  // Font-stack hygiene.
-  const fonts = tokens?.fonts ?? [];
-  const distinctFonts = new Set(fonts.map((f) => f.toLowerCase().trim()).filter(Boolean));
+  // Font-stack hygiene. `tokens.fonts` may be `string[]` (older shape) or
+  // `{ family: string; role?: string }[]` (current branding-extraction shape).
+  const fonts = (tokens?.fonts ?? []) as Array<string | { family?: string }>;
+  const distinctFonts = new Set(
+    fonts
+      .map((f) => (typeof f === 'string' ? f : f?.family ?? ''))
+      .map((s) => s.toLowerCase().trim())
+      .filter(Boolean),
+  );
   if (distinctFonts.size === 0 && tokens) {
     findings.push(
       finding(

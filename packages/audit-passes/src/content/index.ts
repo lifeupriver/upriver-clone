@@ -2,6 +2,7 @@
 import type { AuditPassResult } from '@upriver/core';
 import { loadPages } from '../shared/loader.js';
 import { finding, scoreFromFindings } from '../shared/finding-builder.js';
+import { getVerticalPack, type PassOptions } from '../shared/vertical-pack.js';
 
 const BANNED_WORDS = [
   'stunning', 'magical', 'seamlessly', 'transform', 'elevate', 'unlock',
@@ -13,7 +14,12 @@ const WEASEL_WORDS = [
   /\bbest\b/i, /\bleading\b/i, /\btop-rated\b/i, /\baward-winning\b/i,
 ];
 
-export async function run(slug: string, clientDir: string): Promise<AuditPassResult> {
+export async function run(
+  slug: string,
+  clientDir: string,
+  opts: PassOptions = {},
+): Promise<AuditPassResult> {
+  const pack = getVerticalPack(opts.vertical);
   const pages = loadPages(clientDir);
   const findings = [];
 
@@ -37,7 +43,7 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
       'content', 'p1', 'medium',
       'Banned marketing language detected',
       `The site uses vague, overused words that signal low credibility: ${examples}.`,
-      'Replace banned words with specific, evidence-based language. Instead of "stunning views," write "floor-to-ceiling windows overlooking the Catskill Mountains."',
+      pack.bannedWordExample,
       {
         why: 'Vague superlatives are invisible to readers — they\'ve been trained to skip them. Specific claims are memorable and credible.',
       },
@@ -93,9 +99,9 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
     findings.push(finding(
       'content', 'p1', 'heavy',
       'Insufficient social proof on site',
-      `Only ${allTestimonials.length} testimonials detected across all pages. For a venue business, social proof is a primary purchase driver.`,
-      'Add at least 6-8 attributed testimonials from real clients. Include name, event type, and ideally a photo. Place the strongest one above the fold on the homepage.',
-      { why: 'Buyers of venue services are making a high-stakes, emotional purchase. Seeing real people who made the same decision and were happy is the most powerful conversion element on the site.' },
+      `Only ${allTestimonials.length} testimonials detected across all pages. ${pack.socialProofWhy}`,
+      'Add at least 6-8 attributed testimonials from real clients. Include name, relevant context, and ideally a photo. Place the strongest one above the fold on the homepage.',
+      { why: 'Specific, attributed testimonials are the single highest-leverage conversion element on most service-business sites.' },
     ));
   }
 
@@ -105,8 +111,8 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
     findings.push(finding(
       'content', 'p1', 'heavy',
       'Low FAQ coverage',
-      `Only ${allFaqs.length} FAQ entries detected. Venue clients have dozens of questions before they contact — unanswered questions become objections.`,
-      'Build a dedicated FAQ page with at least 30-50 questions. Group by topic: venue spaces, catering, pricing, logistics, day-of details.',
+      `Only ${allFaqs.length} FAQ entries detected. ${pack.faqWhy}`,
+      'Build a dedicated FAQ page with at least 30-50 questions. Group by topic relevant to this business (e.g. pricing, scheduling, logistics, what to expect, what is included).',
       { why: 'FAQ pages serve dual purpose: they reduce inquiry friction for prospects and they rank for long-tail "can I" and "do you" searches.' },
     ));
   }

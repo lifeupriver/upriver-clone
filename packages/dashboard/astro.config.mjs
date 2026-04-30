@@ -1,11 +1,18 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import vercel from '@astrojs/vercel';
+import node from '@astrojs/node';
 import tailwindcss from '@tailwindcss/vite';
+
+// `UPRIVER_ASTRO_ADAPTER=node` produces a standalone Node SSR server at
+// `dist/server/entry.mjs` — used by `upriver report build` when it boots the
+// dashboard locally to render report HTML. Default is the Vercel adapter
+// (production deploys).
+const useNodeAdapter = process.env.UPRIVER_ASTRO_ADAPTER === 'node';
 
 export default defineConfig({
   output: 'server',
-  adapter: vercel(),
+  adapter: useNodeAdapter ? node({ mode: 'standalone' }) : vercel(),
   integrations: [react()],
   vite: {
     plugins: [tailwindcss()],

@@ -3,7 +3,7 @@ import { Args, Flags } from '@oclif/core';
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { BaseCommand } from '../base-command.js';
-import { clientDir } from '@upriver/core';
+import { clientDir, readClientConfig } from '@upriver/core';
 import { createAnthropicRunner } from '../deep-audit/anthropic-runner.js';
 import { competitorDeepPass } from '../deep-audit/passes/competitor-deep/run.js';
 import { contentStrategyPass } from '../deep-audit/passes/content-strategy/run.js';
@@ -36,7 +36,11 @@ import {
   runCrossBrowser,
 } from '../deep-audit/index.js';
 
-type PassFn = (slug: string, clientDir: string) => Promise<AuditPassResult>;
+type PassFn = (
+  slug: string,
+  clientDir: string,
+  opts?: { vertical?: string; cloneRepoDir?: string },
+) => Promise<AuditPassResult>;
 
 const ALL_PASSES: ReadonlyArray<{ name: string; fn: PassFn }> = [
   { name: 'seo', fn: runSeo },
@@ -127,6 +131,16 @@ export default class Audit extends BaseCommand {
     const outDir = flags.out ?? join(dir, 'audit');
     mkdirSync(outDir, { recursive: true });
 
+    // Read vertical from client-config.yaml; passes use it to swap in
+    // industry-specific copy and heuristics. Missing/unknown values fall
+    // back to the generic small-business pack inside audit-passes.
+    let vertical: string | undefined;
+    try {
+      vertical = readClientConfig(slug).vertical;
+    } catch {
+      vertical = undefined;
+    }
+
     const mode = (flags.mode ?? 'base') as 'base' | 'deep' | 'tooling' | 'all';
     const runBase = true;
     const runDeep = mode === 'deep' || mode === 'all';
@@ -146,7 +160,7 @@ export default class Audit extends BaseCommand {
       passesToRun.map(async ({ name, fn }) => {
         const passStart = Date.now();
         try {
-          const result = await (fn as (slug: string, clientDir: string) => Promise<AuditPassResult>)(slug, dir);
+          const result = await fn(slug, dir, vertical ? { vertical } : {});
           const elapsed = ((Date.now() - passStart) / 1000).toFixed(1);
           const grade = gradeScore(result.score);
           const p0 = result.findings.filter((f) => f.priority === 'p0').length;

@@ -123,8 +123,8 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
     findings.push(finding(
       'links', 'p1', 'light',
       'Homepage has very few internal links',
-      `The homepage links to only ${homepage.links.internal.length} internal pages. A venue site should link to all major sections from the homepage.`,
-      'Ensure the homepage navigation links to: venue spaces, pricing, gallery, about, contact/inquiry. Add footer links to secondary pages.',
+      `The homepage links to only ${homepage.links.internal.length} internal pages. The homepage should link to every primary section of the site.`,
+      'Ensure the homepage navigation links to every primary page (services/products, pricing, about, contact). Add footer links to secondary pages.',
       { page: homepage.url },
     ));
   }

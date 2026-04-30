@@ -29,6 +29,11 @@ export default class Init extends BaseCommand {
     name: Flags.string({
       description: 'Client display name (e.g. "Audrey\'s Farmhouse")',
     }),
+    vertical: Flags.string({
+      description:
+        'Business vertical — used by audit passes to swap in industry-specific copy and heuristics. Defaults to generic.',
+      options: ['wedding-venue', 'preschool', 'restaurant', 'professional-services', 'generic'],
+    }),
   };
 
   async run(): Promise<void> {
@@ -48,12 +53,15 @@ export default class Init extends BaseCommand {
     }
 
     // Write initial config
-    const config: ClientConfig = {
+    const baseConfig = {
       slug,
       name,
       url,
       created_at: new Date().toISOString(),
     };
+    const config: ClientConfig = flags.vertical
+      ? { ...baseConfig, vertical: flags.vertical as NonNullable<ClientConfig['vertical']> }
+      : baseConfig;
     writeClientConfig(config);
     this.log(`Created client directory: clients/${slug}/`);
 

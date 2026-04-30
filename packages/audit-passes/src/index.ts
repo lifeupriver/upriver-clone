@@ -13,3 +13,5 @@ export { run as runCompetitors } from './competitors/index.js';
 
 export type { PageData, DesignTokens } from './shared/loader.js';
 export { loadPages, loadDesignTokens, loadRawHtml } from './shared/loader.js';
+export type { PassOptions, Vertical, VerticalPack } from './shared/vertical-pack.js';
+export { getVerticalPack } from './shared/vertical-pack.js';

@@ -64,16 +64,21 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
   const allTypes = allSchemas.flatMap((s) => getTypes(s.schemas));
 
   // ── LocalBusiness or Organization schema ─────────────────────────────────
+  // Recognize common Schema.org subtypes that inherit from LocalBusiness or
+  // Organization. Adding new subtypes here is preferred over forcing the
+  // generic `LocalBusiness` type — Google rewards specificity.
   const hasLocalBusiness = allTypes.some((t) =>
-    /LocalBusiness|FoodEstablishment|EventVenue|Organization|WeddingService/i.test(t),
+    /LocalBusiness|FoodEstablishment|EventVenue|Organization|WeddingService|Restaurant|Preschool|School|EducationalOrganization|ChildCare|MedicalOrganization|Dentist|Physician|HomeAndConstructionBusiness|HealthAndBeautyBusiness|ProfessionalService/i.test(
+      t,
+    ),
   );
 
   if (!hasLocalBusiness) {
     findings.push(finding(
       'schema', 'p0', 'medium',
       'No LocalBusiness or Organization schema markup',
-      'No JSON-LD schema for LocalBusiness, Organization, or EventVenue was found. This is the foundational schema for any venue business.',
-      'Add LocalBusiness or EventVenue JSON-LD to the homepage and every page. Include: name, address, telephone, url, openingHours, geo coordinates.',
+      'No JSON-LD schema for LocalBusiness, Organization, or a more specific subtype was found. This is the foundational schema for any local business website.',
+      'Add LocalBusiness JSON-LD (or the most specific Schema.org subtype that applies — EventVenue, Restaurant, Preschool, etc.) to the homepage and every page. Include: name, address, telephone, url, openingHours, geo coordinates.',
       {
         why: 'LocalBusiness schema enables rich results in Google Search and Google Maps, directly increasing click-through rates for local searches.',
       },
@@ -82,7 +87,11 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
     // Validate required properties
     const localBusinessSchema = allSchemas
       .flatMap((s) => s.schemas)
-      .find((s) => /LocalBusiness|EventVenue|Organization/i.test(String(s['@type'] ?? '')));
+      .find((s) =>
+        /LocalBusiness|EventVenue|Organization|Restaurant|Preschool|School|EducationalOrganization|ChildCare|MedicalOrganization|Dentist|Physician|HomeAndConstructionBusiness|HealthAndBeautyBusiness|ProfessionalService/i.test(
+          String(s['@type'] ?? ''),
+        ),
+      );
 
     if (localBusinessSchema) {
       const missingProps: string[] = [];
@@ -129,10 +138,10 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
   if (hasEventSpaces && !hasEventSchema) {
     findings.push(finding(
       'schema', 'p2', 'light',
-      'No Event schema for venue event spaces',
+      'No Event schema for advertised event spaces',
       'Event spaces are described on the site but no Event or EventVenue schema is present.',
-      'Consider adding Event schema for recurring or sample events, and EventVenue schema for the venue spaces themselves.',
-      { why: 'Event schema can surface venue pages in Google\'s Events panel for location-based searches.' },
+      'Consider adding Event schema for recurring or sample events, and EventVenue schema for the spaces themselves.',
+      { why: 'Event schema can surface pages in Google\'s Events panel for location-based searches.' },
     ));
   }
 
@@ -159,7 +168,7 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
       'The site has testimonials but no structured review markup. AggregateRating schema enables star ratings in search results.',
       'Add AggregateRating schema with review count and average score. Gather and display verified reviews to qualify for rich results.',
       {
-        why: 'Star ratings in search results increase click-through rates by 15-30% on average. For a venue business, social proof in SERPs is a significant competitive advantage.',
+        why: 'Star ratings in search results increase click-through rates by 15-30% on average. Social proof in SERPs is a significant competitive advantage for any local-business listing.',
       },
     ));
   }

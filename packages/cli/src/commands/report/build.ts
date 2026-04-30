@@ -11,8 +11,8 @@ import { Args, Flags } from '@oclif/core';
 import { clientDir } from '@upriver/core';
 
 import { BaseCommand } from '../../base-command.js';
-import { rewriteHtml } from './rewrite.js';
-import { findDashboardDir, withDashboardServer } from './server.js';
+import { rewriteHtml } from '../../report-helpers/rewrite.js';
+import { findDashboardDir, withDashboardServer } from '../../report-helpers/server.js';
 
 interface RouteSpec {
   /** URL path appended to `/deliverables/<slug>`. Empty string for cover. */

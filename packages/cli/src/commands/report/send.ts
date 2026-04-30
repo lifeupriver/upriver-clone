@@ -6,8 +6,8 @@ import { clientDir } from '@upriver/core';
 import type { AuditPackage } from '@upriver/core';
 
 import { BaseCommand } from '../../base-command.js';
-import { extractSubject, renderEmailTemplate } from './email-template.js';
-import { buildShareUrl, loadOrCreateShareInfo } from './share-token.js';
+import { extractSubject, renderEmailTemplate } from '../../report-helpers/email-template.js';
+import { buildShareUrl, loadOrCreateShareInfo } from '../../report-helpers/share-token.js';
 
 const DEFAULT_BASE_URL = 'https://reports.upriverhudsonvalley.com';
 const DEFAULT_FROM = 'reports@upriverhudsonvalley.com';

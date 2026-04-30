@@ -135,7 +135,10 @@ export default class Qa extends BaseCommand {
     const results = await Promise.allSettled(
       PASSES.map(async ({ name, fn }) => {
         try {
-          return await (fn as (slug: string, dir: string) => Promise<AuditPassResult>)(slug, qaDir);
+          const passOpts = config.vertical ? { vertical: config.vertical } : {};
+          return await (
+            fn as (slug: string, dir: string, opts?: { vertical?: string }) => Promise<AuditPassResult>
+          )(slug, qaDir, passOpts);
         } catch (err) {
           this.warn(`  [ERR] ${name}: ${String(err)}`);
           throw err;

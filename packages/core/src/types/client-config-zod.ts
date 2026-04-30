@@ -16,6 +16,9 @@ export const ClientConfigZ = z
     platform: z
       .enum(['squarespace', 'wordpress', 'wix', 'webflow', 'showit', 'unknown'])
       .optional(),
+    vertical: z
+      .enum(['wedding-venue', 'preschool', 'restaurant', 'professional-services', 'generic'])
+      .optional(),
     created_at: z.string(),
     gsc: GscConfigZ.optional(),
     vercel_preview_url: z.string().url().optional(),

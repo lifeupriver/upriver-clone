@@ -6,7 +6,7 @@ import { clientDir } from '@upriver/core';
 import { PDFDocument } from 'pdf-lib';
 
 import { BaseCommand } from '../../base-command.js';
-import { withDashboardServer } from './server.js';
+import { withDashboardServer } from '../../report-helpers/server.js';
 
 interface PdfRouteSpec {
   /** URL path appended to `/deliverables/<slug>`. Empty string for cover. */
