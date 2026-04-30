@@ -1,14 +1,74 @@
 import { defineMiddleware } from 'astro:middleware';
 
-import { DataSourceUnavailableError } from './lib/data-source.js';
+import { getSessionUser, isOperator } from './lib/auth.js';
+import { DataSourceUnavailableError, getDataSource } from './lib/data-source.js';
+
+/** Path prefixes that require an `app_metadata.role === 'operator'` session. */
+const OPERATOR_PATH_PREFIXES = ['/clients', '/api/enqueue'];
+
+/** Paths bypass auth even in supabase mode (login flow + share-link routes). */
+const PUBLIC_PATH_PREFIXES = [
+  '/login',
+  '/auth/',
+  '/deliverables/',
+  '/api/inngest', // unused in option (1a) but harmless to keep open; serve handler lives in worker
+  '/_image', // Astro asset endpoint
+];
+
+function pathIs(pathname: string, prefixes: readonly string[]): boolean {
+  for (const p of prefixes) {
+    if (pathname === p || pathname.startsWith(`${p}/`) || pathname.startsWith(p)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function pathStartsWithAny(pathname: string, prefixes: readonly string[]): boolean {
+  return prefixes.some((p) => pathname.startsWith(p));
+}
 
 /**
  * Catch `DataSourceUnavailableError` from any route and return a clean 503
  * instead of a stack trace. This is the Phase 1 placeholder behavior for
  * filesystem-touching routes when the dashboard is deployed on Vercel
  * before Phase 2 storage abstraction lands.
+ *
+ * Phase 4 layers an auth gate *before* the error catch: in supabase data
+ * source mode, operator-only paths (/clients, /api/enqueue) require a
+ * Supabase Auth session whose `app_metadata.role === 'operator'`. Local
+ * data source mode (operator's laptop) bypasses the gate so dev workflows
+ * keep working.
  */
 export const onRequest = defineMiddleware(async (context, next) => {
+  const url = new URL(context.request.url);
+  const pathname = url.pathname;
+
+  // Auth gate runs only when the dashboard is fronting Supabase storage —
+  // i.e. on Vercel. Local dev with UPRIVER_DATA_SOURCE=local keeps the
+  // existing token-or-no-auth behavior.
+  if (
+    getDataSource() === 'supabase' &&
+    pathStartsWithAny(pathname, OPERATOR_PATH_PREFIXES) &&
+    !pathIs(pathname, PUBLIC_PATH_PREFIXES)
+  ) {
+    const user = await getSessionUser(context.request, context.cookies);
+    if (!isOperator(user)) {
+      const isApi = pathname.startsWith('/api/');
+      if (isApi) {
+        return new Response(JSON.stringify({ error: 'forbidden — operator session required' }), {
+          status: 403,
+          headers: { 'content-type': 'application/json' },
+        });
+      }
+      const next = encodeURIComponent(pathname + url.search);
+      return new Response(null, {
+        status: 302,
+        headers: { location: `/login?next=${next}` },
+      });
+    }
+  }
+
   try {
     return await next();
   } catch (err) {
