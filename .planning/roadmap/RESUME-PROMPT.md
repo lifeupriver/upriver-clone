@@ -26,62 +26,66 @@ order before doing anything:
 
 ## Headline state
 
-- Branch: `main`, 5 commits ahead of `origin/main`. Tests 72/72 green,
-  typecheck clean across all packages. Working tree clean.
-- Supabase project `upriver-platform` (id `qavbpfmhgvkhrnbqalrp`) is
+- Branch: `main`, 13 commits ahead of `origin/main`. Tests 72/72 (cli)
+  + 21/21 (core), typecheck clean across all packages. Working tree
+  clean.
+- Supabase project `upriver-platform` (id `qavbpfmhgvkhrnbqalrp`)
   ACTIVE_HEALTHY in the `Upriver` Pro org
-  (id `ezbdnbazneviadrqalph`). Bucket `upriver` exists, private,
-  500 MB cap. Env vars wired in `.env.example`.
-- Vercel team `Upriver` exists (id `team_FIxyAOaCMqi7KGYQntQeCbuW`).
-  No upriver-platform Vercel project yet — intentionally deferred
-  until Phase 2 ships, so the first deploy is a working one.
-- Architecture: Option B (full hosted Vercel + Supabase). Phase 1
-  code-side complete (commit `79429ea`); project creation slices
-  4–6 deferred. **Next phase to start: Phase 2 (storage abstraction).**
+  (id `ezbdnbazneviadrqalph`). Bucket `upriver` private, 500 MB cap.
+- Vercel team `Upriver` (id `team_FIxyAOaCMqi7KGYQntQeCbuW`).
+- Vercel project `upriver-platform` (id
+  `prj_LFSBjXlYAZCBj5tsuNsmneeJysL9`) live at
+  https://upriver-platform.vercel.app, Root Directory =
+  `packages/dashboard`. UPRIVER_DATA_SOURCE=supabase set on Production
+  + Development env. Preview env intentionally empty.
+- Architecture: Option B (full Vercel + Supabase). **Phases 1 and 2
+  complete.** Next phase: Phase 3 (pipeline execution off the
+  dashboard via worker platform, recommended Inngest).
 
-## Phase 1 — what landed
+## Phase 1 + 2 — what landed
 
-- `@astrojs/vercel` adapter (replaced `@astrojs/node`); broken
-  `start` script removed.
-- `packages/dashboard/src/lib/data-source.ts` —
-  `getDataSource()` reads `UPRIVER_DATA_SOURCE` (default `local`);
-  `assertLocalDataSource()` throws `DataSourceUnavailableError` when
-  `supabase`. Phase 2 will wire the actual supabase implementation.
-- `getClientsBase()` (fs-reader.ts) and `resolveUpriverBin()`
-  (run-cli.ts) gate via `assertLocalDataSource()` — every fs route is
-  covered through these helpers.
-- `src/middleware.ts` translates `DataSourceUnavailableError` to a
-  clean 503 (HTML or JSON depending on `Accept`).
-- `.gitignore` ignores `.vercel/`.
+- `@astrojs/vercel` adapter on the dashboard.
+- `@upriver/core/data` exports `ClientDataSource` interface +
+  `LocalFsClientDataSource` and `SupabaseClientDataSource`.
+- Dashboard libs (fs-reader, report-reader, intake-writer, pipeline)
+  all async; route through `resolveClientDataSource()` based on
+  `UPRIVER_DATA_SOURCE`.
+- `upriver sync push|pull <slug>` CLI commands move artifacts between
+  local fs and the bucket. Default skip: `node_modules/`, `.git/`,
+  `.DS_Store`. `--exclude` and `--dry-run` flags.
+- Production deploy verified: GET / → 302 → /clients → 200; empty
+  state shows "Looking in: Supabase bucket clients/" because no slugs
+  pushed yet.
+- Smoke test: `node packages/core/scripts/smoke-data-source.mjs` runs
+  the full SupabaseClientDataSource surface against the live bucket.
 
-## Immediate next step — Phase 2 of OPTION-B-MIGRATION.md
+## Immediate next step — Phase 3 of OPTION-B-MIGRATION.md
 
-Storage abstraction. From `OPTION-B-MIGRATION.md`:
+Pipeline execution off the dashboard. Goal: trigger pipeline stages
+from the hosted dashboard without spawning child processes inside
+Vercel functions.
 
-1. Define `ClientDataSource` interface in `packages/core/src/data/`
-   with `listClients()`, `readClientFile(slug, path)`,
-   `writeClientFile(slug, path, body)`,
-   `signClientFileUrl(slug, path, ttl)`. Pure interface, no IO.
-2. Implementations:
-   - `LocalFsClientDataSource` — current behavior on `clients/<slug>/`.
-   - `SupabaseClientDataSource` — `@supabase/supabase-js`, bucket
-     `upriver`, prefix `clients/<slug>/`.
-3. Refactor `dashboard/src/lib/fs-reader.ts` (and friends) to consume
-   the abstraction; pick implementation from `getDataSource()`.
-4. New CLI commands: `upriver sync push <slug>` and
-   `upriver sync pull <slug>` — idempotent (skip on size+mtime match).
-5. Once Phase 2 verifies locally with `UPRIVER_DATA_SOURCE=supabase`
-   pointed at the live bucket, **then** circle back to deferred Phase 1
-   slices 4–6: create the Vercel project via `deploy_to_vercel`, scope
-   to team `team_FIxyAOaCMqi7KGYQntQeCbuW`, root `packages/dashboard`,
-   set env vars (`UPRIVER_SUPABASE_URL`,
-   `UPRIVER_SUPABASE_PUBLISHABLE_KEY`,
-   `UPRIVER_SUPABASE_SERVICE_KEY`, `UPRIVER_DATA_SOURCE=supabase`,
-   `ANTHROPIC_API_KEY`, `UPRIVER_RUN_TOKEN` placeholder).
+Open architectural decisions to confirm before coding:
+- **Worker platform** — recommendation Inngest. Alternatives:
+  Trigger.dev, GitHub Actions, Vercel Functions w/ Fluid Compute,
+  Fly.io. See OPTION-B-MIGRATION.md Phase 3 table.
+- **Container image registry** — recommendation GitHub Container
+  Registry (free).
+- **Existing-client back-migration** — when do operators run
+  `upriver sync push` against existing local clients? Operator's
+  call.
 
-Phase 2 needs the **Supabase service-role key** in local `.env`
-(operator paste from Supabase dashboard → Settings → API; not exposed
-via MCP). Surface this requirement before starting implementation.
+Slices (per OPTION-B-MIGRATION.md):
+1. `packages/worker/` — one job per pipeline stage (scrape, audit,
+   synthesize, design-brief, scaffold, clone, fixes-plan, qa).
+2. Replace `/api/run/<command>` with `/api/enqueue/<command>` —
+   posts to Inngest, returns a job-id.
+3. `/api/jobs/<id>` SSE endpoint streaming status from Inngest.
+4. Update `PipelineStages.tsx` to enqueue+stream.
+5. Worker container with `claude` CLI + Lighthouse + squirrelscan +
+   Playwright; baked into a GHCR image.
+
+Surface decision questions before scaffolding `packages/worker/`.
 
 ## MCP servers
 
@@ -127,8 +131,8 @@ Prefer action, minimize interruptions, but pause for:
 
 When stop conditions hit, write a fresh `HANDOFF.md` and surface.
 
-Begin by reading HANDOFF.md, then start Phase 2 step 1 (after
-confirming the Supabase service-role key is available in `.env`).
+Begin by reading HANDOFF.md, then surface the Phase 3 architectural
+decisions for confirmation before scaffolding `packages/worker/`.
 ```
 
 ---

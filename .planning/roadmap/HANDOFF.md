@@ -1,8 +1,9 @@
 # Handoff — current state, pending work
 
-**Last commit:** `8e5b143 feat(option-b): phase 2.4+2.5 — upriver sync push/pull CLI`
-**Branch:** `main` (10 commits ahead of `origin/main`)
+**Last commit:** `9a9a1ff chore(dashboard): fix /clients empty-state hint for supabase data source`
+**Branch:** `main` (13 commits ahead of `origin/main`)
 **Working tree:** clean
+**Production URL:** https://upriver-platform.vercel.app — first deploy `dpl_2i5DXSd62beSuFdnGo7uSorTpN5T` is READY, all routes 200/302, empty-state expected (bucket has no client slugs yet).
 **Tests:** `pnpm --filter @upriver/cli run test` → 72/72 green; `pnpm --filter @upriver/core run test` → 21/21 green
 **Typecheck:** `pnpm -r run typecheck` → clean across all packages
 **Dashboard build:** `pnpm --filter @upriver/dashboard run build` → produces valid `.vercel/output/` with `_render.func`
@@ -76,16 +77,29 @@ was triggered. Everything below is current as of this commit.
   Default skip: `node_modules/`, `.git/`, `.DS_Store`.
 - Local dev unchanged (`UPRIVER_DATA_SOURCE` defaults to `local`).
 
-**Phase 1 deferred slices (4–6) — now ready to land:**
-- Phase 2 storage abstraction is in place, so a Vercel project created
-  with `UPRIVER_DATA_SOURCE=supabase` can render real data the
-  operator has pushed via `sync push`.
-- Create Vercel project via `mcp__plugin_vercel_vercel__deploy_to_vercel`
-  scoped to team `team_FIxyAOaCMqi7KGYQntQeCbuW`, root directory
-  `packages/dashboard`.
-- Env vars: `UPRIVER_SUPABASE_URL`, `UPRIVER_SUPABASE_PUBLISHABLE_KEY`,
+**Phase 1 slices 4–6 — DONE:**
+- Vercel project `upriver-platform` (id
+  `prj_LFSBjXlYAZCBj5tsuNsmneeJysL9`) created under team `Upriver`.
+  Root directory set to `packages/dashboard` via dashboard UI (only
+  way — no MCP/CLI for this setting).
+- `.vercel/project.json` link committed to repo root (gitignored).
+- Env vars set on Production + Development environments via
+  `vercel env add`: `UPRIVER_SUPABASE_URL`,
+  `UPRIVER_SUPABASE_PUBLISHABLE_KEY`,
   `UPRIVER_SUPABASE_SERVICE_KEY`, `UPRIVER_DATA_SOURCE=supabase`,
-  `ANTHROPIC_API_KEY`, `UPRIVER_RUN_TOKEN` placeholder.
+  `ANTHROPIC_API_KEY`. Preview env skipped — Vercel CLI's
+  unattended `env add` for preview keeps prompting for git branch
+  even with `--yes`; preview deploys aren't wired yet anyway.
+- Skipped: `UPRIVER_RUN_TOKEN` (not set; current dashboard treats
+  unset = open same-origin, which is fine until Phase 4 Supabase
+  Auth lands. `RESEND_API_KEY` (Phase 0 deliverable, still pending).
+- First production deploy succeeded: `vercel deploy --prod --yes`
+  from repo root; build cd's into `packages/dashboard` per the
+  Root Directory setting; Astro vercel adapter runs cleanly.
+- Smoke verified: GET / → 302 → /clients → 200; /deliverables →
+  200; /clients/new → 200; /clients/&lt;missing&gt; → 302 redirect.
+  Empty-state hint updated to read "Looking in: Supabase bucket
+  clients/" on supabase mode.
 
 ---
 
@@ -151,23 +165,21 @@ reference. Spec doc and drift report are background.
 
 Full detail in `.planning/roadmap/OPTION-B-MIGRATION.md`.
 
-### Phase 1 — adapter swap + Vercel project (CODE-SIDE DONE, project creation deferred)
-1. ✅ `pnpm add -D @astrojs/vercel --filter @upriver/dashboard` (commit `79429ea`)
-2. ✅ Swap adapter in `packages/dashboard/astro.config.mjs`
-3. ✅ Runtime guards via `UPRIVER_DATA_SOURCE` (default `local`) +
-   middleware → 503 placeholder when `supabase`
-4. ⏸ Create Vercel project — deferred until Phase 2 ships, so the
-   first deploy is a working one
-5. ⏸ Set env vars on the Vercel project — deferred with #4
-6. ⏸ Don't deploy — moot until #4–5
+### Phase 1 — adapter swap + Vercel project (DONE)
+1. ✅ `pnpm add -D @astrojs/vercel` (commit `79429ea`)
+2. ✅ Adapter swap in `astro.config.mjs`
+3. ✅ Runtime guards via `UPRIVER_DATA_SOURCE` + 503 middleware
+4. ✅ Vercel project `upriver-platform` created under team `Upriver`,
+   Root Directory = `packages/dashboard` (set via dashboard UI)
+5. ✅ Env vars set on Production + Development environments
+6. ✅ First production deploy at https://upriver-platform.vercel.app
 
 ### Phase 2 — storage abstraction (DONE)
 - ✅ `ClientDataSource` interface in `packages/core/src/data/`
 - ✅ `LocalFsClientDataSource` + `SupabaseClientDataSource`
 - ✅ Dashboard libs refactored to use the abstraction
 - ✅ `upriver sync push|pull <slug>` CLI commands
-- ⏸ Vercel deploy with `UPRIVER_DATA_SOURCE=supabase` (deferred Phase 1
-  slices 4–6 — ready to land)
+- ✅ Vercel deploy with `UPRIVER_DATA_SOURCE=supabase` live
 
 ### Phase 3 — pipeline execution off the dashboard (5–7 days)
 - Inngest jobs per pipeline stage in `packages/worker/`
