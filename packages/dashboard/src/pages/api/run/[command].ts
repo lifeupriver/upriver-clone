@@ -20,6 +20,8 @@ const ALLOWED_COMMANDS: ReadonlyArray<string> = [
   'clone',
   'fixes-plan',
   'qa',
+  'process-interview',
+  'interview-link',
 ];
 
 /** Time to wait after SIGTERM before escalating to SIGKILL on client abort. */

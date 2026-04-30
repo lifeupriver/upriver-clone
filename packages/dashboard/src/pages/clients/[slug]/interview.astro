@@ -1,0 +1,129 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import { readClientConfig, clientExists } from '@/lib/fs-reader';
+import {
+  readInterviewSpec,
+  readResponses,
+  readInterviewShare,
+  summarizeProgress,
+} from '@/lib/interview';
+
+const { slug } = Astro.params;
+if (!slug || !(await clientExists(slug))) {
+  return Astro.redirect('/clients');
+}
+const config = (await readClientConfig(slug))!;
+const spec = await readInterviewSpec(slug);
+const file = await readResponses(slug);
+const share = await readInterviewShare(slug);
+const progress = spec ? summarizeProgress(spec, file.answers ?? {}) : null;
+
+// Build the magic-link URL using the share file's stored baseUrl, falling
+// back to the request origin so the operator can copy a link that works.
+const origin = share?.baseUrl ?? Astro.url.origin;
+const interviewUrl = share
+  ? `${origin}/deliverables/${slug}/interview?token=${encodeURIComponent(share.token)}`
+  : null;
+---
+
+<DashboardLayout title={`${config.name} — Interview`}>
+  <main style="max-width: 880px; margin: 0 auto; padding: 24px 20px 80px;">
+    <header style="margin-bottom: 24px;">
+      <a href={`/clients/${slug}`} style="color: #555; text-decoration: none; font-size: 14px;">← {config.name}</a>
+      <h1 style="margin: 8px 0 4px; font-size: 28px; letter-spacing: -0.01em;">Interview</h1>
+      <p style="color: #666; margin: 0;">Track the client's interview progress and synthesize their answers when ready.</p>
+    </header>
+
+    {!spec && (
+      <div style="background: #fff8e1; border: 1px solid #f0d27a; border-radius: 8px; padding: 16px;">
+        No <code>interview-guide.md</code> found for this client yet. Run <code>upriver synthesize {slug}</code> to generate it.
+      </div>
+    )}
+
+    {spec && progress && (
+      <>
+        <section style="background: #fff; border: 1px solid #e6e6df; border-radius: 10px; padding: 18px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 10px;">
+            <strong style="font-size: 18px;">{progress.answered} of {progress.total} answered</strong>
+            <span style="color: #666; font-size: 13px;">
+              Last update: {file._meta?.updatedAt ? new Date(file._meta.updatedAt).toLocaleString() : 'never'}
+            </span>
+          </div>
+          <div style="height: 8px; background: #ececea; border-radius: 999px; overflow: hidden;">
+            <div style={`height: 100%; background: #2b7a5b; width: ${progress.total === 0 ? 0 : Math.round((progress.answered / progress.total) * 100)}%`}></div>
+          </div>
+          <ul style="margin: 14px 0 0; padding: 0; list-style: none; font-size: 14px; color: #444;">
+            {progress.perSection.map(s => (
+              <li style="display: flex; justify-content: space-between; padding: 4px 0;">
+                <span>{spec.sections.find(x => x.id === s.id)?.title}</span>
+                <span style="color: #666;">{s.answered}/{s.total}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section style="background: #fff; border: 1px solid #e6e6df; border-radius: 10px; padding: 18px; margin-bottom: 16px;">
+          <h2 style="margin: 0 0 10px; font-size: 16px;">Magic link</h2>
+          {interviewUrl ? (
+            <>
+              <p style="margin: 0 0 10px; color: #666; font-size: 14px;">Send this URL to the client. It auto-saves to <code>clients/{slug}/interview-responses.json</code>.</p>
+              <code style="display: block; padding: 10px 12px; background: #f5f5ee; border-radius: 6px; word-break: break-all; font-size: 13px;">{interviewUrl}</code>
+            </>
+          ) : (
+            <p style="margin: 0; color: #666;">No interview-share token yet. Run <code>upriver interview-link {slug}</code> to mint one.</p>
+          )}
+        </section>
+
+        <section style="background: #fff; border: 1px solid #e6e6df; border-radius: 10px; padding: 18px;">
+          <h2 style="margin: 0 0 10px; font-size: 16px;">Synthesize</h2>
+          <p style="margin: 0 0 12px; color: #666; font-size: 14px;">
+            When the client has answered enough (≥40 items recommended), run <code>process-interview --responses</code> to produce the brand voice guide, FAQ bank, asset gaps, and aesthetic overrides.
+          </p>
+          <button id="run-process" data-slug={slug} disabled={progress.answered === 0}
+            style="background: #1a1a1a; color: #fff; border: 0; padding: 10px 16px; border-radius: 6px; font: inherit; cursor: pointer; opacity: 1;">
+            Process responses
+          </button>
+          <pre id="run-output" style="margin: 14px 0 0; padding: 0; font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: #333; white-space: pre-wrap; max-height: 320px; overflow: auto;"></pre>
+        </section>
+      </>
+    )}
+  </main>
+
+  <script is:inline define:vars={{ slug }}>
+    const btn = document.getElementById('run-process');
+    const out = document.getElementById('run-output');
+    if (btn && out) {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        out.textContent = 'Starting…\n';
+        try {
+          const res = await fetch('/api/run/process-interview', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+              args: [slug],
+              flags: { responses: 'clients/' + slug + '/interview-responses.json' },
+            }),
+          });
+          if (!res.body) {
+            out.textContent += '(no streaming response)\n';
+          } else {
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            while (true) {
+              const { value, done } = await reader.read();
+              if (done) break;
+              out.textContent += decoder.decode(value);
+              out.scrollTop = out.scrollHeight;
+            }
+          }
+          out.textContent += '\n[done]\n';
+        } catch (err) {
+          out.textContent += '\nError: ' + (err && err.message ? err.message : String(err)) + '\n';
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    }
+  </script>
+</DashboardLayout>

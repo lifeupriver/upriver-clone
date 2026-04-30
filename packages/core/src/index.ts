@@ -61,3 +61,11 @@ export type { SkillEntry, Workstream } from './skills/registry.js';
 // Pipeline (G.7 — single source of truth for stage list)
 export { PIPELINE_STAGES, findStage } from './pipeline/stages.js';
 export type { PipelineStage, PipelineStageId } from './pipeline/stages.js';
+
+// Interview form parser (shared between CLI and dashboard)
+export {
+  parseInterviewGuide,
+  summarizeProgress,
+  responsesToTranscriptMarkdown,
+} from './interview/parse-guide.js';
+export type { FormSpec, FormSection, FormItem } from './interview/parse-guide.js';

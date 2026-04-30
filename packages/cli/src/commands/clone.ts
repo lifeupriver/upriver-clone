@@ -17,6 +17,7 @@ import {
 } from '../clone/rewrite-links.js';
 import { withKeyedLock } from '../util/keyed-lock.js';
 import { readIntake } from '../util/intake-reader.js';
+import { extractEmbeds, pageFileSlug as embedPageSlug } from '../clone/embed-audit.js';
 
 const CLAUDE_BIN = process.env['CLAUDE_BIN'] || 'claude';
 
@@ -43,6 +44,10 @@ export default class Clone extends BaseCommand {
       options: ['client', 'upriver'],
       default: 'client',
     }),
+    'all-pages': Flags.boolean({
+      description:
+        'Clone every page in audit-package.siteStructure.pages (the old behavior). By default, clone only the pages classified as "major" by `upriver major-pages` — homepage, nav targets, conventional hubs, content pages with real h1+body. Run `upriver major-pages <slug>` first to populate the list.',
+    }),
   };
 
   async run(): Promise<void> {
@@ -60,6 +65,38 @@ export default class Clone extends BaseCommand {
     }
 
     let pages = pkg.siteStructure.pages.filter((p) => p.statusCode < 400);
+
+    // By default narrow to the heuristic-classified "major" set so we don't
+    // burn tokens cloning blog detail pages, product pages, sitemap chrome,
+    // etc. Pass --all-pages to restore the old behavior.
+    if (!flags['all-pages'] && !flags.page) {
+      const majorPath = join(clientDir, 'major-pages.json');
+      if (existsSync(majorPath)) {
+        try {
+          const raw = JSON.parse(readFileSync(majorPath, 'utf8')) as {
+            major?: Array<{ path?: string; url?: string; slug?: string }>;
+          };
+          const majorPaths = new Set(
+            (raw.major ?? [])
+              .map((m) => (m.path ?? '').toLowerCase().replace(/\/+$/, '') || '/')
+              .filter(Boolean),
+          );
+          if (majorPaths.size > 0) {
+            const before = pages.length;
+            pages = pages.filter((p) => majorPaths.has(canonicalPagePath(p)));
+            this.log(
+              `  Filtered to ${pages.length}/${before} page(s) via major-pages.json. Pass --all-pages to clone everything.`,
+            );
+          }
+        } catch (err) {
+          this.warn(`  Could not read major-pages.json (${(err as Error).message}); falling back to all pages.`);
+        }
+      } else {
+        this.log(
+          `  Hint: run "upriver major-pages ${slug}" first to narrow the clone set; cloning all ${pages.length} pages for now.`,
+        );
+      }
+    }
 
     // Default-skip junk pages (404/cart/auth/sitemap). Override with --include-junk.
     if (!flags['include-junk']) {
@@ -322,6 +359,8 @@ function buildAgentPrompt(args: {
   const localLogos = findLocalLogos(clientDir);
   const clientLogos = findClientLogos(resolve(clientDir, '..', '..', 'clients', slug, 'repo'));
   const localLogosBlock = formatLogosBlock(clientLogos, localLogos);
+  const uxProfileBlock = formatUxProfileBlock(clientDir, page);
+  const embedsBlock = formatEmbedsBlock(clientDir, page);
   const localRoutes = pkg.siteStructure.pages
     .filter((p) => p.statusCode < 400 && isCloneWorthy(canonicalPagePath(p), p.url))
     .map((p) => canonicalPagePath(p))
@@ -336,6 +375,8 @@ function buildAgentPrompt(args: {
 
 ## Step 1 — open the screenshot first (mandatory)
 Use the Read tool on the desktop screenshot. Then write a 5–8 bullet visual description as the FIRST thing you do — sections in order, type sizes, colors used, image-to-text relationships, anything distinctive. This is non-negotiable: if you skip it, the output will look generic.
+
+**Then read the logo file** at the FIRST entry under "Local logos available" below (or in /public/images if the listing is empty). The page header MUST render this image — do not type the brand name as text where the live page renders it as a logo.
 
 - Desktop screenshot: \`${pageScreenshot}\` (fallback: \`${screenshot}\`)
 - Mobile screenshot: \`${mobileScreenshot}\` — read if you need to confirm responsive behavior.
@@ -375,7 +416,8 @@ Edit \`${pageFile}\` (create if missing). Match the screenshot's layout — sect
   <Carousel slides={slides} autoplayMs={6000} className="h-screen min-h-[480px]" />
   \`\`\`
   Pull every slide image from the rawhtml in source order. Static-rendering only the first slide loses fidelity.
-- **Images**: prefer local files at \`/images/<filename>\` (already copied to \`public/images/\` by scaffold) over remote CDN URLs. Especially for logos — see "Local logos available" below.
+- **Images**: prefer local files at \`/images/<filename>\` (already copied to \`public/images/\` by scaffold) over remote CDN URLs. Especially for logos — see "Local logos available" below. CDN URLs left in the page will be auto-rewritten to local paths by the finalize pass when a matching filename exists in the manifest, but starting with the local path is cleaner and lets you verify the image renders before commit.
+- **Section ordering = screenshot top to bottom, no exceptions.** If the live page has hero → mission → testimonials → CTA, the cloned page must have the same five sections in that same order. Do not insert "At a glance" stat strips, FAQ accordions, or any other section that isn't visible in the screenshot.
 - **Internal links MUST use local paths.** All \`href="..."\` to pages on \`${clientDomain}\` (or any subdomain) must be rewritten to root-relative paths. \`href="https://${clientDomain}/lodging"\` → \`href="/lodging"\`. The CLI runs a deterministic rewrite pass after you finish that catches anything missed, so don't worry about being exhaustive — but doing it correctly first means fewer downstream surprises and a cleaner diff.
 
 ### Local routes available — use these for any internal hrefs
@@ -397,7 +439,7 @@ ${headings}
 
 CTAs detected in audit summary:
 ${ctas}
-
+${embedsBlock}${uxProfileBlock}
 ## Step 4 — verify the build
 Run \`pnpm install --silent\` if \`node_modules\` is missing, then \`pnpm build\`. The page must compile. If a Vercel-adapter or other env error blocks \`pnpm build\`, fall back to \`pnpm exec astro check\`.
 ${clientWantsBlock}
@@ -638,6 +680,232 @@ function formatLogosBlock(clientLogos: ClientLogoEntry[], legacyLogos: string[])
   return lines.join('\n');
 }
 
+interface MinimalUxProfile {
+  carousels?: Array<{ slideCount: number; pattern: string; autoplay: boolean; intervalMs: number | null; hasDots: boolean; hasArrows: boolean }>;
+  animations?: Array<{ selector: string; durationMs: number; iterations: number | 'infinite' }>;
+  sticky?: Array<{ selector: string; position: string; top: number | null; zIndex: number }>;
+  hoverEffects?: Array<{ text: string; changes: string[] }>;
+  videos?: Array<{ src: string; autoplay: boolean; muted: boolean; loop: boolean }>;
+  iframes?: Array<{ src: string; width: number; height: number }>;
+}
+
+/**
+ * Read the per-page UX dossier (if present) and produce a markdown block the
+ * agent prompt can include. The dossier is created by `upriver capture-ux`
+ * via Playwright. Empty/missing → returns '' so the prompt is unchanged.
+ */
+function formatUxProfileBlock(clientDir: string, page: SitePage): string {
+  const fileSlug = pageFileSlug(page);
+  const profilePath = join(clientDir, 'ux-profile', `${fileSlug}.json`);
+  if (!existsSync(profilePath)) return '';
+  let data: Record<string, MinimalUxProfile>;
+  try {
+    data = JSON.parse(readFileSync(profilePath, 'utf8')) as Record<string, MinimalUxProfile>;
+  } catch {
+    return '';
+  }
+  const desktop = data['desktop'] ?? Object.values(data)[0];
+  if (!desktop) return '';
+
+  const sections: string[] = [];
+
+  if (desktop.carousels?.length) {
+    sections.push('Carousels detected on the live page (REPRODUCE — static-rendering only the first slide is a fidelity miss):');
+    for (const c of desktop.carousels) {
+      const auto = c.autoplay ? `autoplay every ${c.intervalMs ?? '?'}ms` : 'no autoplay';
+      const chrome = [c.hasDots ? 'dot indicators' : null, c.hasArrows ? 'prev/next arrows' : null].filter(Boolean).join(' + ') || 'no chrome';
+      sections.push(`  - ${c.slideCount} slides (${c.pattern}); ${auto}; ${chrome}.`);
+    }
+    sections.push('  → Use `src/components/astro/Carousel.astro` and pass an array of slide images. Match slide count and autoplay interval.');
+  }
+
+  if (desktop.sticky?.length) {
+    const visible = desktop.sticky.filter(
+      (s) => !/cko|slideout-cart|cart|maker-cart/i.test(s.selector),
+    );
+    if (visible.length > 0) {
+      sections.push('Sticky / fixed elements on the live page (preserve in clone):');
+      for (const s of visible) {
+        sections.push(`  - ${s.selector} — position: ${s.position}${s.top !== null ? `; top: ${s.top}px` : ''}; z-index: ${s.zIndex}.`);
+      }
+    }
+  }
+
+  if (desktop.animations?.length) {
+    sections.push('Active animations on initial render (target similar duration/timing in clone):');
+    for (const a of desktop.animations.slice(0, 8)) {
+      sections.push(`  - ${a.selector}: ${a.durationMs}ms × ${a.iterations}.`);
+    }
+  }
+
+  if (desktop.hoverEffects?.length) {
+    sections.push('Hover effects observed on CTAs (reproduce to match feel):');
+    for (const h of desktop.hoverEffects.slice(0, 8)) {
+      sections.push(`  - "${h.text}": ${h.changes.join('; ')}.`);
+    }
+  }
+
+  if (desktop.videos?.length) {
+    sections.push('Video elements (preserve autoplay/muted/loop attributes):');
+    for (const v of desktop.videos) {
+      const flags: string[] = [];
+      if (v.autoplay) flags.push('autoplay');
+      if (v.muted) flags.push('muted');
+      if (v.loop) flags.push('loop');
+      sections.push(`  - ${v.src} [${flags.join(', ') || 'no flags'}].`);
+    }
+  }
+
+  if (desktop.iframes?.length) {
+    sections.push('Iframes on the page (Google Maps, embedded video, etc — keep them):');
+    for (const f of desktop.iframes) {
+      sections.push(`  - ${f.src.slice(0, 120)} (${f.width}×${f.height}).`);
+    }
+  }
+
+  if (sections.length === 0) return '';
+
+  return `\n## UX dossier — interactive behavior to reproduce
+
+These were captured from the live page by Playwright. Static layout alone is not enough; the cloned page must behave the same way.
+
+${sections.join('\n')}
+
+`;
+}
+
+/**
+ * Read rawhtml/<page>.html and produce a markdown block listing every iframe
+ * (Google Map, YouTube, Calendly, etc), every form (action, fields), and
+ * every script-driven widget (Mailchimp, HubSpot) the live page has. The
+ * agent must reproduce these in the cloned page — usually as native Astro
+ * forms or simple iframe embeds. Empty if no embeds detected.
+ */
+function formatEmbedsBlock(clientDir: string, page: SitePage): string {
+  const slug = embedPageSlug(page);
+  const rawPath = join(clientDir, 'rawhtml', `${slug}.html`);
+  if (!existsSync(rawPath)) return '';
+  const html = readFileSync(rawPath, 'utf8');
+  const { iframes, forms, scripts } = extractEmbeds(html);
+  // Merge in iframes captured by Playwright (UX dossier) — page-builder
+  // sites render maps/widgets via JS so they're often absent from rawhtml.
+  const uxPath = join(clientDir, 'ux-profile', `${slug}.json`);
+  if (existsSync(uxPath)) {
+    try {
+      const ux = JSON.parse(readFileSync(uxPath, 'utf8')) as Record<
+        string,
+        { iframes?: Array<{ src: string; width?: number; height?: number }> }
+      >;
+      const desktop = ux['desktop'] ?? Object.values(ux)[0];
+      for (const i of desktop?.iframes ?? []) {
+        if (iframes.some((e) => e.src === i.src)) continue;
+        iframes.push({
+          kind: 'iframe',
+          src: i.src,
+          provider: /google\.com\/maps|generateMap\.php/i.test(i.src)
+            ? 'google-maps'
+            : /youtube|youtu\.be/i.test(i.src)
+              ? 'youtube'
+              : /vimeo/i.test(i.src)
+                ? 'vimeo'
+                : /calendly/i.test(i.src)
+                  ? 'calendly'
+                  : 'unknown',
+          width: i.width ?? null,
+          height: i.height ?? null,
+        });
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
+  // Filter chrome.
+  const meaningfulIframes = iframes.filter(
+    (i) => i.provider !== 'unknown' && i.provider !== 'squarespace-embed',
+  );
+  const meaningfulForms = forms.filter(
+    (f) =>
+      f.fieldCount > 0 &&
+      f.recognizable !== 'unknown' &&
+      !((!f.action || f.action === '') && f.fieldCount <= 2),
+  );
+
+  if (meaningfulIframes.length === 0 && meaningfulForms.length === 0 && scripts.length === 0) {
+    return '';
+  }
+
+  const lines: string[] = [];
+
+  if (meaningfulIframes.length > 0) {
+    lines.push('Iframes on the live page (REPRODUCE — every one of these must be present in the cloned page):');
+    for (const i of meaningfulIframes) {
+      const dim = i.width && i.height ? ` ${i.width}×${i.height}` : '';
+      let suggestion = '';
+      switch (i.provider) {
+        case 'google-maps':
+          suggestion = ' → use `https://www.google.com/maps?q=<address>&output=embed` (no API key needed).';
+          break;
+        case 'youtube':
+        case 'vimeo':
+          suggestion = ' → embed the iframe with `loading="lazy"` and `allowfullscreen`.';
+          break;
+        case 'calendly':
+        case 'tally':
+        case 'typeform':
+        case 'jotform':
+        case 'google-forms':
+          suggestion = ' → embed the iframe at the same form URL.';
+          break;
+      }
+      lines.push(`  - [${i.provider}]${dim}: ${i.src.slice(0, 140)}${suggestion}`);
+    }
+  }
+
+  if (meaningfulForms.length > 0) {
+    lines.push('');
+    lines.push('Forms on the live page (RECREATE NATIVELY in Astro — do NOT just link out):');
+    for (const f of meaningfulForms) {
+      const fieldList = f.fields
+        .filter((x) => x.tag !== 'button')
+        .map((x) => {
+          const name = x.name ?? '(unnamed)';
+          const type = x.type ?? x.tag;
+          return `${name}:${type}${x.required ? '*' : ''}`;
+        })
+        .join(', ');
+      const action =
+        f.recognizable === 'newsletter'
+          ? '/api/newsletter'
+          : f.recognizable === 'donation'
+          ? '/api/donate'
+          : '/api/inquiry';
+      lines.push(
+        `  - [${f.recognizable}] post to \`${action}\`. Fields: ${fieldList || '(see live)'}.`,
+      );
+    }
+    lines.push(
+      '  → Reuse `src/components/astro/ContactForm.astro` if its shape matches; otherwise inline. Add a hidden honeypot `<input type="text" name="_hp" class="hidden" tabindex="-1" autocomplete="off">`.',
+    );
+  }
+
+  if (scripts.length > 0) {
+    lines.push('');
+    lines.push('Script-driven widgets on the live page (replace with Astro equivalent or matching iframe):');
+    for (const s of scripts) {
+      lines.push(`  - [${s.provider}] ${s.src.slice(0, 120)}.`);
+    }
+  }
+
+  return `\n## Embeds dossier — iframes, forms, third-party widgets to reproduce
+
+Every interactive embed the live page has must exist on the cloned page (or be replaced with a native Astro equivalent that posts to the same destination). Static-only ports lose conversion paths and look broken to visitors.
+
+${lines.join('\n')}
+
+`;
+}
+
 function canonicalPagePath(page: SitePage): string {
   // Prefer the URL pathname when it's root (homepage with slug='home' should still
   // be treated as '/'). Otherwise fall back to slug, then url.
@@ -721,10 +989,14 @@ function runFinalizeRewrite(args: FinalizeRewriteArgs): void {
   if (!clientDomain) return;
 
   try {
-    const { imageManifest, filenameToLocal } = buildAssetIndex(manifestPath);
+    const { imageManifest, filenameToLocal, inferredCdnHosts } = buildAssetIndex(manifestPath);
+    // Union the hardcoded Squarespace defaults with hosts we actually saw in the
+    // scraped asset manifest. This makes the rewrite work for any platform
+    // (Square Online editmysite.com, Wix, custom CDNs) without code changes.
+    const cdnHosts = Array.from(new Set([...DEFAULT_CDN_HOSTS, ...inferredCdnHosts]));
     const opts: RewriteOptions = {
       clientDomain,
-      cdnHosts: DEFAULT_CDN_HOSTS,
+      cdnHosts,
       imageManifest,
       filenameToLocal,
     };

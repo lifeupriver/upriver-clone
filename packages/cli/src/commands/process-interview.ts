@@ -36,7 +36,10 @@ export default class ProcessInterview extends BaseCommand {
   static override flags = {
     transcript: Flags.string({
       description: 'Path to interview transcript file (txt or md)',
-      required: true,
+    }),
+    responses: Flags.string({
+      description:
+        'Path to interview-responses.json (form output from /deliverables/<slug>/interview). Mutually exclusive with --transcript.',
     }),
   };
 
@@ -46,6 +49,13 @@ export default class ProcessInterview extends BaseCommand {
     const anthropicKey = this.requireEnv('ANTHROPIC_API_KEY');
     const firecrawlKey = this.requireEnv('FIRECRAWL_API_KEY');
 
+    if (!flags.transcript && !flags.responses) {
+      this.error('One of --transcript or --responses is required.');
+    }
+    if (flags.transcript && flags.responses) {
+      this.error('Use only one of --transcript or --responses.');
+    }
+
     const dir = clientDir(slug);
     const pkgPath = join(dir, 'audit-package.json');
     if (!existsSync(pkgPath)) {
@@ -53,12 +63,40 @@ export default class ProcessInterview extends BaseCommand {
         `No audit-package.json at ${pkgPath}. Run "upriver synthesize ${slug}" first.`,
       );
     }
-    if (!existsSync(flags.transcript)) {
-      this.error(`Transcript file not found: ${flags.transcript}`);
-    }
 
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as AuditPackage;
-    const transcript = readFileSync(flags.transcript, 'utf8');
+    let transcript: string;
+    if (flags.responses) {
+      if (!existsSync(flags.responses)) {
+        this.error(`Responses file not found: ${flags.responses}`);
+      }
+      const guidePath = join(dir, 'interview-guide.md');
+      if (!existsSync(guidePath)) {
+        this.error(
+          `interview-guide.md not found at ${guidePath} — needed to interpret response keys.`,
+        );
+      }
+      const { parseInterviewGuide, responsesToTranscriptMarkdown } = await import(
+        '../interview/parse-guide.js'
+      );
+      const spec = parseInterviewGuide(readFileSync(guidePath, 'utf8'));
+      const responsesFile = JSON.parse(readFileSync(flags.responses, 'utf8')) as {
+        answers?: Record<string, string>;
+      };
+      transcript = responsesToTranscriptMarkdown(spec, responsesFile.answers ?? {}, {
+        clientName: pkg.meta.clientName,
+      });
+      this.log(
+        `  Synthesized faux-transcript from ${
+          Object.keys(responsesFile.answers ?? {}).length
+        } answered item(s).`,
+      );
+    } else {
+      if (!existsSync(flags.transcript!)) {
+        this.error(`Transcript file not found: ${flags.transcript}`);
+      }
+      transcript = readFileSync(flags.transcript!, 'utf8');
+    }
     const config = readClientConfig(slug);
 
     this.log(`\nProcessing interview for "${pkg.meta.clientName}"...`);

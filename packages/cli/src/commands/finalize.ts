@@ -60,15 +60,18 @@ export default class Finalize extends BaseCommand {
     this.log(`\nFinalizing "${slug}" — rewriting client-domain & CDN URLs in ${repoDir}`);
     this.log(`  Client domain: ${clientDomain}`);
 
-    let { imageManifest, filenameToLocal } = buildAssetIndex(manifestPath);
+    let { imageManifest, filenameToLocal, inferredCdnHosts } = buildAssetIndex(manifestPath);
     this.log(`  Asset manifest: ${imageManifest.size} URL keys, ${filenameToLocal.size} filenames`);
+    // Union hardcoded defaults with hosts derived from the manifest itself so
+    // platforms beyond Squarespace (Square Online, Wix, etc) work too.
+    const cdnHosts = Array.from(new Set([...DEFAULT_CDN_HOSTS, ...inferredCdnHosts]));
 
     const srcDir = `${repoDir}/src`;
     const publicImagesDir = `${repoDir}/public/images`;
 
     if (flags['download-missing']) {
       this.log(`\n  Scanning for unmatched CDN URLs...`);
-      const allCdnUrls = findCdnUrlsInRepo(srcDir, DEFAULT_CDN_HOSTS);
+      const allCdnUrls = findCdnUrlsInRepo(srcDir, cdnHosts);
       const unmatched = filterUnmatched(allCdnUrls, imageManifest, filenameToLocal);
       this.log(`  Found ${allCdnUrls.size} total CDN URLs, ${unmatched.length} unmatched.`);
 
@@ -102,12 +105,13 @@ export default class Finalize extends BaseCommand {
         const reloaded = buildAssetIndex(manifestPath);
         imageManifest = reloaded.imageManifest;
         filenameToLocal = reloaded.filenameToLocal;
+        inferredCdnHosts = reloaded.inferredCdnHosts;
       }
     }
 
     const opts: RewriteOptions = {
       clientDomain,
-      cdnHosts: DEFAULT_CDN_HOSTS,
+      cdnHosts: Array.from(new Set([...DEFAULT_CDN_HOSTS, ...inferredCdnHosts])),
       imageManifest,
       filenameToLocal,
     };

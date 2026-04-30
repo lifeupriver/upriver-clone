@@ -2,26 +2,52 @@
 // Primary site navigation. The `upriver scaffold` command replaces this
 // component's `navItems` array from the discovered site map before the
 // template is written into the client repo.
+//
+// Sizing is driven by CSS custom properties emitted in `global.css` from
+// `upriver capture-typography` (see clients/<slug>/typography-capture.json).
+// `--logo-height`, `--font-size-nav`, and `--font-weight-nav` will fall back
+// to sensible defaults if the capture step hasn't run.
 const navItems: { href: string; label: string }[] = [
   { href: '/', label: 'Home' },
 ];
 ---
 
-<header class="border-b border-ink-200 bg-white">
-  <div class="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
-    <a href="/" class="text-lg font-semibold text-ink-900">Client</a>
-    <nav class="flex items-center gap-6">
+<header class="bg-white">
+  <div class="mx-auto max-w-7xl px-6 py-3 flex items-center justify-between gap-6">
+    <a href="/" class="flex items-center" aria-label="Home">
+      {/*
+        Logo size honors --logo-height. The scaffold's image-copy step writes
+        the brand logo to /public/images/<filename>; replace the src below in
+        the Astro page that imports this component, or keep this stub.
+      */}
+      <span
+        class="font-semibold text-ink-900"
+        style="font-size: var(--font-size-nav, 18px);"
+      >
+        Client
+      </span>
+    </a>
+    <nav class="hidden lg:flex items-center" aria-label="Primary" style="gap: 1.75rem;">
       {navItems.map((item) => (
-        <a href={item.href} class="text-sm text-ink-700 hover:text-brand-600">
+        <a
+          href={item.href}
+          class="text-ink-900 hover:text-brand-600 transition-colors"
+          style="font-size: var(--font-size-nav, 14px); font-weight: var(--font-weight-nav, 600);"
+        >
           {item.label}
         </a>
       ))}
-      <a
-        href="/contact"
-        class="text-sm bg-brand-600 text-white px-4 py-2 rounded-button hover:bg-brand-700"
-      >
-        Contact
-      </a>
     </nav>
+    <button
+      class="lg:hidden text-ink-900"
+      aria-label="Open menu"
+      type="button"
+    >
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
+    </button>
   </div>
 </header>

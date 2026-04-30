@@ -20,6 +20,7 @@ import type {
   FirecrawlScrapeResult,
   FirecrawlBrandingProfile,
 } from '@upriver/core';
+import { postProcessDesignTokens } from '../scrape/post-process-tokens.js';
 
 // Combined extraction schema — all structured data in one JSON pass
 const COMBINED_SCHEMA = {
@@ -382,11 +383,25 @@ export default class Scrape extends BaseCommand {
       }
     }
 
-    // Write design-tokens.json
+    // Write design-tokens.json (after post-processing to fix platform-default
+    // pollution like Square Online's #3374FF or Square Market font).
     if (brandingProfile) {
+      const rawTokens = {
+        extracted_at: new Date().toISOString(),
+        source_url: config.url,
+        ...brandingProfile,
+      };
+      const finalTokens = postProcessDesignTokens(rawTokens as Record<string, unknown>);
+      const pp = (finalTokens as { __postprocess?: { brandColorOverride?: { from: string; to: string; reason: string }; fontsDropped?: string[] } }).__postprocess;
+      if (pp?.brandColorOverride) {
+        this.log(`  brand-color override: ${pp.brandColorOverride.from} → ${pp.brandColorOverride.to} (${pp.brandColorOverride.reason})`);
+      }
+      if (pp?.fontsDropped && pp.fontsDropped.length > 0) {
+        this.log(`  dropped junk fonts: ${pp.fontsDropped.join(', ')}`);
+      }
       writeFileSync(
         join(dir, 'design-tokens.json'),
-        JSON.stringify({ extracted_at: new Date().toISOString(), source_url: config.url, ...brandingProfile }, null, 2),
+        JSON.stringify(finalTokens, null, 2),
         'utf8',
       );
       this.log(`  design-tokens.json written.`);

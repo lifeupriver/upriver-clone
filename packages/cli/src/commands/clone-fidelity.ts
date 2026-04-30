@@ -259,12 +259,14 @@ export function scanUnmatchedCdn(repoDir: string, clientDir: string): AuditFindi
   if (!existsSync(srcDir) || !existsSync(manifestPath)) return null;
   let imageManifest: Map<string, string>;
   let filenameToLocal: Map<string, string>;
+  let inferredCdnHosts: string[];
   try {
-    ({ imageManifest, filenameToLocal } = buildAssetIndex(manifestPath));
+    ({ imageManifest, filenameToLocal, inferredCdnHosts } = buildAssetIndex(manifestPath));
   } catch {
     return null;
   }
-  const found = findCdnUrlsInRepo(srcDir, DEFAULT_CDN_HOSTS);
+  const cdnHosts = Array.from(new Set([...DEFAULT_CDN_HOSTS, ...inferredCdnHosts]));
+  const found = findCdnUrlsInRepo(srcDir, cdnHosts);
   const unmatched = filterUnmatched(found, imageManifest, filenameToLocal);
   if (unmatched.length === 0) return null;
   const sample = unmatched.slice(0, 5).join(', ');

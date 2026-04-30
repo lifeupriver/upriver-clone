@@ -5,6 +5,7 @@ import { updateClientConfig } from '@upriver/core';
 import { buildClientClaudeMd, buildProductMarketingContext } from '../../docs/client-docs.js';
 import {
   applyDesignTokens,
+  loadTypographyCapture,
   copyClientAssets,
   copyImages,
   copyTemplate,
@@ -45,6 +46,7 @@ export default class Scaffold extends BaseCommand {
 
     const pkg = loadAuditPackage(clientDir);
     const tokens = loadDesignTokens(clientDir);
+    const typography = loadTypographyCapture(clientDir);
     const pages = loadPageRecords(clientDir);
 
     this.log('  [1/9] Copying scaffold template...');
@@ -65,7 +67,11 @@ export default class Scaffold extends BaseCommand {
     }
 
     this.log('  [3/9] Applying design tokens...');
-    applyDesignTokens(repoDir, pkg.designSystem, tokens, clientAssets.fonts);
+    applyDesignTokens(repoDir, pkg.designSystem, tokens, clientAssets.fonts, typography);
+    if (typography) {
+      const fams = typography.observedFamilies?.join(', ') ?? '(unspecified)';
+      this.log(`         Typography capture applied: families=[${fams}]; logo=${typography.logo ? `${typography.logo.width}×${typography.logo.height}` : 'n/a'}.`);
+    }
 
     this.log('  [4/9] Generating navigation...');
     generateNav(repoDir, pkg.siteStructure, pkg.meta.clientName);

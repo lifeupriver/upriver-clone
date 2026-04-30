@@ -35,10 +35,12 @@ export interface RewriteResult {
 export function buildAssetIndex(manifestPath: string): {
   imageManifest: Map<string, string>;
   filenameToLocal: Map<string, string>;
+  inferredCdnHosts: string[];
 } {
   const manifest: AssetManifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
   const imageManifest = new Map<string, string>();
   const filenameToLocal = new Map<string, string>();
+  const hostSet = new Set<string>();
 
   for (const asset of manifest.assets) {
     if (asset.type !== 'image') continue;
@@ -53,6 +55,10 @@ export function buildAssetIndex(manifestPath: string): {
       if (urlFilename && !filenameToLocal.has(urlFilename)) {
         filenameToLocal.set(urlFilename, localFilename);
       }
+      // Track every host an image URL came from — this is exactly the set
+      // of CDN hosts the rewrite step needs to recognize, derived from
+      // ground truth instead of a hardcoded list.
+      if (u.hostname) hostSet.add(u.hostname.toLowerCase());
     } catch (err) {
       if (process.env['UPRIVER_DEBUG']) {
         console.warn(`[rewrite-links] skipping malformed manifest URL ${asset.url}: ${(err as Error).message}`);
@@ -60,7 +66,7 @@ export function buildAssetIndex(manifestPath: string): {
     }
   }
 
-  return { imageManifest, filenameToLocal };
+  return { imageManifest, filenameToLocal, inferredCdnHosts: [...hostSet] };
 }
 
 export function rewriteContent(input: string, opts: RewriteOptions): RewriteResult {

@@ -35,6 +35,16 @@ if (repoExists) {
 }
 
 const startCmd = `cd clients/${slug}/repo && pnpm dev --port ${port} --host`;
+
+// Static fallback: if the dev server isn't up but a built dist exists, the
+// dashboard can serve `clients/<slug>/repo/dist/client/` from
+// `/preview/<slug>/`. Probe for the built index.
+const hasBuiltDist = await resolveClientDataSource().fileExists(
+  slug,
+  'repo/dist/client/index.html',
+);
+const staticPreviewUrl = `/preview/${slug}/`;
+const iframeSrc = serverUp ? previewUrl : hasBuiltDist ? staticPreviewUrl : null;
 ---
 
 <DashboardLayout title={`${config.name} — Site Preview`} section="clients">
@@ -73,15 +83,22 @@ const startCmd = `cd clients/${slug}/repo && pnpm dev --port ${port} --host`;
     <div class="empty">
       <p>No scaffolded repo at <code class="mono">{repoPath}</code>. Run <code class="mono">upriver scaffold {slug}</code>.</p>
     </div>
-  ) : !serverUp ? (
+  ) : iframeSrc === null ? (
     <div class="empty">
-      <p><strong>Dev server isn't running.</strong></p>
-      <p style="margin-top: 0.5rem;">Start it from a terminal:</p>
+      <p><strong>Dev server isn't running and no built dist exists.</strong></p>
+      <p style="margin-top: 0.5rem;">Start the dev server:</p>
       <pre class="cmd"><code>{startCmd}</code></pre>
-      <p class="hint">Then refresh this page. Configure the port in <code class="mono">clients/{slug}/client-config.yaml</code> via <code class="mono">dev_port</code>.</p>
+      <p class="hint">Or build the static version: <code class="mono">cd clients/{slug}/repo && pnpm build</code> — then this page will iframe <code class="mono">{staticPreviewUrl}</code>.</p>
     </div>
   ) : (
-    <iframe src={previewUrl} title={`${config.name} cloned site`} class="site-frame" loading="eager" />
+    <>
+      {!serverUp && (
+        <p class="subtitle" style="margin: -0.5rem 0 0.75rem;">
+          Showing the static <code class="mono">dist/client/</code> build (dev server is offline).
+        </p>
+      )}
+      <iframe src={iframeSrc} title={`${config.name} cloned site`} class="site-frame" loading="eager" />
+    </>
   )}
 </DashboardLayout>
 

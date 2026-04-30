@@ -1,0 +1,208 @@
+---
+import { readClientConfig, clientExists } from '@/lib/fs-reader';
+import {
+  readInterviewSpec,
+  readResponses,
+  validateInterviewToken,
+  summarizeProgress,
+} from '@/lib/interview';
+
+const { slug } = Astro.params;
+if (!slug || !(await clientExists(slug))) {
+  return new Response('Not found', { status: 404 });
+}
+
+const token = Astro.url.searchParams.get('token');
+if (!(await validateInterviewToken(slug, token))) {
+  return new Response(
+    'Invalid or missing magic-link token. Ask Upriver for a fresh link.',
+    { status: 401, headers: { 'content-type': 'text/plain' } },
+  );
+}
+
+const config = (await readClientConfig(slug))!;
+const spec = await readInterviewSpec(slug);
+if (!spec) {
+  return new Response(
+    'Interview guide is not yet available for this client.',
+    { status: 503, headers: { 'content-type': 'text/plain' } },
+  );
+}
+
+const responsesFile = await readResponses(slug);
+const answers = responsesFile.answers ?? {};
+const progress = summarizeProgress(spec, answers);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Interview — {config.name}</title>
+    <style>
+      :root {
+        --ink: #1a1a1a;
+        --muted: #666;
+        --bg: #fafaf7;
+        --card: #ffffff;
+        --border: #e6e6df;
+        --brand: #2b7a5b;
+        --accent: #b86c2a;
+      }
+      html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 ui-sans-serif, system-ui, sans-serif; }
+      .shell { max-width: 760px; margin: 0 auto; padding: 32px 20px 80px; }
+      header.intro h1 { font-size: 28px; margin: 0 0 4px; letter-spacing: -0.01em; }
+      header.intro p { color: var(--muted); margin: 6px 0 24px; }
+      .progress { position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 12px 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+      .progress-bar { height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; }
+      .progress-bar > div { height: 100%; background: var(--brand); transition: width 0.2s ease; }
+      .progress-meta { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--muted); margin-top: 6px; }
+      .save-status { font-size: 13px; color: var(--muted); }
+      .save-status.saving { color: var(--accent); }
+      .save-status.saved { color: var(--brand); }
+      details.section { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
+      details.section > summary { cursor: pointer; padding: 14px 18px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+      details.section > summary::-webkit-details-marker { display: none; }
+      details.section > summary .count { font-weight: 400; color: var(--muted); font-size: 13px; }
+      details.section[open] > summary { border-bottom: 1px solid var(--border); }
+      .section-body { padding: 8px 18px 18px; }
+      .item { padding: 14px 0; border-bottom: 1px dashed var(--border); }
+      .item:last-child { border-bottom: 0; }
+      .item .prompt { font-weight: 500; margin: 0 0 4px; }
+      .item .why, .item .detail { font-size: 13px; color: var(--muted); margin: 2px 0; }
+      .item textarea { width: 100%; box-sizing: border-box; padding: 8px 10px; font: inherit; line-height: 1.45; border: 1px solid var(--border); border-radius: 6px; background: #fff; resize: vertical; min-height: 56px; }
+      .item textarea:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+      .item.override .detail { white-space: pre-wrap; background: #f5f5ee; padding: 8px 10px; border-radius: 6px; font-size: 13px; }
+      footer.note { color: var(--muted); font-size: 13px; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); }
+    </style>
+  </head>
+  <body>
+    <main class="shell" data-slug={slug} data-token={token}>
+      <header class="intro">
+        <h1>Interview — {config.name}</h1>
+        <p>
+          Take this in pieces. Your answers save automatically — close the tab and come
+          back any time. Skip anything that's not a fit; we only need what matters.
+        </p>
+      </header>
+
+      <div class="progress">
+        <div class="progress-bar"><div id="progress-fill" style={`width: ${progress.total === 0 ? 0 : Math.round((progress.answered / progress.total) * 100)}%`}></div></div>
+        <div class="progress-meta">
+          <span><strong id="progress-count">{progress.answered}</strong> of {progress.total} answered</span>
+          <span class="save-status" id="save-status">All changes saved</span>
+        </div>
+      </div>
+
+      <form id="interview-form" autocomplete="off">
+        {spec.sections.map((section, sIdx) => (
+          <details class="section" open={sIdx === 0}>
+            <summary>
+              <span>{section.title}</span>
+              <span class="count">
+                <span data-section-answered={section.id}>{progress.perSection.find(p => p.id === section.id)?.answered ?? 0}</span>/{section.items.length}
+              </span>
+            </summary>
+            <div class="section-body">
+              {section.items.map(item => (
+                <div class={`item ${item.kind === 'override' ? 'override' : ''}`}>
+                  <p class="prompt">{item.prompt}</p>
+                  {item.why && <p class="why">Why we're asking: {item.why}</p>}
+                  {item.detail && (
+                    item.kind === 'override'
+                      ? <div class="detail">{item.detail}</div>
+                      : <p class="detail">{item.detail}</p>
+                  )}
+                  <textarea
+                    name={item.id}
+                    data-section={section.id}
+                    rows={item.kind === 'override' ? 5 : 2}
+                    placeholder={item.kind === 'check' ? 'Yes / No / Notes' : 'Type your answer here…'}
+                  >{answers[item.id] ?? ''}</textarea>
+                </div>
+              ))}
+            </div>
+          </details>
+        ))}
+      </form>
+
+      <footer class="note">
+        Questions? Reply to the email Upriver sent with this link. We'll see your latest
+        saved answers when we open your file.
+      </footer>
+    </main>
+
+    <script is:inline define:vars={{ slug, token, total: spec.totalItems }}>
+      (function() {
+        const form = document.getElementById('interview-form');
+        const status = document.getElementById('save-status');
+        const fill = document.getElementById('progress-fill');
+        const countEl = document.getElementById('progress-count');
+        if (!form || !status || !fill || !countEl) return;
+
+        let pending = {};
+        let saveTimer = null;
+        const DEBOUNCE_MS = 800;
+
+        function setStatus(state, msg) {
+          status.className = 'save-status ' + state;
+          status.textContent = msg;
+        }
+
+        async function flush() {
+          if (Object.keys(pending).length === 0) return;
+          const payload = { token, answers: pending };
+          pending = {};
+          setStatus('saving', 'Saving…');
+          try {
+            const r = await fetch('/api/interview/' + encodeURIComponent(slug), {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+            const data = await r.json();
+            if (!r.ok || !data.ok) {
+              setStatus('', data.error || 'Save failed — will retry');
+              return;
+            }
+            countEl.textContent = String(data.answeredCount);
+            const pct = total === 0 ? 0 : Math.round((data.answeredCount / total) * 100);
+            fill.style.width = pct + '%';
+            // Recompute per-section counts cheaply from the DOM.
+            const bySection = {};
+            form.querySelectorAll('textarea').forEach((t) => {
+              const s = t.dataset.section;
+              if (!s) return;
+              bySection[s] = bySection[s] || 0;
+              if (t.value.trim().length > 0) bySection[s]++;
+            });
+            Object.entries(bySection).forEach(([sec, n]) => {
+              const el = document.querySelector('[data-section-answered="' + sec + '"]');
+              if (el) el.textContent = String(n);
+            });
+            setStatus('saved', 'All changes saved');
+          } catch (err) {
+            setStatus('', 'Offline — will retry on next change');
+          }
+        }
+
+        function schedule() {
+          if (saveTimer) clearTimeout(saveTimer);
+          saveTimer = setTimeout(flush, DEBOUNCE_MS);
+        }
+
+        form.addEventListener('input', (e) => {
+          const t = e.target;
+          if (!(t instanceof HTMLTextAreaElement)) return;
+          pending[t.name] = t.value;
+          setStatus('saving', 'Saving…');
+          schedule();
+        });
+        // Flush on tab hide so the user doesn't lose a fast change.
+        document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); });
+        window.addEventListener('beforeunload', () => { flush(); });
+      })();
+    </script>
+  </body>
+</html>

@@ -74,15 +74,44 @@ function copyRecursive(src: string, dest: string): void {
   }
 }
 
+/**
+ * Optional Playwright typography measurement (`upriver capture-typography`)
+ * that records actual rendered font sizes / weights / line-heights and the
+ * logo bounding box. When present, scaffold emits matching CSS tokens so the
+ * cloned site sizes type and the logo to match the live page exactly.
+ */
+export interface TypographyCaptureLite {
+  body?: { fontSizePx: number; fontWeight: number; lineHeightPx: number | null; primaryFamily: string };
+  h1?: { fontSizePx: number; fontWeight: number; lineHeightPx: number | null; primaryFamily: string } | null;
+  h2?: { fontSizePx: number; fontWeight: number; lineHeightPx: number | null; primaryFamily: string } | null;
+  h3?: { fontSizePx: number; fontWeight: number; lineHeightPx: number | null; primaryFamily: string } | null;
+  navLink?: { fontSizePx: number; fontWeight: number; lineHeightPx: number | null; primaryFamily: string } | null;
+  link?: { fontSizePx: number; fontWeight: number; lineHeightPx: number | null; primaryFamily: string } | null;
+  button?: { fontSizePx: number; fontWeight: number; lineHeightPx: number | null; primaryFamily: string } | null;
+  logo?: { width: number; height: number } | null;
+  observedFamilies?: string[];
+}
+
 export function applyDesignTokens(
   repoDir: string,
   designSystem: DesignSystem,
   rawTokens: Record<string, unknown> | null,
   clientFonts: ClientFontFace[] = [],
+  typographyCapture: TypographyCaptureLite | null = null,
 ): void {
   const cssPath = join(repoDir, 'src', 'styles', 'global.css');
-  const css = renderGlobalCss(designSystem, rawTokens, clientFonts);
+  const css = renderGlobalCss(designSystem, rawTokens, clientFonts, typographyCapture);
   writeFileSync(cssPath, css, 'utf8');
+}
+
+export function loadTypographyCapture(clientDir: string): TypographyCaptureLite | null {
+  const path = join(clientDir, 'typography-capture.json');
+  if (!existsSync(path)) return null;
+  try {
+    return JSON.parse(readFileSync(path, 'utf8')) as TypographyCaptureLite;
+  } catch {
+    return null;
+  }
 }
 
 // Map commercial / proprietary fonts to free Google Fonts substitutes that are
@@ -98,21 +127,61 @@ interface FontMapping {
   italics?: string; // optional ital@0,1;wght@... fragment
 }
 
+// Map proprietary / commercial fonts to their closest free Google Fonts
+// equivalent. Keys are matched case-insensitively as substrings of the
+// extracted font family name, so "Brandon Grotesque" matches "brandon
+// grotesque" and "HvDTrial Brandon Grotesque" alike. Order matters — earlier
+// entries win on substring overlap.
 const FONT_SUBSTITUTES: Array<[string, FontMapping]> = [
+  // Square Online's default font — humanist geometric sans, very Inter-like.
+  ['square market', { google: 'Inter', weights: '300;400;500;600;700;800' }],
+  ['square serif', { google: 'Source Serif 4', weights: '400;500;600;700', italics: 'ital,wght@0,400..700;1,400..700' }],
+  // Webflow / Wix / Webly defaults that page-builders sometimes leak.
+  ['avenir next', { google: 'Nunito Sans', weights: '300;400;600;700' }],
+  ['avenir', { google: 'Nunito Sans', weights: '300;400;600;700' }],
+  ['proxima nova', { google: 'Mulish', weights: '300;400;500;600;700;800' }],
+  ['gotham', { google: 'Montserrat', weights: '300;400;500;600;700;900' }],
+  // Brandon, Halis, Mulish-family.
   ['brandon grotesque', { google: 'Mulish', weights: '300;400;500;700;800', italics: 'ital,wght@0,300..800;1,300..800' }],
+  ['halis', { google: 'Mulish', weights: '300;400;500;600;700' }],
+  // Open / Source family.
   ['freight sans', { google: 'Source Sans 3', weights: '300;400;500;600;700' }],
-  ['gastromond', { google: 'Crimson Pro', weights: '400;500;600', italics: 'ital,wght@0,400..600;1,400..600' }],
+  // Geometric humanist.
+  ['gt walsheim', { google: 'DM Sans', weights: '400;500;700' }],
+  ['cera pro', { google: 'DM Sans', weights: '400;500;700' }],
+  ['cera', { google: 'DM Sans', weights: '400;500;700' }],
+  // Geometric.
   ['futura pt', { google: 'Jost', weights: '300;400;500;600;700' }],
   ['futura', { google: 'Jost', weights: '300;400;500;600;700' }],
-  ['bebas neue', { google: 'Bebas Neue', weights: '400' }],
-  ['halis', { google: 'Mulish', weights: '300;400;500;600;700' }],
+  ['neue haas', { google: 'Inter', weights: '300;400;500;600;700' }],
+  ['helvetica neue', { google: 'Inter', weights: '300;400;500;600;700' }],
+  ['helvetica', { google: 'Inter', weights: '400;500;700' }],
+  // Serif / display.
+  ['gastromond', { google: 'Crimson Pro', weights: '400;500;600', italics: 'ital,wght@0,400..600;1,400..600' }],
+  ['canela', { google: 'Lora', weights: '400;500;600;700', italics: 'ital,wght@0,400..700;1,400..700' }],
+  ['gt sectra', { google: 'Lora', weights: '400;500;600;700', italics: 'ital,wght@0,400..700;1,400..700' }],
   ['playfair', { google: 'Playfair Display', weights: '400;500;600;700', italics: 'ital,wght@0,400..700;1,400..700' }],
-  ['proxima nova', { google: 'Mulish', weights: '300;400;500;600;700;800' }],
-  ['avenir', { google: 'Nunito Sans', weights: '300;400;600;700' }],
+  ['butler', { google: 'Cormorant Garamond', weights: '400;500;600;700' }],
+  ['didot', { google: 'Cormorant', weights: '400;500;600;700' }],
+  ['baskerville', { google: 'Libre Baskerville', weights: '400;700' }],
+  ['caslon', { google: 'Cormorant Garamond', weights: '400;500;600;700' }],
+  // Display headlines.
+  ['bebas neue', { google: 'Bebas Neue', weights: '400' }],
+  ['oswald', { google: 'Oswald', weights: '300;400;500;600;700' }],
+  // Already-free common families (passthrough — substitution is a no-op
+  // but keeps the @import URL correct).
   ['inter', { google: 'Inter', weights: '300;400;500;600;700' }],
   ['montserrat', { google: 'Montserrat', weights: '300;400;500;600;700' }],
   ['lato', { google: 'Lato', weights: '300;400;700' }],
   ['poppins', { google: 'Poppins', weights: '300;400;500;600;700' }],
+  ['nunito', { google: 'Nunito', weights: '300;400;500;600;700' }],
+  ['mulish', { google: 'Mulish', weights: '300;400;500;600;700' }],
+  ['dm sans', { google: 'DM Sans', weights: '400;500;700' }],
+  ['jost', { google: 'Jost', weights: '300;400;500;600;700' }],
+  ['public sans', { google: 'Public Sans', weights: '300;400;500;600;700' }],
+  ['source sans', { google: 'Source Sans 3', weights: '300;400;500;600;700' }],
+  ['raleway', { google: 'Raleway', weights: '300;400;500;600;700' }],
+  ['work sans', { google: 'Work Sans', weights: '300;400;500;600;700' }],
 ];
 
 function resolveFont(
@@ -145,6 +214,19 @@ function resolveFont(
     return { displayName: ranked[0]!.f.family, importUrl: null, clientProvided: true };
   }
 
+  // System fonts that ship with browsers — don't generate a Google Fonts
+  // @import for them (it'd 404). Use the family name directly so the stack
+  // resolves at runtime.
+  const SYSTEM_FONTS = new Set([
+    'arial', 'helvetica', 'times', 'times new roman', 'georgia', 'verdana',
+    'tahoma', 'trebuchet ms', 'courier', 'courier new', 'monospace', 'serif',
+    'sans-serif', 'system-ui', 'ui-sans-serif', 'ui-serif', 'ui-monospace',
+    'segoe ui', 'apple color emoji', '-apple-system', 'blinkmacsystemfont',
+  ]);
+  if (SYSTEM_FONTS.has(lowerName)) {
+    return { displayName: rawName, importUrl: null, clientProvided: false };
+  }
+
   for (const [pattern, sub] of FONT_SUBSTITUTES) {
     if (lowerName.includes(pattern)) {
       const url = sub.italics
@@ -173,10 +255,38 @@ function tokenize(s: string): string[] {
     .filter((t) => t.length >= 3);
 }
 
+function renderTypographyTokens(t: TypographyCaptureLite | null): string {
+  if (!t) return '';
+  const lines: string[] = [];
+  const px = (n: number | null | undefined): string | null =>
+    typeof n === 'number' && Number.isFinite(n) ? `${Math.round(n * 100) / 100}px` : null;
+  const role = (label: string, r: TypographyCaptureLite['body'] | null | undefined): void => {
+    if (!r) return;
+    const sz = px(r.fontSizePx);
+    if (sz) lines.push(`  --font-size-${label}: ${sz};`);
+    if (r.fontWeight) lines.push(`  --font-weight-${label}: ${r.fontWeight};`);
+    const lh = px(r.lineHeightPx ?? null);
+    if (lh) lines.push(`  --line-height-${label}: ${lh};`);
+  };
+  role('body', t.body ?? null);
+  role('h1', t.h1 ?? null);
+  role('h2', t.h2 ?? null);
+  role('h3', t.h3 ?? null);
+  role('nav', t.navLink ?? null);
+  role('button', t.button ?? null);
+  role('link', t.link ?? null);
+  if (t.logo) {
+    lines.push(`  --logo-height: ${t.logo.height}px;`);
+    lines.push(`  --logo-width:  ${t.logo.width}px;`);
+  }
+  return lines.length ? '\n  /* Captured from live site by `upriver capture-typography`. */\n' + lines.join('\n') + '\n' : '';
+}
+
 function renderGlobalCss(
   ds: DesignSystem,
   raw: Record<string, unknown> | null,
   clientFonts: ClientFontFace[] = [],
+  typography: TypographyCaptureLite | null = null,
 ): string {
   const colors = { ...ds.colors };
   // raw firecrawl tokens can carry extras (link, success, warning, error)
@@ -184,8 +294,18 @@ function renderGlobalCss(
     raw && typeof raw === 'object' && 'colors' in raw && raw.colors && typeof raw.colors === 'object'
       ? (raw.colors as Record<string, string>)
       : {};
+  // When the design-tokens.json was post-processed (e.g. brand-color override
+  // from logo filename), the raw tokens are MORE authoritative than the
+  // audit-package's designSystem.colors. Detect via the `__postprocess`
+  // marker we set in scrape/post-process-tokens.ts and let raw win.
+  const postProcessed = !!(raw && typeof raw === 'object' && '__postprocess' in raw);
   for (const [k, v] of Object.entries(rawColors)) {
-    if (typeof v === 'string' && !(k in colors)) colors[k] = v;
+    if (typeof v !== 'string') continue;
+    if (postProcessed) {
+      colors[k] = v;
+    } else if (!(k in colors)) {
+      colors[k] = v;
+    }
   }
 
   const brandScale = generateScale(colors.primary || '#2f6bff');
@@ -194,33 +314,45 @@ function renderGlobalCss(
   const radiusCard = ds.spacing.borderRadius || '0.75rem';
   const radiusButton = inferButtonRadius(raw) || '0.5rem';
 
-  // Prefer raw fonts[] with role=heading/body (often more accurate than the
-  // audit's designSystem.typography, which can pick up CSS-variable names that
-  // aren't actually rendered).
+  // Prefer Playwright-captured typography (the actually-rendered family) over
+  // raw firecrawl tokens, which can pick up CSS-variable names that aren't
+  // actually rendered. Falls back to raw → audit tokens → Inter.
   const rawFontByRole = collectFontsByRole(raw);
-  const headingName = rawFontByRole.heading ?? ds.typography.headingFont ?? 'Inter';
-  const bodyName = rawFontByRole.body ?? ds.typography.bodyFont ?? 'Inter';
+  const capturedHeading = typography?.h2?.primaryFamily || typography?.h1?.primaryFamily || typography?.h3?.primaryFamily;
+  const capturedBody = typography?.body?.primaryFamily;
+  const headingName = capturedHeading ?? rawFontByRole.heading ?? ds.typography.headingFont ?? 'Inter';
+  const bodyName = capturedBody ?? rawFontByRole.body ?? ds.typography.bodyFont ?? 'Inter';
 
   const headingResolved = resolveFont(headingName, clientFonts);
   const bodyResolved = resolveFont(bodyName, clientFonts);
   const headingFont = quoteFont(headingResolved.displayName);
   const bodyFont = quoteFont(bodyResolved.displayName);
 
-  // Dedupe @imports (heading and body might map to same Google family) — only
-  // emit when the font is NOT client-provided.
-  const importUrls = new Set<string>();
-  if (headingResolved.importUrl) importUrls.add(headingResolved.importUrl);
-  if (bodyResolved.importUrl) importUrls.add(bodyResolved.importUrl);
-
-  // Pick up additional fonts from raw firecrawl tokens — but skip any that
-  // already match a client-provided font (that family is local).
+  // Dedupe @imports BY GOOGLE-FONT FAMILY (heading and body often map to
+  // the same family with slightly different weight ranges; emitting both
+  // produces wasteful redundant @imports). Track {family → widest weight set}
+  // and emit a single URL per family.
+  const importByFamily = new Map<string, string>();
+  const addImport = (display: string, url: string | null): void => {
+    if (!url) return;
+    importByFamily.set(display, url);
+  };
+  addImport(headingResolved.displayName, headingResolved.importUrl);
+  // Body's import only wins if it's a different family — otherwise the
+  // heading's URL already covers it.
+  if (bodyResolved.displayName !== headingResolved.displayName) {
+    addImport(bodyResolved.displayName, bodyResolved.importUrl);
+  }
   const extraFonts = collectExtraFonts(raw);
   for (const f of extraFonts) {
     const r = resolveFont(f, clientFonts);
-    if (r.importUrl) importUrls.add(r.importUrl);
+    if (r.displayName !== headingResolved.displayName && r.displayName !== bodyResolved.displayName) {
+      addImport(r.displayName, r.importUrl);
+    }
   }
-
-  const importLines = [...importUrls].map((u) => `@import url('${u}');`).join('\n');
+  const importLines = [...importByFamily.values()]
+    .map((u) => `@import url('${u}');`)
+    .join('\n');
 
   // Emit @font-face for every client-provided font file.
   const fontFaceLines: string[] = [];
@@ -282,7 +414,7 @@ ${customColorVars.join('\n')}
 
   --font-sans:    ${bodyFont}, ui-sans-serif, system-ui, sans-serif;
   --font-display: ${headingFont}, ui-sans-serif, system-ui, sans-serif;
-
+${renderTypographyTokens(typography)}
   --radius-card:   ${radiusCard};
   --radius-button: ${radiusButton};
 }
@@ -384,7 +516,35 @@ function mix(base: RGB, target: RGB, amount: number): RGB {
 function generateScale(baseHex: string): Record<number, string> {
   const base = hexToRgb(baseHex) ?? { r: 47, g: 107, b: 255 };
   const white: RGB = { r: 255, g: 255, b: 255 };
-  const black: RGB = { r: 12, g: 32, b: 88 };
+  // Use a true near-black for the dark end. The previous `{12, 32, 88}` was
+  // a deep navy, which made any near-neutral input scale produce navy ink
+  // tones (particularly bad when the source was `#000`, which produced a
+  // 900-step blue).
+  const black: RGB = { r: 16, g: 16, b: 18 };
+
+  // If the base is itself near-black or near-white, use a calibrated neutral
+  // scale instead of mixing toward navy. Heuristic: low saturation + low
+  // value (or high value) → treat as ink/grey palette.
+  const max = Math.max(base.r, base.g, base.b);
+  const min = Math.min(base.r, base.g, base.b);
+  const sat = max === 0 ? 0 : (max - min) / max;
+  const isNeutral = sat < 0.1;
+  const isDark = max < 60;
+  if (isNeutral && isDark) {
+    return {
+      50: '#fafafa',
+      100: '#ececec',
+      200: '#c8c8c8',
+      300: '#a3a3a3',
+      400: '#7e7e7e',
+      500: '#5a5a5a',
+      600: '#3d3d3d',
+      700: '#2c2c2c',
+      800: '#1f1f1f',
+      900: '#1b1b1b',
+    } as Record<number, string>;
+  }
+
   return {
     50: rgbToHex(mix(base, white, 0.95)),
     100: rgbToHex(mix(base, white, 0.88)),
