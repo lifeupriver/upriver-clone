@@ -1,107 +1,153 @@
-# Handoff — phase 3 code complete; operator provisioning is next
+# Handoff — phases 3 and 4 code complete; operator provisioning is next
 
-Last session shipped **Phase 3 of OPTION-B-MIGRATION.md end-to-end in code**.
-24 commits ahead of `origin/main`, working tree clean, typecheck green
-across the workspace.
+This session shipped **Phase 3 + Phase 4 of OPTION-B-MIGRATION.md
+end-to-end in code**, plus two small follow-ups (`flagsToArgs` extraction,
+stdoutTail rendering). 31 commits ahead of `origin/main`, working tree
+clean, typecheck green, 72/72 CLI tests passing.
 
-## What landed this session
+## What landed
+
+### Phase 3 — pipeline execution off the dashboard
 
 | Slice | Commit | What it does |
 |---|---|---|
-| 3.1 | `2dd9e18` | Scaffolded `@upriver/worker` package — Inngest client, event schema, generic `runStage` function |
-| 3.2 | `8ac919b` | Dashboard `/api/enqueue/[command]` — sends `upriver/stage.run` event, returns `{ jobId }` |
+| 3.1 | `2dd9e18` | Scaffolded `@upriver/worker` — Inngest client, event schema, generic `runStage` |
+| 3.2 | `8ac919b` | Dashboard `/api/enqueue/[command]` — sends `upriver/stage.run`, returns `{ jobId }` |
 | 3.3 | `be5265d` | Dashboard `/api/jobs/[id]` — SSE polling Inngest run-status REST API at 1Hz |
-| 3.4 | `e2270f6` | `PipelineStages.tsx` branches on `dataSource` prop — `local` keeps spawn path, `supabase` uses enqueue+poll |
-| 3.5a | `ca96d91` | Worker becomes a standalone HTTP server (`express` + `inngest/express`) on `:8288`. Removed dashboard's `/api/inngest` (architecture 1a — serve handler lives in the worker container) |
-| 3.5b | `703fff6` | Multi-stage Dockerfile: builder uses `node:20-bookworm-slim` + pnpm; runtime uses `mcr.microsoft.com/playwright:v1.59.1-jammy` and global-installs `@anthropic-ai/claude-code`, `lighthouse@12`, `squirrelscan` |
-| 3.5c | `18677af` | `packages/worker/fly.toml` + `packages/worker/DEPLOY.md` walking the operator through Inngest signup, fly launch, secrets |
-| 3.5d | `69a38d3` | `.github/workflows/worker-image.yml` builds + pushes to `ghcr.io/lifeupriver/upriver-worker` on main / v* tags |
-| 3.5e | `5138a8e` | Real `runStage` impl: `step.run('validate')` → `pull` (recursive bucket walk → `/tmp/upriver/clients/<slug>/`) → `spawn` (`execFile node /app/packages/cli/bin/run.js …`) → `push` (only files with `mtime > cutoff`) |
+| 3.4 | `e2270f6` | `PipelineStages.tsx` branches on `dataSource` prop |
+| 3.5a | `ca96d91` | Worker hosts the Inngest serve handler (express + inngest/express) |
+| 3.5b | `703fff6` | Multi-stage Dockerfile w/ playwright + claude/lighthouse/squirrelscan |
+| 3.5c | `18677af` | `packages/worker/fly.toml` + `DEPLOY.md` |
+| 3.5d | `69a38d3` | `.github/workflows/worker-image.yml` → GHCR |
+| 3.5e | `5138a8e` | Real `runStage`: validate → pull → spawn → push |
 
-## Architecture decisions locked this session
+### Phase 4 — Supabase Auth + share tokens
 
-- **Q1 — worker platform:** Inngest Cloud (recommended; user agreed)
-- **Q2 — registry:** GHCR (`ghcr.io/lifeupriver/upriver-worker`)
-- **Q3 — back-migration:** new clients only; existing locals stay local
-- **Q1.a — serve handler location:** option (1a) — hosts inside the worker
-  container on Fly.io, not in the dashboard. Container has direct access to
-  claude/Lighthouse/Playwright/squirrelscan in the same process.
+| Slice | Commit | What it does |
+|---|---|---|
+| 4.1 | `e9b96f2` | `supabase/migrations/…_phase4_share_tokens.sql` (committed, NOT applied) |
+| 4.2 | `941b1a8` | `lib/auth.ts` + `/login` + `/auth/callback` + `/auth/signout` (magic link) |
+| 4.3 | `4952233` | Middleware gates `/clients` + `/api/enqueue` on operator session |
+| 4.4 | `c2d85c2` | `/deliverables/<slug>/*` validates `?t=<share-token>` against the table |
+| 4.5 | `684ed34` | Drop `UPRIVER_RUN_TOKEN` everywhere |
 
-## Architecture (current)
+### Follow-ups
+
+| | Commit | What |
+|---|---|---|
+| | `5b134e8` | Hoisted `flagsToArgs` to `@upriver/core/util` (one source of truth for dashboard + worker) |
+| | `975b2d3` | Render `stdoutTail`/`stderrTail` from Inngest `done` payload in `PipelineStages` |
+
+## Architecture decisions locked
+
+- **Worker platform:** Inngest Cloud
+- **Registry:** GHCR (`ghcr.io/lifeupriver/upriver-worker`)
+- **Back-migration:** new clients only
+- **Serve handler:** option (1a) — hosted in worker container on Fly.io
+- **Auth:** Supabase magic link (no GitHub OAuth)
+- **Operator allowlist:** single seed (`joshua@joshuabrownphotography.com`)
+- **Share tokens:** Postgres `share_tokens` table
+
+## Current architecture
 
 ```
 Vercel dashboard (upriver-platform):
-  /api/enqueue/<cmd>  → inngest.send({ name: 'upriver/stage.run', data: {...} })
-                                                                │
-                                                                ▼ (Inngest Cloud)
-                                                                │
-Fly.io worker (long-running container):                         │
-  /api/inngest        ← inngest/express serve handler  ◄────────┘
+  middleware
+    ├─ /clients/* + /api/enqueue/*  → Supabase Auth gate (operator role)
+    └─ /deliverables/<slug>/*       → operator OR ?t=<token> in share_tokens
+  /login + /auth/callback + /auth/signout    (magic-link flow)
+  /api/enqueue/<cmd>  → inngest.send → { jobId }
+  /api/jobs/<id>      → SSE polling Inngest run-status
+
+  ─────────────────────────────────── (Inngest Cloud) ───────
+
+Fly.io worker (long-running container):
+  /api/inngest        ← inngest/express serve handler
                         ↓ runs inside the container:
-                          1. validate (zod + ALLOWED_COMMANDS)
-                          2. pull   (Supabase Storage → /tmp/upriver/clients/<slug>/)
-                          3. spawn  (node /app/packages/cli/bin/run.js <cmd> <slug>)
+                          1. validate
+                          2. pull   (Supabase Storage → /tmp)
+                          3. spawn  (node /app/packages/cli/bin/run.js …)
                           4. push   (changed files → Supabase Storage)
-  /healthz            ← Fly checks block
+  /healthz
 
-Vercel dashboard polls /api/jobs/<id> for status (REST → Inngest API).
+Supabase project (qavbpfmhgvkhrnbqalrp):
+  Storage bucket `upriver` (private)
+  Postgres
+    share_tokens(slug, token, expires_at, …)
+  Auth (magic-link, app_metadata.role='operator' on seed)
 ```
 
-## What the operator must do before Phase 3 actually runs
+## Operator provisioning checklist
 
-The code is complete. None of it is testable end-to-end without these steps.
-Full walkthrough lives in `packages/worker/DEPLOY.md`.
+The code is complete. None of it is testable end-to-end without these.
 
-### 1. Inngest Cloud account
-- Sign up at <https://app.inngest.com>
-- Create environment `production`
-- Copy `INNGEST_EVENT_KEY` and `INNGEST_SIGNING_KEY`
+### Phase 3 prerequisites (unchanged from prior handoff)
 
-### 2. Fly.io worker
-```bash
-fly launch --no-deploy --config packages/worker/fly.toml --copy-config
-fly secrets set \
-  INNGEST_EVENT_KEY=... \
-  INNGEST_SIGNING_KEY=... \
-  INNGEST_SERVE_HOST=https://upriver-worker.fly.dev \
-  ANTHROPIC_API_KEY=... \
-  FIRECRAWL_API_KEY=... \
-  UPRIVER_SUPABASE_URL=https://qavbpfmhgvkhrnbqalrp.supabase.co \
-  UPRIVER_SUPABASE_SERVICE_ROLE_KEY=... \
-  --app upriver-worker
-```
+1. **Inngest Cloud** — sign up at <https://app.inngest.com>, create env
+   `production`, copy `INNGEST_EVENT_KEY` + `INNGEST_SIGNING_KEY`.
+2. **Fly.io worker** — `fly launch --no-deploy --config packages/worker/fly.toml --copy-config`,
+   then `fly secrets set INNGEST_EVENT_KEY=… INNGEST_SIGNING_KEY=… INNGEST_SERVE_HOST=https://upriver-worker.fly.dev ANTHROPIC_API_KEY=… FIRECRAWL_API_KEY=… UPRIVER_SUPABASE_URL=https://qavbpfmhgvkhrnbqalrp.supabase.co UPRIVER_SUPABASE_SERVICE_ROLE_KEY=… --app upriver-worker`.
+3. **First image push** — push to `main` or run the `worker-image` workflow manually.
+4. **First Fly deploy** — `fly deploy --image ghcr.io/lifeupriver/upriver-worker:latest --config packages/worker/fly.toml`.
+5. **Sync Inngest** — Apps → Sync new app → `https://upriver-worker.fly.dev/api/inngest`.
+6. **Vercel env (sender side)** — `vercel env add INNGEST_EVENT_KEY production` + `INNGEST_EVENT_KEY development` + `INNGEST_SIGNING_KEY production`.
 
-### 3. Build + push the image
-Push to `main` triggers `.github/workflows/worker-image.yml`. Or manually:
-```bash
-docker build -f packages/worker/Dockerfile -t ghcr.io/lifeupriver/upriver-worker:dev .
-docker push ghcr.io/lifeupriver/upriver-worker:dev
-```
+### Phase 4 prerequisites (new)
 
-### 4. First Fly deploy
-```bash
-fly deploy --image ghcr.io/lifeupriver/upriver-worker:latest --config packages/worker/fly.toml
-```
+1. **Apply the share_tokens migration to prod.** Either:
+   ```bash
+   pnpm dlx supabase db push --linked
+   ```
+   or via the Supabase MCP `apply_migration` tool with explicit prod authorization.
+   The migration is at `supabase/migrations/20260429000001_phase4_share_tokens.sql`.
 
-### 5. Sync Inngest with the worker
-Inngest dashboard → Apps → Sync new app → `https://upriver-worker.fly.dev/api/inngest`
+2. **Configure Supabase Auth.** In the Supabase dashboard:
+   - Auth → URL Configuration → Site URL = `https://upriver-platform.vercel.app`
+   - Auth → URL Configuration → Redirect URLs → add `https://upriver-platform.vercel.app/auth/callback`
+   - Auth → Email Templates: default magic-link template works; customize copy if desired.
+   - Auth → Providers → keep only Email (magic link); leave password disabled.
 
-### 6. Vercel side
-```bash
-vercel env add INNGEST_EVENT_KEY production --value ek_... --yes
-vercel env add INNGEST_EVENT_KEY development --value ek_... --yes
-vercel env add INNGEST_SIGNING_KEY production --value signkey-... --yes
-```
+3. **Seed the operator.** In SQL Editor:
+   ```sql
+   -- After joshua@joshuabrownphotography.com signs in once via /login, mint
+   -- the operator role.
+   update auth.users
+     set raw_app_meta_data = jsonb_set(coalesce(raw_app_meta_data, '{}'), '{role}', '"operator"')
+     where email = 'joshua@joshuabrownphotography.com';
+   ```
+   Or use the Auth admin API. The user must exist first (one magic-link sign-in creates them).
+
+4. **Mint a share token** for any slug whose deliverables you want to share:
+   ```sql
+   insert into public.share_tokens (slug, token, expires_at, label)
+     values ('audreys', encode(gen_random_bytes(24), 'base64'), now() + interval '90 days', 'launch review');
+   select slug, token from public.share_tokens where slug = 'audreys' order by created_at desc limit 1;
+   ```
+   Share URL: `https://upriver-platform.vercel.app/deliverables/audreys?t=<token>`.
+
+5. **Drop UPRIVER_RUN_TOKEN from Vercel env** (no longer read; safe to remove):
+   ```bash
+   vercel env rm UPRIVER_RUN_TOKEN production --yes
+   vercel env rm UPRIVER_RUN_TOKEN development --yes
+   ```
 
 ## Verification once provisioned
 
 ```bash
 curl https://upriver-worker.fly.dev/healthz       # → ok
-curl https://upriver-worker.fly.dev/api/inngest   # → JSON manifest with run-stage
+curl https://upriver-worker.fly.dev/api/inngest   # → JSON manifest
+
+# Hitting the dashboard without a session redirects to /login.
+curl -sS -I https://upriver-platform.vercel.app/clients | head -1
+# → HTTP/2 302 ; location: /login?next=%2Fclients
+
+# Share-link probe (replace TOKEN with one minted above):
+curl -sS -o /dev/null -w "%{http_code}\n" \
+  "https://upriver-platform.vercel.app/deliverables/audreys?t=TOKEN"
+# → 200 (with token), 302 to /login (without)
 ```
 
-Then on the hosted dashboard, click any pipeline-stage Run button on a slug
-that's been `upriver sync push`-ed to the bucket. Expected log:
+After login as the seed email and click any pipeline-stage Run button:
 
 ```
 [start] upriver scrape <slug>
@@ -109,44 +155,49 @@ that's been `upriver sync push`-ed to the bucket. Expected log:
 [status] Queued
 [status] Running
 [status] Completed
+--- stdout (tail) ---
+…
 [done] Scrape completed.
 ```
 
 ## Known gaps / known unknowns
 
-- **stdoutTail/stderrTail in `done`**: `PipelineStages` doesn't render these
-  yet — they sit in the Inngest run output. Trivial to wire when needed.
-- **squirrelscan install**: pinned to `npm install -g squirrelscan` in the
-  Dockerfile. If the package isn't on npm under that name, swap to the
-  install path documented at <https://skills.sh/squirrelscan/skills/audit-website>.
-- **Step output size**: `runStage` truncates stdout/stderr to 4 KB tails so
-  Inngest's step state stays small. A chatty stage (`scrape` over 100 pages)
-  will lose middle-of-run logs. Fly logs are the source of truth.
-- **`flagsToArgs` duplication**: lives in `packages/dashboard/src/lib/run-cli.ts`
-  AND inline in `packages/worker/src/functions/run-stage.ts`. Refactor target
-  for `@upriver/core/util` — out of Phase 3 scope.
-- **Phase 4 (auth) is untouched**: `/api/enqueue/<cmd>` honors
-  `UPRIVER_RUN_TOKEN` if set, but Supabase Auth replacement isn't wired.
-  See `OPTION-B-MIGRATION.md` Phase 4.
+- **Token minting UI**: no operator dashboard for minting/revoking share
+  tokens yet; current path is direct SQL or service-role API. Easy
+  follow-up; not on the original Phase 4 spec.
+- **`auth.callback` path is fixed**: hard-coded `/auth/callback` in the OTP
+  redirect. If we ever serve the dashboard from a non-root path, plumb
+  through `Astro.url.origin`.
+- **Share-token expiry policy**: schema supports `expires_at` (nullable);
+  no global default. Operator is responsible for setting expiry per row.
+- **`squirrelscan` install**: pinned to `npm install -g squirrelscan` in the
+  Dockerfile — verify availability at deploy time.
+- **Phase 5 (auth UX polish)** not in original migration plan but obvious
+  follow-up: header bar with sign-out link in DashboardLayout; "you are
+  signed in as foo@" indicator; first-time user message when role isn't
+  yet `operator`.
 
 ## Repo state
 
-- Branch: `main`, **24 commits ahead of `origin/main`**.
+- Branch: `main`, **31 commits ahead of `origin/main`**.
 - Working tree: clean.
 - Typecheck: 0 errors across all packages.
-- Tests: not re-run this session — last verified clean at the start of
-  Phase 3 (cli 72/72, core 21/21).
-- Production: <https://upriver-platform.vercel.app/clients> still 200.
-  Phase 3 code is dormant on prod until `INNGEST_EVENT_KEY` is set on Vercel
-  env (without it, `/api/enqueue` returns 502 from `inngest.send`).
+- Tests: cli 72/72 (re-verified this session), core not re-run.
+- Production: `https://upriver-platform.vercel.app/clients` still 200
+  *because* `UPRIVER_DATA_SOURCE=supabase` is set but
+  `UPRIVER_SUPABASE_PUBLISHABLE_KEY` is not (auth gate currently bypasses
+  on bad config — verify once Phase 4 prereqs are applied).
 
 ## Next step
 
-Operator runs the 6-step provisioning checklist above. Code-side work that
-*does not* depend on operator infra is fair game for the next session:
+Operator runs the Phase 3 + Phase 4 provisioning checklists. Code-side
+work that doesn't depend on operator infra:
 
-- Phase 4 (auth) — clean independent slice.
-- `flagsToArgs` extraction to `@upriver/core/util`.
-- Render `stdoutTail`/`stderrTail` in `PipelineStages` `done` event.
-- Operator workflow doc on the standard "spin up a new client" loop now that
-  Phase 3 changes the trigger model.
+- Token-minting UI in the operator dashboard.
+- Sign-out / current-user header in `DashboardLayout`.
+- `auth.callback` redirect URL parameterization.
+- `automigrations` workflow that runs `supabase db push` on tag push (so
+  schema changes ship with deploys instead of manual `db push`).
+
+If the operator wants the next session to push through any of these, all
+are clean independent slices.
