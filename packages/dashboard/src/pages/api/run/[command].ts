@@ -31,6 +31,7 @@ const ALLOWED_COMMANDS: ReadonlyArray<string> = [
   'monitor',
   'followup',
   'prototype-app',
+  'custom-tools',
 ];
 
 /** Time to wait after SIGTERM before escalating to SIGKILL on client abort. */
