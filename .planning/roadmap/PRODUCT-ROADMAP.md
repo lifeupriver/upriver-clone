@@ -148,7 +148,7 @@ The dependency arrows are real but loose: A and B can ship before C; D unlocks E
 
 5. **New deep pass: `competitor-side-by-side`.** Today `competitors/index.ts` is a single 171-line heuristic pass. Upgrade with a deep variant that scrapes 3 named competitors via Firecrawl (operator passes them in `client-config.yaml` under a new `competitors:` key), runs the same audit harness against each, and produces a comparative scorecard. New file: `packages/cli/src/deep-audit/passes/competitor-deep.ts`.
 
-6. **Make `--deep` the default for audits intended as sales reports.** Add `--audit-mode=sales|operator` flag to `audit.ts:62-74`. Sales mode runs all base + all deep passes by default, with a higher LLM budget and full reference coverage. Operator mode keeps the cheap base passes for iterative work.
+6. **Make `--deep` the default for audits intended as sales reports.** ~~Add `--audit-mode=sales|operator` flag to `audit.ts:62-74`.~~ **Shipped as `--mode=base|deep|all` on `audit` and `--audit-mode=base|deep|all` on `run all`** (see C.6 drift note above). `base` is the operator default; `deep` adds the LLM passes and `all` adds the tooling-driven passes too — equivalent to the spec's "sales mode" with full reference coverage.
 
 7. **Findings get an estimated-impact field.** Extend `AuditFinding` in `packages/core/src/types/audit.ts` with `estimatedImpact: { metric: 'bookings'|'pageviews'|'cwv'|'rankings'; magnitude: 'small'|'medium'|'large'; rationale: string }`. Populate from each audit pass; surface in the report hero (workstream A item 4).
 
