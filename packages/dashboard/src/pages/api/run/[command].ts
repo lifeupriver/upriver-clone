@@ -30,6 +30,7 @@ const ALLOWED_COMMANDS: ReadonlyArray<string> = [
   'interview-link',
   'monitor',
   'followup',
+  'prototype-app',
 ];
 
 /** Time to wait after SIGTERM before escalating to SIGKILL on client abort. */

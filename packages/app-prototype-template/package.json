@@ -1,0 +1,10 @@
+{
+  "name": "@upriver/app-prototype-template",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Expo React Native template copied per-client by `upriver prototype-app` (F04). Not built or tested in CI; the package exists so the template files are checked in alongside the rest of the monorepo.",
+  "main": "App.tsx",
+  "scripts": {
+    "typecheck": "echo 'template package — typechecked when copied into a client dir'"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "{{APP_NAME}}",
+    "slug": "{{APP_SLUG}}-prototype",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "{{BRAND_PRIMARY}}"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.upriver.{{APP_SLUG}}"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "{{BRAND_PRIMARY}}"
+      },
+      "package": "com.upriver.{{APP_SLUG}}"
+    },
+    "web": {
+      "favicon": "./assets/icon.png"
+    }
+  }
+}
