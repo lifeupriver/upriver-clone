@@ -1,7 +1,7 @@
 # Handoff — current state, pending work
 
-**Last commit:** `9a9a1ff chore(dashboard): fix /clients empty-state hint for supabase data source`
-**Branch:** `main` (13 commits ahead of `origin/main`)
+**Last commit:** `a41582d docs(roadmap): refresh resume prompt for fresh-context handoff`
+**Branch:** `main` (15 commits ahead of `origin/main`)
 **Working tree:** clean
 **Production URL:** https://upriver-platform.vercel.app — first deploy `dpl_2i5DXSd62beSuFdnGo7uSorTpN5T` is READY, all routes 200/302, empty-state expected (bucket has no client slugs yet).
 **Tests:** `pnpm --filter @upriver/cli run test` → 72/72 green; `pnpm --filter @upriver/core run test` → 21/21 green
