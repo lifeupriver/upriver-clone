@@ -75,7 +75,7 @@ function gradeScore(score: number): string {
 }
 
 export default class Audit extends BaseCommand {
-  static override description = 'Run all 10 audit passes concurrently against scraped data';
+  static override description = 'Run audit passes concurrently against scraped data (12 base + up to 12 deep: 3 LLM + 9 tooling)';
 
   static override args = {
     slug: Args.string({ description: 'Client slug', required: true }),
