@@ -4,6 +4,9 @@ Comprehensive list of pending work as of `2026-04-30`. Pulled from
 `HANDOFF.md`, `DRIFT-REPORT.md`, `OPTION-B-MIGRATION.md`,
 `PRODUCT-ROADMAP.md`, plus this session's open threads.
 
+> **2026-04-29 autopilot pass.** Items marked ✅ landed in the
+> backlog-burndown session — see `HANDOFF.md` for the full summary.
+
 Items are ordered by priority within each section; effort estimates assume
 focused work, not calendar time.
 
@@ -56,7 +59,7 @@ but minting fails the moment you click the button.
 
 ## 🟡 P1 — High-value, unblocked code-side
 
-### 3. Hoist pipeline-stage list out of `run all` into `@upriver/core/pipeline` consumers
+### 3. ~~Hoist pipeline-stage list out of `run all`~~ ✅ already shipped (verified 2026-04-29; `run/all.ts:6` imports `PIPELINE_STAGES` and filters from it)
 
 **What.** `packages/cli/src/commands/run/all.ts` declares the canonical
 sequence imperatively. `packages/dashboard/src/components/react/PipelineStages.tsx`
@@ -75,7 +78,7 @@ from it.
 
 ---
 
-### 4. Roadmap drift C.6 — `--audit-mode` flag rename or alias
+### 4. ~~Roadmap drift C.6 — `--audit-mode` flag rename or alias~~ ✅ `0d057d3` (PRODUCT-ROADMAP.md updated to match shipped `--mode=base|deep|all`)
 
 **What.** Roadmap spec'd `--audit-mode=sales|operator`. Shipped as
 `--mode=base|deep|all` on `audit`, plus `--audit-mode=base|deep|all` on
@@ -150,7 +153,7 @@ anywhere automatically.
 
 ---
 
-### 8. Tooling-pass `--deep` vs `--mode=deep|all` consolidation
+### 8. ~~Tooling-pass `--deep` vs `--mode=deep|all` consolidation~~ ✅ `087f5df` (`--mode=base|deep|tooling|all`; `--deep` deprecated alias)
 
 **What.** Two flags on `audit` trigger different pass sets:
 - `--mode=deep|all` → C.3–C.5 LLM passes via `DEEP_PASSES` + `runAgent`.
@@ -169,7 +172,7 @@ addendum.
 
 ---
 
-### 9. Update stale audit-command description
+### 9. ~~Update stale audit-command description~~ ✅ `e6ce0fa`
 
 **What.** `audit.ts` header says "Run all 10 audit passes concurrently".
 Actual count is 12 base + up to 12 deep (3 LLM + 9 tooling).
@@ -212,7 +215,7 @@ would have surfaced the actual error path immediately.
 
 ---
 
-### 12. Token-expiry sweep cron
+### 12. ~~Token-expiry sweep cron~~ ✅ `6eb4881` — migration committed; **operator must apply** via `pnpm dlx supabase db push` or `apply_migration`
 
 **What.** Daily Postgres job that deletes `share_tokens` rows where
 `expires_at < now() - interval '7 days'` (keep a brief audit window after
@@ -228,7 +231,7 @@ Cron Job hitting `/api/cron/sweep-tokens`.
 
 ---
 
-### 13. Audit log of dashboard actions
+### 13. ~~Audit log of dashboard actions~~ ✅ `b8e87bf` — migration + writer stub committed; writer inert until `DASHBOARD_EVENTS_ENABLED=true` AND migration applied
 
 **What.** Append to a `dashboard_events` table: who minted/revoked which
 share token, who triggered which pipeline run, when. Operator-only history
@@ -245,7 +248,7 @@ view.
 
 ---
 
-### 14. Better error pages
+### 14. ~~Better error pages~~ ✅ `3c786de` (`/auth/expired`, `/deliverables/expired`, branded `/clients/<slug>` 404)
 
 **What.** First-class pages for:
 - `/login` callback failure (currently a plain text 400).
@@ -265,7 +268,7 @@ one" page, not a redirect to operator login.
 
 ---
 
-### 15. `/api/health` endpoint on the dashboard
+### 15. ~~`/api/health` endpoint on the dashboard~~ ✅ `b4302ee`
 
 **What.** Return `{ ok: true, dataSource, supabaseReachable, version }`
 for uptime monitoring.
@@ -349,7 +352,7 @@ Auth's `before-user-created` trigger, build the page.
 
 ---
 
-### 19. Sales-team facing docs
+### 19. ~~Sales-team facing docs~~ ✅ `7897d9a` (`docs/SALES-PLAYBOOK.md`, `docs/CLIENT-ONBOARDING.md`, `docs/EMAIL-TEMPLATES.md`)
 
 **What.** Beyond the operator-focused `docs/USER-GUIDE.md`, build:
 
@@ -383,7 +386,7 @@ never read), but the variable will outlive its docs.
 
 ---
 
-### 21. Resend SMTP wired into Supabase Auth (already done)
+### 21. ~~Resend SMTP wired into Supabase Auth~~ ✅ `113d29e` (documented in `docs/OPS.md`)
 
 **Note.** Done during this session. Document in `OPS.md` so future operators
 remember: Auth → SMTP Settings uses `smtp.resend.com:465` with the
@@ -393,7 +396,7 @@ remember: Auth → SMTP Settings uses `smtp.resend.com:465` with the
 
 ## 🔵 P3 — Nice-to-haves
 
-### 22. `/auth/callback` redirect URL parameterization
+### 22. ~~`/auth/callback` redirect URL parameterization~~ ✅ `c5f88ef` (route deleted; middleware handles `?code=` everywhere)
 
 **What.** `signInWithOtp` hard-codes `/auth/callback` derived from
 `Astro.url.origin`. The middleware code-exchange now catches `?code=`
@@ -435,7 +438,7 @@ integration was deferred.
 
 ---
 
-### 25. Worker container — verify `squirrelscan` install path
+### 25. ~~Worker container — verify `squirrelscan` install path~~ ✅ `9b6a133` (verified on npm at 0.0.38; Dockerfile annotated)
 
 **What.** Dockerfile pins `npm install -g squirrelscan` — verified to be on
 npm under that name? If not, swap to the install path documented at
@@ -450,7 +453,7 @@ Worth fixing before that to avoid a debug cycle.
 
 ---
 
-### 26. Render `pulled` / `pushed` byte counts in PipelineStages done log
+### 26. ~~Render `pulled` / `pushed` byte counts in PipelineStages done log~~ ✅ `6570aaa`
 
 **What.** The Inngest `done` payload from `runStage` includes:
 ```ts
