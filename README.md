@@ -76,6 +76,11 @@ upriver audit-media audreys
 # 4. Compile audit-package.json and write client-facing docs (voice guide, exec summary)
 upriver synthesize audreys
 
+# 4b. (Optional) Generate JSON-LD schemas for the rebuilt site (F02).
+#     Outputs schema/site.json + per-page schemas + a 3-platform install
+#     guide. Sellable as a $500 standalone deliverable.
+upriver schema-build audreys
+
 # 5a. (Optional) Derive a deeper brand voice guide from the scraped copy.
 #     Outputs voice/voice-rules.json + brand-voice.md + sample-rewrites.md.
 #     Sellable as a $750 standalone deliverable; consumed by improve, blog
