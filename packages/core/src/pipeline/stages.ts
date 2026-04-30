@@ -24,6 +24,7 @@ export type PipelineStageId =
   | 'video-audit'
   | 'synthesize'
   | 'voice-extract'
+  | 'blog-topics'
   | 'schema-build'
   | 'design-brief'
   | 'scaffold'
@@ -75,6 +76,7 @@ export const PIPELINE_STAGES: readonly PipelineStage[] = [
   { id: 'video-audit', label: 'Video audit', command: 'video-audit', optional: true, describe: 'F12 — page-by-page video plan with shot lists (sells the videography work)' },
   { id: 'synthesize', label: 'Synthesize', command: 'synthesize', describe: 'Compose audit-package.json' },
   { id: 'voice-extract', label: 'Voice Extract', command: 'voice-extract', optional: true, describe: 'Derive brand voice guide (F03) — feeds improve, blog topics, video audit, admin' },
+  { id: 'blog-topics', label: 'Blog Topics', command: 'blog-topics', optional: true, describe: 'F10 — 25 blog topic briefs (sells as $750 standalone; consumed by improve + admin)' },
   { id: 'schema-build', label: 'Schema Build', command: 'schema-build', optional: true, describe: 'Generate JSON-LD schemas + install guide (F02) — sellable as $500 standalone' },
   { id: 'design-brief', label: 'Design Brief', command: 'design-brief', describe: 'Render the operator design brief' },
   { id: 'scaffold', label: 'Scaffold', command: 'scaffold', describe: 'Generate Astro repo from template' },
