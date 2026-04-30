@@ -2,6 +2,7 @@ import { execFile } from 'node:child_process';
 import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, posix, relative } from 'node:path';
 import { promisify } from 'node:util';
+import { flagsToArgs } from '@upriver/core';
 import { createSupabaseClientDataSourceFromEnv, type SupabaseClientDataSource } from '@upriver/core/data';
 import { inngest } from '../client.js';
 import { STAGE_RUN_EVENT, stageRunPayloadSchema, type StageRunPayload } from '../events.js';
@@ -39,26 +40,6 @@ function resolveCliBin(): string {
 }
 
 const execFileAsync = promisify(execFile);
-
-/**
- * Convert a flags object into alternating CLI argv. Mirrors the helper in
- * `packages/dashboard/src/lib/run-cli.ts` — kept inline because moving it to
- * `@upriver/core` is a refactor outside Phase 3.5e's scope.
- */
-function flagsToArgs(flags: Record<string, string | boolean | number>): string[] {
-  const out: string[] = [];
-  for (const [key, value] of Object.entries(flags)) {
-    if (value === false || value === undefined || value === null) continue;
-    if (value === true) {
-      out.push(`--${key}`);
-      continue;
-    }
-    if (typeof value === 'string' || typeof value === 'number') {
-      out.push(`--${key}`, String(value));
-    }
-  }
-  return out;
-}
 
 /**
  * Recursively walk the bucket under `clients/<slug>/<dir>` and return POSIX
