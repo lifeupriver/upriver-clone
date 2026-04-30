@@ -16,7 +16,7 @@ const { passes, slug } = Astro.props;
       dimension={pass.dimension}
       score={pass.score}
       findingsCount={pass.findings.length}
-      href={slug ? `/clients/${slug}/audit#${pass.dimension}` : undefined}
+      href={slug ? `/clients/${slug}/audit#findings?dim=${encodeURIComponent(pass.dimension)}` : undefined}
     />
   ))}
 </div>

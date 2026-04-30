@@ -30,7 +30,7 @@ const content = await readMarkdownFile(slug, 'fixes-plan.md');
   </div>
 
   {content ? (
-    <MarkdownDoc content={content} />
+    <MarkdownDoc content={content} withToc collapseSections />
   ) : (
     <div class="empty">
       <p>No fixes plan yet. Run <code>upriver fixes plan {slug}</code> to generate it.</p>

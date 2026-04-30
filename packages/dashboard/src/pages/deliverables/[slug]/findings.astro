@@ -58,10 +58,17 @@ const groups: FindingGroup[] = [
   </section>
 
   {groups.map(group => (
-    <section class="finding-group" id={group.id}>
+    <section class="finding-group" id={group.id} data-group-id={group.id}>
       <div class="group-header">
         <h2 class="group-title">{group.title}</h2>
         <span class="pill pill-muted">{group.findings.length}</span>
+        {group.findings.length > 0 && (
+          <div class="group-toggle no-print">
+            <button type="button" data-toggle="open" data-target={group.id}>Open all</button>
+            <span class="toggle-sep">·</span>
+            <button type="button" data-toggle="close" data-target={group.id}>Collapse all</button>
+          </div>
+        )}
       </div>
       {group.findings.length === 0 ? (
         <p class="empty">No items here.</p>
@@ -75,6 +82,24 @@ const groups: FindingGroup[] = [
     </section>
   ))}
 </ReportLayout>
+
+<script>
+  // Open / collapse every <details> in a finding group at once. Native
+  // <details> means no React island and no extra payload — just a click
+  // delegate that flips `open` for matching nodes.
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as Element | null)?.closest<HTMLButtonElement>('button[data-toggle]');
+    if (!btn) return;
+    const targetId = btn.dataset.target;
+    if (!targetId) return;
+    const root = document.getElementById(targetId);
+    if (!root) return;
+    const open = btn.dataset.toggle === 'open';
+    root.querySelectorAll<HTMLDetailsElement>('details.finding-card').forEach((d) => {
+      d.open = open;
+    });
+  });
+</script>
 
 <style>
   .page-header {
@@ -118,6 +143,33 @@ const groups: FindingGroup[] = [
     font-size: var(--fs-xxs);
     margin: 0;
   }
+
+  .group-toggle {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .group-toggle button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+  }
+
+  .group-toggle button:hover { color: var(--accent-hover); }
+
+  .toggle-sep { color: var(--border); }
 
   .findings-list {
     display: flex;

@@ -2,6 +2,12 @@
 import '../styles/global.css';
 import { getSessionUser } from '@/lib/auth';
 import { getDataSource } from '@/lib/data-source';
+import {
+  clientExists,
+  getClientArtifacts,
+  readClientConfig,
+  type ClientArtifacts,
+} from '@/lib/fs-reader';
 
 export interface Props {
   title: string;
@@ -23,6 +29,51 @@ const nav = [
   { href: '/clients', label: 'Clients', section: 'clients' },
   { href: '/deliverables', label: 'Deliverables', section: 'deliverables' },
 ];
+
+// When the current URL is /clients/<slug>/... or /deliverables/<slug>/...,
+// surface a per-client sub-nav with status dots so the operator doesn't have
+// to bounce back to the landing page to jump between artifacts.
+const segments = currentPath.split('/').filter(Boolean);
+const slugFromPath =
+  (segments[0] === 'clients' || segments[0] === 'deliverables') && segments[1] && segments[1] !== 'new' && segments[1] !== 'expired'
+    ? segments[1]
+    : null;
+
+interface SubNavItem {
+  href: string;
+  label: string;
+  has: boolean;
+}
+
+let clientSubNav: { name: string; slug: string; items: SubNavItem[] } | null = null;
+if (slugFromPath && (await clientExists(slugFromPath))) {
+  const [config, artifacts] = await Promise.all([
+    readClientConfig(slugFromPath),
+    getClientArtifacts(slugFromPath),
+  ]);
+  if (config) {
+    const a: ClientArtifacts = artifacts;
+    clientSubNav = {
+      name: config.name,
+      slug: slugFromPath,
+      items: [
+        { href: `/clients/${slugFromPath}`,                  label: 'Overview',         has: true },
+        { href: `/clients/${slugFromPath}/intake`,           label: 'Intake',           has: a.hasIntake },
+        { href: `/clients/${slugFromPath}/audit`,            label: 'Audit',            has: a.hasAudit },
+        { href: `/clients/${slugFromPath}/clone-fidelity`,   label: 'Clone Fidelity',   has: a.hasFidelity },
+        { href: `/clients/${slugFromPath}/voice`,            label: 'Brand Voice',      has: a.hasVoice },
+        { href: `/clients/${slugFromPath}/design-brief`,     label: 'Design Brief',     has: a.hasBrief },
+        { href: `/clients/${slugFromPath}/site`,             label: 'Site Preview',     has: a.hasRepo },
+        { href: `/clients/${slugFromPath}/fixes`,            label: 'Fixes Plan',       has: a.hasFixes },
+        { href: `/clients/${slugFromPath}/qa`,               label: 'QA Report',        has: a.hasQa },
+        { href: `/clients/${slugFromPath}/launch-checklist`, label: 'Launch Checklist', has: a.hasLaunch },
+        { href: `/deliverables/${slugFromPath}`,             label: 'Export Audit',     has: a.hasAudit },
+        { href: `/deliverables/${slugFromPath}/design-brief`, label: 'Export Brief',    has: a.hasBrief },
+        { href: `/clients/${slugFromPath}/share`,            label: 'Share Links',      has: true },
+      ],
+    };
+  }
+}
 ---
 
 <html lang="en">
@@ -55,6 +106,22 @@ const nav = [
             </a>
           ))}
         </nav>
+
+        {clientSubNav && (
+          <nav class="sidebar-subnav">
+            <span class="eyebrow nav-section-label">This client</span>
+            <span class="sub-name" title={clientSubNav.name}>{clientSubNav.name}</span>
+            {clientSubNav.items.map(item => (
+              <a
+                href={item.href}
+                class:list={['sub-link', { active: currentPath === item.href, dim: !item.has }]}
+              >
+                <span class:list={['sub-dot', { has: item.has }]} aria-hidden="true" />
+                <span class="sub-label">{item.label}</span>
+              </a>
+            ))}
+          </nav>
+        )}
 
         <div class="sidebar-footer">
           {operatorEmail && (
@@ -120,6 +187,68 @@ const nav = [
 
   .nav-section-label {
     padding: 0 1.25rem 0.5rem;
+  }
+
+  .sidebar-subnav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+    padding: 0.5rem 0 0.5rem;
+    margin-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .sidebar-subnav .nav-section-label {
+    padding: 0.75rem 1.25rem 0.25rem;
+  }
+
+  .sub-name {
+    padding: 0 1.25rem 0.5rem;
+    color: var(--text-body);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sub-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 1.25rem;
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-left: 2px solid transparent;
+    transition: color var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out),
+                background var(--dur-fast) var(--ease-out);
+  }
+
+  .sub-link:hover { color: var(--text-body); background: var(--bg-surface); }
+  .sub-link.active { color: var(--accent); border-left-color: var(--accent); }
+  .sub-link.dim { opacity: 0.55; }
+
+  .sub-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    background: transparent;
+  }
+  .sub-dot.has {
+    background: var(--success);
+    border-color: var(--success);
+  }
+
+  .sub-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .sidebar-footer {

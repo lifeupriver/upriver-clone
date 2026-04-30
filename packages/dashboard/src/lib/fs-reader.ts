@@ -184,3 +184,65 @@ export async function readFidelitySummary(slug: string): Promise<FidelitySummary
     return null;
   }
 }
+
+/**
+ * One-shot probe of every artifact the dashboard cares about for a single
+ * client. Used by the operator landing page (artifact grid) and the per-client
+ * sidebar section. Replaces several scattered probe sites that were each
+ * doing their own `fileExists` calls.
+ */
+export interface ClientArtifacts {
+  hasIntake: boolean;
+  hasInterviewSpec: boolean;
+  hasInterviewResponses: boolean;
+  hasAudit: boolean;
+  hasFidelity: boolean;
+  hasVoice: boolean;
+  hasBrief: boolean;
+  hasFixes: boolean;
+  hasQa: boolean;
+  hasLaunch: boolean;
+  hasRepo: boolean;
+}
+
+export async function getClientArtifacts(slug: string): Promise<ClientArtifacts> {
+  const ds = resolveClientDataSource();
+  const [
+    hasIntake,
+    hasInterviewSpec,
+    hasInterviewResponses,
+    hasAudit,
+    hasFidelity,
+    hasVoice,
+    hasBrief,
+    hasFixes,
+    hasQa,
+    hasLaunch,
+    hasRepo,
+  ] = await Promise.all([
+    ds.fileExists(slug, 'intake.json'),
+    ds.fileExists(slug, 'interview/interview-spec.json'),
+    ds.fileExists(slug, 'interview/responses.json'),
+    ds.fileExists(slug, 'audit/summary.json'),
+    ds.fileExists(slug, 'clone-qa/summary.json'),
+    ds.fileExists(slug, 'docs/brand-voice-guide.md'),
+    ds.fileExists(slug, 'claude-design-brief.md'),
+    ds.fileExists(slug, 'fixes-plan.md'),
+    ds.fileExists(slug, 'qa-report.md'),
+    ds.fileExists(slug, 'launch-checklist.md'),
+    ds.fileExists(slug, 'repo'),
+  ]);
+  return {
+    hasIntake,
+    hasInterviewSpec,
+    hasInterviewResponses,
+    hasAudit,
+    hasFidelity,
+    hasVoice,
+    hasBrief,
+    hasFixes,
+    hasQa,
+    hasLaunch,
+    hasRepo,
+  };
+}

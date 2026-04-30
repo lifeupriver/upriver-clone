@@ -30,7 +30,7 @@ const content = await readMarkdownFile(slug, 'launch-checklist.md');
   </div>
 
   {content ? (
-    <MarkdownDoc content={content} />
+    <MarkdownDoc content={content} withToc collapseSections />
   ) : (
     <div class="empty">
       <p>No launch checklist yet. Run <code>upriver launch-checklist {slug}</code> to generate it.</p>

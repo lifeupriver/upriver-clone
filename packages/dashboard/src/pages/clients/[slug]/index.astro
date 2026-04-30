@@ -3,8 +3,17 @@ import DashboardLayout from '@/layouts/DashboardLayout.astro';
 import PipelineStages from '@/components/react/PipelineStages';
 import ScoreStrip from '@/components/astro/ScoreStrip.astro';
 import FindingsTable from '@/components/astro/FindingsTable.astro';
-import { readClientConfig, readAuditPasses, readAuditSummary, clientExists } from '@/lib/fs-reader';
-import { detectStage } from '@/lib/pipeline';
+import ArtifactCard from '@/components/astro/ArtifactCard.astro';
+import {
+  readClientConfig,
+  readAuditPasses,
+  readAuditSummary,
+  readIntake,
+  readFidelitySummary,
+  getClientArtifacts,
+  clientExists,
+} from '@/lib/fs-reader';
+import { detectStage, type PipelineStage } from '@/lib/pipeline';
 import { getDataSource } from '@/lib/data-source';
 
 const { slug } = Astro.params;
@@ -43,9 +52,14 @@ if (!slug || !(await clientExists(slug))) {
 }
 
 const config = (await readClientConfig(slug))!;
-const passes = await readAuditPasses(slug);
-const summary = await readAuditSummary(slug);
-const stage = await detectStage(slug);
+const [passes, summary, stage, intake, fidelity, artifacts] = await Promise.all([
+  readAuditPasses(slug),
+  readAuditSummary(slug),
+  detectStage(slug),
+  readIntake(slug),
+  readFidelitySummary(slug),
+  getClientArtifacts(slug),
+]);
 const dataSource = getDataSource();
 
 const allFindings = passes.flatMap(p => p.findings);
@@ -54,6 +68,130 @@ const p0Findings  = allFindings.filter(f => f.priority === 'p0');
 const created = new Date(config.created_at).toLocaleDateString('en-US', {
   month: 'long', day: 'numeric', year: 'numeric'
 });
+
+function fmtShortDate(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// Map the detected pipeline stage to a one-sentence "next step" recommendation
+// + CTA target. Keep these terse — the full pipeline runner lives in the
+// sidebar PipelineStages island; this is just the headline action.
+interface NextStep {
+  title: string;
+  detail: string;
+  ctaLabel: string;
+  ctaHref: string;
+}
+
+// Detect-stage only ever returns this subset of pipeline stages, but
+// `PipelineStage` is the full id union — so use a partial map and fall back
+// to the `init` step for any unmapped value.
+const nextStepByStage: Partial<Record<PipelineStage, NextStep>> = {
+  init: {
+    title: 'Discover the site',
+    detail: 'Crawl pages and competitors to seed the audit.',
+    ctaLabel: 'Run discover',
+    ctaHref: `/clients/${slug}#pipeline`,
+  },
+  discover: {
+    title: 'Scrape the live site',
+    detail: 'Capture HTML and screenshots for every discovered page.',
+    ctaLabel: 'Run scrape',
+    ctaHref: `/clients/${slug}#pipeline`,
+  },
+  scrape: {
+    title: 'Run the audit',
+    detail: 'Score every dimension and generate findings.',
+    ctaLabel: 'Run audit',
+    ctaHref: `/clients/${slug}#pipeline`,
+  },
+  audit: {
+    title: 'Synthesize the audit',
+    detail: 'Compose findings into a single audit package the client can read.',
+    ctaLabel: 'Run synthesize',
+    ctaHref: `/clients/${slug}#pipeline`,
+  },
+  synthesize: {
+    title: 'Generate the design brief',
+    detail: 'Turn the audit into the operator design brief.',
+    ctaLabel: 'Open audit',
+    ctaHref: `/clients/${slug}/audit`,
+  },
+  'voice-extract': {
+    title: 'Scaffold the new repo',
+    detail: 'Brand voice is captured. Spin up the Astro repo for the rebuild.',
+    ctaLabel: 'Run scaffold',
+    ctaHref: `/clients/${slug}#pipeline`,
+  },
+  'design-brief': {
+    title: 'Scaffold the new repo',
+    detail: 'Brief is ready. Spin up the Astro repo for the rebuild.',
+    ctaLabel: 'Open brief',
+    ctaHref: `/clients/${slug}/design-brief`,
+  },
+  scaffold: {
+    title: 'Clone the site',
+    detail: 'Repo is scaffolded. Visual-clone every page into it.',
+    ctaLabel: 'Run clone',
+    ctaHref: `/clients/${slug}#pipeline`,
+  },
+  clone: {
+    title: 'Plan the fixes',
+    detail: 'Site is cloned. Generate the fixes plan before QA.',
+    ctaLabel: 'Open site preview',
+    ctaHref: `/clients/${slug}/site`,
+  },
+  'fixes-plan': {
+    title: 'Run QA',
+    detail: 'Fixes are planned. Re-audit the cloned site.',
+    ctaLabel: 'Open fixes plan',
+    ctaHref: `/clients/${slug}/fixes`,
+  },
+  qa: {
+    title: 'Generate the launch checklist',
+    detail: 'QA is logged. Compose the launch checklist and ship.',
+    ctaLabel: 'Open QA report',
+    ctaHref: `/clients/${slug}/qa`,
+  },
+  launch: {
+    title: 'Ready to ship',
+    detail: 'Launch checklist is ready. Walk it before going live.',
+    ctaLabel: 'Open checklist',
+    ctaHref: `/clients/${slug}/launch-checklist`,
+  },
+};
+
+const nextStep: NextStep = nextStepByStage[stage] ?? nextStepByStage.init!;
+
+// Artifact summaries — short strings shown under each card title.
+const tierLabel: Record<string, string> = {
+  polish: 'Polish',
+  rebuild: 'Rebuild',
+  'rebuild-plus-content': 'Rebuild + content',
+};
+
+const intakeSummary = artifacts.hasIntake && intake
+  ? `${intake.scopeTier ? tierLabel[intake.scopeTier] ?? intake.scopeTier : 'Tier undecided'}${
+      intake.submittedAt ? ` · submitted ${fmtShortDate(intake.submittedAt)}` : ''
+    }`
+  : undefined;
+
+const interviewSummary = artifacts.hasInterviewResponses
+  ? 'Responses captured'
+  : artifacts.hasInterviewSpec
+  ? 'Guide ready, awaiting client'
+  : undefined;
+
+const auditSummary = artifacts.hasAudit && summary
+  ? `${summary.p0_count} P0 · ${summary.total_findings} findings · score ${summary.overall}`
+  : undefined;
+
+const fidelitySummary = artifacts.hasFidelity && fidelity
+  ? `Overall fidelity ${fidelity.overall}`
+  : undefined;
 ---
 
 <DashboardLayout title={config.name} section="clients">
@@ -87,6 +225,16 @@ const created = new Date(config.created_at).toLocaleDateString('en-US', {
       )}
     </div>
   </div>
+
+  <!-- Next step strip -->
+  <section class="next-step card">
+    <div class="next-meta">
+      <span class="eyebrow">Next step</span>
+      <h3 class="next-title">{nextStep.title}</h3>
+      <p class="next-detail">{nextStep.detail}</p>
+    </div>
+    <a href={nextStep.ctaHref} class="next-cta">{nextStep.ctaLabel} →</a>
+  </section>
 
   <!-- Two-column layout -->
   <div class="client-body">
@@ -124,41 +272,125 @@ const created = new Date(config.created_at).toLocaleDateString('en-US', {
       </div>
 
       <!-- Pipeline -->
-      <div class="card pipeline-card">
+      <div class="card pipeline-card" id="pipeline">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
           <span class="eyebrow">Pipeline</span>
           <span class="eyebrow" style="font-size: 0.62rem; color: var(--text-muted);">click Run to invoke</span>
         </div>
         <PipelineStages slug={slug} currentStage={stage} dataSource={dataSource} client:load />
       </div>
-
-      <!-- Quick nav -->
-      <div class="quick-nav">
-        <a href={`/clients/${slug}/audit`} class:list={['quick-link', { disabled: passes.length === 0 }]}>
-          Audit Report
-        </a>
-        <a href={`/clients/${slug}/voice`} class="quick-link">Brand Voice</a>
-        <a href={`/clients/${slug}/design-brief`} class="quick-link">Design Brief</a>
-        <a href={`/clients/${slug}/site`} class="quick-link">Site Preview</a>
-        <a href={`/clients/${slug}/clone-fidelity`} class="quick-link">Clone Fidelity</a>
-        <a href={`/clients/${slug}/intake`} class="quick-link">Intake</a>
-        <a href={`/clients/${slug}/fixes`} class="quick-link">Fixes Plan</a>
-        <a href={`/clients/${slug}/qa`} class="quick-link">QA Report</a>
-        <a href={`/clients/${slug}/launch-checklist`} class="quick-link">Launch Checklist</a>
-        <a href={`/deliverables/${slug}`} class="quick-link quick-link-accent">
-          Export Audit
-        </a>
-        <a href={`/deliverables/${slug}/design-brief`} class="quick-link quick-link-accent">
-          Export Brief
-        </a>
-        <a href={`/clients/${slug}/share`} class="quick-link quick-link-accent">
-          Share Links
-        </a>
-      </div>
     </aside>
 
-    <!-- Right: Scores + Findings -->
+    <!-- Right: Workspace + Scores + Findings -->
     <div class="client-main">
+      <!-- Workspace artifact grid -->
+      <section class="section">
+        <div class="section-header">
+          <h3>Workspace</h3>
+          <span class="mono section-hint">artifacts for this client</span>
+        </div>
+
+        <div class="artifact-group">
+          <span class="eyebrow group-label">Inputs</span>
+          <div class="artifact-grid">
+            <ArtifactCard
+              title="Intake"
+              status={artifacts.hasIntake ? 'ready' : 'empty'}
+              href={`/clients/${slug}/intake`}
+              summary={intakeSummary}
+            />
+            <ArtifactCard
+              title="Interview"
+              status={artifacts.hasInterviewResponses ? 'ready' : artifacts.hasInterviewSpec ? 'stale' : 'empty'}
+              href={`/clients/${slug}/interview`}
+              summary={interviewSummary}
+            />
+          </div>
+        </div>
+
+        <div class="artifact-group">
+          <span class="eyebrow group-label">Audit</span>
+          <div class="artifact-grid">
+            <ArtifactCard
+              title="Audit Report"
+              status={artifacts.hasAudit ? 'ready' : 'empty'}
+              href={`/clients/${slug}/audit`}
+              summary={auditSummary}
+            />
+            <ArtifactCard
+              title="Clone Fidelity"
+              status={artifacts.hasFidelity ? 'ready' : 'empty'}
+              href={`/clients/${slug}/clone-fidelity`}
+              summary={fidelitySummary}
+            />
+          </div>
+        </div>
+
+        <div class="artifact-group">
+          <span class="eyebrow group-label">Outputs</span>
+          <div class="artifact-grid">
+            <ArtifactCard
+              title="Brand Voice"
+              status={artifacts.hasVoice ? 'ready' : 'empty'}
+              href={`/clients/${slug}/voice`}
+            />
+            <ArtifactCard
+              title="Design Brief"
+              status={artifacts.hasBrief ? 'ready' : 'empty'}
+              href={`/clients/${slug}/design-brief`}
+            />
+            <ArtifactCard
+              title="Site Preview"
+              status={artifacts.hasRepo ? 'ready' : 'empty'}
+              href={`/clients/${slug}/site`}
+              summary={artifacts.hasRepo ? 'Cloned repo available' : undefined}
+            />
+            <ArtifactCard
+              title="Fixes Plan"
+              status={artifacts.hasFixes ? 'ready' : 'empty'}
+              href={`/clients/${slug}/fixes`}
+            />
+            <ArtifactCard
+              title="QA Report"
+              status={artifacts.hasQa ? 'ready' : 'empty'}
+              href={`/clients/${slug}/qa`}
+            />
+            <ArtifactCard
+              title="Launch Checklist"
+              status={artifacts.hasLaunch ? 'ready' : 'empty'}
+              href={`/clients/${slug}/launch-checklist`}
+            />
+          </div>
+        </div>
+
+        <div class="artifact-group">
+          <span class="eyebrow group-label">Share</span>
+          <div class="artifact-grid">
+            <ArtifactCard
+              title="Export Audit"
+              status={artifacts.hasAudit ? 'ready' : 'empty'}
+              href={`/deliverables/${slug}`}
+              summary="Client-facing audit report"
+              ctaLabel="Open export →"
+            />
+            <ArtifactCard
+              title="Export Brief"
+              status={artifacts.hasBrief ? 'ready' : 'empty'}
+              href={`/deliverables/${slug}/design-brief`}
+              summary="Client-facing design brief"
+              ctaLabel="Open export →"
+            />
+            <ArtifactCard
+              title="Share Links"
+              status="ready"
+              href={`/clients/${slug}/share`}
+              summary="Generate read-only share tokens"
+              ctaLabel="Manage →"
+            />
+          </div>
+        </div>
+      </section>
+
       {passes.length > 0 ? (
         <>
           <section class="section">
@@ -227,7 +459,7 @@ const created = new Date(config.created_at).toLocaleDateString('en-US', {
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border);
   }
@@ -253,6 +485,38 @@ const created = new Date(config.created_at).toLocaleDateString('en-US', {
   }
 
   .overall-score { font-size: 2.5rem; }
+
+  .next-step {
+    margin-bottom: 2rem;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    border-color: var(--accent-20);
+    background: linear-gradient(180deg, var(--accent-05), var(--bg-surface));
+  }
+
+  .next-meta { display: flex; flex-direction: column; gap: 0.25rem; }
+  .next-title { margin: 0.15rem 0 0.1rem; font-size: 1.15rem; }
+  .next-detail { color: var(--text-muted); font-size: var(--fs-sm); margin: 0; }
+
+  .next-cta {
+    flex-shrink: 0;
+    padding: 0.65rem 1.1rem;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-heading);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    box-shadow: var(--shadow-btn-primary);
+    transition: background var(--dur-fast) var(--ease-out);
+  }
+  .next-cta:hover { background: var(--accent-hover); }
 
   .client-body {
     display: grid;
@@ -303,52 +567,10 @@ const created = new Date(config.created_at).toLocaleDateString('en-US', {
 
   .meta-link:hover { color: var(--accent-hover); }
 
-  .quick-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 0.375rem;
-  }
-
-  .quick-link {
-    padding: 0.5rem 0.875rem;
-    background: var(--bg-surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-heading);
-    font-weight: 500;
-    font-size: var(--fs-xs);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    transition: color var(--dur-fast) var(--ease-out),
-                border-color var(--dur-fast) var(--ease-out);
-  }
-
-  .quick-link:hover {
-    color: var(--text-body);
-    border-color: var(--border-input);
-  }
-
-  .quick-link-accent {
-    color: var(--accent);
-    border-color: var(--accent-20);
-    background: var(--accent-05);
-  }
-
-  .quick-link-accent:hover {
-    color: var(--accent-hover);
-    border-color: var(--accent-30);
-  }
-
-  .quick-link.disabled {
-    opacity: 0.4;
-    pointer-events: none;
-  }
-
   .client-main {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 2.25rem;
   }
 
   .section {
@@ -362,6 +584,23 @@ const created = new Date(config.created_at).toLocaleDateString('en-US', {
     align-items: baseline;
     justify-content: space-between;
     gap: 1rem;
+  }
+
+  .section-hint { color: var(--text-muted); font-size: var(--fs-xs); }
+
+  .artifact-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    margin-top: 0.5rem;
+  }
+
+  .group-label { font-size: 0.7rem; }
+
+  .artifact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.75rem;
   }
 
   .see-all {

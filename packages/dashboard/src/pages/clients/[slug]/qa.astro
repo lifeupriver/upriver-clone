@@ -30,7 +30,7 @@ const content = await readMarkdownFile(slug, 'qa-report.md');
   </div>
 
   {content ? (
-    <MarkdownDoc content={content} />
+    <MarkdownDoc content={content} withToc collapseSections />
   ) : (
     <div class="empty">
       <p>No QA report yet. Run <code>upriver qa {slug}</code> to generate it.</p>
