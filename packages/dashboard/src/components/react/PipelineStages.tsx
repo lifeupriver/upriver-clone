@@ -305,6 +305,18 @@ async function consumeSSE(body: ReadableStream<Uint8Array>, opts: StreamCallback
   if (buffer.trim().length > 0) handleEvent(buffer, opts);
 }
 
+function formatBytes(n: number): string {
+  if (!Number.isFinite(n) || n <= 0) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  let i = 0;
+  let v = n;
+  while (v >= 1024 && i < units.length - 1) {
+    v /= 1024;
+    i += 1;
+  }
+  return `${v.toFixed(v >= 10 || i === 0 ? 0 : 1)} ${units[i]}`;
+}
+
 function indexOfBlankLine(s: string): number {
   const a = s.indexOf('\n\n');
   const b = s.indexOf('\r\n\r\n');
@@ -336,7 +348,12 @@ function handleEvent(raw: string, opts: StreamCallbacks): void {
       const parsed = JSON.parse(data) as {
         code?: number;
         status?: string;
-        output?: { stdoutTail?: string; stderrTail?: string } | null;
+        output?: {
+          stdoutTail?: string;
+          stderrTail?: string;
+          pulled?: { files?: number; bytes?: number };
+          pushed?: { files?: number; bytes?: number };
+        } | null;
       };
       // Two payload shapes share this event name: legacy spawn endpoint uses
       // `{ code }`, jobs endpoint uses `{ status, output }`. Either path
@@ -357,6 +374,13 @@ function handleEvent(raw: string, opts: StreamCallbacks): void {
           for (const line of output.stderrTail.split('\n')) {
             opts.onLine(line);
           }
+        }
+        const pulled = output.pulled;
+        const pushed = output.pushed;
+        if (pulled || pushed) {
+          const fmt = (b: { files?: number; bytes?: number } | undefined): string =>
+            b ? `${b.files ?? 0} files / ${formatBytes(b.bytes ?? 0)}` : '0 files / 0 B';
+          opts.onLine(`[transfer] pulled ${fmt(pulled)}, pushed ${fmt(pushed)}`);
         }
       }
       if (typeof parsed.code === 'number') {
