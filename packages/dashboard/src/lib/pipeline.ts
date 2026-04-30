@@ -31,6 +31,7 @@ export async function detectStage(slug: string): Promise<PipelineStage> {
   if (await ds.fileExists(slug, 'repo/package.json')) return 'clone';
   if (await ds.fileExists(slug, 'repo')) return 'scaffold';
   if (await ds.fileExists(slug, 'claude-design-brief.md')) return 'design-brief';
+  if (await ds.fileExists(slug, 'voice/voice-rules.json')) return 'voice-extract';
   if (await ds.fileExists(slug, 'audit-package.json')) return 'synthesize';
   if (await ds.fileExists(slug, 'audit/summary.json')) return 'audit';
   if (await ds.fileExists(slug, 'pages')) return 'scrape';

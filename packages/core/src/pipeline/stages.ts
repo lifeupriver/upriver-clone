@@ -20,6 +20,7 @@ export type PipelineStageId =
   | 'scrape'
   | 'audit'
   | 'synthesize'
+  | 'voice-extract'
   | 'design-brief'
   | 'scaffold'
   | 'clone'
@@ -66,6 +67,7 @@ export const PIPELINE_STAGES: readonly PipelineStage[] = [
   { id: 'scrape', label: 'Scrape', command: 'scrape', describe: 'Firecrawl scrape every page' },
   { id: 'audit', label: 'Audit', command: 'audit', describe: 'Run audit passes (--audit-mode threads through on `run all`)' },
   { id: 'synthesize', label: 'Synthesize', command: 'synthesize', describe: 'Compose audit-package.json' },
+  { id: 'voice-extract', label: 'Voice Extract', command: 'voice-extract', optional: true, describe: 'Derive brand voice guide (F03) — feeds improve, blog topics, video audit, admin' },
   { id: 'design-brief', label: 'Design Brief', command: 'design-brief', describe: 'Render the operator design brief' },
   { id: 'scaffold', label: 'Scaffold', command: 'scaffold', describe: 'Generate Astro repo from template' },
   { id: 'clone', label: 'Clone', command: 'clone', args: ['--no-pr'], describe: 'Visual clone every page' },

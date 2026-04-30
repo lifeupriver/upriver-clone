@@ -27,7 +27,7 @@ Copy `.env.example` to `.env` at the repo root. The CLI auto-loads `.env` from t
 | Variable | Required for | Notes |
 |----------|--------------|-------|
 | `FIRECRAWL_API_KEY` | `init`, `discover`, `scrape`, `qa` | [Firecrawl](https://firecrawl.dev) key (`fc-...`). Covers map, scrape, batch, and branding extraction. |
-| `ANTHROPIC_API_KEY` | `synthesize`, `design-brief`, `interview-prep`, `process-interview` | Used via `@anthropic-ai/sdk` for brand voice draft, executive summary, and implementation plan. |
+| `ANTHROPIC_API_KEY` | `synthesize`, `design-brief`, `voice-extract`, `interview-prep`, `process-interview` | Used via `@anthropic-ai/sdk` for brand voice draft/extract, executive summary, and implementation plan. |
 | `GOOGLE_SERVICE_ACCOUNT_KEY` | `discover` (GSC data), `audit` (seo pass) | Path to a Google service-account JSON file with Search Console read access for the client's property. Optional — commands degrade gracefully without it. |
 | `UPRIVER_SUPABASE_URL` | All commands (usage logging) | Supabase project URL for internal usage tracking. Optional — missing values skip the log write. |
 | `UPRIVER_SUPABASE_SERVICE_KEY` | All commands (usage logging) | Service-role key for the usage-log Supabase. |
@@ -70,6 +70,12 @@ upriver audit audreys
 
 # 4. Compile audit-package.json and write client-facing docs (voice guide, exec summary)
 upriver synthesize audreys
+
+# 5a. (Optional) Derive a deeper brand voice guide from the scraped copy.
+#     Outputs voice/voice-rules.json + brand-voice.md + sample-rewrites.md.
+#     Sellable as a $750 standalone deliverable; consumed by improve, blog
+#     topics, video audit, and the natural-language admin.
+upriver voice-extract audreys
 
 # 5. Generate the Claude Design handoff brief
 upriver design-brief audreys

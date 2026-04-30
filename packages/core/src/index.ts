@@ -4,6 +4,7 @@ export * from './types/firecrawl.js';
 export * from './types/audit.js';
 export * from './types/audit-package.js';
 export * from './types/intake.js';
+export * from './types/voice.js';
 export * from './types/extraction-schemas.js';
 export {
   CtaButtonZ,
