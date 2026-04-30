@@ -2,15 +2,15 @@ import { defineMiddleware } from 'astro:middleware';
 
 import { getSessionUser, isOperator } from './lib/auth.js';
 import { DataSourceUnavailableError, getDataSource } from './lib/data-source.js';
+import { validateShareToken } from './lib/share-token.js';
 
 /** Path prefixes that require an `app_metadata.role === 'operator'` session. */
-const OPERATOR_PATH_PREFIXES = ['/clients', '/api/enqueue'];
+const OPERATOR_PATH_PREFIXES = ['/clients', '/api/enqueue', '/deliverables'];
 
-/** Paths bypass auth even in supabase mode (login flow + share-link routes). */
+/** Paths bypass auth even in supabase mode (login flow). */
 const PUBLIC_PATH_PREFIXES = [
   '/login',
   '/auth/',
-  '/deliverables/',
   '/api/inngest', // unused in option (1a) but harmless to keep open; serve handler lives in worker
   '/_image', // Astro asset endpoint
 ];
@@ -53,7 +53,24 @@ export const onRequest = defineMiddleware(async (context, next) => {
     !pathIs(pathname, PUBLIC_PATH_PREFIXES)
   ) {
     const user = await getSessionUser(context.request, context.cookies);
-    if (!isOperator(user)) {
+    const operator = isOperator(user);
+
+    // /deliverables/<slug>/* has an additional public path: a valid share
+    // token (`?t=<token>`) lets anonymous users in. The slug is the segment
+    // immediately after `/deliverables/`. The bare `/deliverables` index
+    // remains operator-only (it lists every slug — not for share-link
+    // recipients).
+    if (!operator && pathname.startsWith('/deliverables/')) {
+      const segments = pathname.slice('/deliverables/'.length).split('/').filter(Boolean);
+      const slug = segments[0];
+      const token = url.searchParams.get('t');
+      if (slug && token && (await validateShareToken(slug, token))) {
+        // Token is valid for this slug — let the request through.
+        return next();
+      }
+    }
+
+    if (!operator) {
       const isApi = pathname.startsWith('/api/');
       if (isApi) {
         return new Response(JSON.stringify({ error: 'forbidden — operator session required' }), {
@@ -61,10 +78,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
           headers: { 'content-type': 'application/json' },
         });
       }
-      const next = encodeURIComponent(pathname + url.search);
+      const nextParam = encodeURIComponent(pathname + url.search);
       return new Response(null, {
         status: 302,
-        headers: { location: `/login?next=${next}` },
+        headers: { location: `/login?next=${nextParam}` },
       });
     }
   }
