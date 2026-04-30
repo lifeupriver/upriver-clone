@@ -118,6 +118,20 @@ export class SupabaseClientDataSource implements ClientDataSource {
   }
 
   async listClientFiles(slug: string, dir: string): Promise<string[]> {
+    const entries = await this.listClientEntries(slug, dir);
+    return entries.filter(e => !e.isDirectory).map(e => e.name);
+  }
+
+  /**
+   * Storage-specific helper exposing both files and directories at a level.
+   * Used by `upriver sync pull` to walk the bucket recursively. Not part of
+   * the `ClientDataSource` interface — callers needing this branch on
+   * `kind === 'supabase'` (or get it from a `SupabaseClientDataSource` directly).
+   */
+  async listClientEntries(
+    slug: string,
+    dir: string,
+  ): Promise<Array<{ name: string; isDirectory: boolean }>> {
     const { data, error } = await this.client.storage
       .from(this.bucket)
       .list(this.dirFor(slug, dir), { limit: 1000 });
@@ -125,7 +139,7 @@ export class SupabaseClientDataSource implements ClientDataSource {
       if (isNotFound(error)) return [];
       throw error;
     }
-    return (data ?? []).filter(e => e.id !== null).map(e => e.name);
+    return (data ?? []).map(e => ({ name: e.name, isDirectory: e.id === null }));
   }
 
   async signClientFileUrl(
