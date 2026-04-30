@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import { getSessionUser } from '@/lib/auth';
+import { getDataSource } from '@/lib/data-source';
 
 export interface Props {
   title: string;
@@ -10,9 +12,12 @@ export interface Props {
 const { title, section = 'clients' } = Astro.props;
 const currentPath = Astro.url.pathname;
 
-// Phase 4 retired the upriver-run-token meta tag — hosted mode uses Supabase
-// Auth cookies, local mode is operator-laptop-only. Nothing to plumb through
-// to client islands.
+// In supabase (hosted) mode, surface the signed-in operator email and a
+// sign-out link in the sidebar footer. Local mode skips the lookup —
+// there's no Supabase session to read and the env vars may not be set.
+const isHosted = getDataSource() === 'supabase';
+const sessionUser = isHosted ? await getSessionUser(Astro.request, Astro.cookies) : null;
+const operatorEmail = sessionUser?.email ?? null;
 
 const nav = [
   { href: '/clients', label: 'Clients', section: 'clients' },
@@ -52,7 +57,14 @@ const nav = [
         </nav>
 
         <div class="sidebar-footer">
-          <span class="mono" style="font-size: var(--fs-xs); color: var(--text-muted);">v0.1.0</span>
+          {operatorEmail && (
+            <div class="session-block">
+              <span class="eyebrow session-label">Signed in</span>
+              <span class="session-email" title={operatorEmail}>{operatorEmail}</span>
+              <a href="/auth/signout" class="signout-link">Sign out</a>
+            </div>
+          )}
+          <span class="mono version-tag">v0.1.0</span>
         </div>
       </aside>
 
@@ -114,6 +126,50 @@ const nav = [
     margin-top: auto;
     padding: 1rem 1.25rem;
     border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .session-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .session-label {
+    margin-bottom: 0.125rem;
+  }
+
+  .session-email {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--text-body);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .signout-link {
+    align-self: flex-start;
+    margin-top: 0.125rem;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color 150ms var(--ease-out);
+  }
+
+  .signout-link:hover {
+    color: var(--accent);
+  }
+
+  .version-tag {
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    opacity: 0.7;
   }
 
   .main {
