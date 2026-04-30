@@ -31,7 +31,19 @@ Copy `.env.example` to `.env` at the repo root. The CLI auto-loads `.env` from t
 | `GOOGLE_SERVICE_ACCOUNT_KEY` | `discover` (GSC data), `audit` (seo pass) | Path to a Google service-account JSON file with Search Console read access for the client's property. Optional — commands degrade gracefully without it. |
 | `UPRIVER_SUPABASE_URL` | All commands (usage logging) | Supabase project URL for internal usage tracking. Optional — missing values skip the log write. |
 | `UPRIVER_SUPABASE_SERVICE_KEY` | All commands (usage logging) | Service-role key for the usage-log Supabase. |
-| `CLAUDE_BIN` | `clone`, `fixes apply` | Override the Claude Code binary path. Defaults to `claude` on `PATH`. |
+| `CLAUDE_BIN` | `clone`, `fixes apply`, `voice-extract`, `audit-media`, `followup`, `custom-tools`, `admin-process` | Override the Claude Code binary path. Defaults to `claude` on `PATH`. |
+| `UPRIVER_USE_API_KEY` | (override) | When set, the new Phase 1-3 features keep `ANTHROPIC_API_KEY` in the spawned `claude` env instead of stripping it. Default behaviour is to strip so the operator's Claude Max subscription powers everything. |
+| `MONITOR_DEFAULT_CADENCE` | `monitor` Inngest cron | Default cron expression for the F06 weekly schedule. Default `0 13 * * MON`. |
+| `MONITOR_SLUGS` | `monitor` Inngest cron | Comma-separated client slugs to fan out to. Used until the `client_admins` Supabase migration lands. |
+| `FOLLOWUP_CADENCE` | `followup` Inngest cron | Default cron for the F07 long-cadence schedule. Default `0 14 * * MON`. |
+| `FOLLOWUP_SLUGS` | `followup` Inngest cron | Comma-separated client slugs eligible for followup runs. |
+| `UPRIVER_CASE_STUDIES_PATH` | `followup` | Optional filesystem path where case study drafts get copied for the operator's content workflow. |
+| `OPERATOR_VIDEO_DAY_RATE` | `video-audit` | Override for full-day shoot pricing in the production budget output. |
+| `EXPO_TOKEN` | `prototype-app --publish` | Required when wiring the (unimplemented) `--publish` flag for stable Expo Go QR codes. |
+| `UPRIVER_GITHUB_PAT` / `UPRIVER_GITHUB_APP_ID` / `UPRIVER_GITHUB_APP_PRIVATE_KEY` | F05 worker | Operator-level GitHub auth used by the worker's webhook handler. |
+| `GITHUB_WEBHOOK_SECRET` | F05 worker | Shared secret for verifying GitHub webhook signatures. |
+| `ADMIN_OPERATOR_SLACK_WEBHOOK` | F05 worker | Slack webhook for PR-ready and asset-needed notifications. |
+| `RESEND_API_KEY` / `RESEND_FROM_DOMAIN` | F06 + F07 worker | Optional. When wired, monitor + followup emails send via Resend. |
 
 ## Installation
 
@@ -122,6 +134,89 @@ upriver qa audreys --preview-url https://audreys-preview.vercel.app
 upriver launch-checklist audreys
 ```
 
+## Sellable standalone deliverables
+
+Phase 1 added six commands that double as standalone products clients can buy without committing to a full rebuild. Each one produces a finished deliverable in under 10 minutes.
+
+```bash
+# F03 — brand voice guide ($750 standalone). Reads scraped copy, produces a
+# multi-section voice guide + machine-readable rules consumed by every other
+# AI-generation surface in the suite.
+upriver voice-extract audreys --depth=standard
+
+# F01 — media audit + replacement shot list. Inventories every image,
+# classifies authenticity, generates a one-day shoot plan with USD pricing.
+upriver audit-media audreys
+
+# F02 — JSON-LD schema build ($500 standalone). LocalBusiness, FAQ, Service,
+# Breadcrumb, Person; vertical-aware @type mapping; 3-platform install guide.
+upriver schema-build audreys
+
+# F09 — gap analysis. Missing pages + missing features for the vertical,
+# plus a proposed-sitemap.json the rebuild stages consume.
+upriver gap-analysis audreys
+
+# F12 — page-by-page video plan with shot lists and a production budget.
+upriver video-audit audreys --count=8
+
+# F10 — 25 ranked blog topic ideas + briefs ($750 standalone).
+upriver blog-topics audreys --count=25
+```
+
+## Phase 2 — retainer + sales artifacts
+
+```bash
+# F06 — weekly delta report for retainer clients. One-page HTML email-ready
+# report with inline-SVG trend chart, callouts, active P0 issues. Wires
+# automatically to the Inngest worker's monitor-weekly cron.
+upriver monitor audreys
+
+# F07 — 6-month re-audit. Produces a case study draft and a re-engagement doc
+# in the client's voice (consumed from F03's voice-rules.json).
+upriver followup audreys
+
+# F04 — Expo React Native prototype. Generates a runnable per-client app
+# under clients/<slug>/app-prototype/ pulling brand colors, real content,
+# and F01-flagged authentic photography.
+upriver prototype-app audreys
+
+# F11 — bespoke backend tool concepts. Generates 3-5 specific, scoped,
+# priced proposals tailored to the client's industry and operational signals.
+upriver custom-tools audreys --count=5
+```
+
+## Phase 3 — natural-language admin (the retainer hook)
+
+Once a site is rebuilt, the operator wires the natural-language admin so
+clients submit plain-English change requests via GitHub Issues (or the
+optional Vercel form) and headless Claude Code opens a PR. The operator
+reviews and merges in GitHub.
+
+```bash
+# Set up the per-client admin (writes templates + form scaffolding,
+# generates a 6-digit form PIN, prints OPERATOR_GUIDE.md with gh + vercel
+# commands to push labels, webhook, and form deployment to production).
+upriver admin-deploy audreys --repo=lifeupriver/audreys-site
+
+# Day-to-day:
+upriver admin-status audreys           # repo, form, pause flag, last run
+upriver admin-pause audreys            # stop processing new events
+upriver admin-pause audreys --resume   # back online
+upriver admin-rotate-pin audreys       # generate a fresh form PIN
+
+# Manual single-issue test (bypasses GitHub webhook):
+upriver admin-process audreys \
+  --repo-dir=/tmp/audreys-site \
+  --issue-number=42 \
+  --issue-title="add fall menu" \
+  --issue-body-file=./issue.md
+```
+
+The webhook handler that fires `admin-process` from real GitHub events lives
+at `packages/admin-template/template/webhook/handler.ts` as a reference
+implementation. Copy into `packages/worker/src/functions/admin-webhook.ts`
+when wiring the production path.
+
 The output of each command lands under `clients/<slug>/`:
 
 ```
@@ -145,6 +240,19 @@ clients/audreys/
 ├── qa/                       # re-scraped preview pages + qa/audit/*.json
 ├── qa-report.md
 ├── launch-checklist.md
+├── voice/                    # F03 — voice-rules.json + brand-voice.md + sample-rewrites.md
+├── schema/                   # F02 — site.json + pages/*.json + manifest.json
+├── schema-install.md         # F02 — three-platform install guide
+├── media-shotlist.md/.html   # F01 — replacement shot list
+├── proposed-sitemap.json     # F09 — drives finalize redirect rules
+├── gap-recommendations.md/.html  # F09 — client deliverable
+├── video-audit/              # F12 — plan + shot lists + production budget
+├── blog-topics/              # F10 — topics.json + 25 briefs + roadmap
+├── monitoring/               # F06 — weekly snapshots + delta reports
+├── followups/                # F07 — case study + re-engagement docs
+├── custom-tools/             # F11 — proposal + sales talking points
+├── app-prototype/            # F04 — runnable Expo project
+├── admin/                    # F05 — issue templates, form, operator guide
 └── repo/                     # scaffolded Astro 6 hybrid site
 ```
 

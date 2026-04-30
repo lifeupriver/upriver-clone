@@ -15,6 +15,11 @@ import {
   downloadMissing,
   appendToAssetManifest,
 } from '../clone/download-missing.js';
+import {
+  applyRedirectsToVercelConfig,
+  buildRedirectRules,
+  loadProposedSitemap,
+} from '../finalize/redirects.js';
 
 export default class Finalize extends BaseCommand {
   static override description =
@@ -133,6 +138,21 @@ export default class Finalize extends BaseCommand {
         this.log(
           `    ${relative(repoDir, path).padEnd(50)}  links:${report.internalLinksRewritten}  imgs:${report.cdnImagesRewritten}`,
         );
+      }
+    }
+
+    // Generate redirect rules from F09 proposed-sitemap.json (if it exists).
+    const proposed = loadProposedSitemap(clientDir);
+    if (proposed && Object.keys(proposed.current_to_proposed).length > 0) {
+      const rules = buildRedirectRules(proposed.current_to_proposed);
+      if (flags['dry-run']) {
+        this.log(`\n  Redirects (from F09 proposed-sitemap, dry-run): ${rules.length} rules would be written.`);
+      } else if (rules.length > 0) {
+        const out = applyRedirectsToVercelConfig(repoDir, rules);
+        this.log(`\n  Redirects: wrote ${out.count} rule(s) to vercel.json from F09 proposed-sitemap.`);
+        if (out.preserved.length > 0) {
+          this.log(`    Preserved ${out.preserved.length} operator-added rule(s) at: ${out.preserved.slice(0, 5).join(', ')}`);
+        }
       }
     }
 
