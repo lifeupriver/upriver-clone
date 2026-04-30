@@ -1,39 +1,35 @@
 # Fresh-session resume prompt
 
-Paste the block below into a new Claude Code session in this repo. It
-boots the next session into the right context without redoing
-discovery.
+Paste the block below into a new Claude Code session in this repo.
 
-The prior version of this file pointed at the original roadmap TODOs —
-those are now all shipped. This is the new world, post-Option-B
-decision.
+Phase 3 of OPTION-B-MIGRATION.md shipped end-to-end in code last session.
+Next session is either: (a) operator-side provisioning to bring Phase 3
+online, or (b) Phase 4 (auth) which is independent and can land first.
 
 ---
 
 ## Paste this:
 
 ```
-You're picking up work on the upriver-clone monorepo. Read these in
-order before doing anything:
+You're picking up work on the upriver-clone monorepo. Read these in order:
 
-1. `.planning/roadmap/HANDOFF.md` — current state, all decisions
-   resolved + open, what's pending. THIS IS THE PRIMARY REFERENCE.
-2. `.planning/roadmap/OPTION-B-MIGRATION.md` — the 4-phase plan for
-   moving from operator-local to fully-hosted on Vercel + Supabase.
-   The user explicitly chose Option B in the previous session.
-3. `.planning/roadmap/DECISIONS-NEEDED.md` — open decisions and the
-   resolved table. Reference only — most are already closed.
+1. `.planning/roadmap/HANDOFF.md` — primary reference. State of phase 3
+   (code complete, operator provisioning pending) and the 6-step Inngest
+   + Fly + Vercel checklist.
+2. `packages/worker/DEPLOY.md` — full operator walkthrough for the
+   provisioning steps.
+3. `.planning/roadmap/OPTION-B-MIGRATION.md` — the 4-phase plan. Phase 4
+   (auth) is the next code-side phase if the operator wants to get
+   ahead of provisioning.
 
 ## Verify state in the first 2 minutes
 
 ```
-git log --oneline origin/main..HEAD | head    # 14 commits expected
-git status                                     # clean
-pnpm -r run typecheck                          # 0 errors
-pnpm --filter @upriver/cli run test            # 72/72
-pnpm --filter @upriver/core run test           # 21/21
+git log --oneline origin/main..HEAD | head     # 24 commits expected
+git status                                      # clean
+pnpm -r run typecheck                           # 0 errors
 curl -sS -o /dev/null -w "%{http_code}\n" https://upriver-platform.vercel.app/clients
-                                               # → 200
+                                                # → 200
 ```
 
 If any step diverges, stop and surface — something has changed since
@@ -41,143 +37,100 @@ this handoff was written.
 
 ## Headline state
 
-- Branch: `main`, 14 commits ahead of `origin/main`. Tests 72/72 (cli)
-  + 21/21 (core), typecheck clean across all packages. Working tree
-  clean.
-- Supabase project `upriver-platform` (id `qavbpfmhgvkhrnbqalrp`)
-  ACTIVE_HEALTHY in the `Upriver` Pro org
-  (id `ezbdnbazneviadrqalph`). Bucket `upriver` private, 500 MB cap.
-- Vercel team `Upriver` (id `team_FIxyAOaCMqi7KGYQntQeCbuW`).
-- Vercel project `upriver-platform` (id
-  `prj_LFSBjXlYAZCBj5tsuNsmneeJysL9`) live at
-  https://upriver-platform.vercel.app, Root Directory =
-  `packages/dashboard`. UPRIVER_DATA_SOURCE=supabase set on Production
-  + Development env. Preview env intentionally empty.
-- Architecture: Option B (full Vercel + Supabase). **Phases 1 and 2
-  complete.** Next phase: Phase 3 (pipeline execution off the
-  dashboard via worker platform, recommended Inngest).
+- Branch: `main`, 24 commits ahead of `origin/main`. Phase 3 code is
+  shipped: `@upriver/worker` package, dashboard `/api/enqueue` +
+  `/api/jobs`, Dockerfile + GHCR workflow, fly.toml + DEPLOY.md, real
+  `runStage` (validate → pull → spawn → push).
+- Architecture decisions locked: Inngest Cloud, GHCR registry,
+  new-clients-only back-migration, serve handler hosted *in* the worker
+  container (option 1a — Fly.io machine).
+- Production at <https://upriver-platform.vercel.app/clients> is still
+  the Phase 2 build (data source = supabase, no Phase 3 trigger yet —
+  `INNGEST_EVENT_KEY` not set on Vercel env, so `/api/enqueue` would
+  return 502).
 
-## Phase 1 + 2 — what landed
+## Two paths forward
 
-- `@astrojs/vercel` adapter on the dashboard.
-- `@upriver/core/data` exports `ClientDataSource` interface +
-  `LocalFsClientDataSource` and `SupabaseClientDataSource`.
-- Dashboard libs (fs-reader, report-reader, intake-writer, pipeline)
-  all async; route through `resolveClientDataSource()` based on
-  `UPRIVER_DATA_SOURCE`.
-- `upriver sync push|pull <slug>` CLI commands move artifacts between
-  local fs and the bucket. Default skip: `node_modules/`, `.git/`,
-  `.DS_Store`. `--exclude` and `--dry-run` flags.
-- Production deploy verified: GET / → 302 → /clients → 200; empty
-  state shows "Looking in: Supabase bucket clients/" because no slugs
-  pushed yet.
-- Smoke test: `node packages/core/scripts/smoke-data-source.mjs` runs
-  the full SupabaseClientDataSource surface against the live bucket.
+### Path A — operator provisions Phase 3 live
 
-## Immediate next step — Phase 3 of OPTION-B-MIGRATION.md
+The 6 steps live in `HANDOFF.md` and `packages/worker/DEPLOY.md`:
 
-Pipeline execution off the dashboard. Goal: trigger pipeline stages
-from the hosted dashboard without spawning child processes inside
-Vercel functions.
+1. Inngest Cloud signup → `INNGEST_EVENT_KEY`, `INNGEST_SIGNING_KEY`
+2. `fly launch --no-deploy --config packages/worker/fly.toml --copy-config`
+   then `fly secrets set ...`
+3. Push to `main` (triggers `.github/workflows/worker-image.yml`)
+4. `fly deploy --image ghcr.io/lifeupriver/upriver-worker:latest`
+5. Inngest dashboard → Apps → Sync new app
+   → `https://upriver-worker.fly.dev/api/inngest`
+6. `vercel env add INNGEST_EVENT_KEY production` +
+   `vercel env add INNGEST_SIGNING_KEY production`
 
-**Surface these three questions to the user FIRST. Do not start
-scaffolding `packages/worker/` until at least Q1 is answered.**
+Verification once live:
+```
+curl https://upriver-worker.fly.dev/healthz                # → ok
+curl https://upriver-worker.fly.dev/api/inngest            # → JSON manifest
+```
+Then click Run on any pushed-to-bucket slug in the hosted dashboard.
 
-> Q1. **Worker platform** — pick one. My recommendation: **Inngest**.
->     Alternatives in `OPTION-B-MIGRATION.md` Phase 3 table:
->     Trigger.dev (similar shape, more control), GitHub Actions
->     `workflow_dispatch` (free, slow startup, awkward SSE),
->     Vercel Functions w/ Fluid Compute (one vendor, ephemeral disk),
->     Fly.io machine (long-running container, manual provisioning).
->
-> Q2. **Container image registry** — recommendation **GitHub Container
->     Registry** (free, integrates with the existing repo).
->     Alternative: Docker Hub.
->
-> Q3. **Existing-client back-migration** — once Phase 3 is live and
->     pipelines run against the bucket, do the existing local clients
->     (currently in operator's local `clients/<slug>/`, none in the
->     bucket as of this handoff) get migrated via `upriver sync push`?
->     Operator's call. Default: only new clients live in the bucket.
+### Path B — start Phase 4 (auth) in parallel
 
-Slices once Q1 + Q2 are answered (per OPTION-B-MIGRATION.md):
-1. `packages/worker/` — one job per pipeline stage (scrape, audit,
-   synthesize, design-brief, scaffold, clone, fixes-plan, qa).
-2. Replace `/api/run/<command>` with `/api/enqueue/<command>` —
-   posts a job to the worker platform, returns a job-id.
-3. `/api/jobs/<id>` SSE endpoint streaming status from the worker.
-4. Update `PipelineStages.tsx` to enqueue+stream instead of
-   spawn+stream.
-5. Worker container with `claude` CLI + Lighthouse + squirrelscan +
-   Playwright; baked into a registry image.
+OPTION-B-MIGRATION.md Phase 4 covers Supabase Auth gating
+`/clients/*` and `/api/enqueue/*`, plus per-slug share tokens for
+`/deliverables/<slug>/*`. Independent of Phase 3 wiring. ~1–2 days.
 
-Phase 3 estimate: 5–7 days. Reversible at the API boundary if the
-worker platform turns out to be a poor fit.
+Smaller code-side tickets that don't depend on Phase 3 going live:
+- Hoist `flagsToArgs` from `packages/dashboard/src/lib/run-cli.ts`
+  + inline copy in `packages/worker/src/functions/run-stage.ts`
+  into `@upriver/core/util/flags.ts`.
+- Render `stdoutTail`/`stderrTail` from the Inngest `done` payload in
+  `PipelineStages.tsx` so the log panel shows real CLI output, not
+  just status transitions.
 
-## Where to find things
+## Where to find Phase 3 things
 
 ```
-packages/core/src/data/
-  client-data-source.ts    # interface
-  local-fs.ts              # LocalFsClientDataSource
-  supabase.ts              # SupabaseClientDataSource + factory
-  *.test.ts                # 13 unit tests
-packages/core/scripts/smoke-data-source.mjs   # live-bucket E2E
-packages/dashboard/src/lib/
-  data-source.ts           # resolveClientDataSource() + assertLocalDataSource()
-  fs-reader.ts             # async; routes through the abstraction
-  report-reader.ts         # async
-  intake-writer.ts         # async
-  pipeline.ts              # async detectStage()
-  run-cli.ts               # still local-only (Phase 3 replaces this)
-packages/dashboard/src/middleware.ts          # 503 placeholder for run-cli paths
-packages/cli/src/commands/sync/{push,pull}.ts # the new sync commands
-.vercel/project.json       # links to upriver-platform on Vercel
-.env                       # operator-local secrets, gitignored
-```
+packages/worker/
+  src/
+    client.ts             # Inngest client (id: upriver-platform)
+    events.ts             # STAGE_RUN_EVENT + zod payload schema
+    serve.ts              # express + inngest/express → :8288
+    functions/
+      run-stage.ts        # validate → pull → spawn → push
+      index.ts            # functions[] manifest
+    index.ts              # public entrypoint (consumed by dashboard)
+  Dockerfile              # multi-stage: builder + playwright runtime
+  fly.toml                # Fly machine config
+  DEPLOY.md               # operator walkthrough
 
-Phase 3 will add `packages/worker/` (does not exist yet).
+packages/dashboard/src/pages/api/
+  enqueue/[command].ts    # POST → inngest.send → { jobId }
+  jobs/[id].ts            # SSE polling Inngest run-status REST
+  run/[command].ts        # legacy spawn path; still in use for local dev
+
+packages/dashboard/src/components/react/PipelineStages.tsx
+  # branches on `dataSource` prop: local→/api/run, supabase→/api/enqueue+/api/jobs
+
+.github/workflows/worker-image.yml
+  # builds + pushes ghcr.io/lifeupriver/upriver-worker on main + v* tags
+```
 
 ## MCP servers
 
-Already authenticated in this repo:
-- `mcp__plugin_supabase_supabase__*` — full toolset. Note:
-  `confirm_cost` must be called before `create_project` /
-  `create_branch`.
-- `mcp__plugin_vercel_vercel__*` — full toolset. Note: no
-  `create_team` (do it in dashboard if needed); no explicit
-  `create_project` (created implicitly by `deploy_to_vercel` —
-  which actually delegates to `vercel deploy` CLI). For env vars,
-  use `vercel env add NAME production --value V --yes` via Bash;
-  preview-env adds need a git branch arg or get rejected even
-  with `--yes` (known CLI quirk; preview deploys aren't wired yet
-  anyway).
+Already authenticated:
+- `mcp__plugin_supabase_supabase__*` — full toolset.
+- `mcp__plugin_vercel_vercel__*` — full toolset.
 
-If the deferred-tools list shows them but their schemas aren't loaded,
-use `ToolSearch` with `select:<tool_name>` to load before calling.
+If deferred-tool schemas aren't loaded, use `ToolSearch` with
+`select:<tool_name>` first.
 
 ## Repo conventions
 
-- `pnpm -r run typecheck` must pass before every commit
-- `pnpm --filter @upriver/cli run test` before any CLI commit
-- Atomic commits per slice — one workstream item per commit
-- Commit messages: `feat(workstream-X): X.N — <one-line summary>`
-- `Co-Authored-By: Claude` trailer is rejected by the harness — omit
-- Subprocess: `execFile` with arg arrays, never shell strings
-- `.planning/roadmap/` is committed (not gitignored)
-
-## What's still operator-input-only (don't block on)
-
-- Service-role key — already in local `.env` and on Vercel for
-  Production + Development env. If a fresh checkout, paste from
-  Supabase dashboard → Settings → API.
-- `RESEND_API_KEY` + `upriverhudsonvalley.com` verified in Resend
-  dashboard. Not blocking Phase 3.
-- `UPRIVER_RUN_TOKEN` — currently unset; dashboard treats as
-  open same-origin. Will be replaced by Supabase Auth in Phase 4.
-- Phase 3 decisions (Q1, Q2, Q3 above).
-- Preview env vars on Vercel — empty by design until git
-  integration goes on.
+- `pnpm -r run typecheck` must pass before every commit.
+- Atomic commits per slice — one workstream item per commit.
+- Commit messages: `feat(option-b): X.N — <one-line summary>`.
+- `Co-Authored-By: Claude` trailer is rejected by the harness — omit.
+- Subprocess: `execFile` with arg arrays, never shell strings.
+- `.planning/roadmap/` is committed (not gitignored).
 
 ## Auto-mode posture
 
@@ -188,8 +141,9 @@ Prefer action, minimize interruptions, but pause for:
 
 When stop conditions hit, write a fresh `HANDOFF.md` and surface.
 
-Begin by reading HANDOFF.md, then surface the Phase 3 architectural
-decisions for confirmation before scaffolding `packages/worker/`.
+Begin by reading `HANDOFF.md`, then ask the operator whether they're
+ready to provision (Path A) or want to push code-side work first
+(Path B).
 ```
 
 ---
@@ -201,6 +155,3 @@ Update this file whenever:
 - Major architectural decisions land that change the "first step"
 - Project IDs, live env values, or MCP-server availability rotates
 - The "what's still operator-input-only" list shrinks meaningfully
-
-The fresh-session prompt block lives between the `---` markers above —
-keep that block self-contained and pasteable.
