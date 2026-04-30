@@ -28,6 +28,13 @@ interface Props {
   slug: string;
   /** Stage detected on the server at page-load time (for initial highlighting). */
   currentStage: string;
+  /**
+   * Server-rendered value of `getDataSource()`. `local` keeps the legacy
+   * `/api/run/<command>` SSE-spawn path. `supabase` switches to the Phase 3
+   * enqueue+poll path: POST `/api/enqueue/<command>` → `{ jobId }` → SSE
+   * `/api/jobs/<jobId>` for status transitions.
+   */
+  dataSource: 'local' | 'supabase';
 }
 
 type Phase = 'idle' | 'running' | 'success' | 'error';
@@ -36,9 +43,15 @@ interface StreamCallbacks {
   onLine: (line: string) => void;
   onDone: (code: number) => void;
   onError: (msg: string) => void;
+  /**
+   * Status transitions from the Phase 3 jobs endpoint (`Queued`, `Running`,
+   * `Completed`, …). Optional because the legacy `/api/run` SSE never emits
+   * status frames — only the enqueue+poll path needs this hook.
+   */
+  onStatus?: (status: string) => void;
 }
 
-export default function PipelineStages({ slug, currentStage }: Props): JSX.Element {
+export default function PipelineStages({ slug, currentStage, dataSource }: Props): JSX.Element {
   const [phase, setPhase] = useState<Phase>('idle');
   const [activeStage, setActiveStage] = useState<string | null>(null);
   const [log, setLog] = useState<string>('');
@@ -58,33 +71,41 @@ export default function PipelineStages({ slug, currentStage }: Props): JSX.Eleme
     abortRef.current = ac;
 
     try {
-      const res = await fetch(`/api/run/${stage.command}`, {
-        method: 'POST',
-        headers: runHeaders(),
-        body: JSON.stringify({ args: [slug, ...(stage.args ?? [])], flags: {} }),
-        signal: ac.signal,
-      });
-      if (!res.ok) {
-        const body = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(body.error ?? `HTTP ${res.status}`);
-      }
-      if (!res.body) throw new Error('Empty response body');
-      await consumeSSE(res.body, {
-        onLine: (line) => setLog((prev) => `${prev}${line}\n`),
-        onDone: (code) => {
-          if (code === 0) {
-            setPhase('success');
-            setLog((prev) => `${prev}\n[done] ${stage.label} exited cleanly.\n`);
-          } else {
+      if (dataSource === 'supabase') {
+        await runViaEnqueue(stage, slug, ac, {
+          onLine: (line) => setLog((prev) => `${prev}${line}\n`),
+          onDone: (code) => {
+            if (code === 0) {
+              setPhase('success');
+              setLog((prev) => `${prev}\n[done] ${stage.label} completed.\n`);
+            } else {
+              setPhase('error');
+              setLog((prev) => `${prev}\n[error] ${stage.label} ended with status code ${code}.\n`);
+            }
+          },
+          onError: (msg) => {
             setPhase('error');
-            setLog((prev) => `${prev}\n[error] ${stage.label} exited with code ${code}.\n`);
-          }
-        },
-        onError: (msg) => {
-          setPhase('error');
-          setLog((prev) => `${prev}\n[error] ${msg}\n`);
-        },
-      });
+            setLog((prev) => `${prev}\n[error] ${msg}\n`);
+          },
+        });
+      } else {
+        await runViaSpawn(stage, slug, ac, {
+          onLine: (line) => setLog((prev) => `${prev}${line}\n`),
+          onDone: (code) => {
+            if (code === 0) {
+              setPhase('success');
+              setLog((prev) => `${prev}\n[done] ${stage.label} exited cleanly.\n`);
+            } else {
+              setPhase('error');
+              setLog((prev) => `${prev}\n[error] ${stage.label} exited with code ${code}.\n`);
+            }
+          },
+          onError: (msg) => {
+            setPhase('error');
+            setLog((prev) => `${prev}\n[error] ${msg}\n`);
+          },
+        });
+      }
     } catch (err) {
       if ((err as Error).name === 'AbortError') {
         setPhase('idle');
@@ -169,6 +190,87 @@ export default function PipelineStages({ slug, currentStage }: Props): JSX.Eleme
 }
 
 /**
+ * Legacy path: POST `/api/run/<command>` and stream the SSE log lines straight
+ * into the panel. Used when `dataSource === 'local'` (operator laptop).
+ */
+async function runViaSpawn(
+  stage: StageDef,
+  slug: string,
+  ac: AbortController,
+  cb: StreamCallbacks,
+): Promise<void> {
+  if (!stage.command) return;
+  const res = await fetch(`/api/run/${stage.command}`, {
+    method: 'POST',
+    headers: runHeaders(),
+    body: JSON.stringify({ args: [slug, ...(stage.args ?? [])], flags: {} }),
+    signal: ac.signal,
+  });
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(body.error ?? `HTTP ${res.status}`);
+  }
+  if (!res.body) throw new Error('Empty response body');
+  await consumeSSE(res.body, cb);
+}
+
+/**
+ * Phase 3 path: POST `/api/enqueue/<command>` to receive a `jobId`, then open
+ * an SSE connection to `/api/jobs/<jobId>` for status transitions. Used when
+ * `dataSource === 'supabase'` (hosted dashboard fronting a worker pool).
+ *
+ * Status frames are mapped into log lines so the existing log panel renders
+ * something useful before Phase 3.5 wires through real per-step output.
+ * `done` translates to a numeric code so the existing onDone callback works:
+ * `Completed` → 0, anything else → 1.
+ */
+async function runViaEnqueue(
+  stage: StageDef,
+  slug: string,
+  ac: AbortController,
+  cb: StreamCallbacks,
+): Promise<void> {
+  if (!stage.command) return;
+  const enqueueRes = await fetch(`/api/enqueue/${stage.command}`, {
+    method: 'POST',
+    headers: runHeaders(),
+    body: JSON.stringify({ slug, args: stage.args ?? [], flags: {} }),
+    signal: ac.signal,
+  });
+  if (!enqueueRes.ok) {
+    const body = (await enqueueRes.json().catch(() => ({}))) as { error?: string };
+    throw new Error(body.error ?? `HTTP ${enqueueRes.status}`);
+  }
+  const { jobId } = (await enqueueRes.json()) as { jobId?: string };
+  if (!jobId) throw new Error('enqueue returned no jobId');
+  cb.onLine(`[enqueued] jobId=${jobId}`);
+
+  const statusRes = await fetch(`/api/jobs/${encodeURIComponent(jobId)}`, {
+    method: 'GET',
+    headers: { accept: 'text/event-stream' },
+    signal: ac.signal,
+  });
+  if (!statusRes.ok) {
+    throw new Error(`status stream HTTP ${statusRes.status}`);
+  }
+  if (!statusRes.body) throw new Error('Empty status stream body');
+
+  await consumeSSE(statusRes.body, {
+    onLine: () => {
+      // Status SSE has no untyped log lines today; ignore so we don't spam the
+      // panel with empty messages from heartbeat comments. Phase 3.5 will add
+      // typed `log` events from the worker container that we'll route back to
+      // cb.onLine with the per-step output.
+    },
+    onDone: cb.onDone,
+    onError: cb.onError,
+    onStatus: (status) => {
+      cb.onLine(`[status] ${status}`);
+    },
+  });
+}
+
+/**
  * Consume an SSE response body and dispatch line/done/error callbacks.
  * Mirrors the parser in NewClientForm.tsx — kept inline rather than extracted
  * because the dashboard package has no test runner and adding a shared util
@@ -236,8 +338,17 @@ function handleEvent(raw: string, opts: StreamCallbacks): void {
   const data = dataLines.join('\n');
   if (eventName === 'done') {
     try {
-      const parsed = JSON.parse(data) as { code?: number };
-      opts.onDone(typeof parsed.code === 'number' ? parsed.code : 1);
+      const parsed = JSON.parse(data) as { code?: number; status?: string };
+      // Two payload shapes share this event name: legacy spawn endpoint uses
+      // `{ code }`, jobs endpoint uses `{ status }`. Either path collapses to
+      // a numeric code so the existing onDone signature stays stable.
+      if (typeof parsed.code === 'number') {
+        opts.onDone(parsed.code);
+      } else if (typeof parsed.status === 'string') {
+        opts.onDone(parsed.status === 'Completed' ? 0 : 1);
+      } else {
+        opts.onDone(1);
+      }
     } catch {
       opts.onDone(1);
     }
@@ -247,6 +358,13 @@ function handleEvent(raw: string, opts: StreamCallbacks): void {
       opts.onError(parsed.message ?? 'unknown error');
     } catch {
       opts.onError(data || 'unknown error');
+    }
+  } else if (eventName === 'status') {
+    try {
+      const parsed = JSON.parse(data) as { status?: string };
+      if (parsed.status && opts.onStatus) opts.onStatus(parsed.status);
+    } catch {
+      // ignore malformed status frames
     }
   } else {
     opts.onLine(data);

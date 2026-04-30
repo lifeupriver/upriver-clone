@@ -5,6 +5,7 @@ import ScoreStrip from '@/components/astro/ScoreStrip.astro';
 import FindingsTable from '@/components/astro/FindingsTable.astro';
 import { readClientConfig, readAuditPasses, readAuditSummary, clientExists } from '@/lib/fs-reader';
 import { detectStage } from '@/lib/pipeline';
+import { getDataSource } from '@/lib/data-source';
 
 const { slug } = Astro.params;
 
@@ -16,6 +17,7 @@ const config = (await readClientConfig(slug))!;
 const passes = await readAuditPasses(slug);
 const summary = await readAuditSummary(slug);
 const stage = await detectStage(slug);
+const dataSource = getDataSource();
 
 const allFindings = passes.flatMap(p => p.findings);
 const p0Findings  = allFindings.filter(f => f.priority === 'p0');
@@ -98,7 +100,7 @@ const created = new Date(config.created_at).toLocaleDateString('en-US', {
           <span class="eyebrow">Pipeline</span>
           <span class="eyebrow" style="font-size: 0.62rem; color: var(--text-muted);">click Run to invoke</span>
         </div>
-        <PipelineStages slug={slug} currentStage={stage} client:load />
+        <PipelineStages slug={slug} currentStage={stage} dataSource={dataSource} client:load />
       </div>
 
       <!-- Quick nav -->
