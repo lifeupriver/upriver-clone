@@ -12,7 +12,10 @@ if (!slug || !(await clientExists(slug))) {
 
 const config = (await readClientConfig(slug))!;
 const tokens = await listShareTokens(slug);
-const origin = new URL(Astro.request.url).origin;
+const headers = Astro.request.headers;
+const host = headers.get('x-forwarded-host') ?? headers.get('host') ?? new URL(Astro.request.url).host;
+const proto = headers.get('x-forwarded-proto') ?? new URL(Astro.request.url).protocol.replace(':', '');
+const origin = `${proto}://${host}`;
 ---
 
 <DashboardLayout title={`${config.name} — Share links`} section="clients">

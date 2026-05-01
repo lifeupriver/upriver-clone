@@ -10,3 +10,5 @@ clients/
 *.log
 .DS_Store
 *.tsbuildinfo
+
+supabase/.temp/

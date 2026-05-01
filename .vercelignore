@@ -1,7 +1,7 @@
-clients/
-.playwright-mcp/
-.handoff/
-.planning/
-marketingskills-main/
-fake-audreys-interview.txt
-claude-code-build-prompt-upriver-clone-v5.md
+/clients/
+/.playwright-mcp/
+/.handoff/
+/.planning/
+/marketingskills-main/
+/fake-audreys-interview.txt
+/claude-code-build-prompt-upriver-clone-v5.md

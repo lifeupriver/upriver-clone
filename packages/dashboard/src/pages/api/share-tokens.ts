@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getSessionUser, isOperator } from '@/lib/auth';
 import { mintShareToken, revokeShareToken } from '@/lib/share-token';
+import { record as recordEvent } from '@/lib/dashboard-events';
 
 export const prerender = false;
 
@@ -83,8 +84,16 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       label,
       createdBy: user?.id ?? null,
     });
-    const origin = new URL(request.url).origin;
+    const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? new URL(request.url).host;
+    const proto = request.headers.get('x-forwarded-proto') ?? new URL(request.url).protocol.replace(':', '');
+    const origin = `${proto}://${host}`;
     const shareUrl = `${origin}/deliverables/${encodeURIComponent(slug)}?t=${encodeURIComponent(record.token)}`;
+    await recordEvent({
+      actorUserId: user?.id ?? null,
+      action: 'share_token.mint',
+      slug,
+      payload: { tokenId: record.id, label, expiresAt: record.expiresAt },
+    });
     return new Response(
       JSON.stringify({ ...record, shareUrl }),
       { status: 201, headers: { 'content-type': 'application/json' } },
@@ -139,6 +148,11 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
 
   try {
     await revokeShareToken(id);
+    await recordEvent({
+      actorUserId: user?.id ?? null,
+      action: 'share_token.revoke',
+      payload: { tokenId: id },
+    });
     return new Response(null, { status: 204 });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
