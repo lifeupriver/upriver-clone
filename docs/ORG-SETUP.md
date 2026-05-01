@@ -51,10 +51,12 @@ steps.
    billed engagements) on the understanding that Joshua's wedding-
    industry pipeline will produce paid work she gets dibs on. See
    §2.2 for how this translates into contractor agreements.
-6. Banking = **Mercury (checking) + Ramp (cards & spend management)**.
-   Mercury is the operating account; Ramp issues the company cards
-   used for SaaS subscriptions and gets us category-level spend
-   reporting + auto-coded transactions feeding accounting.
+6. Banking = **Chase Business Complete Checking + Chase Ink Business
+   Cash card**. Single-vendor, established, branch access if ever
+   needed. Joshua holds the only company card; Anne-Marie and Zach
+   don't carry company cards (they invoice via 1099 for any expenses
+   that come up). Trades the Mercury+Ramp tech-forward DX for
+   familiarity and one fewer login surface.
 7. Tooling principle = **MCP-first.** Any tool we adopt must expose
    itself to Claude — either via an existing MCP server, an official
    CLI, or a public API we can wrap in our own MCP server. We'll
@@ -138,8 +140,7 @@ Why it matters:
 | **Anthropic / Claude Team** | N/A — it *is* Claude | `claude` headless CLI | Already used by the upriver pipeline |
 | **Attio** | ⚠️ Community MCP exists; verify before relying on it. Otherwise REST API + custom MCP. | API | If community MCP is thin, we build `@upriver/mcp-attio` (already on the roadmap in §6.2) |
 | **Quickbooks Online** | ⚠️ Community MCP servers exist; quality varies | OAuth API | Build `@upriver/mcp-bookkeeping` if we end up doing automated reconciliation |
-| **Mercury** | ❌ No MCP yet | OAuth API | Add `@upriver/mcp-banking` to backlog |
-| **Ramp** | ❌ No MCP yet | OAuth API + Developer API | Same — fold into `@upriver/mcp-banking` |
+| **Chase Business** | ❌ No MCP, no public developer API for SMB accounts | None — read-only via Plaid/MX | Banking automations require a third-party connector (Plaid → Quickbooks). Accept the gap; this is the cost of the Chase choice. |
 | **Resend** | ❌ No first-party MCP | Node SDK | Wrap in `@upriver/mcp-email` if we automate transactional sends |
 | **Inngest** | ❌ No first-party MCP | `inngest-cli` | The CLI is sufficient for now |
 | **Fly.io** | ❌ No official MCP | `flyctl` | The CLI is rich enough; defer MCP |
@@ -149,9 +150,11 @@ Why it matters:
 
 **Implication for the Phase 4 build roadmap:** the four custom MCP
 servers in §6.2 (`mcp-engagements`, `mcp-pipeline`, `mcp-attio`,
-`mcp-content`) get joined by **`@upriver/mcp-banking`** (Mercury +
-Ramp wrapper) and **`@upriver/mcp-email`** (Resend wrapper) as the
-gaps that matter most. See §6.2 for the expanded list.
+`mcp-content`) get joined by **`@upriver/mcp-email`** (Resend wrapper)
+as the gap that matters most for outbound automation. Banking is a
+known dead end on Chase's API side — we'll rely on Plaid → Quickbooks
+for read-only visibility and accept that "issue a virtual card via
+Claude" isn't on the table for now. See §6.2 for the expanded list.
 
 **Implication for tool selection in this doc:** every Phase 1-3 tool
 choice was sanity-checked against this audit. If a future tool we
@@ -172,29 +175,50 @@ EIN exists.
 | 0.2 | NY publication requirement (LLC must publish in two newspapers within 120 days of formation — NY-specific quirk; Northwest/LegalZoom handles this for you) | Joshua | Filing service or directly with newspapers | ~$500-2,000 depending on county | 6 weeks total but background |
 | 0.3 | Apply for **EIN** from IRS | Joshua | irs.gov/EIN — free, online, takes 10 min | $0 | Same day |
 | 0.4 | Operating agreement (single-member, default-NY) | Joshua | LegalZoom template or Northwest's free one | $0-200 | 1 day |
-| 0.5 | Open **business checking** at Mercury (operating account; tech-forward, online-only, fast funding) | Joshua | mercury.com | $0 | 1-3 days |
-| 0.6 | Open **Ramp** for company cards + spend management (issues virtual + physical cards under the LLC, auto-codes transactions, syncs to Quickbooks). Works alongside Mercury rather than replacing it. | Joshua | ramp.com | $0 (Ramp is free; takes interchange) | 1-2 weeks |
-| 0.7 | (Optional) **Chase Ink Business Cash** as a backup card in case a vendor doesn't accept Ramp's BIN. No annual fee; 5% on internet/phone/cable up to $25k/yr. | Joshua | chase.com | $0 annual | 1-2 weeks |
-| 0.8 | **Accounting software** | Joshua | Quickbooks Online Simple Start ($30/mo) **or** Xero Starter ($20/mo) **or** Wave (free, weaker but workable for now) | $0-30/mo | 1 day |
-| 0.9 | Register a **DBA** if you want to operate as just "Upriver" without "Hudson Valley LLC" everywhere | Joshua | NY county clerk | ~$25-100 | 1 day |
-| 0.10 | Get **General Liability + Professional Liability (E&O) insurance** — agencies that build websites for clients absolutely need E&O | Joshua | Hiscox / Next Insurance / Embroker | $400-1,200/yr | 1 week |
-| 0.11 | Sign **1099 subcontractor agreements** with Anne-Marie and Zach (see §2.2). | Joshua | Bonsai contract templates / Stripe Atlas / a lawyer for the first one | $200-500 one-time legal | 1 week |
+| 0.5 | Open **Chase Business Complete Checking** in the LLC's name with EIN | Joshua | chase.com (or in-branch — Chase requires it for first-time business banking customers in some cases) | $15/mo waived with $2k avg balance | 1-2 weeks |
+| 0.6 | Apply for **Chase Ink Business Cash** card in the LLC's name (no annual fee, 5% cash back on internet/phone/cable up to $25k/yr — built for an SaaS-heavy business) | Joshua | chase.com | $0 annual | 1-2 weeks |
+| 0.7 | **Accounting software** | Joshua | Quickbooks Online Simple Start ($30/mo) **or** Xero Starter ($20/mo) **or** Wave (free, weaker but workable for now) | $0-30/mo | 1 day |
+| 0.8 | Register a **DBA** if you want to operate as just "Upriver" without "Hudson Valley LLC" everywhere | Joshua | NY county clerk | ~$25-100 | 1 day |
+| 0.9 | Get **General Liability + Professional Liability (E&O) insurance** — agencies that build websites for clients absolutely need E&O | Joshua | Hiscox / Next Insurance / Embroker | $400-1,200/yr | 1 week |
+| 0.10 | Sign **1099 subcontractor agreements** with Anne-Marie and Zach (see §2.2). | Joshua | Bonsai contract templates / Stripe Atlas / a lawyer for the first one | $200-500 one-time legal | 1 week |
 
-### 2.1 Why Mercury + Ramp instead of just one or the other
+### 2.1 Why Chase (and the trade-offs we accept)
 
-- **Mercury** is the bank account: ACH in/out, wire, Stripe payouts
-  land here, vendors that need bank-to-bank go through it.
-- **Ramp** is the card layer + the spend-management UI: every SaaS
-  subscription gets its own virtual Ramp card with a per-vendor
-  spending limit, auto-coded by category. Receipts get emailed to
-  Ramp and matched to transactions automatically. When Anne-Marie
-  or Zach need to expense something, they get a card via Ramp without
-  Joshua handing over his number.
-- Both have clean APIs (gap on the MCP side per §1.3 — we'll build
-  `@upriver/mcp-banking`). Both auto-sync to Quickbooks.
-- Together they replace what would otherwise be "Joshua's personal
-  Chase card with screenshots in a Slack channel," which is what
-  most early-stage teams accidentally end up with.
+Single-vendor banking on Chase Business Complete Checking + the Chase
+Ink Business Cash card. Decision rationale and what we're giving up:
+
+**Why this works:**
+
+- One bank, one login, one statement. Less surface area for the team
+  to keep track of.
+- Branch access if a wire ever needs to be initiated in person, a
+  cashier's check is needed, or a deposit can't be done remotely.
+  Mercury can't do any of those.
+- Chase Ink Business Cash is genuinely the best SaaS-spend card on
+  the market for an org our size — 5% back on internet/phone/cable
+  (which most SaaS billing falls under) up to $25k/yr. At our
+  projected ~$500/mo SaaS run rate, that's ~$300/yr in cashback.
+- Joshua holds the only company card. Anne-Marie and Zach don't
+  carry company cards — when they have a legitimate expense (rare:
+  the occasional Cloudinary upgrade for a specific client engagement,
+  for example), it goes on their personal card and gets reimbursed
+  via the same 1099 invoice flow they use for billable hours.
+- Quickbooks integrates directly with Chase via Plaid; transactions
+  auto-pull and auto-categorize.
+
+**What we're giving up vs Mercury+Ramp:**
+
+- Per-vendor virtual cards with auto-locked spending limits — Chase
+  Ink can mint additional cards but doesn't have Ramp's
+  one-vendor-per-card UX.
+- Programmatic banking via Claude — Chase has no public API for SMB
+  accounts. Banking automations (read-only visibility into burn
+  rate, runway, recent transactions) work via Plaid → Quickbooks
+  rather than direct, but we lose "issue a card / freeze a card /
+  see today's transactions" via MCP. Acceptable at our size; revisit
+  if banking complexity grows.
+- Faster account funding — Chase business banking can take 1-2 weeks
+  to fully set up vs Mercury's 1-3 days. Pad the timeline.
 
 ### 2.2 The contractor / mutual-incentive arrangement
 
@@ -249,12 +273,12 @@ swapped. **Don't skip this.** Without paper, the IP-ownership story
 gets murky if a dispute ever surfaces, and the working-now-for-paid-work-
 later understanding becomes one party's word against the other's.
 
-**Output of Phase 0:** an LLC, EIN, Mercury checking, Ramp company
-cards, accounting software, insurance, signed contractor agreements
-with Anne-Marie and Zach, ongoing arrangement with Megan documented.
-You can now sign up for SaaS in the company's name with a company
-card on file and bring contractors onto engagements with proper IP
-assignment.
+**Output of Phase 0:** an LLC, EIN, Chase Business Complete Checking,
+Chase Ink Business Cash card, accounting software, insurance, signed
+contractor agreements with Anne-Marie and Zach, ongoing arrangement
+with Megan documented. You can now sign up for SaaS in the company's
+name with a company card on file and bring contractors onto
+engagements with proper IP assignment.
 
 ---
 
@@ -553,7 +577,8 @@ The non-engineering tools that make us look and act like a real company.
 
 ### 5.1 Stripe (payments)
 
-1. Sign up Stripe with the LLC's name and EIN. Bank-link to Mercury.
+1. Sign up Stripe with the LLC's name and EIN. Bank-link to Chase
+   Business Complete Checking.
 2. Create products:
    - **Audit-only engagement** — flat fee
    - **Audit + Rebuild** — flat fee or staged
@@ -625,7 +650,8 @@ Setup:
 ### 5.4 Quickbooks Online (or Xero)
 
 1. Sign up with the LLC EIN.
-2. Connect Mercury checking + the Chase Ink card.
+2. Connect Chase Business Complete Checking + the Chase Ink card
+   (both via Plaid).
 3. Add Joshua as Admin; Megan as Standard user (she'll do day-to-day
    bookkeeping if comfortable, otherwise hire a bookkeeper at
    $200/mo).
@@ -721,13 +747,6 @@ potentially clients' agents) to call. Priority order:
   contacts, companies, engagements, deals. Lets an operator do "log a
   call with Audrey from yesterday + bump the engagement to phase 4"
   without context-switching to the Attio UI.
-- **`@upriver/mcp-banking`** *(P1)* — wraps Mercury's and Ramp's
-  developer APIs. Read-only at first: balance, recent transactions,
-  burn rate, runway, per-vendor SaaS spend. Eventually write-capable
-  for things like "issue a new Ramp card for the audreys engagement
-  with a $200 monthly limit." Closes the MCP gap on banking from
-  §1.3 — until this exists, financial questions require Joshua to
-  open two tabs.
 - **`@upriver/mcp-email`** *(P2)* — wraps Resend so the dashboard's
   agentic flows can send transactional emails directly (delivery
   reports, share-link reminders, monitor-report callouts) without
@@ -812,9 +831,8 @@ codifies reusable automation patterns and a CLI command
 
 - [ ] File LLC paperwork (NY DoS or Northwest)
 - [ ] Apply for EIN (10 min)
-- [ ] Open Mercury business checking
-- [ ] Open Ramp account (cards + spend management)
-- [ ] (Optional) Apply for Chase Ink Business Cash as backup card
+- [ ] Open Chase Business Complete Checking (online or in-branch)
+- [ ] Apply for Chase Ink Business Cash card
 - [ ] Have a lawyer draft the base 1099 services agreement (Anne-Marie
       version with the side-letter; Zach uses same template)
 
@@ -940,8 +958,8 @@ Most-restricted list — ops/admin, not engineering:
 - [ ] Calendly — accept (so she can manage Joshua's calendar if needed)
 - [ ] Quickbooks — Standard user
 - [ ] Stripe — read-only Dashboard access (for receipt reconciliation)
-- [ ] Mercury — Bookkeeper access (no payment authority unless we
-      decide otherwise)
+- [ ] Chase Business — view-only access for bookkeeping reconciliation
+      (no transaction authority); Joshua remains the only signer
 - [ ] Vercel — Viewer
 - [ ] Cloudflare — Billing
 - [ ] **No** GitHub, Supabase, Fly, Inngest access
@@ -1005,9 +1023,10 @@ Most-restricted list — ops/admin, not engineering:
   `marketingskills` library; check what tier we need)
 - Loom / Descript / Riverside (for Zach's video work)
 - Stripe fees (2.9% + 30¢ per transaction; not really a fixed cost)
-- Mercury checking ($0/mo — free)
-- Ramp cards + spend management ($0/mo — Ramp earns interchange, no
-  user fee on the free tier)
+- Chase Business Complete Checking ($15/mo, waived with $2k average
+  balance — should be waived in normal operation)
+- Chase Ink Business Cash card ($0/yr; earns ~$300/yr cashback at
+  our projected SaaS spend, net positive)
 - Contractor pay (Anne-Marie + Zach 1099s): variable, billed against
   client work. Not a fixed monthly run-rate cost.
 - Legal: ~$300-500 one-time for the first 1099 services agreement
@@ -1057,17 +1076,15 @@ in conversation are removed.
    per-developer for a while; Pro unlocks team analytics and
    higher limits. Recommend Pro because the dashboard runs
    production traffic.
-7. **Bank**: Mercury vs Chase Business. Mercury is faster to open
-   and better DX; Chase has branches if you ever need a cashier's
-   check.
-8. **Insurance carrier**: Hiscox / Next / Embroker / a local broker.
+6. **Insurance carrier**: Hiscox / Next / Embroker / a local broker.
 
 ---
 
 ## 12. TL;DR for whoever's stressed reading this
 
 ```
-Week 1: form Upriver Hudson Valley LLC, EIN, Mercury, Chase Ink card.
+Week 1: form Upriver Hudson Valley LLC, EIN, Chase Business checking,
+        Chase Ink card.
 Week 2: domain to Cloudflare; Workspace; 1Password; migrate every
         engineering account from Joshua-personal to Upriver-org.
 Week 3: Stripe, Attio, Quickbooks, Calendly, status page.
