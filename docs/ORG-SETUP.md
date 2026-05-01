@@ -41,6 +41,24 @@ steps.
 4. Entity = **form an LLC as step zero** — Upriver Hudson Valley LLC,
    EIN, business banking, business card, accounting before opening
    business-tier accounts that demand a real company name on the bill.
+5. Employment model = **1099 subcontractors** for Anne-Marie and Zach,
+   with the option to convert to retainer or W-2 once Upriver has the
+   revenue to support it. Joshua handles sales and finds clients;
+   Anne-Marie does the web/dev work; Zach does the automation +
+   content work; Megan handles administration. The arrangement with
+   Anne-Marie specifically is mutually-incentivized: she's investing
+   her time helping build the org infrastructure now (not just on
+   billed engagements) on the understanding that Joshua's wedding-
+   industry pipeline will produce paid work she gets dibs on. See
+   §2.2 for how this translates into contractor agreements.
+6. Banking = **Mercury (checking) + Ramp (cards & spend management)**.
+   Mercury is the operating account; Ramp issues the company cards
+   used for SaaS subscriptions and gets us category-level spend
+   reporting + auto-coded transactions feeding accounting.
+7. Tooling principle = **MCP-first.** Any tool we adopt must expose
+   itself to Claude — either via an existing MCP server, an official
+   CLI, or a public API we can wrap in our own MCP server. We'll
+   build adapters for the few gaps. See §1.3.
 
 ---
 
@@ -79,6 +97,67 @@ Why it matters:
 
 This is the single most important rule in this doc.
 
+### 1.3 The MCP-first principle (the second-most-important rule)
+
+> **Every tool we adopt must be operable by Claude.** Concretely: it
+> ships an MCP server, an official CLI, or a stable public API we can
+> wrap in our own MCP server. If a tool fails this bar and there's no
+> good alternative, we accept the gap consciously and put "build an
+> MCP adapter" on the backlog — we don't just live with the manual
+> workflow.
+
+Why it matters:
+
+- Most of the work on a client engagement gets driven by Claude — the
+  CLI, the dashboard agents, the headless `claude` features. Every
+  tool that *can't* be operated by Claude is a piece of work that
+  has to live in a human's head and clicks.
+- One of the four people on the team will, on any given day, be in
+  Claude Code rather than in a browser tab. The set of tools they can
+  operate is the set with MCP / CLI access.
+- Auditability — when Claude does the work, every action is logged in
+  the conversation. When a human clicks through a UI, it isn't.
+
+**Tool MCP / CLI status audit:**
+
+| Tool | MCP? | CLI? | Notes |
+| --- | --- | --- | --- |
+| **GitHub** | ✅ Official MCP | `gh` | Already wired in our sessions |
+| **Vercel** | ✅ Official MCP | `vercel` | Already wired |
+| **Supabase** | ✅ Official MCP | `supabase` | Already wired |
+| **Cloudflare** | ✅ Official MCP | `wrangler` | Add when we move DNS |
+| **Stripe** | ✅ Official MCP | `stripe` | Wire after Stripe setup |
+| **Cloudinary** | ✅ Official MCP | CLI exists | Wire when Zach's content workflow needs it |
+| **Calendly** | ✅ Official MCP | API | Wire on Calendly setup |
+| **Sentry** | ✅ Official MCP | `sentry-cli` | Wire on Sentry setup |
+| **Linear** | ✅ Official MCP | `linear` | When we adopt Linear |
+| **Notion** | ✅ Official MCP | API | When we adopt Notion |
+| **Slack** | ✅ Official MCP | API | Wire post-Slack setup |
+| **Google Workspace** (Gmail/Calendar/Drive) | ✅ Community MCPs (`@modelcontextprotocol/gdrive`, gmail, calendar) | `gcloud` for admin | Wire after Workspace setup |
+| **1Password** | ✅ Official `op` CLI + MCP | `op` | The `op run` pattern injects secrets directly into commands |
+| **Anthropic / Claude Team** | N/A — it *is* Claude | `claude` headless CLI | Already used by the upriver pipeline |
+| **Attio** | ⚠️ Community MCP exists; verify before relying on it. Otherwise REST API + custom MCP. | API | If community MCP is thin, we build `@upriver/mcp-attio` (already on the roadmap in §6.2) |
+| **Quickbooks Online** | ⚠️ Community MCP servers exist; quality varies | OAuth API | Build `@upriver/mcp-bookkeeping` if we end up doing automated reconciliation |
+| **Mercury** | ❌ No MCP yet | OAuth API | Add `@upriver/mcp-banking` to backlog |
+| **Ramp** | ❌ No MCP yet | OAuth API + Developer API | Same — fold into `@upriver/mcp-banking` |
+| **Resend** | ❌ No first-party MCP | Node SDK | Wrap in `@upriver/mcp-email` if we automate transactional sends |
+| **Inngest** | ❌ No first-party MCP | `inngest-cli` | The CLI is sufficient for now |
+| **Fly.io** | ❌ No official MCP | `flyctl` | The CLI is rich enough; defer MCP |
+| **Backblaze B2** | ❌ No MCP | S3-compatible API + `b2` CLI | Not high-priority for Claude-driven work |
+| **Instatus** (status page) | ❌ No MCP | API | Low-priority gap |
+| **Discord/Slack alerting** | Slack ✅ | — | Use Slack MCP to triage alerts |
+
+**Implication for the Phase 4 build roadmap:** the four custom MCP
+servers in §6.2 (`mcp-engagements`, `mcp-pipeline`, `mcp-attio`,
+`mcp-content`) get joined by **`@upriver/mcp-banking`** (Mercury +
+Ramp wrapper) and **`@upriver/mcp-email`** (Resend wrapper) as the
+gaps that matter most. See §6.2 for the expanded list.
+
+**Implication for tool selection in this doc:** every Phase 1-3 tool
+choice was sanity-checked against this audit. If a future tool we
+consider doesn't pass the bar, that's a real reason to look at an
+alternative or to plan the MCP build alongside the adoption.
+
 ---
 
 ## 2. Phase 0 — Legal entity (the prerequisite for everything else)
@@ -93,22 +172,89 @@ EIN exists.
 | 0.2 | NY publication requirement (LLC must publish in two newspapers within 120 days of formation — NY-specific quirk; Northwest/LegalZoom handles this for you) | Joshua | Filing service or directly with newspapers | ~$500-2,000 depending on county | 6 weeks total but background |
 | 0.3 | Apply for **EIN** from IRS | Joshua | irs.gov/EIN — free, online, takes 10 min | $0 | Same day |
 | 0.4 | Operating agreement (single-member, default-NY) | Joshua | LegalZoom template or Northwest's free one | $0-200 | 1 day |
-| 0.5 | Open **business checking** (recommend Mercury for a tech-y org; Chase Business if you want bank branches) | Joshua | Mercury.com — free, fast, online-only | $0 | 1-3 days |
-| 0.6 | Open **business credit card** in LLC's name with EIN | Joshua | Chase Ink Business Cash (no annual fee, 5% on internet/phone/cable up to $25k/yr — built for this exact use case) | $0 annual | 1-2 weeks |
-| 0.7 | **Accounting software** | Joshua | Quickbooks Online Simple Start ($30/mo) **or** Xero Starter ($20/mo) **or** Wave (free, weaker but workable for now) | $0-30/mo | 1 day |
-| 0.8 | Register a **DBA** if you want to operate as just "Upriver" without "Hudson Valley LLC" everywhere | Joshua | NY county clerk | ~$25-100 | 1 day |
-| 0.9 | Get **General Liability + Professional Liability (E&O) insurance** — agencies that build websites for clients absolutely need E&O | Joshua | Hiscox / Next Insurance / Embroker | $400-1,200/yr | 1 week |
-| 0.10 | Set up **W-9 / 1099 templates** for vendors and contractor agreements for Anne-Marie/Zach if they're 1099 not W-2 | Joshua | Bonsai / Notion templates | $0-20/mo | 1 day |
+| 0.5 | Open **business checking** at Mercury (operating account; tech-forward, online-only, fast funding) | Joshua | mercury.com | $0 | 1-3 days |
+| 0.6 | Open **Ramp** for company cards + spend management (issues virtual + physical cards under the LLC, auto-codes transactions, syncs to Quickbooks). Works alongside Mercury rather than replacing it. | Joshua | ramp.com | $0 (Ramp is free; takes interchange) | 1-2 weeks |
+| 0.7 | (Optional) **Chase Ink Business Cash** as a backup card in case a vendor doesn't accept Ramp's BIN. No annual fee; 5% on internet/phone/cable up to $25k/yr. | Joshua | chase.com | $0 annual | 1-2 weeks |
+| 0.8 | **Accounting software** | Joshua | Quickbooks Online Simple Start ($30/mo) **or** Xero Starter ($20/mo) **or** Wave (free, weaker but workable for now) | $0-30/mo | 1 day |
+| 0.9 | Register a **DBA** if you want to operate as just "Upriver" without "Hudson Valley LLC" everywhere | Joshua | NY county clerk | ~$25-100 | 1 day |
+| 0.10 | Get **General Liability + Professional Liability (E&O) insurance** — agencies that build websites for clients absolutely need E&O | Joshua | Hiscox / Next Insurance / Embroker | $400-1,200/yr | 1 week |
+| 0.11 | Sign **1099 subcontractor agreements** with Anne-Marie and Zach (see §2.2). | Joshua | Bonsai contract templates / Stripe Atlas / a lawyer for the first one | $200-500 one-time legal | 1 week |
 
-**Decision needed:** Are Anne-Marie and Zach **W-2 employees** or
-**1099 contractors**? Affects payroll setup (Gusto for W-2, just 1099s
-for contractor). For first year recommend 1099 unless you want full-time
-benefits — we'll add a Phase 0.11 if W-2.
+### 2.1 Why Mercury + Ramp instead of just one or the other
 
-**Output of Phase 0:** an LLC, EIN, business bank, business card,
-accounting software, insurance, contractor agreements ready to sign.
+- **Mercury** is the bank account: ACH in/out, wire, Stripe payouts
+  land here, vendors that need bank-to-bank go through it.
+- **Ramp** is the card layer + the spend-management UI: every SaaS
+  subscription gets its own virtual Ramp card with a per-vendor
+  spending limit, auto-coded by category. Receipts get emailed to
+  Ramp and matched to transactions automatically. When Anne-Marie
+  or Zach need to expense something, they get a card via Ramp without
+  Joshua handing over his number.
+- Both have clean APIs (gap on the MCP side per §1.3 — we'll build
+  `@upriver/mcp-banking`). Both auto-sync to Quickbooks.
+- Together they replace what would otherwise be "Joshua's personal
+  Chase card with screenshots in a Slack channel," which is what
+  most early-stage teams accidentally end up with.
+
+### 2.2 The contractor / mutual-incentive arrangement
+
+This is **not** a typical W-2 setup or even a typical 1099 setup, and
+the contracts should reflect what's actually happening.
+
+**Today's reality:**
+
+- Joshua is the founder and the only person currently paid by the
+  business. He's funding setup costs personally and will reimburse
+  via the LLC once banking is in place.
+- **Anne-Marie** is investing time into building Upriver's
+  infrastructure and tooling — not just billed client work — on the
+  understanding that Joshua's wedding-industry pipeline will produce
+  a steady flow of paid engagements where she's the lead developer.
+  Mutually beneficial: she's getting in on the ground floor of an
+  agency that has a clear sales motion; Upriver is getting senior dev
+  capacity it couldn't otherwise afford.
+- **Zach** is similarly a 1099 — content + automation work, billed
+  per project or per retainer block.
+- **Megan** is doing administrative work and is the only one currently
+  receiving regular pay (continuing the existing arrangement).
+
+**What the contracts need to capture:**
+
+1. A **base 1099 services agreement** for each of Anne-Marie and Zach:
+   scope of services, hourly or per-project rate, IP assignment to
+   Upriver Hudson Valley LLC for any work product, confidentiality,
+   no-non-compete (NY restricts these for contractors anyway).
+2. A **side letter / addendum for Anne-Marie** that documents the
+   infrastructure-building work she's contributing without immediate
+   payment, and what she gets in exchange. Two reasonable patterns:
+   - **First-right-of-refusal on web/dev work** — every paid client
+     engagement Joshua brings in offers Anne-Marie the lead-dev role
+     at a stipulated rate before going to anyone else, until X hours
+     of paid work has been billed. Simple, no equity, no future
+     obligation if Upriver fizzles.
+   - **Profit-share or revenue-share on a defined client cohort** —
+     Anne-Marie gets X% of the gross margin on Y clients during Z
+     months. More complex but better aligned if Upriver hits scale.
+   - **Recommend pattern 1** for the first six months. Easier to
+     paper, easier to unwind if something doesn't work, no
+     securities-law concerns.
+3. A **conversion clause** noting both parties intend to revisit the
+   relationship at month 6 or month 12, with the option to convert
+   to a retainer (e.g. $X/mo guaranteed minimum) or to W-2
+   employment if Upriver's revenue supports it.
+
+Get the first agreement drafted by an actual attorney (~$300-500);
+the second one (Zach's) can use the same template with the names
+swapped. **Don't skip this.** Without paper, the IP-ownership story
+gets murky if a dispute ever surfaces, and the working-now-for-paid-work-
+later understanding becomes one party's word against the other's.
+
+**Output of Phase 0:** an LLC, EIN, Mercury checking, Ramp company
+cards, accounting software, insurance, signed contractor agreements
+with Anne-Marie and Zach, ongoing arrangement with Megan documented.
 You can now sign up for SaaS in the company's name with a company
-card on file.
+card on file and bring contractors onto engagements with proper IP
+assignment.
 
 ---
 
@@ -556,25 +702,50 @@ dashboard. Don't build them yet — wait for the pain to be specific.
   approvals (e.g. fixes-plan-scope signoff), and submits change
   requests.
 
-### 6.2 Custom MCP servers
+### 6.2 Custom MCP servers (closing the MCP-first gaps from §1.3)
 
 Each MCP server we build is a tool surface for our own agents (and
-potentially clients' agents) to call.
+potentially clients' agents) to call. Priority order:
 
-- **`@upriver/mcp-engagements`** — read-only over the Supabase
-  `engagements` table. Gives any Claude session local-to-the-team
-  the ability to answer "what's the status on audreys?" without
-  re-running the dashboard.
-- **`@upriver/mcp-pipeline`** — exposes the upriver CLI commands
-  as MCP tools so an operator running Claude Code on their laptop
-  can say "run the audit on audreys" and the agent calls
-  `upriver audit audreys` for them.
-- **`@upriver/mcp-attio`** — wraps Attio's REST API; same idea, lets
-  an agent do "log a call with Audrey from yesterday" without
-  context-switching to the Attio UI.
-- **`@upriver/mcp-content`** — Zach's tool: search prior client
-  voice guides, sample copy, photo libraries, video shotlists,
+- **`@upriver/mcp-pipeline`** *(P0 — biggest day-one win)* — exposes
+  the upriver CLI commands as MCP tools so an operator running Claude
+  Code on their laptop can say "run the audit on audreys" and the
+  agent calls `upriver audit audreys` for them. Trivial to build —
+  the CLI already has structured args + JSON output flags.
+- **`@upriver/mcp-engagements`** *(P0)* — read-only over the Supabase
+  `engagements` table (and related `usage_log`, `dashboard_events`).
+  Gives any Claude session local-to-the-team the ability to answer
+  "what's the status on audreys?" without re-running the dashboard.
+- **`@upriver/mcp-attio`** *(P1 — only if community Attio MCP is
+  insufficient)* — wraps Attio's REST API so agents can read/write
+  contacts, companies, engagements, deals. Lets an operator do "log a
+  call with Audrey from yesterday + bump the engagement to phase 4"
+  without context-switching to the Attio UI.
+- **`@upriver/mcp-banking`** *(P1)* — wraps Mercury's and Ramp's
+  developer APIs. Read-only at first: balance, recent transactions,
+  burn rate, runway, per-vendor SaaS spend. Eventually write-capable
+  for things like "issue a new Ramp card for the audreys engagement
+  with a $200 monthly limit." Closes the MCP gap on banking from
+  §1.3 — until this exists, financial questions require Joshua to
+  open two tabs.
+- **`@upriver/mcp-email`** *(P2)* — wraps Resend so the dashboard's
+  agentic flows can send transactional emails directly (delivery
+  reports, share-link reminders, monitor-report callouts) without
+  going through a separate `npm run send` step.
+- **`@upriver/mcp-content`** *(P2)* — Zach's tool: search prior
+  client voice guides, sample copy, photo libraries, video shotlists,
   etc., across all engagements at once.
+
+Each server lives in `packages/mcp-<name>/` in the same monorepo as
+the CLI, ships as an npm-publishable package (under the `@upriver`
+scope), and gets added to the team's shared `~/.claude/mcp.json`
+config so every operator has the same surface available.
+
+**Architecture decision:** these MCPs are *workspace-internal* —
+they're bound to Upriver's data shapes and aren't general-purpose. We
+don't try to make them open-source-friendly; we optimize for fit with
+our pipeline. (If we later open-source any, we extract the generic
+slice and leave Upriver-specific behavior in a wrapper.)
 
 ### 6.3 Marketing site
 
@@ -642,7 +813,10 @@ codifies reusable automation patterns and a CLI command
 - [ ] File LLC paperwork (NY DoS or Northwest)
 - [ ] Apply for EIN (10 min)
 - [ ] Open Mercury business checking
-- [ ] Apply for Chase Ink Business Cash card
+- [ ] Open Ramp account (cards + spend management)
+- [ ] (Optional) Apply for Chase Ink Business Cash as backup card
+- [ ] Have a lawyer draft the base 1099 services agreement (Anne-Marie
+      version with the side-letter; Zach uses same template)
 
 ### Wave 2 — Day 2-3 (Joshua, ~4 hours total)
 
@@ -831,6 +1005,13 @@ Most-restricted list — ops/admin, not engineering:
   `marketingskills` library; check what tier we need)
 - Loom / Descript / Riverside (for Zach's video work)
 - Stripe fees (2.9% + 30¢ per transaction; not really a fixed cost)
+- Mercury checking ($0/mo — free)
+- Ramp cards + spend management ($0/mo — Ramp earns interchange, no
+  user fee on the free tier)
+- Contractor pay (Anne-Marie + Zach 1099s): variable, billed against
+  client work. Not a fixed monthly run-rate cost.
+- Legal: ~$300-500 one-time for the first 1099 services agreement
+  draft; subsequent contractors reuse the template.
 
 **Year-one all-in:** ~$8,000-12,000 in tools + setup. Roughly the
 margin on 2-3 audits-only or 1 rebuild engagement. Manageable.
@@ -858,23 +1039,21 @@ background-running and doesn't block anything.
 
 ## 11. Open decisions (Joshua, please confirm)
 
-These were assumed in the doc; flag if any are wrong:
+These were assumed in the doc; flag if any are wrong. Items resolved
+in conversation are removed.
 
-1. **W-2 vs 1099** for Anne-Marie / Zach. Plan currently assumes
-   1099; switching to W-2 means adding Gusto ($40/mo + $6/employee)
-   and W-2 onboarding paperwork.
-2. **Email scheme**: confirm `dev@` for Anne-Marie and `content@`
+1. **Email scheme**: confirm `dev@` for Anne-Marie and `content@`
    for Zach (vs personal aliases like `anne-marie@` / `zach@` —
    I recommend role aliases for transferability, but it's a call
    you might want to make differently).
-3. **Workspace tier**: Standard ($12/user) vs Starter ($6/user).
+2. **Workspace tier**: Standard ($12/user) vs Starter ($6/user).
    Doc assumes Standard for unlimited shared drives + Meet
    recording.
-4. **CRM choice**: Attio (recommended) vs HubSpot Free vs
+3. **CRM choice**: Attio (recommended) vs HubSpot Free vs
    Pipedrive. Attio fits an agency model best; Pipedrive cheaper.
-5. **Accounting**: Quickbooks vs Xero vs Wave. Doc assumes
+4. **Accounting**: Quickbooks vs Xero vs Wave. Doc assumes
    Quickbooks Online — most CPAs default to it.
-6. **Vercel tier**: Pro at $20/user. We could stay on Hobby (free)
+5. **Vercel tier**: Pro at $20/user. We could stay on Hobby (free)
    per-developer for a while; Pro unlocks team analytics and
    higher limits. Recommend Pro because the dashboard runs
    production traffic.
