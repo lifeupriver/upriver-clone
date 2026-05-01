@@ -22,6 +22,12 @@ const PORT = Number(process.env['PORT'] ?? 8288);
 
 const app = express();
 
+// `inngest/express` requires the JSON body to be pre-parsed; without this
+// middleware, sync and invocation requests reach the handler with no body
+// and Inngest Cloud reports "Missing body when syncing".
+// Cap is generous because Inngest step state can be large for long pipelines.
+app.use(express.json({ limit: '10mb' }));
+
 const serveHost = process.env['INNGEST_SERVE_HOST'];
 app.use(
   '/api/inngest',

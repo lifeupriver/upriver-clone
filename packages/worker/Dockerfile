@@ -44,7 +44,11 @@ COPY tsconfig.base.json ./
 RUN pnpm --filter @upriver/core --filter @upriver/audit-passes --filter @upriver/scaffold-template --filter @upriver/cli --filter @upriver/worker run build
 
 # Prune dev deps for the runtime stage. Keeps the final image lean.
-RUN pnpm --filter @upriver/worker --filter @upriver/cli --filter @upriver/core --filter @upriver/audit-passes --filter @upriver/scaffold-template --prod deploy /deploy/worker
+# `pnpm deploy` accepts exactly one --filter; it automatically resolves and
+# bundles the target's workspace dependencies (cli, core, audit-passes, etc.).
+# `--legacy` opts out of pnpm v10's new injected-workspace-packages requirement
+# (the workspace doesn't set inject-workspace-packages=true).
+RUN pnpm --filter @upriver/worker --prod deploy /deploy/worker --legacy
 
 # ---- runtime ---------------------------------------------------------------
 # Playwright's official image already has Chromium + system libs preinstalled,
@@ -78,4 +82,7 @@ EXPOSE 8288
 
 # Run the worker's HTTP entrypoint. Inngest Cloud delivers function
 # invocations to /api/inngest on this port.
-CMD ["node", "packages/worker/dist/serve.js"]
+# `pnpm deploy /deploy/worker` flattens the worker package's contents into the
+# deploy root, so dist/serve.js lives at /app/dist/serve.js (not under
+# packages/worker/). Mirrors the package.json "start" script.
+CMD ["node", "dist/serve.js"]

@@ -1,44 +1,38 @@
-# Fly.io config for the upriver worker.
+# fly.toml app configuration file generated for upriver-worker on 2026-04-30T22:10:04-04:00
 #
-# Deploy from repo root:
-#   fly deploy --config packages/worker/fly.toml --dockerfile packages/worker/Dockerfile
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
-# First-time setup is documented in packages/worker/DEPLOY.md.
 
-app = "upriver-worker"
-primary_region = "iad"
+app = 'upriver-worker'
+primary_region = 'iad'
 
 [build]
-  dockerfile = "packages/worker/Dockerfile"
+  # Path is relative to this fly.toml's directory (packages/worker/).
+  # Build context is supplied at deploy time (`fly deploy` from repo root).
+  dockerfile = 'Dockerfile'
 
 [env]
-  PORT = "8288"
-  # Inngest needs the public-facing URL when generating signed callbacks.
-  # Override with `fly secrets set INNGEST_SERVE_HOST=https://upriver-worker.fly.dev`
-  # so signed URLs match what the dashboard sees.
-  NODE_ENV = "production"
+  NODE_ENV = 'production'
+  PORT = '8288'
 
 [http_service]
   internal_port = 8288
   force_https = true
-  # Idle workers stop to keep cost ~$0; Inngest's retry backoff covers the
-  # cold-start window when a job arrives. Crank min_machines_running to 1
-  # if you start seeing first-job latency complaints.
-  auto_stop_machines = "stop"
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
-  processes = ["app"]
+  processes = ['app']
 
   [[http_service.checks]]
-    grace_period = "10s"
-    interval = "30s"
-    method = "get"
-    path = "/healthz"
-    protocol = "http"
-    timeout = "5s"
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '10s'
+    method = 'get'
+    path = '/healthz'
+    protocol = 'http'
 
 [[vm]]
-  size = "shared-cpu-2x"
-  memory = "2gb"
-  cpu_kind = "shared"
+  size = 'shared-cpu-2x'
+  memory = '2gb'
   cpus = 2
+  memory_mb = 2048
