@@ -26,6 +26,7 @@ import {
 import { computeImpactMetrics } from '../synthesize/impact-metrics.js';
 import { loadPagesAndTokens, type LoadedPage } from '../synthesize/loader.js';
 import { cachedClaudeCall, type CacheableTextBlockParam } from '../util/cached-llm.js';
+import { claudeCliCall, claudeCliAvailable } from '../util/claude-cli.js';
 
 const MODEL = 'claude-sonnet-4-6';
 const MAX_TOKENS = 8000;
@@ -48,7 +49,22 @@ export default class Synthesize extends BaseCommand {
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Synthesize);
     const { slug } = args;
-    const apiKey = this.requireEnv('ANTHROPIC_API_KEY');
+    const rawKey = process.env['ANTHROPIC_API_KEY'];
+    const forceCli = Boolean(process.env['UPRIVER_USE_CLAUDE_CLI']);
+    const looksValid = (k: string | undefined): k is string =>
+      typeof k === 'string' && k.startsWith('sk-ant-') && !k.endsWith('...') && k.length > 20;
+    const apiKey = !forceCli && looksValid(rawKey) ? rawKey : undefined;
+    if (!apiKey) {
+      const cliReady = await claudeCliAvailable();
+      if (!cliReady) {
+        this.error(
+          'Neither ANTHROPIC_API_KEY is set nor the `claude` CLI is on PATH. Install Claude Code (npm i -g @anthropic-ai/claude-code) to use your Claude Max subscription, or set ANTHROPIC_API_KEY.',
+        );
+      }
+      this.log('  Using `claude` CLI (Claude Max subscription) — no ANTHROPIC_API_KEY set.');
+    } else {
+      this.log('  Using Anthropic API key (ANTHROPIC_API_KEY).');
+    }
 
     const dir = clientDir(slug);
     if (!existsSync(dir)) this.error(`Client directory not found: ${dir}`);
@@ -100,7 +116,7 @@ export default class Synthesize extends BaseCommand {
     const contentInventory = aggregateContent(pages);
     const screenshots = { pages: pages.map(toScreenshot) };
 
-    const anthropic = new Anthropic({ apiKey });
+    const anthropic = apiKey ? new Anthropic({ apiKey }) : null;
     const systemBlocks = systemContextBlocks(config.name, config.url, overallScore);
 
     this.log('  [1/3] Drafting brand voice...');
@@ -445,7 +461,7 @@ function systemContextBlocks(
 }
 
 async function callClaude<T>(
-  anthropic: Anthropic,
+  anthropic: Anthropic | null,
   slug: string,
   command: string,
   prompt: string,
@@ -456,8 +472,13 @@ async function callClaude<T>(
   return parseJson<T>(text);
 }
 
+function systemBlocksToString(system?: CacheableTextBlockParam[]): string {
+  if (!system || system.length === 0) return '';
+  return system.map((b) => b.text).join('\n\n');
+}
+
 async function callClaudeText(
-  anthropic: Anthropic,
+  anthropic: Anthropic | null,
   slug: string,
   command: string,
   prompt: string,
@@ -465,19 +486,30 @@ async function callClaudeText(
   system?: CacheableTextBlockParam[],
 ): Promise<string> {
   try {
-    const { text } = await cachedClaudeCall({
-      anthropic,
+    if (anthropic) {
+      const { text } = await cachedClaudeCall({
+        anthropic,
+        slug,
+        command,
+        model: MODEL,
+        maxTokens: MAX_TOKENS,
+        messages: [{ role: 'user', content: prompt }],
+        ...(system ? { system } : {}),
+        log: (msg) => cmd.log(msg),
+      });
+      return text;
+    }
+    const { text } = await claudeCliCall({
       slug,
       command,
       model: MODEL,
-      maxTokens: MAX_TOKENS,
-      messages: [{ role: 'user', content: prompt }],
-      ...(system ? { system } : {}),
+      systemPrompt: systemBlocksToString(system),
+      userPrompt: prompt,
       log: (msg) => cmd.log(msg),
     });
     return text;
   } catch (err) {
-    cmd.warn(`Claude API error: ${String(err)}`);
+    cmd.warn(`Claude error: ${String(err)}`);
     throw err;
   }
 }
