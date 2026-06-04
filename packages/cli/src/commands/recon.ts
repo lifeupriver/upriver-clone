@@ -5,7 +5,7 @@ import { clientDir } from '@upriver/core';
 import { createEmptyProfile } from '@upriver/schemas';
 
 import { BaseCommand } from '../base-command.js';
-import { resolveClientDataSource } from '../generate/data-source.js';
+import { resolveClientDataSourceOrFail } from '../generate/data-source.js';
 import { appendConflicts, bumpMeta, readProfile, writeProfile } from '../generate/profile-io.js';
 import { claudeCliAvailable } from '../util/claude-cli.js';
 import { DEFAULT_ADAPTER_IDS, selectAdapters } from '../recon/adapters/index.js';
@@ -55,7 +55,7 @@ export default class Recon extends BaseCommand {
     }
     if (adapters.length === 0) this.error('No adapters selected.');
 
-    const ds = resolveClientDataSource();
+    const ds = resolveClientDataSourceOrFail((m) => this.error(m));
     const config = this.getConfig(slug); // readClientConfig — errors clearly if missing
     const existing = await readProfile(ds, slug);
     const now = new Date().toISOString();

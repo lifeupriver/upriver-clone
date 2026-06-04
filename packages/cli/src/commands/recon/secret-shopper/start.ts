@@ -1,7 +1,7 @@
 import { Args, Flags } from '@oclif/core';
 
 import { BaseCommand } from '../../../base-command.js';
-import { resolveClientDataSource } from '../../../generate/data-source.js';
+import { resolveClientDataSourceOrFail } from '../../../generate/data-source.js';
 import { startSecretShopper } from '../../../recon/adapters/secret-shopper.js';
 
 export default class ReconSecretShopperStart extends BaseCommand {
@@ -27,7 +27,7 @@ export default class ReconSecretShopperStart extends BaseCommand {
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(ReconSecretShopperStart);
-    const ds = resolveClientDataSource();
+    const ds = resolveClientDataSourceOrFail((m) => this.error(m));
     const sentAt = flags.at ?? new Date().toISOString();
 
     const entry = await startSecretShopper(ds, args.slug, { channel: flags.channel, sentAt });

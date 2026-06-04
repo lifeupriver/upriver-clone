@@ -4,7 +4,7 @@ import { Args, Flags } from '@oclif/core';
 import type { DeliverableId } from '@upriver/schemas';
 
 import { BaseCommand } from '../base-command.js';
-import { resolveClientDataSource } from '../generate/data-source.js';
+import { resolveClientDataSourceOrFail } from '../generate/data-source.js';
 import { runGenerate } from '../generate/engine.js';
 import { claudeCliCall } from '../util/claude-cli.js';
 
@@ -43,7 +43,7 @@ export default class Generate extends BaseCommand {
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Generate);
-    const ds = resolveClientDataSource();
+    const ds = resolveClientDataSourceOrFail((m) => this.error(m));
 
     const outcome = await runGenerate(
       {

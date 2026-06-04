@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { Args, Flags } from '@oclif/core';
 
 import { BaseCommand } from '../../base-command.js';
-import { resolveClientDataSource } from '../../generate/data-source.js';
+import { resolveClientDataSourceOrFail } from '../../generate/data-source.js';
 import { readProfile } from '../../generate/profile-io.js';
 import { claudeCliAvailable } from '../../util/claude-cli.js';
 import { defaultChunkCaller } from '../../transcript/extract.js';
@@ -64,7 +64,7 @@ export default class ExtractTranscript extends BaseCommand {
       this.error(`Transcript appears to be binary, not text: ${file}`);
     }
 
-    const ds = resolveClientDataSource();
+    const ds = resolveClientDataSourceOrFail((m) => this.error(m));
     const existing = await readProfile(ds, slug);
     const now = new Date().toISOString();
     const log = (msg: string): void => this.log(msg);

@@ -2,7 +2,7 @@ import { Args, Flags } from '@oclif/core';
 import { createEmptyProfile } from '@upriver/schemas';
 
 import { BaseCommand } from '../../../base-command.js';
-import { resolveClientDataSource } from '../../../generate/data-source.js';
+import { resolveClientDataSourceOrFail } from '../../../generate/data-source.js';
 import { appendConflicts, bumpMeta, readProfile, writeProfile } from '../../../generate/profile-io.js';
 import { recordSecretShopper } from '../../../recon/adapters/secret-shopper.js';
 import { mergeCandidates, structurallyValid } from '../../../recon/merge-candidates.js';
@@ -29,7 +29,7 @@ export default class ReconSecretShopperRecord extends BaseCommand {
   async run(): Promise<void> {
     const { args, flags } = await this.parse(ReconSecretShopperRecord);
     const { slug } = args;
-    const ds = resolveClientDataSource();
+    const ds = resolveClientDataSourceOrFail((m) => this.error(m));
     const respondedAt = flags.at ?? new Date().toISOString();
 
     const { entry, candidate } = await recordSecretShopper(ds, slug, {

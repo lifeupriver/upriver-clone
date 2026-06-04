@@ -4,7 +4,7 @@ import { Args, Flags } from '@oclif/core';
 import { clientProfileZ, deliverableReadiness, type ClientProfile } from '@upriver/schemas';
 
 import { BaseCommand } from '../../base-command.js';
-import { resolveClientDataSource } from '../../generate/data-source.js';
+import { resolveClientDataSourceOrFail } from '../../generate/data-source.js';
 import { appendConflicts, readProfile, writeProfile } from '../../generate/profile-io.js';
 import { planImport } from '../../generate/profile-merge.js';
 
@@ -69,7 +69,7 @@ export default class ProfileImport extends BaseCommand {
       this.error(`_meta.slug "${parsed._meta.slug}" does not match the slug argument "${slug}".`);
     }
 
-    const ds = resolveClientDataSource();
+    const ds = resolveClientDataSourceOrFail((m) => this.error(m));
     const existing = await readProfile(ds, slug);
     const now = new Date().toISOString();
 

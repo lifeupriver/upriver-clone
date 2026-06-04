@@ -3,7 +3,7 @@ import type { ClientIntake } from '@upriver/core';
 import { auditDecisionsZ, type AuditDecisions } from '@upriver/schemas';
 
 import { BaseCommand } from '../../base-command.js';
-import { resolveClientDataSource } from '../../generate/data-source.js';
+import { resolveClientDataSourceOrFail } from '../../generate/data-source.js';
 import { appendConflicts, readProfile, writeProfile } from '../../generate/profile-io.js';
 import {
   LEGACY_INTAKE_PATH,
@@ -40,7 +40,7 @@ export default class ProfileMigrateIntake extends BaseCommand {
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(ProfileMigrateIntake);
-    const ds = resolveClientDataSource();
+    const ds = resolveClientDataSourceOrFail((m) => this.error(m));
 
     if (flags.all && args.slug) {
       this.error('Pass a slug or --all, not both.');
