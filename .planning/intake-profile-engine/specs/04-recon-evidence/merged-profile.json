@@ -1,0 +1,444 @@
+{
+  "_meta": {
+    "version": 1,
+    "slug": "littlefriends",
+    "createdAt": "2026-06-04T00:00:00.000Z",
+    "updatedAt": "2026-06-04T19:09:55.940Z",
+    "revision": 3
+  },
+  "identity": {
+    "legalName": {
+      "value": "Little Friends Learning Loft LLC",
+      "source": "recon",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "site footer [NEEDS CONFIRMATION: exact legal entity name/suffix]",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    },
+    "publicName": {
+      "value": "Little Friends Learning Loft",
+      "source": "recon",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "Page title: 'Little Friends Learning Loft | Little Friends Learning Loft'",
+      "updatedAt": "2026-06-04T19:09:55.940Z"
+    },
+    "category": {
+      "value": "Montessori preschool",
+      "source": "recon",
+      "confidence": "low",
+      "verified": false,
+      "updatedAt": "2026-06-04T19:09:55.940Z",
+      "evidence": "\"Montessori preschool\" displayed directly beneath the business name in the listing header."
+    },
+    "subcategory": {
+      "value": "Licensed group family day care",
+      "source": "transcript",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "recorded session [NEEDS CONFIRMATION: OCFS license class]",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    },
+    "yearEstablished": {
+      "value": 2018,
+      "source": "transcript",
+      "confidence": "low",
+      "verified": false,
+      "evidence": "owner: 'we opened about six years ago' [NEEDS CONFIRMATION: exact year]",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    },
+    "phone": {
+      "value": "(732) 343-0005",
+      "source": "recon",
+      "confidence": "medium",
+      "verified": false,
+      "updatedAt": "2026-06-04T19:09:55.940Z",
+      "evidence": "\"(732) 343-0005\" shown in the listing with a tel: link to +17323430005."
+    },
+    "website": {
+      "value": "https://littlefriendslearningloft.com",
+      "source": "recon",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "proposal",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    },
+    "hours": {
+      "value": "Thursday 9 AM–5 PM (open, closes 5 PM)",
+      "source": "recon",
+      "confidence": "medium",
+      "verified": false,
+      "updatedAt": "2026-06-04T19:09:55.940Z",
+      "evidence": "\"Open · Closes 5 PM\" status line and table row: \"Thursday - 9 AM–5 PM\"."
+    },
+    "primaryAddress": {
+      "value": {
+        "line1": "290 North St",
+        "city": "Newburgh",
+        "state": "NY",
+        "postalCode": "12550"
+      },
+      "source": "recon",
+      "confidence": "medium",
+      "verified": false,
+      "updatedAt": "2026-06-04T19:09:55.940Z",
+      "evidence": "\"290 North St, Newburgh, NY 12550\" shown in the listing address field."
+    },
+    "serviceArea": {
+      "value": "Newburgh, NY and Hudson Valley",
+      "source": "recon",
+      "confidence": "medium",
+      "verified": false,
+      "updatedAt": "2026-06-04T19:09:55.940Z",
+      "evidence": "School located at 290 North Street, Newburgh; Instagram posts reference 'Hudson Valley Educator colleagues' and events in Newburgh and neighboring cities"
+    },
+    "socialHandles": {
+      "value": [
+        {
+          "platform": "Instagram",
+          "handle": "@littlefriendslearningloft"
+        }
+      ],
+      "source": "recon",
+      "confidence": "medium",
+      "verified": false,
+      "updatedAt": "2026-06-04T19:09:55.940Z",
+      "evidence": "\"Follow us on Instagram! @littlefriendslearningloft\""
+    },
+    "gbp": {
+      "value": {
+        "url": "https://www.google.com/maps/search/Little%20Friends%20Learning%20Loft",
+        "status": "claimed"
+      },
+      "source": "recon",
+      "confidence": "low",
+      "verified": false,
+      "updatedAt": "2026-06-04T19:09:55.940Z",
+      "evidence": "Listing displays structured hours, phone number, and linked website — consistent with a claimed profile. Place ID /g/11lymmzy35 present in tile request parameters."
+    }
+  },
+  "people": {
+    "owners": {
+      "value": [
+        {
+          "name": "[NEEDS CONFIRMATION]",
+          "role": "Owner / Director"
+        }
+      ],
+      "source": "transcript",
+      "confidence": "low",
+      "verified": false,
+      "evidence": "recorded session [NEEDS CONFIRMATION: owner full name]",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    },
+    "billingContact": {
+      "value": {
+        "name": "[NEEDS CONFIRMATION]"
+      },
+      "source": "operator",
+      "confidence": "low",
+      "verified": false,
+      "evidence": "[NEEDS CONFIRMATION]",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    }
+  },
+  "offerings": {
+    "core": {
+      "value": [
+        {
+          "name": "Full-day preschool program",
+          "components": [
+            "Play-led curriculum",
+            "Meals/snacks",
+            "Daily report"
+          ],
+          "useCase": "Working families needing licensed early care"
+        }
+      ],
+      "source": "transcript",
+      "confidence": "medium",
+      "verified": true,
+      "evidence": "fixture hand-fill",
+      "updatedAt": "2026-06-04T18:54:17.827Z"
+    },
+    "dontDo": {
+      "value": [
+        "Drop-in / hourly care"
+      ],
+      "source": "transcript",
+      "confidence": "low",
+      "verified": true,
+      "evidence": "fixture hand-fill",
+      "updatedAt": "2026-06-04T18:54:17.827Z"
+    }
+  },
+  "pricing": {
+    "shareable": {
+      "value": [
+        {
+          "item": "Registration fee",
+          "price": "$75",
+          "conditions": "Annual, non-refundable"
+        }
+      ],
+      "source": "recon",
+      "confidence": "low",
+      "verified": true,
+      "evidence": "fixture hand-fill",
+      "updatedAt": "2026-06-04T18:54:17.827Z"
+    },
+    "deposit": {
+      "value": "One month's tuition, due at registration",
+      "source": "transcript",
+      "confidence": "low",
+      "verified": true,
+      "evidence": "fixture hand-fill",
+      "updatedAt": "2026-06-04T18:54:17.827Z"
+    },
+    "refundPolicy": {
+      "value": "[NEEDS CONFIRMATION]",
+      "source": "operator",
+      "confidence": "low",
+      "verified": false,
+      "evidence": "[NEEDS CONFIRMATION]",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    }
+  },
+  "capacity": {
+    "metrics": {
+      "value": [
+        {
+          "label": "Total licensed capacity",
+          "value": 16,
+          "unit": "children"
+        }
+      ],
+      "source": "transcript",
+      "confidence": "medium",
+      "verified": true,
+      "evidence": "fixture hand-fill",
+      "updatedAt": "2026-06-04T18:54:17.827Z"
+    }
+  },
+  "customers": {
+    "primaryCustomer": {
+      "value": {
+        "demographic": "Dual-income families with children aged 2–5",
+        "psychographic": "Value early-childhood education and consistent caregivers"
+      },
+      "source": "transcript",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "recorded session",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    }
+  },
+  "positioning": {
+    "keyDifferentiator": {
+      "value": "Low child-to-teacher ratios and a loft-based, play-led curriculum",
+      "source": "transcript",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "recorded session",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    },
+    "outcomeDelivered": {
+      "value": "Students reach multiple tiers of educational, social, and emotional goals at a pace suited to each individual learner through Montessori-based, multi-age instruction",
+      "source": "recon",
+      "confidence": "low",
+      "verified": false,
+      "updatedAt": "2026-06-04T19:09:55.940Z",
+      "evidence": "\"Years 1, 2 and 3 are designed to help students reach multiple tiers of educational, social and emotional goals at a pace befitting each individual learner.\""
+    }
+  },
+  "voice": {
+    "attributes": {
+      "value": [
+        {
+          "attribute": "Warm",
+          "definition": "Speaks like a trusted caregiver",
+          "example": "We can't wait to welcome your little one to the Loft."
+        }
+      ],
+      "source": "transcript",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "recorded session",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    }
+  },
+  "governance": {
+    "regulatedData": {
+      "value": [
+        "Children's PII",
+        "Immunization records"
+      ],
+      "source": "operator",
+      "confidence": "low",
+      "verified": false,
+      "evidence": "[NEEDS CONFIRMATION]",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    },
+    "dataRetention": {
+      "value": "[NEEDS CONFIRMATION]",
+      "source": "operator",
+      "confidence": "low",
+      "verified": true,
+      "evidence": "fixture hand-fill",
+      "updatedAt": "2026-06-04T18:54:17.827Z"
+    }
+  },
+  "goals": {
+    "primaryOutcome": {
+      "value": "Fill open spots and cut enrollment admin time",
+      "source": "transcript",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "recorded session",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    },
+    "budgetConstraints": {
+      "value": "[NEEDS CONFIRMATION]",
+      "source": "operator",
+      "confidence": "low",
+      "verified": false,
+      "evidence": "[NEEDS CONFIRMATION]",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    },
+    "redLines": {
+      "value": [
+        "No images of children without signed media releases"
+      ],
+      "source": "transcript",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "recorded session",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    }
+  },
+  "modules": {
+    "preschool": {
+      "ocfs": {
+        "licenseStatus": {
+          "value": "Licensed — active",
+          "source": "transcript",
+          "confidence": "medium",
+          "verified": true,
+          "evidence": "fixture hand-fill",
+          "updatedAt": "2026-06-04T18:54:17.827Z"
+        },
+        "licenseNumber": {
+          "value": "[NEEDS CONFIRMATION]",
+          "source": "operator",
+          "confidence": "low",
+          "verified": false,
+          "evidence": "[NEEDS CONFIRMATION]",
+          "updatedAt": "2026-06-04T00:00:00.000Z"
+        }
+      },
+      "trainingMatrix": {
+        "value": [
+          {
+            "staffName": "[NEEDS CONFIRMATION]",
+            "role": "Lead teacher",
+            "requiredTrainings": [
+              {
+                "name": "Mandated Reporter",
+                "status": "[NEEDS CONFIRMATION]"
+              }
+            ]
+          }
+        ],
+        "source": "operator",
+        "confidence": "low",
+        "verified": true,
+        "evidence": "fixture hand-fill",
+        "updatedAt": "2026-06-04T18:54:17.827Z"
+      },
+      "immunizationPolicy": {
+        "value": "Follows NYS immunization requirements for licensed child care",
+        "source": "transcript",
+        "confidence": "low",
+        "verified": true,
+        "evidence": "fixture hand-fill",
+        "updatedAt": "2026-06-04T18:54:17.827Z"
+      },
+      "enrollmentCapacity": {
+        "value": [
+          {
+            "ageGroup": "Toddler (2s)",
+            "licensedCapacity": 6,
+            "currentEnrollment": 5,
+            "waitlist": 3
+          },
+          {
+            "ageGroup": "Preschool (3–5)",
+            "licensedCapacity": 10,
+            "currentEnrollment": 7,
+            "waitlist": 1
+          }
+        ],
+        "source": "transcript",
+        "confidence": "medium",
+        "verified": true,
+        "evidence": "fixture hand-fill",
+        "updatedAt": "2026-06-04T18:54:17.827Z"
+      }
+    }
+  },
+  "content": {
+    "visualBrandAssets": {
+      "value": {
+        "palette": [
+          "#3374FF",
+          "#FFFFFF",
+          "#000000"
+        ]
+      },
+      "source": "recon",
+      "confidence": "low",
+      "verified": false,
+      "updatedAt": "2026-06-04T19:09:55.940Z",
+      "evidence": "Firecrawl branding extraction (dominant colors)"
+    },
+    "testimonials": {
+      "value": [
+        {
+          "quote": "We had heard how wonderful Little Friends Learning Loft was, but seeing it in action blew us away. As parents, you want your child to find a place that fosters curiosity but still maintains a sense of control, teaches compassion and connectedness, but still encourages individuality. What they've built here is a special kind of magic, and we're just thrilled that our son can be part of it. He truly loves being there!",
+          "attribution": "Renata Kero, Cold Spring",
+          "theme": "exceeds parental expectations; balances curiosity with structure and individuality with community"
+        }
+      ],
+      "source": "recon",
+      "confidence": "low",
+      "verified": false,
+      "updatedAt": "2026-06-04T19:09:55.940Z",
+      "evidence": "\"-Renata Kero, Cold Spring\" — block quote on homepage"
+    },
+    "reviewPlatforms": {
+      "value": [
+        {
+          "platform": "Google",
+          "rating": 5
+        }
+      ],
+      "source": "recon",
+      "confidence": "medium",
+      "verified": false,
+      "updatedAt": "2026-06-04T19:09:55.940Z",
+      "evidence": "\"5.0\" star rating displayed beneath the business name on the Google Maps listing. Review count not rendered in the provided content."
+    }
+  },
+  "seo": {
+    "local": {
+      "value": {
+        "gbpStatus": "claimed"
+      },
+      "source": "recon",
+      "confidence": "low",
+      "verified": false,
+      "updatedAt": "2026-06-04T19:09:55.940Z",
+      "evidence": "Listing includes phone, website (littlefriendslearningloft.com), and structured hours — all require owner verification to set."
+    }
+  }
+}
