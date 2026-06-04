@@ -1,0 +1,64 @@
+{
+  "_meta": {
+    "version": 1,
+    "slug": "littlefriends",
+    "createdAt": "2026-06-04T00:00:00.000Z",
+    "updatedAt": "2026-06-04T00:00:00.000Z",
+    "revision": 1
+  },
+  "identity": {
+    "legalName": { "value": "Little Friends Learning Loft LLC", "source": "recon", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "site footer [NEEDS CONFIRMATION: exact legal entity name/suffix]" },
+    "publicName": { "value": "Little Friends Learning Loft", "source": "recon", "confidence": "high", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "site title + proposal" },
+    "category": { "value": "Preschool & child care", "source": "recon", "confidence": "high", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "Google Business Profile primary category" },
+    "subcategory": { "value": "Licensed group family day care", "source": "transcript", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "recorded session [NEEDS CONFIRMATION: OCFS license class]" },
+    "yearEstablished": { "value": 2018, "source": "transcript", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "owner: 'we opened about six years ago' [NEEDS CONFIRMATION: exact year]" },
+    "phone": { "value": "(518) 555-0142", "source": "recon", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "Google Business Profile [NEEDS CONFIRMATION]" },
+    "website": { "value": "https://littlefriendslearningloft.com", "source": "recon", "confidence": "high", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "proposal" },
+    "hours": { "value": "Mon–Fri 7:30am–5:30pm", "source": "recon", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "[NEEDS CONFIRMATION: summer/holiday hours]" }
+  },
+  "people": {
+    "owners": { "value": [{ "name": "[NEEDS CONFIRMATION]", "role": "Owner / Director" }], "source": "transcript", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "recorded session [NEEDS CONFIRMATION: owner full name]" },
+    "billingContact": { "value": { "name": "[NEEDS CONFIRMATION]" }, "source": "operator", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "[NEEDS CONFIRMATION]" }
+  },
+  "offerings": {
+    "core": { "value": [{ "name": "Full-day preschool program", "useCase": "Working families needing licensed early care", "components": ["Play-led curriculum", "Meals/snacks", "Daily report"] }], "source": "transcript", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "proposal [NEEDS CONFIRMATION: price range withheld pending owner]" },
+    "dontDo": { "value": ["Drop-in / hourly care"], "source": "transcript", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "[NEEDS CONFIRMATION]" }
+  },
+  "pricing": {
+    "deposit": { "value": "One month's tuition, due at registration", "source": "transcript", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "recorded session [NEEDS CONFIRMATION]" },
+    "shareable": { "value": [{ "item": "Registration fee", "price": "$75", "conditions": "Annual, non-refundable" }], "source": "recon", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "[NEEDS CONFIRMATION: tuition tiers]" },
+    "refundPolicy": { "value": "[NEEDS CONFIRMATION]", "source": "operator", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "[NEEDS CONFIRMATION]" }
+  },
+  "capacity": {
+    "metrics": { "value": [{ "label": "Total licensed capacity", "value": 16, "unit": "children" }], "source": "transcript", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "owner stated OCFS license [NEEDS CONFIRMATION: per-age breakdown]" }
+  },
+  "customers": {
+    "primaryCustomer": { "value": { "demographic": "Dual-income families with children aged 2–5", "psychographic": "Value early-childhood education and consistent caregivers" }, "source": "transcript", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "recorded session" }
+  },
+  "positioning": {
+    "keyDifferentiator": { "value": "Low child-to-teacher ratios and a loft-based, play-led curriculum", "source": "transcript", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "recorded session" }
+  },
+  "voice": {
+    "attributes": { "value": [{ "attribute": "Warm", "definition": "Speaks like a trusted caregiver", "example": "We can't wait to welcome your little one to the Loft." }], "source": "transcript", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "recorded session" }
+  },
+  "governance": {
+    "regulatedData": { "value": ["Children's PII", "Immunization records"], "source": "operator", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "[NEEDS CONFIRMATION]" },
+    "dataRetention": { "value": "[NEEDS CONFIRMATION]", "source": "operator", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "[NEEDS CONFIRMATION]" }
+  },
+  "goals": {
+    "primaryOutcome": { "value": "Fill open spots and cut enrollment admin time", "source": "transcript", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "recorded session" },
+    "budgetConstraints": { "value": "[NEEDS CONFIRMATION]", "source": "operator", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "[NEEDS CONFIRMATION]" },
+    "redLines": { "value": ["No images of children without signed media releases"], "source": "transcript", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "recorded session" }
+  },
+  "modules": {
+    "preschool": {
+      "ocfs": {
+        "licenseStatus": { "value": "Licensed — active", "source": "transcript", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "owner stated; [NEEDS CONFIRMATION: OCFS license document]" },
+        "licenseNumber": { "value": "[NEEDS CONFIRMATION]", "source": "operator", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "[NEEDS CONFIRMATION]" }
+      },
+      "trainingMatrix": { "value": [{ "staffName": "[NEEDS CONFIRMATION]", "role": "Lead teacher", "requiredTrainings": [{ "name": "Mandated Reporter", "status": "[NEEDS CONFIRMATION]" }] }], "source": "operator", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "[NEEDS CONFIRMATION: NYS training matrix per staff]" },
+      "immunizationPolicy": { "value": "Follows NYS immunization requirements for licensed child care", "source": "transcript", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "[NEEDS CONFIRMATION: written policy document]" },
+      "enrollmentCapacity": { "value": [{ "ageGroup": "Toddler (2s)", "licensedCapacity": 6, "currentEnrollment": 5, "waitlist": 3 }, { "ageGroup": "Preschool (3–5)", "licensedCapacity": 10, "currentEnrollment": 7, "waitlist": 1 }], "source": "transcript", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "recorded session [NEEDS CONFIRMATION: current head counts]" }
+    }
+  }
+}

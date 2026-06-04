@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "pnpm --filter @upriver/core --filter @upriver/worker run build && astro build",
+    "build": "pnpm --filter @upriver/core --filter @upriver/schemas --filter @upriver/worker run build && astro build",
     "preview": "astro preview",
     "typecheck": "astro check",
     "clean": "rm -rf dist .astro node_modules/.astro"
@@ -19,6 +19,7 @@
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "@upriver/core": "workspace:*",
+    "@upriver/schemas": "workspace:*",
     "@upriver/worker": "workspace:*",
     "astro": "^5.0.0",
     "inngest": "^3.27.0",

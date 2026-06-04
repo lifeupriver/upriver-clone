@@ -1,0 +1,28 @@
+{
+  "name": "@upriver/schemas",
+  "version": "0.1.0",
+  "description": "Client Profile contract — zod schemas, inferred types, merge/coverage helpers for the Intake & Profile Engine",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rm -rf dist",
+    "test": "tsc -p tsconfig.json && mkdir -p dist/fixtures && (cp src/fixtures/*.json dist/fixtures/ 2>/dev/null || true) && node --test 'dist/**/*.test.js'"
+  },
+  "dependencies": {
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  }
+}
