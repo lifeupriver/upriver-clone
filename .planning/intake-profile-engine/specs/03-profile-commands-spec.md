@@ -49,3 +49,66 @@ Tests beside each module; pure logic separated from oclif exactly as `generate/`
 ## Changelog
 
 - 2026-06-04: spec written (tier-2 batch with 04, 05).
+
+- 2026-06-04: **BUILT.** `upriver profile show/set/verify/conflicts/pull/push` + the canonical-Supabase default flip shipped on `build/03-profile-commands`. Pure logic in `packages/cli/src/profile/` (`paths`, `show-model`, `render`, `mutate`, `sync`, `io`), thin oclif in `commands/profile/`, the flip + clear-error in `generate/data-source.ts`. 50 new unit tests, all TDD (red→green). Every file ≤ ~210 lines.
+
+### Definition of Done — verification table
+
+| DoD item | Result |
+|---|---|
+| Root `pnpm build` clean; `@upriver/cli test` green (existing + new) | **Scoped PASS / full deferred.** The shared working tree carried specs 04/05/07's *uncommitted* in-flight work (non-compiling intake migration + recon/transcript), so the literal whole-package `tsc` is red through no fault of this build. Built/tested via a scoped `tsconfig` excluding only those foreign files: **306/306 green** (entire CLI suite minus the 04/05/07 in-flight files, incl. all 50 new tests). My only shared-module change (the flip) is touched by no existing test. Full-suite green is the tier-2 integration session's DoD item (it runs `pnpm -r test` after each merge). |
+| Unit: show-model grouping + unapproved-blocking | PASS (`show-model.test.ts`, 7) |
+| Unit: set merge semantics (operator wins, HV set ≠ verified) | PASS (`mutate.test.ts`) |
+| Unit: verify rules (non-HV rejected, empty rejected, unblock report) | PASS (`mutate.test.ts`) |
+| Unit: conflicts resolve both directions | PASS (`mutate.test.ts`) |
+| Unit: sync merge-on-pull with conflict queue | PASS (`sync.test.ts`, 5) |
+| Unit: paths validation (wildcards, unknown rejected) | PASS (`paths.test.ts`, 9) |
+| Live: verify 10 HV → `generate doc-02 --dry-run` READY; before/after `show` committed | PASS (transcript below; `clients/littlefriends/profile.json` rev 1→2) |
+| Supabase flip; missing env → clear message naming vars + `UPRIVER_DATA_SOURCE=local` | PASS (`data-source-flip.test.ts`, 4) |
+| No files outside ownership modified | PASS — commit ⊆ owned source + planning docs + spec-mandated outputs (see below) |
+| Spec changelog: deviations, transcript, follow-ups | PASS (this entry) |
+
+### Live acceptance transcript (`clients/littlefriends/`, `UPRIVER_DATA_SOURCE=local`)
+
+`profile show littlefriends` **before** (revision 1): doc-02 sits in *blocked-by-unverified-HV* but **not** in *blocked-by-missing-fields* — the "0 missing, 10 unverified HV" asymmetry from spec 02's run.
+
+```
+Ready (2):  doc-01, doc-18
+Blocked (25):
+  blocked by missing fields (24): doc-03 … i09        (doc-02 NOT listed)
+  blocked by unverified HV (22): doc-02, doc-03, …     (doc-02 listed)
+```
+
+`profile verify littlefriends 'offerings.core.*.priceRange' offerings.dontDo pricing.shareable pricing.deposit capacity.metrics governance.dataRetention modules.preschool.ocfs.licenseStatus modules.preschool.immunizationPolicy modules.preschool.enrollmentCapacity modules.preschool.trainingMatrix --evidence "fixture hand-fill"`:
+
+```
+  verified offerings.core.*.priceRange
+  … (10 total)
+10 field(s) verified. revision 2.
+unblocked: doc-02
+```
+
+`generate littlefriends --doc doc-02 --dry-run` — **the gate opened**:
+
+```
+Deliverable doc-02 (Business Facts Reference)
+  status: READY
+```
+
+`profile show littlefriends` **after** (revision 2): `Ready (3): doc-01, doc-02, doc-18`; doc-02 gone from the HV-blocked bucket (22→19). `show --deliverable doc-02` shows all 10 gates `HV: verified`, `[READY]`. Deltas vs. before are explained entirely by the verify (rev 1→2, 10 `verified` flips).
+
+### Deviations & build decisions
+
+1. **Shared-working-tree / parallel builds.** Specs 03/04/05/07 ran against the same physical checkout (case-insensitive path alias). At build time the tree held 04 (`src/recon/`, `commands/recon*`), 05 (`util/intake-reader.ts` + `clone.ts`/`fixes/plan.ts`/`improve/index.ts` mid-migration, dashboard), and 07 (`src/transcript/`) **uncommitted**, and the 05 files do not currently compile. This build touched none of them, committed only owned files, and verified via a scoped `tsconfig` (excluding exactly those foreign paths; the scratch config was deleted before commit). The tier-2 integration session reconciles and runs the full suite.
+2. **Flip error message exceeds the "one-line" descriptor (DoD-required).** The DoD requires every command to fail with a clear message naming the env vars *and* the `UPRIVER_DATA_SOURCE=local` escape hatch. `createSupabaseClientDataSourceFromEnv` (in read-only `@upriver/core`) names the vars but not the hatch, so the message lives in `resolveClientDataSource` (the single resolution choke point), giving `generate`/`profile *`/`import` the message for free. A few lines, not one — owned file. A sibling `resolveClientDataSourceOrFail(fail)` (no oclif coupling — it takes a `(msg) => never` callback) is used by `show`/`set`/`verify`/`conflicts` so the missing-env case surfaces as a clean oclif `CLIError` via `this.error` (parity with `import`'s validation errors), not an uncaught throw — making spec 03 the clean reference the integrator's seam #3 copies. (`pull`/`push` keep their own try/catch since they build the supabase source directly.)
+3. **Added `profile/io.ts` (a 6th module).** `generate/profile-io.ts` is read-only and its `appendConflicts` only appends; `conflicts --resolve` needs to *rewrite* the trimmed queue, so `writeConflicts` lives in a small owned `io.ts`. Pure-impure split: `paths`/`show-model`/`render`/`mutate` pure, `io`/`sync` do I/O.
+4. **`verify` gained `--evidence`.** Required by the DoD/acceptance (`--evidence "fixture hand-fill"`). Recorded on each verified envelope; value/source untouched.
+5. **`--all-filled` scope.** Scans the union of every deliverable's `requiresHvVerified` gates and the profile's HV-matched leaf envelopes, deduped by the envelope each resolves to. This catches both array-nested gates (`offerings.core.*.priceRange` → `offerings.core`) and section-glob leaves (`pricing.refundPolicy` via `pricing.**`). Fields nested below a non-HV array leaf with no gate path are out of scope — the same envelope-granularity limit the rest of the HV system has.
+6. **Manifest sync = source-wins-on-copy.** "last-write-wins" read as: the side you pull/push *from* wins; divergence is flagged in the report. Generated `.md` docs are not synced (count diff + hint to `upriver sync`).
+7. **Ownership / boundary check.** Scoped to source isolation against the parallel specs. Three sanctioned change categories: (a) owned source (`commands/profile/{show,set,verify,conflicts,pull,push}.ts`, `profile/*`, `generate/data-source.ts`); (b) planning docs (this changelog); (c) spec-mandated outputs — `.env.example` (§1: add `UPRIVER_DATA_SOURCE`) and `clients/littlefriends/profile.json` (the acceptance's verify writes rev 1→2 + 10 `verified`).
+
+### Follow-ups
+
+- **Stale hint in `generate/report.ts` (spec 02's, untouched per §1).** Its HV-block hint still names the "hand-edit + `--replace`" workaround; `profile verify` now supersedes it. Tier-2 integration seam #2 updates that line.
+- **Data-source coherence (integration seam #3).** After merge, confirm `recon` / `extract-transcript` / `migrate-intake` resolve the data source through the same flipped path and surface the same missing-env message.
+- **Dashboard coverage view** consumes `profile show --json` (the `ShowModel` shape) — later, separate piece.
