@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro';
 import type { AuditFinding } from '@upriver/core';
-import { clientExists, readAllFindings, readIntake } from '@/lib/fs-reader';
-import { readAuditPackage } from '@/lib/report-reader';
-import { resolveClientDataSource } from '@/lib/data-source';
+import { clientExists, readAllFindings, readIntake } from '../../../../lib/fs-reader.js';
+import { readAuditPackage } from '../../../../lib/report-reader.js';
+import { resolveClientDataSource } from '../../../../lib/data-source.js';
 
 export const prerender = false;
 

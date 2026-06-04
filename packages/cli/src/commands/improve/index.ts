@@ -83,7 +83,7 @@ export default class Improve extends BaseCommand {
 
     const matrix = loadSkillMatrix(flags.matrix);
     const pkg = loadAuditPackage(dir);
-    const intake = readIntake(slug);
+    const intake = await readIntake(slug);
 
     const onlyIds = new Set((flags.track ?? []).map((s) => s.toLowerCase()));
     const skipIds = new Set((flags.skip ?? []).map((s) => s.toLowerCase()));

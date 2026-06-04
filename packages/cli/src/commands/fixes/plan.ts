@@ -127,7 +127,7 @@ export default class FixesPlan extends BaseCommand {
       );
     }
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as AuditPackage;
-    const intake = readIntake(slug);
+    const intake = await readIntake(slug);
 
     const scopePath = join(dir, 'fixes-plan-scope.md');
     const inScopeIds = readScope(scopePath);

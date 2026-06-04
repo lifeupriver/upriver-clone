@@ -8,7 +8,8 @@
     "build": "pnpm --filter @upriver/core --filter @upriver/schemas --filter @upriver/worker run build && astro build",
     "preview": "astro preview",
     "typecheck": "astro check",
-    "clean": "rm -rf dist .astro node_modules/.astro"
+    "test": "pnpm --filter @upriver/core --filter @upriver/schemas run build && tsc -p tsconfig.test.json && node --test $(find dist-test/test -name '*.test.js')",
+    "clean": "rm -rf dist dist-test .astro node_modules/.astro"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.0",
