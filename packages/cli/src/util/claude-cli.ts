@@ -51,6 +51,12 @@ export interface ClaudeCliCallOptions {
   permissionMode?: 'acceptEdits' | 'auto' | 'bypassPermissions' | 'default' | 'dontAsk' | 'plan';
   /** Allowed tools for the headless session. Defaults to read-only. */
   allowedTools?: string[];
+  /**
+   * Working directory for the spawned session. Used by write-mode callers
+   * (`generate`) to point the session at a staging dir. Additive; existing
+   * callers leave it unset and run in the current working directory.
+   */
+  cwd?: string;
 }
 
 export interface ClaudeCliCallResult {
@@ -179,7 +185,7 @@ export async function claudeCliCall(opts: ClaudeCliCallOptions): Promise<ClaudeC
     args.push('--json-schema', JSON.stringify(opts.jsonSchema));
   }
 
-  const envelope = await invokeCli(args, opts.userPrompt);
+  const envelope = await invokeCli(args, opts.userPrompt, opts.cwd);
   if (envelope.is_error) {
     throw new Error(`claude CLI returned an error envelope (${envelope.subtype}): ${envelope.result.slice(0, 240)}`);
   }
@@ -220,7 +226,11 @@ export async function claudeCliCall(opts: ClaudeCliCallOptions): Promise<ClaudeC
   return { text, fromCache: false, cachePath, costUsd, inputTokens, outputTokens };
 }
 
-function invokeCli(args: string[], stdinPayload: string): Promise<ClaudeCliResultEnvelope> {
+function invokeCli(
+  args: string[],
+  stdinPayload: string,
+  cwd?: string,
+): Promise<ClaudeCliResultEnvelope> {
   return new Promise((resolveP, rejectP) => {
     // The Claude Code CLI prefers an ANTHROPIC_API_KEY env var when present.
     // Upriver runs against the operator's Claude Max subscription, so we
@@ -235,6 +245,7 @@ function invokeCli(args: string[], stdinPayload: string): Promise<ClaudeCliResul
     const child = spawn(CLAUDE_BIN, args, {
       stdio: ['pipe', 'pipe', 'pipe'],
       env: childEnv,
+      ...(cwd !== undefined ? { cwd } : {}),
     });
     let stdout = '';
     let stderr = '';
