@@ -18,6 +18,12 @@ import {
   createSupabaseClientDataSourceFromEnv,
   type ClientDataSource,
 } from '@upriver/core/data';
+// Smoke import — proves @upriver/schemas resolves from the dashboard (Vercel)
+// build. The profile read/write path (Build Spec 03) will consume this here.
+import { clientProfileZ } from '@upriver/schemas';
+
+/** @internal smoke-test binding; remove when the profile data path lands. */
+export const __schemasSmoke: unknown = clientProfileZ;
 
 export type DataSource = 'local' | 'supabase';
 

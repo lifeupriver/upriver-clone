@@ -61,6 +61,9 @@ importers:
       '@upriver/core':
         specifier: workspace:*
         version: link:../core
+      '@upriver/schemas':
+        specifier: workspace:*
+        version: link:../schemas
       dotenv:
         specifier: ^16.0.0
         version: 16.6.1
@@ -150,6 +153,9 @@ importers:
       '@upriver/core':
         specifier: workspace:*
         version: link:../core
+      '@upriver/schemas':
+        specifier: workspace:*
+        version: link:../schemas
       '@upriver/worker':
         specifier: workspace:*
         version: link:../worker
@@ -220,6 +226,19 @@ importers:
       tailwindcss:
         specifier: ^4.0.0
         version: 4.2.4
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
+
+  packages/schemas:
+    dependencies:
+      zod:
+        specifier: ^3.22.0
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.39
       typescript:
         specifier: ^5.4.0
         version: 5.9.3

@@ -34,6 +34,7 @@
     "@types/tar": "^7.0.87",
     "@upriver/audit-passes": "workspace:*",
     "@upriver/core": "workspace:*",
+    "@upriver/schemas": "workspace:*",
     "dotenv": "^16.0.0",
     "pdf-lib": "^1.17.1",
     "pixelmatch": "^7.2.0",
