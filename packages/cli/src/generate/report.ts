@@ -26,8 +26,8 @@ export function renderReadiness(id: DeliverableId, readiness: Readiness): string
     lines.push(`  unverified human-verify-required fields (${readiness.unverifiedHv.length}):`);
     for (const f of readiness.unverifiedHv) lines.push(`    - ${f}`);
     lines.push(
-      '  hint: there is no --force past an HV gate. Verify by editing the profile JSON ' +
-        '(set verified: true on these fields) and re-importing with --replace; `profile verify` lands in Build Spec 03.',
+      '  hint: there is no --force past an HV gate. Once a field holds the right value, ' +
+        'verify it with `upriver profile verify <slug> <path>`.',
     );
   }
   if (readiness.missingDocs.length > 0) {

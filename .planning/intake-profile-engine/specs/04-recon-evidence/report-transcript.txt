@@ -1,0 +1,46 @@
+
+Recon for "littlefriends" — adapters: website, gbp
+
+  website: scraped https://littlefriendslearningloft.com
+[claude-cache] wrote 58f7f4146225def3ada5ca47 (recon-website)
+  gbp: scraping https://www.google.com/maps/search/Little%20Friends%20Learning%20Loft
+[claude-cache] wrote fa6b5da2265226124683b8ae (recon-gbp)
+
+Recon run
+
+  website: 7 filled, 1 skipped, 3 conflicted (2 evidence files)
+      + content.visualBrandAssets
+      + identity.category
+      + identity.primaryAddress
+      + identity.serviceArea
+      + identity.socialHandles
+      + positioning.outcomeDelivered
+      + content.testimonials
+      ! offerings.core (conflict queued)
+      ! positioning.keyDifferentiator (conflict queued)
+      ! pricing.shareable (conflict queued)
+  gbp: 7 filled, 0 skipped, 0 conflicted (1 evidence file)
+      + identity.gbp
+      + identity.category
+      + identity.primaryAddress
+      + identity.phone
+      + identity.hours
+      + content.reviewPlatforms
+      + seo.local
+
+Coverage (recon targets): 4 → 8 of 12 filled (+4 this run)
+  Deliverables advanced:
+    doc-06 SEO & Keyword Strategy: 5 → 4 missing fields
+    doc-16 Sales Collateral: 2 → 1 missing fields
+
+Recon targets still empty (4):
+    - competitors.direct
+    - seo.baseline
+    - toolsAndAccess.websiteCms
+    - salesProcess.firstTouch
+
+3 conflict(s) queued to profile-conflicts.json (operator review — build spec 03).
+
+Totals: 14 filled, 1 skipped, 3 conflicted.
+
+Profile written for "littlefriends".

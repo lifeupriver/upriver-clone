@@ -1,0 +1,142 @@
+// Cross-chunk reconciliation (spec §1):
+//   1. drop + report candidates with an unknown path, a non-verbatim quote, or
+//      a value that fails the schema — never silently;
+//   2. dedupe identical (path,value) candidates seen in multiple chunks
+//      (boundary-spanning facts), unioning their chunk indices;
+//   3. collapse same-path / different-value candidates to one winner by
+//      confidence → frequency → first-seen, reporting the discards.
+
+import type { Confidence } from '@upriver/schemas';
+
+import { isValidLeafPath, validateCandidateValue } from '../profile/paths.js';
+import type {
+  ChunkExtraction,
+  DiscardedDuplicate,
+  DroppedCandidate,
+  RawCandidate,
+  Reconciliation,
+  ReconciledCandidate,
+  UnmappedTopic,
+} from './types.js';
+
+const CONF_RANK: Record<Confidence, number> = { high: 3, medium: 2, low: 1 };
+
+function normalizeWs(s: string): string {
+  return s.replace(/\s+/g, ' ').trim();
+}
+
+/** A quote must appear verbatim (whitespace-normalized) in the source transcript. */
+function isVerbatim(quote: string, sourceNorm: string): boolean {
+  const q = normalizeWs(quote);
+  return q.length > 0 && sourceNorm.includes(q);
+}
+
+interface ValueGroup {
+  value: unknown;
+  quote: string;
+  speaker?: string;
+  confidence: Confidence;
+  chunkIndices: Set<number>;
+}
+
+function rank(c: Confidence): number {
+  return CONF_RANK[c];
+}
+
+export function reconcile(extractions: ChunkExtraction[], sourceText: string): Reconciliation {
+  const sourceNorm = normalizeWs(sourceText);
+  const dropped: DroppedCandidate[] = [];
+  const valid: Array<{ cand: RawCandidate; chunkIndex: number }> = [];
+
+  for (const ex of extractions) {
+    for (const cand of ex.candidates) {
+      const base = { path: cand.path, value: cand.value, quote: cand.quote };
+      if (!isValidLeafPath(cand.path)) {
+        dropped.push({ ...base, reason: `unknown schema path: ${cand.path}` });
+        continue;
+      }
+      if (!isVerbatim(cand.quote, sourceNorm)) {
+        dropped.push({ ...base, reason: 'quote not found verbatim in transcript' });
+        continue;
+      }
+      const v = validateCandidateValue(cand.path, cand.value);
+      if (!v.ok) {
+        dropped.push({ ...base, reason: `invalid value (${v.error})` });
+        continue;
+      }
+      valid.push({ cand, chunkIndex: ex.chunkIndex });
+    }
+  }
+
+  // Group valid candidates by path, then by value.
+  const byPath = new Map<string, Map<string, ValueGroup>>();
+  for (const { cand, chunkIndex } of valid) {
+    const groups = byPath.get(cand.path) ?? new Map<string, ValueGroup>();
+    byPath.set(cand.path, groups);
+    const key = JSON.stringify(cand.value);
+    const conf = cand.confidence ?? 'medium';
+    const g = groups.get(key);
+    if (!g) {
+      const fresh: ValueGroup = {
+        value: cand.value,
+        quote: cand.quote,
+        confidence: conf,
+        chunkIndices: new Set([chunkIndex]),
+      };
+      if (cand.speaker !== undefined) fresh.speaker = cand.speaker;
+      groups.set(key, fresh);
+    } else {
+      g.chunkIndices.add(chunkIndex);
+      if (rank(conf) > rank(g.confidence)) g.confidence = conf;
+      // Keep the longest quote as the evidence for this value (spec §1.4 tie-break).
+      if (cand.quote.length > g.quote.length) {
+        g.quote = cand.quote;
+        if (cand.speaker !== undefined) g.speaker = cand.speaker;
+      }
+    }
+  }
+
+  const candidates: ReconciledCandidate[] = [];
+  const discarded: DiscardedDuplicate[] = [];
+
+  for (const [path, groups] of byPath) {
+    const arr = [...groups.values()];
+    // Winner: highest confidence, then longest quote on tie (spec §1.4),
+    // then earliest chunk for determinism.
+    arr.sort((a, b) => {
+      if (rank(b.confidence) !== rank(a.confidence)) return rank(b.confidence) - rank(a.confidence);
+      if (b.quote.length !== a.quote.length) return b.quote.length - a.quote.length;
+      return Math.min(...a.chunkIndices) - Math.min(...b.chunkIndices);
+    });
+    const winner = arr[0] as ValueGroup;
+    const reconciled: ReconciledCandidate = {
+      path,
+      value: winner.value,
+      quote: winner.quote,
+      confidence: winner.confidence,
+      chunkIndices: [...winner.chunkIndices].sort((a, b) => a - b),
+    };
+    if (winner.speaker !== undefined) reconciled.speaker = winner.speaker;
+    candidates.push(reconciled);
+
+    for (const loser of arr.slice(1)) {
+      discarded.push({
+        path,
+        value: loser.value,
+        quote: loser.quote,
+        keptValue: winner.value,
+        reason: 'lower-confidence duplicate value for the same path',
+      });
+    }
+  }
+
+  // Collect + dedupe unmapped topics.
+  const unmappedMap = new Map<string, UnmappedTopic>();
+  for (const ex of extractions) {
+    for (const u of ex.unmapped) {
+      unmappedMap.set(`${u.topic}\u0000${u.quote}`, u);
+    }
+  }
+
+  return { candidates, dropped, unmapped: [...unmappedMap.values()], discarded };
+}

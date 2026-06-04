@@ -58,7 +58,7 @@ export default class Clone extends BaseCommand {
     if (!existsSync(repoDir)) this.error(`Scaffolded repo not found at ${repoDir}. Run "upriver scaffold ${slug}" first.`);
 
     const pkg = loadAuditPackage(clientDir);
-    const intake = readIntake(slug);
+    const intake = await readIntake(slug);
     const priorFidelity = readPriorFidelity(clientDir);
     if (priorFidelity) {
       this.log(`  Loaded prior fidelity report (${priorFidelity.size} pages) — verify loop will be plan-aware.`);

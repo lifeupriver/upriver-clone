@@ -1,0 +1,110 @@
+[
+  {
+    "path": "offerings.core",
+    "existing": {
+      "value": [
+        {
+          "name": "Full-day preschool program",
+          "components": [
+            "Play-led curriculum",
+            "Meals/snacks",
+            "Daily report"
+          ],
+          "useCase": "Working families needing licensed early care"
+        }
+      ],
+      "source": "transcript",
+      "confidence": "medium",
+      "verified": true,
+      "evidence": "fixture hand-fill",
+      "updatedAt": "2026-06-04T18:54:17.827Z"
+    },
+    "candidate": {
+      "value": [
+        {
+          "name": "Montessori School Program",
+          "components": [
+            "Years 1, 2, and 3",
+            "multi-age classrooms",
+            "playground",
+            "garden",
+            "yoga studio",
+            "gymnasium",
+            "art room",
+            "library"
+          ],
+          "useCase": "Early childhood education for preschool-age children founded on Montessori principles of hands-on learning and self-discovery"
+        },
+        {
+          "name": "Summer Camp",
+          "useCase": "Summer enrichment program; 2026 registration opens March 1st"
+        },
+        {
+          "name": "Mini Skate Camp",
+          "components": [
+            "skateboarding lessons",
+            "custom board creation"
+          ],
+          "useCase": "One-day skateboarding camp for children ages 4–10, hosted on school campus in partnership with Connect Skateboarding"
+        }
+      ],
+      "source": "recon",
+      "confidence": "low",
+      "evidence": "\"Years 1, 2 and 3 are designed to help students reach multiple tiers of educational, social and emotional goals\"; \"Little Friends 2026 Summer Camp Registration is open March 1st\"; \"Mini Skate Camp is BACK...kids ages 4–10...Sunday, June 7th 9 AM – 12 PM\""
+    },
+    "queuedAt": "2026-06-04T19:09:55.940Z"
+  },
+  {
+    "path": "positioning.keyDifferentiator",
+    "existing": {
+      "value": "Low child-to-teacher ratios and a loft-based, play-led curriculum",
+      "source": "transcript",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "recorded session",
+      "updatedAt": "2026-06-04T00:00:00.000Z"
+    },
+    "candidate": {
+      "value": "Montessori-based multi-age learning environment with dedicated child-led spaces including a playground, garden, yoga studio, gymnasium, art room, and library",
+      "source": "recon",
+      "confidence": "low",
+      "evidence": "\"We invite individually motivated experiences and practice exploration in our playground, garden, yoga studio, gymnasium, art room and library\""
+    },
+    "queuedAt": "2026-06-04T19:09:55.940Z"
+  },
+  {
+    "path": "pricing.shareable",
+    "existing": {
+      "value": [
+        {
+          "item": "Registration fee",
+          "price": "$75",
+          "conditions": "Annual, non-refundable"
+        }
+      ],
+      "source": "recon",
+      "confidence": "low",
+      "verified": true,
+      "evidence": "fixture hand-fill",
+      "updatedAt": "2026-06-04T18:54:17.827Z"
+    },
+    "candidate": {
+      "value": [
+        {
+          "item": "Roll Out skateboarding drop-off lesson",
+          "price": "$30 per child",
+          "included": [
+            "2-hour session",
+            "all equipment",
+            "professional instruction from Connect Skateboarding"
+          ],
+          "conditions": "Ages 4 and up; open play in parking lot available for whole family at no stated charge"
+        }
+      ],
+      "source": "recon",
+      "confidence": "low",
+      "evidence": "\"Drop-off lessons are open to kids ages 4 and up for $30 per child. The 2-hour session is led by the incredible @connectskateboarding team and includes all equipment and professional instruction.\""
+    },
+    "queuedAt": "2026-06-04T19:09:55.940Z"
+  }
+]

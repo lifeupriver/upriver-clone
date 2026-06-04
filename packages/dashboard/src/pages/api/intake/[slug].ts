@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import type { ClientIntake, FindingDecision, ScopeTier } from '@upriver/core';
-import { clientExists, readIntake } from '@/lib/fs-reader';
-import { emptyIntake, writeIntake } from '@/lib/intake-writer';
+import { clientExists, readIntake } from '../../../lib/fs-reader.js';
+import { emptyIntake, writeIntake } from '../../../lib/intake-writer.js';
 
 export const prerender = false;
 

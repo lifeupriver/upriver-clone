@@ -1,6 +1,7 @@
 import { parse as parseYaml } from 'yaml';
 import type { ClientConfig } from '@upriver/core';
 import type { AuditFinding, AuditPassResult, ClientIntake } from '@upriver/core';
+import { clientProfileZ, type AuditDecisions, type AuditDecisionsSection } from '@upriver/schemas';
 
 import { resolveClientDataSource } from './data-source.js';
 import { detectStage, type PipelineStage } from './pipeline.js';
@@ -121,14 +122,50 @@ export async function clientExists(slug: string): Promise<boolean> {
 }
 
 /**
- * Read the persisted client intake for a slug.
+ * Reconstruct the legacy `ClientIntake` shape from a profile's `auditDecisions`
+ * section. `version` is constant `1`; `updatedAt` comes from the envelope. Keys
+ * are emitted in canonical `ClientIntake` order so a downstream `JSON.stringify`
+ * is byte-identical to the legacy file (the API contract depends on this). Kept
+ * in lockstep with `clientIntakeToAuditDecisions` in `intake-writer.ts` and the
+ * CLI's `intake-reader.ts`.
+ */
+function auditDecisionsToClientIntake(section: AuditDecisionsSection): ClientIntake {
+  const v = section.value as AuditDecisions;
+  return {
+    version: 1,
+    findingDecisions: v.findingDecisions,
+    pageWants: v.pageWants,
+    referenceSites: v.referenceSites,
+    scopeTier: v.scopeTier,
+    submittedAt: v.submittedAt,
+    updatedAt: section.updatedAt,
+  };
+}
+
+/**
+ * Read the persisted client intake for a slug, profile-first.
+ *
+ * Returns the profile's `auditDecisions` reconstructed as a `ClientIntake` when
+ * present; otherwise falls back to the legacy `clients/<slug>/intake.json`. This
+ * is the dashboard mirror of the CLI's compatibility reader — a storage repoint,
+ * not an API change: the returned shape is identical either way.
  *
  * @param slug - Client slug.
- * @returns Parsed `ClientIntake`, or `null` if `intake.json` is missing or
- *          unparseable.
+ * @returns Parsed `ClientIntake`, or `null` if neither source exists.
  */
 export async function readIntake(slug: string): Promise<ClientIntake | null> {
-  const text = await resolveClientDataSource().readClientFileText(slug, 'intake.json');
+  const ds = resolveClientDataSource();
+
+  const profileText = await ds.readClientFileText(slug, 'profile.json');
+  if (profileText) {
+    const profile = clientProfileZ.parse(JSON.parse(profileText));
+    const section = profile.auditDecisions;
+    if (section && section.value != null) {
+      return auditDecisionsToClientIntake(section);
+    }
+  }
+
+  const text = await ds.readClientFileText(slug, 'intake.json');
   if (!text) return null;
   try {
     return JSON.parse(text) as ClientIntake;
