@@ -124,3 +124,17 @@ Step 4's actual output quality is reviewed by Joshua at the gate, not by the bui
 ## Changelog
 
 - 2026-06-04: spec written. Scope decision (Joshua): includes minimal `profile import` so M1 is end-to-end runnable; full profile commands remain Build Spec 03. CLI data-source default stays `local` in this build; the canonical-Supabase default flip ships with Build Spec 03's pull/push.
+
+### Deviations & build decisions (per build-prompt failure-handling)
+
+1. **`claude-cli.ts` change (the one permitted, taken).** Added an optional `cwd?: string` to `ClaudeCliCallOptions`, threaded to `spawn`. Additive; existing callers are unaffected (full `@upriver/cli` suite stays green at 156/156). The write-mode session runs with `cwd` = an empty staging dir, writes the doc there, and the CLI persists it through `ClientDataSource` (the session never touches Supabase).
+2. **Response-cache vs file output (supersedes spec §4's "the existing cache layer applies").** `claudeCliCall`'s cache stores the model's *text reply*, not the written doc file, so a warm text-cache hit produces no file. Re-run-free is therefore implemented at the manifest layer using the `specHash` + `profileSliceHash` the spec already put in the manifest: the command reuses an unchanged, still-present doc without re-invoking `claude`. The runner passes a stable `specHash.profileSliceHash` cache key and treats a cache-hit-with-no-file as an actionable error (`UPRIVER_LLM_NO_CACHE=1` to force a fresh session). No generator behavior changes; re-runs are still free, just gated by the manifest rather than the text cache.
+3. **Orchestration extracted for testability.** The `generate` logic lives in `generate/engine.ts` (oclif-free, so M2's `--all` and the worker reuse it per spec §2), with the Continue-gate decision in `generate/gate.ts`; `commands/generate.ts` is a thin wrapper. Likewise the import decision is a pure `planImport` in `generate/profile-merge.ts`. All gating/merge/marker/manifest logic is unit-tested with `claudeCliCall` mocked.
+
+### Follow-ups noticed for Build Spec 03 (profile show/set/verify, supabase flip, pull/push)
+
+- **HV unblock:** `profile verify <path>` flips `verified: true` on HV envelopes — the only path past an HV gate. M1 has no verify, so the readiness report documents the hand-edit + `--replace` workaround. doc-02's 10 HV fields are the live demo of this gap.
+- **`profile show`:** render coverage (`deliverableReadiness` over the full map) + the conflict queue (`profile-conflicts.json`, already written by `import`) + manifest approvals (generated-but-unapproved docs).
+- **`profile set <path> <value>`:** writes `source: 'operator'` envelopes via the same `mergeCandidate` path `import` uses.
+- **Supabase default flip:** one line in `generate/data-source.ts` (`getDataSource` default) plus `profile pull`/`push` — a thin copy through the two `ClientDataSource`s, merging on pull via the already-built `mergeProfiles`.
+- **Manifest `approved` vs `requiresDocs`:** approval is what counts a doc as generated for downstream deps; Build Spec 03 / M2 should surface unapproved docs that are blocking downstream generation.
