@@ -112,3 +112,11 @@ Deliverable doc-02 (Business Facts Reference)
 - **Stale hint in `generate/report.ts` (spec 02's, untouched per §1).** Its HV-block hint still names the "hand-edit + `--replace`" workaround; `profile verify` now supersedes it. Tier-2 integration seam #2 updates that line.
 - **Data-source coherence (integration seam #3).** After merge, confirm `recon` / `extract-transcript` / `migrate-intake` resolve the data source through the same flipped path and surface the same missing-env message.
 - **Dashboard coverage view** consumes `profile show --json` (the `ShowModel` shape) — later, separate piece.
+
+### INTEGRATED — 2026-06-04 (`integration/tier-2`)
+
+DoD independently re-verified: **all PASS** (full table in `../06-tier2-integration-report.md` §3). Full suite green (cli **322/322**), so the build-time "scoped 306 / full deferred" caveat on the first DoD row is **resolved**. Seam work touching this spec:
+- **Seam 2** — the stale `generate/report.ts` HV hint now names `upriver profile verify <slug> <path>` (the spec's recorded follow-up, closed).
+- **Seam 3** — the integrator copied this spec's `resolveClientDataSourceOrFail` reference to `generate`/`recon`/`migrate-intake`/`extract-transcript`/`import`/`secret-shopper`; every data-source command now fails identically on missing `UPRIVER_SUPABASE_*` (the data-source-coherence follow-up is closed).
+- **Seam 1** — `profile/paths.ts` is now the single schema-path walker (the transcript extractor's leaf-enum/value-validation helpers folded in; `paths.test.ts` carries the migrated cases).
+- Phase-4 acceptance (local): doc-02 `[READY]` with all 10 HV gates `verified`, `generate doc-02 --dry-run` = READY; tracked `profile.json` untouched. Per-commit ownership (`e0e636d`) clean.

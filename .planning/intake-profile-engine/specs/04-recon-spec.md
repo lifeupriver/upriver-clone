@@ -104,3 +104,11 @@ Evidence persists under `clients/<slug>/recon/<adapter>/` via the data source. E
   - **GSC adapter** — needs per-client OAuth; deferred.
   - **Multi-page website crawl + sitemap** — this build scrapes the homepage only; blog count/cadence (`content.written`) and deeper NAP (often footer/contact pages, stripped by `onlyMainContent`) want a small crawl + sitemap pass.
   - **serp / socials / geo** were not exercised live (DoD scoped the live run to `website,gbp`); they are fixture-tested and wired into the default adapter set.
+
+### INTEGRATED — 2026-06-04 (`integration/tier-2`)
+
+DoD independently re-verified: **all PASS** (full table in `../06-tier2-integration-report.md` §3).
+- **Evidence classification:** `04-recon-evidence/` is committed **changelog evidence (acceptable)** — referenced by DoD item 4, under the planning tree; no runtime evidence leaked into the gitignored `clients/`. All six files are valid JSON; `profile-conflicts.json` holds the **3** queued conflicts this changelog reports (transcript×2 + verified×1, recon overwrote none).
+- **Never-verified:** grep confirms no `verified: true` literal in `recon/` source; the one recon-sourced verified leaf in `merged-profile.json` (`pricing.shareable`) was operator-verified pre-run and is byte-identical (preserved, not set by recon).
+- **Phase-4** `recon littlefriends --dry-run` (local): adapter plan (website, gbp, socials, geo, serp) + 8 unfilled targets, no gathering, exit 0.
+- **Seam 3** — `commands/recon.ts` + `secret-shopper/{start,record}` now resolve through `resolveClientDataSourceOrFail` (clean CLIError parity on missing env). Per-commit ownership (`146053e`) clean.

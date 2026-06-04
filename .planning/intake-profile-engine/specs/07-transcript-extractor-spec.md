@@ -116,3 +116,11 @@ Tests beside each module; `claudeCliCall` mocked; recorded fixture transcript (s
   - Re-enable `--json-schema` (or a successor structured-output flag) once the claude CLI constrains output and tolerates long replies.
   - Run the real Little Friends recorded-session transcript when Joshua supplies it (second acceptance pass; `[NEEDS CONFIRMATION]` markers in doc-01 should visibly collapse on re-import + regenerate).
   - Verbatim-quote validation is whitespace-normalized and case-sensitive; if real transcripts show benign case drift, consider case-insensitive matching.
+
+### INTEGRATED — 2026-06-04 (`integration/tier-2`)
+
+DoD independently re-verified: **all PASS except the real-transcript run** (deferred to post-merge) (full table in `../06-tier2-integration-report.md` §3).
+- **Seam 1 — paths.ts consolidation follow-up CLOSED.** `transcript/paths.ts` is removed; its `enumerateLeafPaths`/`isValidLeafPath`/`hintForPath`/`validateCandidateValue` now live in the single `profile/paths.ts` walker. `catalog.ts` and `reconcile.ts` import from there; the unit tests migrated into `profile/paths.test.ts`.
+- **Encoding hygiene** — `reconcile.ts` carried a stray NUL byte (a Map-key delimiter) that made it binary to git/grep; replaced with a ` ` source escape (runtime-identical).
+- **Seam 3** — `commands/profile/extract-transcript.ts` now resolves through `resolveClientDataSourceOrFail` (clean CLIError on missing env).
+- **Phase-4** `extract-transcript … --dry-run` (local, fixture): applied 16 / conflicted 2 / dropped 4 / unmapped 3, coverage 29→42, **nothing written** (LLM non-determinism explains count drift vs the run above; same shape). Per-commit ownership (`c7c3e56`) clean.
