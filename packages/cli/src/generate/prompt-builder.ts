@@ -39,9 +39,9 @@ export function buildPrompt(input: BuildPromptInput): BuiltPrompt {
     `You are producing the "${title}" deliverable for an Upriver Consulting client, following the production spec below exactly.`,
     [
       '## Output contract',
-      `Write exactly one file, at this path relative to your working directory: ${input.outputPath}`,
-      "It must be a single Markdown document that follows the spec's section template and file structure.",
-      'Write only the document into that file. Do not print the document or add commentary outside the file.',
+      `Write the deliverable to a single new Markdown file in your current working directory. Name it per the spec's file-naming convention (a reasonable default is ${input.outputPath}).`,
+      "The file must follow the spec's section template and structure.",
+      'Write only the document into that file. Do not print the document to the conversation; your reply should be a short summary only.',
       MARKER_INSTRUCTION,
     ].join('\n'),
     `## Brand voice rules\n${loadBrandVoiceRules()}`,

@@ -1,6 +1,6 @@
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import type { DeliverableId } from '@upriver/schemas';
 
@@ -42,8 +42,6 @@ export interface RunDocResult {
  */
 export async function runDoc(input: RunDocInput, call: ClaudeCall = claudeCliCall): Promise<RunDocResult> {
   const staging = mkdtempSync(join(tmpdir(), `upriver-generate-${input.id}-`));
-  const target = join(staging, input.outputFileName);
-  mkdirSync(dirname(target), { recursive: true });
   try {
     const result = await call({
       slug: input.slug,
@@ -56,7 +54,11 @@ export async function runDoc(input: RunDocInput, call: ClaudeCall = claudeCliCal
       cacheKey: `${input.specHash}.${input.profileSliceHash}`,
       cwd: staging,
     });
-    if (!existsSync(target)) {
+    // The staging dir started empty, so read whichever document the session
+    // wrote — the model follows the deliverable spec's own file-naming, which we
+    // do not constrain. The CLI persists it under the canonical docs/ path.
+    const produced = findGeneratedFile(staging);
+    if (!produced) {
       if (result.fromCache) {
         throw new Error(
           'claude returned a cached response with no regenerated file. The response cache stores ' +
@@ -64,11 +66,13 @@ export async function runDoc(input: RunDocInput, call: ClaudeCall = claudeCliCal
         );
       }
       throw new Error(
-        `Session finished but did not write ${input.outputFileName}. Model reply: ${result.text.slice(0, 200)}`,
+        `Session finished but did not write a document. Model reply: ${result.text.slice(0, 200)}`,
       );
     }
-    const content = readFileSync(target, 'utf8');
-    if (content.trim().length === 0) throw new Error(`Session wrote an empty ${input.outputFileName}.`);
+    const content = readFileSync(produced, 'utf8');
+    if (content.trim().length === 0) {
+      throw new Error(`Session wrote an empty document (${basename(produced)}).`);
+    }
     return {
       content,
       fromCache: result.fromCache,
@@ -79,4 +83,24 @@ export async function runDoc(input: RunDocInput, call: ClaudeCall = claudeCliCal
   } finally {
     rmSync(staging, { recursive: true, force: true });
   }
+}
+
+/** The document the session wrote: prefer markdown, then the largest file. */
+function findGeneratedFile(dir: string): string | null {
+  const files: Array<{ path: string; size: number; md: boolean }> = [];
+  const walk = (d: string): void => {
+    for (const entry of readdirSync(d, { withFileTypes: true })) {
+      const full = join(d, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.isFile()) {
+        files.push({ path: full, size: statSync(full).size, md: /\.(md|markdown)$/i.test(entry.name) });
+      }
+    }
+  };
+  walk(dir);
+  if (files.length === 0) return null;
+  const markdown = files.filter((f) => f.md);
+  const pool = markdown.length > 0 ? markdown : files;
+  pool.sort((a, b) => b.size - a.size);
+  return pool[0]?.path ?? null;
 }
