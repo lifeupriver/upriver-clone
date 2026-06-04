@@ -6,7 +6,7 @@
 
 import { MUST_ASK, SOURCE_EXPECTATIONS } from '@upriver/schemas';
 
-import { enumerateLeafPaths } from './paths.js';
+import { enumerateLeafPaths } from '../profile/paths.js';
 
 export const PRIORITY_MARK = '★';
 
