@@ -251,6 +251,7 @@ Failure handling: if any cross-check fails, fix the schema or the map — never 
 - 2026-06-04: spec written. Supersedes PRD §2.1 on one detail: `humanVerifyRequired` is registry metadata, not a stored per-instance envelope key. Canonical-store recommendation recorded in §2 pending Joshua's confirmation.
 - 2026-06-04: **APPROVED by Joshua.** Canonical-Supabase confirmed. Build authorized; kickoff prompt at `.planning/intake-profile-engine/build-prompts/01-schemas-build-prompt.md`.
 - 2026-06-04: **BUILT.** `packages/schemas` (@upriver/schemas) shipped against this spec. All §8 Definition-of-Done checks green: root `pnpm build` clean; `pnpm --filter @upriver/schemas test` = 39/39 (map↔schema integrity, must-ask completeness, HV consistency, DAG validity, merge semantics, envelope round-trip, fixture readiness); `cli` + `dashboard` consume it via `workspace:*` with a smoke import; deps = zod only; no I/O in `src/`; no file > ~300 lines (fat sections split into `*.parts.ts` siblings). Root `pnpm test` = 179/179 across packages.
+- 2026-06-04: **Cowork review PASSED** (independent verification against merged main `8264219`/PR #24): structure, deps, no-I/O, all eight §8 cross-checks present with correct semantics, DAG edges per PRD §3.1, fixture doc-02-blocked state, smoke imports. No deviations beyond those listed above.
 
 ### Deviations & build decisions (per §8 failure-handling)
 
