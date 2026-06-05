@@ -83,9 +83,12 @@ if phase_ge verify; then
   run $UPRIVER profile show $SLUG --json
   $UPRIVER profile show $SLUG --json > "$RUN_DIR/coverage-pre.json" 2>>"$LOG"
   HV_PATHS=$(node -e '
+    // show --json shape: { ready: DeliverableRow[], blocked: DeliverableRow[] },
+    // each row { id, title, readiness: { ready, missingFields[], unverifiedHv[], missingDocs[] } }.
     const m = require(process.argv[1]);
+    const rows = [...(m.ready ?? []), ...(m.blocked ?? [])];
     const set = new Set();
-    for (const d of (m.deliverables ?? m)) for (const p of (d.unverifiedHv ?? [])) set.add(p);
+    for (const d of rows) for (const p of (d.readiness?.unverifiedHv ?? [])) set.add(p);
     console.log([...set].join(" "));
   ' "$PWD/$RUN_DIR/coverage-pre.json" 2>>"$LOG")
   if [ -n "$HV_PATHS" ]; then
@@ -108,10 +111,19 @@ if phase_ge readiness; then
     console.log(m.join("\n"));
   ' "$PWD/$LOG" 2>/dev/null | tail -12)
   $UPRIVER profile show $SLUG --json > "$RUN_DIR/readiness.json" 2>>"$LOG"
+  # The checkpoint fires only on FIELD-level blockers (missing required fields or
+  # unverified HV) — the operator gap-fills those. Docs blocked solely by an
+  # ungenerated upstream doc (missingDocs) are normal DAG ordering that
+  # `generate --all` resolves tier by tier, so they must NOT trip the checkpoint.
   NOT_READY=$(node -e '
     const m=require(process.argv[1]);
-    const rows=(m.deliverables ?? m).filter(d=>/^doc-/.test(d.id)&&!d.ready);
-    for (const d of rows) console.log(`${d.id}: missing=[${d.missingFields.join(",")}] unverifiedHv=[${d.unverifiedHv.join(",")}]`);
+    const rows=(m.blocked ?? []).filter(d=>/^doc-/.test(d.id));
+    for (const d of rows) {
+      const r=d.readiness ?? {};
+      const mf=r.missingFields ?? [], hv=r.unverifiedHv ?? [], md=r.missingDocs ?? [];
+      if (mf.length===0 && hv.length===0) continue; // blocked only by upstream docs — not an operator action
+      console.log(`${d.id}: missingFields=[${mf.join(",")}] unverifiedHv=[${hv.join(",")}] missingDocs=[${md.join(",")}]`);
+    }
   ' "$PWD/$RUN_DIR/readiness.json" 2>>"$LOG")
   if [ -n "$NOT_READY" ]; then
     log "CHECKPOINT: docs blocked — operator gap-fill needed before generation."

@@ -172,12 +172,21 @@ export default class Generate extends BaseCommand {
       }
 
       const allPrior = tier.docs.every((id) => priorApproved.has(id));
-      const decision = resolveGateDecision({ yes: flags.yes, isTty: Boolean(process.stdin.isTTY), priorApproved: allPrior });
+      const decision = resolveGateDecision({
+        yes: flags.yes,
+        isTty: Boolean(process.stdin.isTTY),
+        priorApproved: allPrior,
+        gateAuto: process.env.UPRIVER_GATE_AUTO === '1',
+      });
       let approve = false;
       switch (decision) {
         case 'auto-approve':
           approve = true;
           this.log(`Auto-approved tier ${tier.index} (--yes; every doc was previously approved).`);
+          break;
+        case 'auto-approve-gate':
+          approve = true;
+          this.log('[gate] AUTO-APPROVED (UPRIVER_GATE_AUTO) — unattended/synthetic runs only.');
           break;
         case 'refuse-yes':
           this.log(`Refusing --yes on tier ${tier.index}: it has a never-approved doc. Review the docs and approve interactively.`);
