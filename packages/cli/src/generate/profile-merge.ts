@@ -2,6 +2,7 @@ import {
   mergeCandidate,
   conflictEntry,
   isEnvelope,
+  leafPaths,
   nearestEnvelope,
   type ClientProfile,
   type ConflictEntry,
@@ -11,6 +12,11 @@ import {
 } from '@upriver/schemas';
 
 import { bumpMeta } from './profile-io.js';
+
+// `leafPaths` is the shared coverage walker (promoted to @upriver/schemas with
+// `buildShowModel` — Build Spec 06). Re-exported so existing consumers
+// (`profile/mutate.ts`, `transcript/report.ts`, `show-model`) keep resolving it here.
+export { leafPaths };
 
 export interface MergeResult {
   profile: ClientProfile;
@@ -52,13 +58,6 @@ function setAtPath(root: Obj, path: string, value: unknown): void {
     cur = cur[seg] as Obj;
   }
   cur[segs[segs.length - 1] as string] = value;
-}
-
-/** Every leaf-envelope dot-path present in a profile (for fill counts). */
-export function leafPaths(profile: ClientProfile): string[] {
-  const out: Array<{ path: string; env: ProfileField<unknown> }> = [];
-  walkEnvelopes(profile, '', out);
-  return out.map((e) => e.path);
 }
 
 function toCandidate(env: ProfileField<unknown>): Candidate<unknown> {

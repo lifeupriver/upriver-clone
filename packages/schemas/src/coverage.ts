@@ -1,9 +1,29 @@
 import type { ClientProfile } from './client-profile.js';
-import { nearestEnvelope } from './envelope.js';
+import { isEnvelope, nearestEnvelope } from './envelope.js';
 import { unverifiedHvFields } from './hv.js';
 import { COVERAGE_MAP, MUST_ASK, type DeliverableId } from './coverage-map.js';
 
 type ProfileData = Record<string, unknown>;
+
+/**
+ * Every leaf-envelope dot-path present in a profile (for fill counts). Arrays
+ * are wrapped as single envelopes, so leaf paths are pure object-key dot-paths
+ * (no array indices). The shared walker behind `profile show`'s per-section fill
+ * stats and the dashboard coverage view (kept identical so the two never drift).
+ */
+export function leafPaths(profile: ClientProfile): string[] {
+  const out: string[] = [];
+  const walk = (node: unknown, prefix: string): void => {
+    if (isEnvelope(node)) {
+      out.push(prefix);
+      return;
+    }
+    if (node === null || typeof node !== 'object' || Array.isArray(node)) return;
+    for (const [k, v] of Object.entries(node)) walk(v, prefix ? `${prefix}.${k}` : k);
+  };
+  walk(profile, '');
+  return out;
+}
 
 /**
  * Is the field at `path` filled (`value !== null`)? For a path through a wrapped

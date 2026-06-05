@@ -12,6 +12,7 @@
     "clean": "rm -rf dist dist-test .astro node_modules/.astro"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.0",
     "@astrojs/check": "^0.9.0",
     "@astrojs/react": "^4.2.0",
     "@supabase/ssr": "^0.5.2",

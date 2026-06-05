@@ -1,0 +1,155 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import { clientExists, readClientConfig } from '@/lib/fs-reader';
+import { loadCoverageModel } from '@/lib/profile-coverage';
+
+const { slug } = Astro.params;
+if (!slug || !(await clientExists(slug))) {
+  return new Response('Client not found', { status: 404, headers: { 'content-type': 'text/plain' } });
+}
+
+const config = await readClientConfig(slug);
+const model = await loadCoverageModel(slug);
+const name = config?.name ?? slug;
+
+// The dashboard mirror of `profile show`: this renders the exact ShowModel the
+// CLI emits (shared builder in @upriver/schemas), grouped by blocker kind.
+const byFields = model?.blocked.filter((r) => r.readiness.missingFields.length > 0) ?? [];
+const byHv = model?.blocked.filter((r) => r.readiness.unverifiedHv.length > 0) ?? [];
+const byDocs = model?.blocked.filter((r) => r.readiness.missingDocs.length > 0) ?? [];
+const pct = (f: number, t: number) => (t === 0 ? 0 : Math.round((f / t) * 100));
+---
+
+<DashboardLayout title={`Coverage — ${name}`} section="clients">
+  <div class="breadcrumb">
+    <a href="/clients" class="bc-link">Clients</a>
+    <span class="bc-sep">/</span>
+    <a href={`/clients/${slug}`} class="bc-link">{name}</a>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">Coverage</span>
+  </div>
+
+  {!model ? (
+    <div class="empty">
+      <p>No profile yet for <code>{slug}</code>. Run <code>upriver profile import {slug} &lt;file&gt;</code>.</p>
+    </div>
+  ) : (
+    <>
+      <header class="head">
+        <div>
+          <span class="eyebrow">Client Profile</span>
+          <h1>Coverage — {name}</h1>
+        </div>
+        <span class="rev">revision {model.revision}</span>
+      </header>
+
+      <section class="cards">
+        <div class="card stat"><span class="num">{model.ready.length}</span><span class="lbl">ready</span></div>
+        <div class="card stat"><span class="num">{model.blocked.length}</span><span class="lbl">blocked</span></div>
+        <div class="card stat"><span class="num">{model.conflicts.length}</span><span class="lbl">conflicts</span></div>
+        <div class="card stat"><span class="num">{model.generated.length}</span><span class="lbl">generated</span></div>
+      </section>
+
+      <section class="section">
+        <h3>Fill by section</h3>
+        <div class="fill">
+          {model.fill.map((f) => (
+            <div class="fill-row">
+              <span class="fill-name">{f.section}</span>
+              <div class="bar"><div class="bar-in" style={`width:${pct(f.filled, f.total)}%`}></div></div>
+              <span class="fill-num mono">{f.filled}/{f.total}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Ready ({model.ready.length})</h3>
+        <div class="chips">
+          {model.ready.length === 0 ? <span class="muted">none</span> :
+            model.ready.map((r) => <a class="chip ok" href={`/clients/${slug}/coverage#${r.id}`} title={r.title}>{r.id}</a>)}
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Blocked ({model.blocked.length})</h3>
+        <p class="grp"><span class="grp-lbl">missing fields ({byFields.length})</span> {byFields.map((r) => <span class="chip">{r.id}</span>)}</p>
+        <p class="grp"><span class="grp-lbl">unverified HV ({byHv.length})</span> {byHv.map((r) => <span class="chip hv">{r.id}</span>)}</p>
+        <p class="grp"><span class="grp-lbl">upstream docs ({byDocs.length})</span> {byDocs.map((r) => <span class="chip">{r.id}</span>)}</p>
+        <details class="detail">
+          <summary>Per-deliverable blockers</summary>
+          {model.blocked.map((r) => (
+            <div class="blk" id={r.id}>
+              <strong>{r.id}</strong> {r.title}
+              {r.readiness.missingFields.length > 0 && <div class="paths">missing: {r.readiness.missingFields.join(', ')}</div>}
+              {r.readiness.unverifiedHv.length > 0 && <div class="paths hvtext">unverified HV: {r.readiness.unverifiedHv.join(', ')}</div>}
+              {r.readiness.missingDocs.length > 0 && <div class="paths">needs docs: {r.readiness.missingDocs.join(', ')}</div>}
+            </div>
+          ))}
+        </details>
+      </section>
+
+      {model.unapprovedBlocking.length > 0 && (
+        <section class="section">
+          <h3>Generated but unapproved — approve at the gate to unblock downstream</h3>
+          {model.unapprovedBlocking.map((u) => (
+            <p class="grp"><span class="chip warn">{u.id}</span> <span class="mono">{u.path}</span> → {u.blocking.join(', ')}</p>
+          ))}
+        </section>
+      )}
+
+      <section class="section">
+        <h3>Conflict queue ({model.conflicts.length})</h3>
+        {model.conflicts.length === 0 ? <p class="muted">none</p> : (
+          <ol class="conflicts">
+            {model.conflicts.map((c) => (
+              <li>
+                <span class="mono">{c.path}</span> — existing <em>{c.existing.source ?? 'unknown'}</em> vs candidate <em>{c.candidate.source}</em>
+              </li>
+            ))}
+          </ol>
+        )}
+      </section>
+    </>
+  )}
+</DashboardLayout>
+
+<style>
+  .breadcrumb { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1.5rem; font-size: var(--fs-xs); }
+  .bc-link { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .bc-link:hover { color: var(--accent); }
+  .bc-sep { color: var(--border); }
+  .bc-current { color: var(--text-body); text-transform: uppercase; letter-spacing: 0.06em; }
+  .head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+  .head h1 { margin: 0.25rem 0 0; }
+  .rev { color: var(--text-muted); font-family: var(--font-mono); font-size: var(--fs-sm); }
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 2rem; }
+  .card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; }
+  .stat { display: flex; flex-direction: column; gap: 0.2rem; }
+  .stat .num { font-size: 2rem; font-weight: 600; }
+  .stat .lbl { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: var(--fs-xs); }
+  .section { margin-bottom: 2rem; }
+  .section h3 { margin: 0 0 0.75rem; }
+  .fill-row { display: grid; grid-template-columns: 160px 1fr 64px; gap: 0.75rem; align-items: center; padding: 0.2rem 0; }
+  .fill-name { font-size: var(--fs-sm); }
+  .bar { height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; }
+  .bar-in { height: 100%; background: var(--accent); }
+  .fill-num { font-size: var(--fs-xs); color: var(--text-muted); text-align: right; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .chip { display: inline-block; padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border); font-family: var(--font-mono); font-size: var(--fs-xs); }
+  .chip.ok { border-color: var(--accent-20, var(--border)); background: var(--accent-05, transparent); }
+  .chip.hv { border-color: #c2772a; color: #b86c2a; }
+  .chip.warn { border-color: #c2772a; }
+  .grp { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin: 0.4rem 0; }
+  .grp-lbl { color: var(--text-muted); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.06em; min-width: 160px; }
+  .detail { margin-top: 0.75rem; }
+  .detail summary { cursor: pointer; color: var(--accent); font-size: var(--fs-sm); }
+  .blk { padding: 0.5rem 0; border-bottom: 1px dashed var(--border); }
+  .paths { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-muted); margin-top: 0.2rem; }
+  .paths.hvtext { color: #b86c2a; }
+  .conflicts { margin: 0; padding-left: 1.25rem; }
+  .mono { font-family: var(--font-mono); font-size: var(--fs-xs); }
+  .muted { color: var(--text-muted); }
+  .empty { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2.5rem; text-align: center; color: var(--text-muted); }
+  code { font-family: var(--font-mono); color: var(--accent); }
+</style>

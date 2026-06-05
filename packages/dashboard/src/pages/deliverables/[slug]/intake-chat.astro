@@ -1,0 +1,137 @@
+---
+import { clientExists, readClientConfig } from '@/lib/fs-reader';
+import { validateInterviewToken } from '@/lib/interview';
+
+// Magic-link gated exactly like the static interview form — same token mechanism
+// (interview-share.json), no new auth (Build Spec 06 §1b). The static FormSpec
+// form stays as the no-JS fallback at deliverables/[slug]/interview.
+const { slug } = Astro.params;
+if (!slug || !(await clientExists(slug))) {
+  return new Response('Not found', { status: 404 });
+}
+const token = Astro.url.searchParams.get('token');
+if (!(await validateInterviewToken(slug, token))) {
+  return new Response('Invalid or missing magic-link token. Ask Upriver for a fresh link.', {
+    status: 401,
+    headers: { 'content-type': 'text/plain' },
+  });
+}
+const config = (await readClientConfig(slug))!;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Intake chat — {config.name}</title>
+    <style>
+      :root { --ink:#1a1a1a; --muted:#666; --bg:#fafaf7; --card:#fff; --border:#e6e6df; --brand:#2b7a5b; --accent:#b86c2a; }
+      html,body { margin:0; padding:0; background:var(--bg); color:var(--ink); font:16px/1.5 ui-sans-serif,system-ui,sans-serif; }
+      .shell { max-width:720px; margin:0 auto; padding:24px 18px 120px; }
+      header h1 { font-size:24px; margin:0 0 4px; }
+      header p { color:var(--muted); margin:4px 0 18px; }
+      .log { display:flex; flex-direction:column; gap:10px; }
+      .msg { padding:10px 14px; border-radius:12px; max-width:85%; white-space:pre-wrap; }
+      .msg.bot { background:var(--card); border:1px solid var(--border); align-self:flex-start; }
+      .msg.me { background:var(--brand); color:#fff; align-self:flex-end; }
+      .note { align-self:center; font-size:13px; color:var(--muted); }
+      .note.saved { color:var(--brand); }
+      .note.rejected { color:var(--accent); }
+      .composer { position:fixed; bottom:0; left:0; right:0; background:var(--bg); border-top:1px solid var(--border); padding:12px; }
+      .composer .inner { max-width:720px; margin:0 auto; display:flex; gap:8px; }
+      textarea { flex:1; resize:none; padding:10px 12px; font:inherit; border:1px solid var(--border); border-radius:8px; min-height:44px; }
+      button { padding:0 18px; font:inherit; font-weight:600; color:#fff; background:var(--brand); border:none; border-radius:8px; cursor:pointer; }
+      button:disabled { opacity:0.5; cursor:default; }
+      footer.fallback { color:var(--muted); font-size:13px; margin-top:24px; padding-top:14px; border-top:1px solid var(--border); }
+      footer.fallback a { color:var(--accent); }
+    </style>
+  </head>
+  <body>
+    <main class="shell" data-slug={slug} data-token={token} data-name={config.name}>
+      <header>
+        <h1>Let's fill in a few details — {config.name}</h1>
+        <p>A short chat. Answer what you can; skip anything that isn't a fit. Your answers save as we go.</p>
+      </header>
+      <div class="log" id="log"></div>
+      <footer class="fallback">
+        Prefer a form? The <a href={`/deliverables/${slug}/interview?token=${token}`}>question list</a> still works.
+      </footer>
+    </main>
+    <div class="composer">
+      <div class="inner">
+        <textarea id="input" placeholder="Type your answer…" rows="1"></textarea>
+        <button id="send">Send</button>
+      </div>
+    </div>
+
+    <script is:inline define:vars={{ slug, token, clientName: config.name }}>
+      (function () {
+        const log = document.getElementById('log');
+        const input = document.getElementById('input');
+        const send = document.getElementById('send');
+        const messages = [];
+
+        function bubble(role, text) {
+          const el = document.createElement('div');
+          el.className = 'msg ' + (role === 'assistant' ? 'bot' : 'me');
+          el.textContent = text;
+          log.appendChild(el);
+          window.scrollTo(0, document.body.scrollHeight);
+        }
+        function note(text, cls) {
+          const el = document.createElement('div');
+          el.className = 'note ' + (cls || '');
+          el.textContent = text;
+          log.appendChild(el);
+          window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        async function turn() {
+          send.disabled = true;
+          try {
+            const r = await fetch('/api/profile/' + encodeURIComponent(slug), {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({ token, clientName, messages }),
+            });
+            const data = await r.json();
+            if (!r.ok || !data.ok) {
+              note(data.error || 'Something went wrong. Try again.', 'rejected');
+              return;
+            }
+            (data.writes || []).forEach((w) => note('Saved: ' + w.path + ' (rev ' + w.revision + ')', 'saved'));
+            (data.rejected || []).forEach((x) => note("Couldn't save " + x.path + ': ' + x.reason, 'rejected'));
+            if (data.assistant) {
+              messages.push({ role: 'assistant', content: data.assistant });
+              bubble('assistant', data.assistant);
+            }
+            if ((data.gap || []).length === 0) {
+              note('All set — nothing more to fill right now.', 'saved');
+              input.disabled = true;
+            }
+          } catch (e) {
+            note('Offline — your message was not sent. Try again.', 'rejected');
+          } finally {
+            send.disabled = false;
+          }
+        }
+
+        send.addEventListener('click', () => {
+          const text = input.value.trim();
+          if (!text) return;
+          messages.push({ role: 'user', content: text });
+          bubble('user', text);
+          input.value = '';
+          turn();
+        });
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send.click(); }
+        });
+
+        // Kick off: let the bot greet and ask the first question.
+        turn();
+      })();
+    </script>
+  </body>
+</html>

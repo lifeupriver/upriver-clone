@@ -20,7 +20,7 @@ import {
 import { readProfile } from './profile-io.js';
 import { profileSlice, renderSlice } from './profile-slice.js';
 import { buildPrompt, type UpstreamDoc } from './prompt-builder.js';
-import { newlyUnblocked, renderGenerationReport, renderReadiness, titleFor } from './report.js';
+import { newlyUnblocked, renderDocLine, renderGenerationReport, renderReadiness, titleFor } from './report.js';
 import { runDoc, type ClaudeCall } from './runner.js';
 import { loadDeliverableSpec } from './spec-loader.js';
 
@@ -44,6 +44,13 @@ export interface GenerateOptions {
   dryRun: boolean;
   yes: boolean;
   model: string;
+  /**
+   * Batch reuse hook (M2 `--all`): generate + record the manifest entry but skip
+   * the per-doc Continue gate, so `batch.ts` can gate the whole DAG tier at once.
+   * Defaults to the single-doc behavior (gate runs). Additive — existing callers
+   * are unaffected.
+   */
+  skipGate?: boolean;
 }
 
 export interface GenerateDeps {
@@ -64,6 +71,8 @@ export interface GenerateOutcome {
   markers: string[];
   docPath?: string;
   claudeCalls: number;
+  /** Word count of the produced doc (set once content exists; for the batch tier report). */
+  words?: number;
 }
 
 async function loadUpstreamDocs(
@@ -174,6 +183,7 @@ export async function runGenerate(
   }
 
   const markers = scanMarkers(content);
+  const words = content.trim().split(/\s+/).filter(Boolean).length;
   const priorApproved = prior?.approved ?? false;
   const entry: ManifestEntry = {
     id: opts.id,
@@ -185,6 +195,22 @@ export async function runGenerate(
     approved: priorApproved,
   };
   let nextManifest = upsertEntry(manifest, entry);
+
+  // Batch mode: record the entry (prior approval untouched) and return a terse
+  // line — `batch.ts` aggregates markers and gates the whole tier.
+  if (opts.skipGate) {
+    log(renderDocLine({ id: opts.id, docPath, content, markers, fromCache }));
+    await writeManifest(ds, opts.slug, nextManifest);
+    return {
+      status: unchanged ? 'reused' : 'generated',
+      exitCode: 0,
+      approved: priorApproved,
+      markers,
+      docPath,
+      claudeCalls,
+      words,
+    };
+  }
 
   log(
     renderGenerationReport({
@@ -227,5 +253,6 @@ export async function runGenerate(
     markers,
     docPath,
     claudeCalls,
+    words,
   };
 }

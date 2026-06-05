@@ -1,27 +1,15 @@
 import { createHash } from 'node:crypto';
 
 import type { ClientDataSource } from '@upriver/core/data';
-import type { DeliverableId } from '@upriver/schemas';
+import { generatedIds, type Manifest, type ManifestEntry } from '@upriver/schemas';
+
+// The manifest shape + the approved-set derivation are the shared coverage
+// contract (promoted to @upriver/schemas with `buildShowModel` — Build Spec 06).
+// Re-exported here so the generate engine's existing imports keep resolving.
+export { generatedIds, type Manifest, type ManifestEntry };
 
 /** `clients/<slug>/docs/manifest.json` — tracks generated docs and approvals. */
 export const MANIFEST_PATH = 'docs/manifest.json';
-
-export interface ManifestEntry {
-  id: DeliverableId;
-  /** Client-artifact path of the generated doc, e.g. `docs/doc-01-brand-voice-guide.md`. */
-  path: string;
-  generatedAt: string;
-  specHash: string;
-  profileSliceHash: string;
-  markers: number;
-  /** Approval at the Continue gate is what counts a doc as "generated" for downstream deps. */
-  approved: boolean;
-}
-
-export interface Manifest {
-  version: 1;
-  docs: Record<string, ManifestEntry>;
-}
 
 /** Stable short content hash, used for change detection (spec §4). */
 export function hashContent(s: string): string {
@@ -45,13 +33,6 @@ export async function writeManifest(
   manifest: Manifest,
 ): Promise<void> {
   await ds.writeClientFile(slug, MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n');
-}
-
-/** Approved deliverable ids — the "generated" set passed to `deliverableReadiness`. */
-export function generatedIds(manifest: Manifest): DeliverableId[] {
-  return Object.values(manifest.docs)
-    .filter((e) => e.approved)
-    .map((e) => e.id);
 }
 
 export function upsertEntry(manifest: Manifest, entry: ManifestEntry): Manifest {
