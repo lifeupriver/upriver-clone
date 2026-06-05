@@ -6,11 +6,12 @@ import {
   renderGenerationReport,
   renderDocLine,
   renderBatchPlan,
+  renderOperatorChecklist,
   renderTierReport,
   newlyUnblocked,
   titleFor,
 } from './report.js';
-import { aggregateMarkers, type BatchPlan, type TierRunResult } from './batch.js';
+import { aggregateMarkers, aggregateOperatorActions, type BatchPlan, type DocResult, type TierRunResult } from './batch.js';
 
 test('renderReadiness lists HV blockers with the no-force hint', () => {
   const r: Readiness = {
@@ -44,6 +45,41 @@ test('renderGenerationReport shows path, word count, numbered markers, and unblo
   assert.match(out, /words: 3/);
   assert.match(out, /1\. who is the owner\?/);
   assert.match(out, /unblocks downstream: doc-04/);
+});
+
+test('renderGenerationReport renders the operator-action checklist when present, omits it when absent', () => {
+  const withOps = renderGenerationReport({
+    id: 'i07',
+    docPath: 'docs/i07-account-access-governance.md',
+    content: 'one two',
+    markers: [],
+    operatorActions: ['create the client Project', 'upgrade to Team plan'],
+    fromCache: false,
+    nowUnblocked: [],
+  });
+  assert.match(withOps, /\[OPERATOR ACTION\] cannot be generated — you must do \(2\)/);
+  assert.match(withOps, /1\. create the client Project/);
+
+  const withoutOps = renderGenerationReport({
+    id: 'doc-01',
+    docPath: 'docs/doc-01.md',
+    content: 'one two',
+    markers: ['q?'],
+    fromCache: false,
+    nowUnblocked: [],
+  });
+  assert.doesNotMatch(withoutOps, /OPERATOR ACTION/);
+});
+
+test('renderOperatorChecklist groups by artifact; empty aggregate renders nothing', () => {
+  const docs: DocResult[] = [
+    { id: 'i07', title: 'Gov', status: 'produced', markers: [], operatorActions: ['create Project', 'OAuth consent'], words: 1 },
+    { id: 'i01', title: 'Proj', status: 'produced', markers: [], operatorActions: [], words: 1 },
+  ];
+  const lines = renderOperatorChecklist(aggregateOperatorActions(docs), 'Operator must do (this run)');
+  assert.match(lines.join('\n'), /Operator must do \(this run\) \(2\), by artifact:/);
+  assert.match(lines.join('\n'), /i07 \(2\):/);
+  assert.deepEqual(renderOperatorChecklist(aggregateOperatorActions([]), 'x'), []);
 });
 
 test('titleFor resolves a deliverable title', () => {
@@ -104,4 +140,22 @@ test('renderTierReport lists produced docs, consolidated markers, and skips', ()
   assert.match(out, /NEEDS CONFIRMATION\] across tier \(1\)/);
   assert.match(out, /1\. who owns it\?/);
   assert.match(out, /skipped \(upstream not available\): doc-02/);
+  assert.doesNotMatch(out, /OPERATOR ACTION/); // 2-arg call: no operator block for prose docs
+});
+
+test('renderTierReport appends the operator-action checklist when the aggregate is passed', () => {
+  const tr: TierRunResult = {
+    index: 0,
+    docs: [
+      { id: 'i07', title: 'Account Access & Governance', status: 'produced', docPath: 'docs/i07.md', markers: [], operatorActions: ['upgrade to Team plan'], words: 900 },
+    ],
+    produced: ['i07'],
+    failed: [],
+    skipped: [],
+    claudeCalls: 1,
+  };
+  const out = renderTierReport(tr, aggregateMarkers(tr.docs), aggregateOperatorActions(tr.docs));
+  assert.match(out, /\[OPERATOR ACTION\] across tier \(1\), by artifact:/);
+  assert.match(out, /i07 \(1\):/);
+  assert.match(out, /1\. upgrade to Team plan/);
 });

@@ -23,6 +23,8 @@ function specsDir(): string {
   mkdirSync(join(dir, 'ai-operating-system'), { recursive: true });
   writeFileSync(join(dir, 'ai-operating-system', '01-brand-voice-guide-spec.md'), '# DOC-01 SPEC BODY');
   writeFileSync(join(dir, 'ai-operating-system', '02-business-facts-reference-spec.md'), '# DOC-02 SPEC BODY');
+  mkdirSync(join(dir, 'infrastructure'), { recursive: true });
+  writeFileSync(join(dir, 'infrastructure', 'I07-client-account-access-governance-spec.md'), '# I07 SPEC BODY');
   return dir;
 }
 function ds(): LocalFsClientDataSource {
@@ -152,6 +154,33 @@ test('an interactive approval persists approved:true in the manifest', async () 
   const manifest = await readManifest(d, 'littlefriends');
   assert.equal(manifest.docs['doc-01']?.approved, true);
   assert.equal(manifest.docs['doc-01']?.path, 'docs/doc-01-brand-voice-guide.md');
+});
+
+test('a provisioning id (i07) is in scope — dry-run loads its spec, reports readiness, zero claude calls', async () => {
+  // Proves the scope gate widened to the i-series (no exit-2 out-of-scope error) and the
+  // infrastructure spec loads. i07 is HV-dense and unverified in the fixture → BLOCKED (the demo).
+  process.env['UPRIVER_SPECS_DIR'] = specsDir();
+  const d = ds();
+  await seedFixture(d);
+  const { deps: dp, out } = deps(d, explodingCall);
+  const r = await runGenerate(opts('i07' as DeliverableId, { dryRun: true }), dp);
+  assert.equal(r.status, 'dry-run');
+  assert.equal(r.exitCode, 0);
+  assert.equal(r.claudeCalls, 0);
+  assert.match(out(), /BLOCKED/);
+  assert.match(out(), /system prompt: \d+ chars/);
+});
+
+test('the engine scans [OPERATOR ACTION] click-ops into operatorActions alongside [NEEDS CONFIRMATION]', async () => {
+  process.env['UPRIVER_SPECS_DIR'] = specsDir();
+  const d = ds();
+  await seedFixture(d);
+  const body = '# Artifact\n\n[NEEDS CONFIRMATION: which plan tier?]\n[OPERATOR ACTION: create the client Project]\n';
+  const { call } = writingCall('doc-01', body);
+  const { deps: dp } = deps(d, call, { isTty: true, promptApprove: async () => true });
+  const r = await runGenerate(opts('doc-01'), dp);
+  assert.deepEqual(r.markers, ['which plan tier?']);
+  assert.deepEqual(r.operatorActions, ['create the client Project']);
 });
 
 test('markers in the generated doc are scanned and recorded', async () => {

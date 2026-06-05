@@ -1,6 +1,7 @@
 import { COVERAGE_MAP, type ClientProfile, type DeliverableId } from '@upriver/schemas';
 
 import { profileSlice, renderSlice } from './profile-slice.js';
+import { isProvisioning, provisioningOutputContract } from './provisioning.js';
 import { loadBrandVoiceRules, loadDeliverableSpec } from './spec-loader.js';
 
 /** The instruction that keeps the model from papering over a thin profile (spec §4). */
@@ -35,15 +36,26 @@ export function buildPrompt(input: BuildPromptInput): BuiltPrompt {
   const title = COVERAGE_MAP.find((d) => d.id === input.id)?.title ?? input.id;
   const spec = loadDeliverableSpec(input.id);
 
+  // Provisioning artifacts (i01–i09) have a different output shape than prose
+  // docs (PRD §6): one file holding the config + an operator runbook + a
+  // cannot-generate checklist, with the second `[OPERATOR ACTION]` marker class.
+  // The branch fires only for i-series ids; the doc path is byte-identical.
+  const intro = isProvisioning(input.id)
+    ? `You are producing the "${title}" client provisioning artifact for an Upriver Consulting engagement, following the infrastructure spec below exactly. This artifact configures part of the client's Claude environment; many steps happen inside the client's Anthropic account and cannot be done from a file.`
+    : `You are producing the "${title}" deliverable for an Upriver Consulting client, following the production spec below exactly.`;
+  const outputContract = isProvisioning(input.id)
+    ? provisioningOutputContract(input.outputPath, MARKER_INSTRUCTION)
+    : [
+        '## Output contract',
+        `Write the deliverable to a single new Markdown file in your current working directory. Name it per the spec's file-naming convention (a reasonable default is ${input.outputPath}).`,
+        "The file must follow the spec's section template and structure.",
+        'Write only the document into that file. Do not print the document to the conversation; your reply should be a short summary only.',
+        MARKER_INSTRUCTION,
+      ].join('\n');
+
   const system = [
-    `You are producing the "${title}" deliverable for an Upriver Consulting client, following the production spec below exactly.`,
-    [
-      '## Output contract',
-      `Write the deliverable to a single new Markdown file in your current working directory. Name it per the spec's file-naming convention (a reasonable default is ${input.outputPath}).`,
-      "The file must follow the spec's section template and structure.",
-      'Write only the document into that file. Do not print the document to the conversation; your reply should be a short summary only.',
-      MARKER_INSTRUCTION,
-    ].join('\n'),
+    intro,
+    outputContract,
     `## Brand voice rules\n${loadBrandVoiceRules()}`,
     `## Deliverable production spec\n${spec}`,
   ].join('\n\n');

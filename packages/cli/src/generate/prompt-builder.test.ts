@@ -13,6 +13,8 @@ function specsDir(): string {
   mkdirSync(join(dir, 'ai-operating-system'), { recursive: true });
   writeFileSync(join(dir, 'ai-operating-system', '01-brand-voice-guide-spec.md'), '# DOC-01 SPEC BODY');
   writeFileSync(join(dir, 'ai-operating-system', '04-content-library-spec.md'), '# DOC-04 SPEC BODY');
+  mkdirSync(join(dir, 'infrastructure'), { recursive: true });
+  writeFileSync(join(dir, 'infrastructure', 'I07-client-account-access-governance-spec.md'), '# I07 SPEC BODY');
   return dir;
 }
 
@@ -55,6 +57,32 @@ test('system prompt carries spec, voice rules, marker instruction, and output pa
   assert.match(system, /doc-01-brand-voice-guide\.md/);
   assert.match(user, /identity\.publicName: LF/);
   assert.match(user, /no upstream documents/);
+});
+
+test('a doc system prompt does NOT carry the provisioning operator-action contract', () => {
+  process.env['UPRIVER_SPECS_DIR'] = specsDir();
+  const p = profileWith({ 'identity.publicName': env('LF') });
+  const { system } = buildPrompt({ id: 'doc-01', profile: p, outputPath: 'doc-01.md', upstreamDocs: [] });
+  assert.doesNotMatch(system, /OPERATOR ACTION/);
+  assert.doesNotMatch(system, /Operator runbook/);
+});
+
+test('an i-series system prompt swaps in the provisioning output contract + operator-action marker', () => {
+  process.env['UPRIVER_SPECS_DIR'] = specsDir();
+  const p = profileWith({ 'governance.dataResidency': env('US') });
+  const { system } = buildPrompt({
+    id: 'i07',
+    profile: p,
+    outputPath: 'littlefriends-access-governance.md',
+    upstreamDocs: [],
+  });
+  assert.match(system, /I07 SPEC BODY/);
+  assert.match(system, /client provisioning artifact/);
+  assert.match(system, /Operator runbook/);
+  assert.match(system, /Operator must do \(cannot be generated\)/);
+  assert.match(system, /\[OPERATOR ACTION:/);
+  // both marker classes are present for provisioning
+  assert.ok(system.includes(MARKER_INSTRUCTION));
 });
 
 test('user prompt includes upstream doc contents when provided', () => {

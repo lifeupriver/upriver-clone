@@ -7,10 +7,12 @@ import { BaseCommand } from '../base-command.js';
 import {
   ALL_DOCS,
   aggregateMarkers,
+  aggregateOperatorActions,
   commitCommand,
   planBatch,
   runTier,
   tierIndexOf,
+  type DocResult,
   type Tier,
 } from '../generate/batch.js';
 import { resolveClientDataSourceOrFail } from '../generate/data-source.js';
@@ -18,7 +20,8 @@ import { runGenerate, type GenerateDeps } from '../generate/engine.js';
 import { resolveGateDecision } from '../generate/gate.js';
 import { generatedIds, readManifest, setApproved, writeManifest } from '../generate/manifest.js';
 import { readProfile } from '../generate/profile-io.js';
-import { renderBatchPlan, renderTierReport, tierUnblocks } from '../generate/report.js';
+import { I_SERIES } from '../generate/provisioning.js';
+import { renderBatchPlan, renderOperatorChecklist, renderTierReport, tierUnblocks } from '../generate/report.js';
 import { claudeCliCall } from '../util/claude-cli.js';
 import type { ClientDataSource } from '@upriver/core/data';
 
@@ -26,6 +29,7 @@ import type { ClientDataSource } from '@upriver/core/data';
 interface AllFlags {
   docs: string | undefined;
   from: string | undefined;
+  provisioning: boolean;
   'dry-run': boolean;
   yes: boolean;
   model: string;
@@ -33,7 +37,7 @@ interface AllFlags {
 
 export default class Generate extends BaseCommand {
   static override description =
-    'Generate AI Operating System documents from a client profile via write-capable headless Claude Code sessions, gated on coverage and human-verify-required fields. `--doc <id>` for one doc (M1); `--all` for DAG-batch generation over docs 01–12 with per-tier Continue gates (M2).';
+    'Generate AI Operating System documents and provisioning artifacts from a client profile via write-capable headless Claude Code sessions, gated on coverage and human-verify-required fields. `--doc <id>` for one deliverable (doc-01…12 or i01…09); `--all` for DAG-batch generation over docs 01–12 (M2); `--all --provisioning` for the I01–I09 provisioning artifacts (M5), each with per-tier Continue gates.';
 
   static override examples = [
     '<%= config.bin %> generate littlefriends --doc doc-01',
@@ -41,6 +45,8 @@ export default class Generate extends BaseCommand {
     '<%= config.bin %> generate littlefriends --all             # generate tier by tier, gating each',
     '<%= config.bin %> generate littlefriends --all --docs doc-01,doc-02,doc-05',
     '<%= config.bin %> generate littlefriends --all --from doc-04   # resume a partially-approved run',
+    '<%= config.bin %> generate littlefriends --all --provisioning --dry-run   # I01–I09 tier plan (I07 first)',
+    '<%= config.bin %> generate littlefriends --doc i07         # a single provisioning artifact',
   ];
 
   static override args = {
@@ -49,15 +55,20 @@ export default class Generate extends BaseCommand {
 
   static override flags = {
     doc: Flags.string({
-      description: 'Single deliverable id to generate (doc-01 … doc-12). Mutually exclusive with --all.',
+      description: 'Single deliverable id to generate (doc-01 … doc-12, or i01 … i09). Mutually exclusive with --all.',
       exclusive: ['all'],
     }),
     all: Flags.boolean({
       description: 'DAG-batch generation over docs 01–12 (or the --docs subset), gated per tier.',
       default: false,
     }),
+    provisioning: Flags.boolean({
+      description: 'Scope --all to the I01–I09 provisioning artifacts (M5) instead of docs 01–12. Consumes the generated, approved docs.',
+      default: false,
+      dependsOn: ['all'],
+    }),
     docs: Flags.string({
-      description: 'Comma-separated subset for --all (e.g. doc-01,doc-02,doc-05). Defaults to docs 01–12.',
+      description: 'Comma-separated subset for --all (e.g. doc-01,doc-02 or, with --provisioning, i07,i01). Defaults to the full scope.',
       dependsOn: ['all'],
     }),
     from: Flags.string({
@@ -102,10 +113,12 @@ export default class Generate extends BaseCommand {
     if (!profile) this.error(`No profile for "${slug}". Run: upriver profile import ${slug} <file>`);
 
     const manifest = await readManifest(ds, slug);
-    const scope = flags.docs ? this.parseDocs(flags.docs) : [...ALL_DOCS];
+    const scopeSet = flags.provisioning ? I_SERIES : ALL_DOCS;
+    const scope = flags.docs ? this.parseDocs(flags.docs, scopeSet) : [...scopeSet];
 
     const plan = planBatch(profile, manifest, scope);
     this.log(renderBatchPlan(plan));
+    if (flags.provisioning) this.hintProvisioningDocs(slug, plan);
 
     const deps = this.makeDeps(ds, async () => false);
 
@@ -123,15 +136,17 @@ export default class Generate extends BaseCommand {
     const startTier = this.resolveStartTier(plan, flags.from);
     const failed = new Set<DeliverableId>();
     const base = { slug, dryRun: false, yes: flags.yes, model: flags.model };
+    const runDocs: DocResult[] = [];
 
     for (let i = startTier; i < plan.tiers.length; i++) {
       const tier = plan.tiers[i] as Tier;
       const tr = await runTier(tier, base, deps, failed);
+      runDocs.push(...tr.docs);
       for (const d of tr.failed) failed.add(d);
       for (const d of tr.skipped) failed.add(d);
 
       this.log('');
-      this.log(renderTierReport(tr, aggregateMarkers(tr.docs)));
+      this.log(renderTierReport(tr, aggregateMarkers(tr.docs), aggregateOperatorActions(tr.docs)));
 
       if (tr.produced.length === 0) {
         this.log(`  Tier ${tier.index}: nothing produced to approve; continuing.`);
@@ -175,15 +190,34 @@ export default class Generate extends BaseCommand {
       this.log(`    ${commitCommand(slug, tier, paths)}`);
     }
 
+    const checklist = renderOperatorChecklist(
+      aggregateOperatorActions(runDocs),
+      'Operator must do (this run, cannot be generated)',
+    );
+    if (checklist.length > 0) {
+      this.log('');
+      for (const line of checklist) this.log(line);
+    }
     this.log('All tiers processed.');
   }
 
-  private parseDocs(raw: string): DeliverableId[] {
+  /** When provisioning blocks on docs that aren't generated/approved yet, point the operator at `--all` first. */
+  private hintProvisioningDocs(slug: string, plan: ReturnType<typeof planBatch>): void {
+    const needsDocs = plan.blocked.some((b) =>
+      b.blockingDocs.some((d) => d.kind === 'unapproved-out-of-scope' && d.id.startsWith('doc-')),
+    );
+    if (needsDocs) {
+      this.log('');
+      this.log(`  hint: provisioning consumes generated docs. Generate and approve them first: upriver generate ${slug} --all`);
+    }
+  }
+
+  private parseDocs(raw: string, scopeSet: readonly DeliverableId[]): DeliverableId[] {
     const ids = raw.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean) as DeliverableId[];
     if (ids.length === 0) this.error('--docs was empty. Pass a comma-separated list like doc-01,doc-02.');
-    const bad = ids.filter((id) => !ALL_DOCS.includes(id));
+    const bad = ids.filter((id) => !scopeSet.includes(id));
     if (bad.length > 0) {
-      this.error(`--docs includes ids outside the 01–12 batch scope: ${bad.join(', ')}. Valid: ${ALL_DOCS.join(', ')}.`);
+      this.error(`--docs includes ids outside the active scope: ${bad.join(', ')}. Valid: ${scopeSet.join(', ')}.`);
     }
     return ids;
   }
