@@ -3,8 +3,10 @@
  * The ONLY client-writable profile surface, and the place the PRD §7 trust
  * boundary is enforced: a valid magic-link token, the chatbot-fillable whitelist
  * only (never `verified`, never an operator-source or HV/credential/money field),
- * `clientProfileZ` validation, and a per-token rate limit. All profile I/O goes
- * through the dashboard's `ClientDataSource` — never a direct Supabase client.
+ * `clientProfileZ` validation, and a per-token rate limit (a shared store on
+ * Vercel so the window is coherent across instances — see `lib/rate-limit.ts`).
+ * All profile I/O goes through the dashboard's `ClientDataSource` — never a
+ * direct Supabase client.
  */
 import type { APIRoute } from 'astro';
 
@@ -27,31 +29,16 @@ import {
   mergeInterviewField,
   readProfile,
 } from '../../../lib/profile-coverage.js';
+import { resolveRateLimiter, resetRateLimiter, type RateLimiter } from '../../../lib/rate-limit.js';
 
 export const prerender = false;
 
 const MAX_MESSAGES = 40;
 const MAX_TEXT_LEN = 4000;
 
-// Per-token rate limit: a fixed window, in-memory (one dashboard instance).
-const RATE_WINDOW_MS = 60_000;
-const RATE_MAX = 20;
-const hits = new Map<string, number[]>();
-
-function rateLimited(token: string, now: number): boolean {
-  const recent = (hits.get(token) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
-  if (recent.length >= RATE_MAX) {
-    hits.set(token, recent);
-    return true;
-  }
-  recent.push(now);
-  hits.set(token, recent);
-  return false;
-}
-
-/** Test hook: clear the rate-limit window. */
+/** Test hook: clear the rate-limit window (and drop the cached limiter). */
 export function __resetRateLimit(): void {
-  hits.clear();
+  resetRateLimiter();
 }
 
 function isRecord(v: unknown): v is Record<string, unknown> {
@@ -71,6 +58,8 @@ export interface ProfilePostDeps {
   create: CreateMessage;
   model?: string;
   now?: () => string;
+  /** The shared/in-memory rate limiter. Defaults to `resolveRateLimiter()`. */
+  rateLimiter?: RateLimiter;
 }
 
 /**
@@ -96,7 +85,8 @@ export async function handleProfilePost(
   if (!(await validateInterviewToken(slug, token))) {
     return json(401, { ok: false, error: 'invalid or missing token' });
   }
-  if (rateLimited(token as string, Date.now())) {
+  const rateLimiter = deps.rateLimiter ?? resolveRateLimiter();
+  if (await rateLimiter.hit(token as string, Date.now())) {
     return json(429, { ok: false, error: 'rate limit exceeded; slow down' });
   }
 
