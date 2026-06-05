@@ -6,35 +6,7 @@ import { flagsToArgs } from '@upriver/core';
 import { createSupabaseClientDataSourceFromEnv, type SupabaseClientDataSource } from '@upriver/core/data';
 import { inngest } from '../client.js';
 import { STAGE_RUN_EVENT, stageRunPayloadSchema, type StageRunPayload } from '../events.js';
-
-/** Allowlist mirrors the dashboard's enqueue endpoint and the API route. */
-const ALLOWED_COMMANDS: ReadonlySet<string> = new Set([
-  'init',
-  'scrape',
-  'audit',
-  'synthesize',
-  'design-brief',
-  'scaffold',
-  'clone',
-  'fixes-plan',
-  'qa',
-  // F01/F02/F03/F09/F10/F12 deliverables (Phase 1)
-  'voice-extract',
-  'audit-media',
-  'schema-build',
-  'gap-analysis',
-  'video-audit',
-  'blog-topics',
-  // F04/F06/F07/F11 deliverables (Phase 2)
-  'prototype-app',
-  'monitor',
-  'followup',
-  'custom-tools',
-  // F05 deliverables (Phase 3) — read-only admin sub-commands fine to enqueue
-  'admin-status',
-  'admin-pause',
-  'admin-rotate-pin',
-]);
+import { ALLOWED_COMMANDS } from './allowed-commands.js';
 
 /**
  * Where the worker stages a client tree on the local (ephemeral) filesystem

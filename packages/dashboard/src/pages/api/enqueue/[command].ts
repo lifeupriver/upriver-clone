@@ -1,25 +1,8 @@
 import type { APIRoute } from 'astro';
 import { inngest, STAGE_RUN_EVENT } from '@upriver/worker';
+import { ENQUEUE_ALLOWED_COMMANDS as ALLOWED_COMMANDS } from '@/lib/enqueue-allowlist';
 
 export const prerender = false;
-
-/**
- * Allowlist of pipeline-stage CLI commands the dashboard may enqueue. Mirrors
- * `ALLOWED_COMMANDS` in `api/run/[command].ts` and `ALLOWED_COMMANDS` in the
- * worker's `run-stage` function. All three lists must move together when the
- * pipeline gains or loses a stage.
- */
-const ALLOWED_COMMANDS: ReadonlyArray<string> = [
-  'init',
-  'scrape',
-  'audit',
-  'synthesize',
-  'design-brief',
-  'scaffold',
-  'clone',
-  'fixes-plan',
-  'qa',
-];
 
 interface EnqueueBody {
   slug: string;
