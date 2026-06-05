@@ -36,3 +36,6 @@ export * from './modules/restaurant.js';
 export * from './client-profile.js';
 export * from './coverage-map.js';
 export * from './coverage.js';
+
+// The shared coverage report model (CLI `profile show` + dashboard coverage view).
+export * from './show-model.js';
