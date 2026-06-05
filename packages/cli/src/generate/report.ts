@@ -44,6 +44,8 @@ export interface GenerationReport {
   docPath: string;
   content: string;
   markers: string[];
+  /** `[OPERATOR ACTION]` click-ops (provisioning only); absent/empty → not rendered. */
+  operatorActions?: string[];
   fromCache: boolean;
   nowUnblocked: DeliverableId[];
 }
@@ -61,6 +63,10 @@ export function renderGenerationReport(r: GenerationReport): string {
   } else {
     lines.push(`  [NEEDS CONFIRMATION] markers (${r.markers.length}):`);
     r.markers.forEach((m, i) => lines.push(`    ${i + 1}. ${m}`));
+  }
+  if (r.operatorActions && r.operatorActions.length > 0) {
+    lines.push(`  [OPERATOR ACTION] cannot be generated — you must do (${r.operatorActions.length}):`);
+    r.operatorActions.forEach((m, i) => lines.push(`    ${i + 1}. ${m}`));
   }
   if (r.nowUnblocked.length > 0) {
     lines.push(`  approving this unblocks downstream: ${r.nowUnblocked.join(', ')}`);
@@ -124,8 +130,27 @@ export function renderBatchPlan(plan: BatchPlan): string {
   return lines.join('\n');
 }
 
-/** Render a tier's run report: produced docs, consolidated markers, failures/skips. */
-export function renderTierReport(tr: TierRunResult, agg: MarkerAggregate): string {
+/**
+ * Render an "operator must do (cannot be generated)" checklist from an aggregate
+ * of `[OPERATOR ACTION]` markers (provisioning, Build Spec 09). Empty aggregate →
+ * `[]`, so callers append nothing for prose-doc runs. Reused by the per-tier
+ * report and the command's run-level summary.
+ */
+export function renderOperatorChecklist(
+  agg: MarkerAggregate,
+  heading = 'Operator must do (cannot be generated)',
+): string[] {
+  if (agg.total === 0) return [];
+  const lines = [`  ${heading} (${agg.total}), by artifact:`];
+  for (const g of agg.byDoc) {
+    lines.push(`    ${g.id} (${g.markers.length}):`);
+    g.markers.forEach((m, i) => lines.push(`      ${i + 1}. ${m}`));
+  }
+  return lines;
+}
+
+/** Render a tier's run report: produced docs, consolidated markers, operator actions, failures/skips. */
+export function renderTierReport(tr: TierRunResult, agg: MarkerAggregate, opActions?: MarkerAggregate): string {
   const lines: string[] = [];
   lines.push(`Tier ${tr.index} report:`);
   for (const d of tr.docs) {
@@ -145,6 +170,7 @@ export function renderTierReport(tr: TierRunResult, agg: MarkerAggregate): strin
       g.markers.forEach((m, i) => lines.push(`      ${i + 1}. ${m}`));
     }
   }
+  if (opActions) lines.push(...renderOperatorChecklist(opActions, '[OPERATOR ACTION] across tier'));
   if (tr.failed.length > 0) lines.push(`  failed: ${tr.failed.join(', ')}`);
   if (tr.skipped.length > 0) lines.push(`  skipped (upstream not available): ${tr.skipped.join(', ')}`);
   return lines.join('\n');

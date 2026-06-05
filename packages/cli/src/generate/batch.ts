@@ -146,6 +146,8 @@ export interface DocResult {
   status: DocStatus;
   docPath?: string;
   markers: string[];
+  /** `[OPERATOR ACTION]` click-ops (provisioning only, Build Spec 09); optional, treated as []. */
+  operatorActions?: string[];
   words: number;
   /** For `failed` / `skipped`: why. */
   reason?: string;
@@ -202,6 +204,7 @@ export async function runTier(
           status: outcome.status === 'reused' ? 'reused' : 'produced',
           ...(outcome.docPath ? { docPath: outcome.docPath } : {}),
           markers: outcome.markers,
+          operatorActions: outcome.operatorActions ?? [],
           words: outcome.words ?? 0,
         };
       } else {
@@ -248,12 +251,21 @@ export interface MarkerAggregate {
   total: number;
 }
 
+function aggregateBy(docs: DocResult[], pick: (d: DocResult) => string[]): MarkerAggregate {
+  const byDoc = docs
+    .map((d) => ({ id: d.id, title: d.title, markers: pick(d) ?? [] }))
+    .filter((g) => g.markers.length > 0);
+  return { byDoc, total: byDoc.reduce((n, g) => n + g.markers.length, 0) };
+}
+
 /** Consolidate the `[NEEDS CONFIRMATION]` markers produced across a tier, grouped by doc. */
 export function aggregateMarkers(docs: DocResult[]): MarkerAggregate {
-  const byDoc = docs
-    .filter((d) => d.markers.length > 0)
-    .map((d) => ({ id: d.id, title: d.title, markers: d.markers }));
-  return { byDoc, total: byDoc.reduce((n, g) => n + g.markers.length, 0) };
+  return aggregateBy(docs, (d) => d.markers);
+}
+
+/** Consolidate the `[OPERATOR ACTION]` cannot-generate steps across a tier (provisioning), grouped by artifact. */
+export function aggregateOperatorActions(docs: DocResult[]): MarkerAggregate {
+  return aggregateBy(docs, (d) => d.operatorActions ?? []);
 }
 
 /**

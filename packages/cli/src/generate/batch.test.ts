@@ -10,6 +10,7 @@ import { COVERAGE_MAP, type ClientProfile, type DeliverableId } from '@upriver/s
 
 import {
   aggregateMarkers,
+  aggregateOperatorActions,
   commitCommand,
   planBatch,
   runTier,
@@ -18,6 +19,7 @@ import {
 } from './batch.js';
 import { docFileName, type GenerateDeps } from './engine.js';
 import type { Manifest } from './manifest.js';
+import { I_SERIES } from './provisioning.js';
 import { titleFor } from './report.js';
 import type { ClaudeCall } from './runner.js';
 
@@ -145,6 +147,66 @@ test('commitCommand names the produced paths + manifest and the tier docs', () =
   const cmd = commitCommand('lf', { index: 0, docs: ['doc-01', 'doc-02'] }, ['docs/a.md', 'docs/b.md']);
   assert.match(cmd, /git add -f clients\/lf\/docs\/a\.md clients\/lf\/docs\/b\.md clients\/lf\/docs\/manifest\.json/);
   assert.match(cmd, /approve tier 0 — doc-01, doc-02/);
+});
+
+// ── M5 provisioning (Build Spec 09): the i-series DAG over planBatch ──────────
+const ALL_18_DOCS: DeliverableId[] = Array.from(
+  { length: 18 },
+  (_, i) => `doc-${String(i + 1).padStart(2, '0')}` as DeliverableId,
+);
+
+test('provisioning tiering: I07 first, then I01, then I02→I04→I03 with I05/06/08/09 parallel after I01', () => {
+  // Every i-artifact field/HV-ready; all 18 prose docs already approved (the M2-then-M5 path).
+  const plan = planBatch(makeProfile([...I_SERIES]), manifestApproved(ALL_18_DOCS), [...I_SERIES]);
+  assert.equal(plan.blocked.length, 0, 'with docs approved + fields ready, nothing should be blocked');
+  assert.equal(plan.tiers.length, 5);
+  assert.deepEqual(plan.tiers[0]?.docs, ['i07']);
+  assert.deepEqual(plan.tiers[1]?.docs, ['i01']);
+  assert.deepEqual(new Set(plan.tiers[2]?.docs), new Set(['i02', 'i05', 'i06', 'i08', 'i09']));
+  assert.equal(plan.tiers[2]?.docs.length, 5);
+  assert.deepEqual(plan.tiers[3]?.docs, ['i04']); // I04 needs I02
+  assert.deepEqual(plan.tiers[4]?.docs, ['i03']); // I03 needs I02 + I04
+});
+
+test('provisioning: I01 is blocked until its 18 doc deps + I07 are approved', () => {
+  // i01 + i07 both field/HV-ready, but no docs approved and docs are out of the i-series subset.
+  const blockedPlan = planBatch(makeProfile(['i01', 'i07']), emptyManifest(), ['i01', 'i07']);
+  assert.deepEqual(blockedPlan.tiers[0]?.docs, ['i07']); // i07 has no doc deps → producible
+  const i01 = blockedPlan.blocked.find((b) => b.id === 'i01')!;
+  assert.ok(i01.reasons.includes('blocked-upstream'));
+  const blocking = i01.blockingDocs.map((b) => b.id);
+  for (const d of ALL_18_DOCS) assert.ok(blocking.includes(d), `i01 should be blocked on ${d}`);
+  assert.ok(i01.blockingDocs.every((b) => !b.id.startsWith('doc-') || b.kind === 'unapproved-out-of-scope'));
+  assert.ok(!blocking.includes('i07'), 'i07 is producible this run, so it is not a blocker');
+
+  // Approve all 18 docs + i07 → i01 becomes producible (tier 0 of an i01-only scope).
+  const readyPlan = planBatch(makeProfile(['i01']), manifestApproved([...ALL_18_DOCS, 'i07']), ['i01']);
+  assert.deepEqual(readyPlan.tiers[0]?.docs, ['i01']);
+  assert.equal(readyPlan.blocked.length, 0);
+});
+
+test('provisioning: an i-artifact with unverified HV lands blocked, naming the exact HV paths', () => {
+  // i07 field-ready but its HV gates unverified — the doc-02 analogue, one tier up.
+  const plan = planBatch(makeProfile([], ['i07']), emptyManifest(), ['i07']);
+  assert.equal(plan.tiers.length, 0);
+  const i07 = plan.blocked.find((b) => b.id === 'i07')!;
+  assert.deepEqual(i07.reasons, ['unverified-hv']);
+  assert.equal(i07.readiness.missingFields.length, 0);
+  const expected = COVERAGE_MAP.find((d) => d.id === 'i07')!.requiresHvVerified;
+  assert.deepEqual([...i07.readiness.unverifiedHv].sort(), [...expected].sort());
+});
+
+test('aggregateOperatorActions groups [OPERATOR ACTION] click-ops by artifact (undefined treated as [])', () => {
+  const docs: DocResult[] = [
+    { id: 'i07', title: 'A', status: 'produced', markers: [], operatorActions: ['create the Project', 'upgrade the plan'], words: 9 },
+    { id: 'i01', title: 'B', status: 'produced', markers: ['q?'], operatorActions: [], words: 8 },
+    { id: 'i02', title: 'C', status: 'produced', markers: [], words: 7 }, // no operatorActions field → []
+    { id: 'i08', title: 'D', status: 'produced', markers: [], operatorActions: ['publish the artifact'], words: 6 },
+  ];
+  const agg = aggregateOperatorActions(docs);
+  assert.equal(agg.total, 3);
+  assert.deepEqual(agg.byDoc.map((g) => g.id), ['i07', 'i08']);
+  assert.deepEqual(agg.byDoc[0]?.markers, ['create the Project', 'upgrade the plan']);
 });
 
 // ── runTier (integration with the real engine, claude injected) ──────────────
