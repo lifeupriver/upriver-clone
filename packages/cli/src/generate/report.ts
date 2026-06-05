@@ -6,6 +6,8 @@ import {
   type Readiness,
 } from '@upriver/schemas';
 
+import type { BatchPlan, BlockedDoc, MarkerAggregate, Tier, TierRunResult } from './batch.js';
+
 export function titleFor(id: DeliverableId): string {
   return COVERAGE_MAP.find((d) => d.id === id)?.title ?? id;
 }
@@ -64,6 +66,96 @@ export function renderGenerationReport(r: GenerationReport): string {
     lines.push(`  approving this unblocks downstream: ${r.nowUnblocked.join(', ')}`);
   }
   return lines.join('\n');
+}
+
+/** Terse one-line per-doc summary for batch mode (the full report is per-tier). */
+export function renderDocLine(r: {
+  id: DeliverableId;
+  docPath: string;
+  content: string;
+  markers: string[];
+  fromCache: boolean;
+}): string {
+  const words = r.content.trim().split(/\s+/).filter(Boolean).length;
+  const verb = r.fromCache ? 'reused' : 'generated';
+  return `  ${verb} ${r.id} — ${words} words, ${r.markers.length} marker(s) → ${r.docPath}`;
+}
+
+// ── Batch (run-level) reports — M2 `generate --all`. Additive: the single-doc
+//    renderers above are untouched. ─────────────────────────────────────────
+
+function renderBlockedDoc(b: BlockedDoc): string[] {
+  const lines = [`  ${b.id} (${b.title})`];
+  if (b.readiness.missingFields.length > 0) {
+    lines.push(`    missing fields (${b.readiness.missingFields.length}): ${b.readiness.missingFields.join(', ')}`);
+  }
+  if (b.readiness.unverifiedHv.length > 0) {
+    lines.push(`    unverified HV (${b.readiness.unverifiedHv.length}): ${b.readiness.unverifiedHv.join(', ')}`);
+  }
+  const thisRun = b.blockingDocs.filter((d) => d.kind === 'blocked-this-run').map((d) => d.id);
+  const outOfScope = b.blockingDocs.filter((d) => d.kind === 'unapproved-out-of-scope').map((d) => d.id);
+  if (thisRun.length > 0) {
+    lines.push(`    blocked by upstream needing data (${thisRun.length}): ${thisRun.join(', ')}`);
+  }
+  if (outOfScope.length > 0) {
+    lines.push(`    upstream out of scope / unapproved (${outOfScope.length}): ${outOfScope.join(', ')}`);
+  }
+  return lines;
+}
+
+/** Render the full `--all` plan: the DAG tiers + the blocked docs with reasons. */
+export function renderBatchPlan(plan: BatchPlan): string {
+  const lines: string[] = [];
+  lines.push(`Batch plan — scope ${plan.scope.length} doc(s) (${plan.scope.join(', ')})`);
+  lines.push(`  already approved (${plan.approved.length}): ${plan.approved.length ? plan.approved.join(', ') : 'none'}`);
+  lines.push('');
+  if (plan.tiers.length === 0) {
+    lines.push('Tiers: none eligible — every in-scope doc is blocked (see below).');
+  } else {
+    lines.push(`Tiers (${plan.tiers.length}) — generated in order, gated per tier:`);
+    for (const tier of plan.tiers) {
+      lines.push(`  Tier ${tier.index} (${tier.docs.length}): ${tier.docs.join(', ')}`);
+    }
+  }
+  lines.push('');
+  lines.push(`Blocked (${plan.blocked.length}):`);
+  if (plan.blocked.length === 0) lines.push('  none');
+  for (const b of plan.blocked) lines.push(...renderBlockedDoc(b));
+  return lines.join('\n');
+}
+
+/** Render a tier's run report: produced docs, consolidated markers, failures/skips. */
+export function renderTierReport(tr: TierRunResult, agg: MarkerAggregate): string {
+  const lines: string[] = [];
+  lines.push(`Tier ${tr.index} report:`);
+  for (const d of tr.docs) {
+    if (d.status === 'produced' || d.status === 'reused') {
+      lines.push(`  [${d.status}] ${d.id} — ${d.words} words, ${d.markers.length} marker(s) → ${d.docPath}`);
+    } else {
+      lines.push(`  [${d.status}] ${d.id} — ${d.reason ?? ''}`);
+    }
+  }
+  lines.push('');
+  if (agg.total === 0) {
+    lines.push('  [NEEDS CONFIRMATION] across tier: none');
+  } else {
+    lines.push(`  [NEEDS CONFIRMATION] across tier (${agg.total}), by doc:`);
+    for (const g of agg.byDoc) {
+      lines.push(`    ${g.id} (${g.markers.length}):`);
+      g.markers.forEach((m, i) => lines.push(`      ${i + 1}. ${m}`));
+    }
+  }
+  if (tr.failed.length > 0) lines.push(`  failed: ${tr.failed.join(', ')}`);
+  if (tr.skipped.length > 0) lines.push(`  skipped (upstream not available): ${tr.skipped.join(', ')}`);
+  return lines.join('\n');
+}
+
+/** Deliverables a tier's approval unblocks in the next tier (for the gate prompt). */
+export function tierUnblocks(plan: BatchPlan, tier: Tier): DeliverableId[] {
+  const next = plan.tiers.find((t) => t.index > tier.index);
+  if (!next) return [];
+  const tierSet = new Set(tier.docs);
+  return next.docs.filter((id) => COVERAGE_MAP.find((d) => d.id === id)?.requiresDocs.some((r) => tierSet.has(r)));
 }
 
 /**
