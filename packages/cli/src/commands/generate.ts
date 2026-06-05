@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import { createInterface } from 'node:readline/promises';
 
 import { Args, Flags } from '@oclif/core';
@@ -11,8 +12,11 @@ import {
   commitCommand,
   planBatch,
   runTier,
+  runTierParallel,
+  seedClientTree,
   tierIndexOf,
   type DocResult,
+  type ParallelTierDeps,
   type Tier,
 } from '../generate/batch.js';
 import { resolveClientDataSourceOrFail } from '../generate/data-source.js';
@@ -23,7 +27,8 @@ import { readProfile } from '../generate/profile-io.js';
 import { I_SERIES } from '../generate/provisioning.js';
 import { renderBatchPlan, renderOperatorChecklist, renderTierReport, tierUnblocks } from '../generate/report.js';
 import { claudeCliCall } from '../util/claude-cli.js';
-import type { ClientDataSource } from '@upriver/core/data';
+import { gitWorktreeProvider, resolveGitRepoRoot } from '../util/git-worktree.js';
+import { LocalFsClientDataSource, type ClientDataSource } from '@upriver/core/data';
 
 /** The `--all` flag subset `runAll` consumes (the parsed flags object is a superset). */
 interface AllFlags {
@@ -33,6 +38,7 @@ interface AllFlags {
   'dry-run': boolean;
   yes: boolean;
   model: string;
+  jobs: number;
 }
 
 export default class Generate extends BaseCommand {
@@ -87,6 +93,12 @@ export default class Generate extends BaseCommand {
       description: 'Model alias for the headless session.',
       default: 'sonnet',
     }),
+    jobs: Flags.integer({
+      description:
+        'Generate each DAG tier across up to N parallel git worktrees (local data source only). Default 1 = the proven sequential path. Docs in a tier write uniquely-named files, so worktrees merge without conflict before the per-tier gate.',
+      default: 1,
+      dependsOn: ['all'],
+    }),
   };
 
   async run(): Promise<void> {
@@ -138,9 +150,15 @@ export default class Generate extends BaseCommand {
     const base = { slug, dryRun: false, yes: flags.yes, model: flags.model };
     const runDocs: DocResult[] = [];
 
+    const jobs = Math.max(1, flags.jobs);
+    const parallel = jobs > 1 ? this.buildParallelDeps(ds, slug, jobs) : null;
+    if (parallel) this.log(`Parallel generation: up to ${parallel.jobs} worktree(s) per tier.`);
+
     for (let i = startTier; i < plan.tiers.length; i++) {
       const tier = plan.tiers[i] as Tier;
-      const tr = await runTier(tier, base, deps, failed);
+      const tr = parallel
+        ? await runTierParallel(tier, base, deps, failed, parallel)
+        : await runTier(tier, base, deps, failed);
       runDocs.push(...tr.docs);
       for (const d of tr.failed) failed.add(d);
       for (const d of tr.skipped) failed.add(d);
@@ -230,6 +248,38 @@ export default class Generate extends BaseCommand {
       this.error(`--from ${from} is not in an eligible tier (it is blocked or out of scope). See the plan above.`);
     }
     return idx;
+  }
+
+  /**
+   * Wire the `--jobs` parallel seam: one git worktree per doc, each backed by a
+   * `LocalFsClientDataSource` rooted at the worktree's `clients/`, seeded from
+   * the operator's tree. Worktrees only make sense for the local data source
+   * (the git-tracked `clients/` tree); for supabase or outside a repo, fall back
+   * to the proven sequential path with a warning rather than failing.
+   */
+  private buildParallelDeps(ds: ClientDataSource, slug: string, jobs: number): ParallelTierDeps | null {
+    if (ds.kind !== 'local') {
+      this.warn(`--jobs ${jobs}: parallel tiers use git worktrees, which need the local data source (UPRIVER_DATA_SOURCE=local). Running sequentially.`);
+      return null;
+    }
+    const repoRoot = resolveGitRepoRoot();
+    if (!repoRoot) {
+      this.warn(`--jobs ${jobs}: not inside a git repository, so worktrees are unavailable. Running sequentially.`);
+      return null;
+    }
+    const provider = gitWorktreeProvider(repoRoot);
+    return {
+      jobs,
+      acquire: async (key) => {
+        const handle = await provider.create(key);
+        const worktreeDs = new LocalFsClientDataSource({ baseDir: join(handle.path, 'clients') });
+        return {
+          ds: worktreeDs,
+          seed: () => seedClientTree(ds, worktreeDs, slug),
+          release: () => handle.remove(),
+        };
+      },
+    };
   }
 
   private makeDeps(ds: ClientDataSource, promptApprove: () => Promise<boolean>): GenerateDeps {

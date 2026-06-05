@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -14,8 +14,12 @@ import {
   commitCommand,
   planBatch,
   runTier,
+  runTierParallel,
+  seedClientTree,
   tierIndexOf,
   type DocResult,
+  type ParallelTierDeps,
+  type TierWorktree,
 } from './batch.js';
 import { docFileName, type GenerateDeps } from './engine.js';
 import type { Manifest } from './manifest.js';
@@ -295,4 +299,139 @@ test('runTier: a doc whose upstream failed this run is skipped, never calls clau
   assert.deepEqual(tr.skipped, ['doc-04']);
   assert.equal(calls(), 0);
   assert.match(tr.docs[0]?.reason ?? '', /doc-02/);
+});
+
+// ── runTierParallel (--jobs N): claude + git both mocked; worktrees are plain
+//    temp dirs so CI never shells out to git or claude. ───────────────────────
+/**
+ * Mock worktree provider: each `acquire` hands back a temp-dir-backed data
+ * source seeded (via the real `seedClientTree`) from `mainDs`, and counts
+ * acquire/release so tests can assert no worktree leaks. No git involved.
+ */
+function fakeWorktrees(
+  mainDs: LocalFsClientDataSource,
+  slug: string,
+  jobs: number,
+): { parallel: ParallelTierDeps; stats: () => { acquired: number; released: number; leaked: number } } {
+  let acquired = 0;
+  let released = 0;
+  const live = new Set<string>();
+  const parallel: ParallelTierDeps = {
+    jobs,
+    acquire: async (_key) => {
+      acquired += 1;
+      const root = mkdtempSync(join(tmpdir(), 'upriver-wt-'));
+      live.add(root);
+      const ds = new LocalFsClientDataSource({ baseDir: join(root, 'clients') });
+      const wt: TierWorktree = {
+        ds,
+        seed: () => seedClientTree(mainDs, ds, slug),
+        release: async () => {
+          released += 1;
+          live.delete(root);
+          rmSync(root, { recursive: true, force: true });
+        },
+      };
+      return wt;
+    },
+  };
+  return { parallel, stats: () => ({ acquired, released, leaked: live.size }) };
+}
+
+test('seedClientTree copies profile + docs/ (manifest + approved docs), nothing else', async () => {
+  const src = seededDs();
+  await src.writeClientFile('lf', 'profile.json', '{"_meta":{}}');
+  await src.writeClientFile('lf', 'docs/manifest.json', '{"version":1,"docs":{}}');
+  await src.writeClientFile('lf', 'docs/doc-01-x.md', '# one');
+  await src.writeClientFile('lf', '.cache/llm/abc.json', 'cache'); // not an input → not seeded
+
+  const dst = seededDs();
+  await seedClientTree(src, dst, 'lf');
+
+  assert.equal(await dst.readClientFileText('lf', 'profile.json'), '{"_meta":{}}');
+  assert.equal(await dst.readClientFileText('lf', 'docs/manifest.json'), '{"version":1,"docs":{}}');
+  assert.equal(await dst.readClientFileText('lf', 'docs/doc-01-x.md'), '# one');
+  assert.equal(await dst.fileExists('lf', '.cache/llm/abc.json'), false);
+});
+
+test('runTierParallel: tier output is byte-identical to the sequential path (DoD)', async () => {
+  process.env['UPRIVER_SPECS_DIR'] = specsDir();
+  const tier = { index: 0, docs: ['doc-01', 'doc-02'] as DeliverableId[] };
+  const base = { slug: 'littlefriends', dryRun: false, yes: false, model: 'sonnet' };
+
+  // Sequential reference run.
+  const seqDs = seededDs();
+  await seqDs.writeClientFile('littlefriends', 'profile.json', readyFixture());
+  const { deps: seqDeps } = deps(seqDs, partialCall(new Set()).call);
+  const seqTr = await runTier(tier, base, seqDeps, new Set());
+
+  // Parallel run (jobs=2) over mocked worktrees.
+  const parDs = seededDs();
+  await parDs.writeClientFile('littlefriends', 'profile.json', readyFixture());
+  const { deps: parDeps } = deps(parDs, partialCall(new Set()).call);
+  const { parallel, stats } = fakeWorktrees(parDs, 'littlefriends', 2);
+  const parTr = await runTierParallel(tier, base, parDeps, new Set(), parallel);
+
+  assert.deepEqual(parTr.produced, ['doc-01', 'doc-02']);
+  assert.deepEqual(parTr.produced, seqTr.produced);
+  assert.equal(parTr.claudeCalls, seqTr.claudeCalls);
+
+  // Byte-identical manifest + every produced doc file.
+  assert.equal(
+    await parDs.readClientFileText('littlefriends', 'docs/manifest.json'),
+    await seqDs.readClientFileText('littlefriends', 'docs/manifest.json'),
+  );
+  for (const id of ['doc-01', 'doc-02'] as DeliverableId[]) {
+    const path = `docs/${docFileName(id, titleFor(id))}`;
+    assert.equal(
+      await parDs.readClientFileText('littlefriends', path),
+      await seqDs.readClientFileText('littlefriends', path),
+      `${id} content differs from sequential`,
+    );
+  }
+
+  // One worktree per doc, all torn down — no leaks.
+  assert.deepEqual(stats(), { acquired: 2, released: 2, leaked: 0 });
+});
+
+test('runTierParallel: a failing doc is isolated; siblings still produce; every worktree is cleaned', async () => {
+  process.env['UPRIVER_SPECS_DIR'] = specsDir();
+  const d = seededDs();
+  await d.writeClientFile('littlefriends', 'profile.json', readyFixture());
+  const { deps: dp } = deps(d, partialCall(new Set<DeliverableId>(['doc-02'])).call);
+  const { parallel, stats } = fakeWorktrees(d, 'littlefriends', 2);
+
+  const tr = await runTierParallel(
+    { index: 0, docs: ['doc-01', 'doc-02'] as DeliverableId[] },
+    { slug: 'littlefriends', dryRun: false, yes: false, model: 'sonnet' },
+    dp,
+    new Set(),
+    parallel,
+  );
+
+  assert.deepEqual(tr.produced, ['doc-01']);
+  assert.deepEqual(tr.failed, ['doc-02']);
+  assert.match(tr.docs.find((x) => x.id === 'doc-02')?.reason ?? '', /claude failed/);
+  // doc-01 merged into the main tree; doc-02 left nothing behind.
+  assert.ok(await d.fileExists('littlefriends', `docs/${docFileName('doc-01', titleFor('doc-01'))}`));
+  // The failed doc's worktree was still released (finally) → no leaks.
+  assert.deepEqual(stats(), { acquired: 2, released: 2, leaked: 0 });
+});
+
+test('runTierParallel: a doc whose upstream failed this run is skipped without acquiring a worktree', async () => {
+  const d = seededDs();
+  const { deps: dp } = deps(d, partialCall(new Set()).call);
+  const { parallel, stats } = fakeWorktrees(d, 'littlefriends', 2);
+
+  const tr = await runTierParallel(
+    { index: 1, docs: ['doc-04'] as DeliverableId[] },
+    { slug: 'littlefriends', dryRun: false, yes: false, model: 'sonnet' },
+    dp,
+    new Set<DeliverableId>(['doc-02']),
+    parallel,
+  );
+
+  assert.deepEqual(tr.skipped, ['doc-04']);
+  assert.match(tr.docs[0]?.reason ?? '', /doc-02/);
+  assert.deepEqual(stats(), { acquired: 0, released: 0, leaked: 0 });
 });

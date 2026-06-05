@@ -26,6 +26,7 @@ const ALLOWED_COMMANDS: ReadonlyArray<string> = [
   'clone',
   'fixes-plan',
   'qa',
+  'generate',
   'process-interview',
   'interview-link',
   'monitor',
