@@ -1,0 +1,479 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - navigation [ref=e13]:
+        - generic [ref=e14]: This client
+        - generic "Audrey's Farmhouse" [ref=e15]
+        - link "Overview" [ref=e16] [cursor=pointer]:
+          - /url: /clients/audreys
+          - generic [ref=e18]: Overview
+        - link "Intake" [ref=e19] [cursor=pointer]:
+          - /url: /clients/audreys/intake
+          - generic [ref=e21]: Intake
+        - link "Audit" [ref=e22] [cursor=pointer]:
+          - /url: /clients/audreys/audit
+          - generic [ref=e24]: Audit
+        - link "Clone Fidelity" [ref=e25] [cursor=pointer]:
+          - /url: /clients/audreys/clone-fidelity
+          - generic [ref=e27]: Clone Fidelity
+        - link "Brand Voice" [ref=e28] [cursor=pointer]:
+          - /url: /clients/audreys/voice
+          - generic [ref=e30]: Brand Voice
+        - link "Design Brief" [ref=e31] [cursor=pointer]:
+          - /url: /clients/audreys/design-brief
+          - generic [ref=e33]: Design Brief
+        - link "Site Preview" [ref=e34] [cursor=pointer]:
+          - /url: /clients/audreys/site
+          - generic [ref=e36]: Site Preview
+        - link "Fixes Plan" [ref=e37] [cursor=pointer]:
+          - /url: /clients/audreys/fixes
+          - generic [ref=e39]: Fixes Plan
+        - link "QA Report" [ref=e40] [cursor=pointer]:
+          - /url: /clients/audreys/qa
+          - generic [ref=e42]: QA Report
+        - link "Launch Checklist" [ref=e43] [cursor=pointer]:
+          - /url: /clients/audreys/launch-checklist
+          - generic [ref=e45]: Launch Checklist
+        - link "Export Audit" [ref=e46] [cursor=pointer]:
+          - /url: /deliverables/audreys
+          - generic [ref=e48]: Export Audit
+        - link "Export Brief" [ref=e49] [cursor=pointer]:
+          - /url: /deliverables/audreys/design-brief
+          - generic [ref=e51]: Export Brief
+        - link "Share Links" [ref=e52] [cursor=pointer]:
+          - /url: /clients/audreys/share
+          - generic [ref=e54]: Share Links
+      - generic [ref=e56]: v0.1.0
+    - main [ref=e57]:
+      - generic [ref=e58]:
+        - link "Clients" [ref=e59] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e60]: /
+        - link "Audrey's Farmhouse" [ref=e61] [cursor=pointer]:
+          - /url: /clients/audreys
+        - generic [ref=e62]: /
+        - generic [ref=e63]: Brand Voice
+      - generic [ref=e65]:
+        - text: Brand & Interview Synthesis
+        - heading "Audrey's Farmhouse" [level=1] [ref=e66]
+        - paragraph [ref=e67]: Open one tab at a time — opening another closes this one.
+      - generic [ref=e68]:
+        - group [ref=e69]:
+          - generic "Brand Voice" [ref=e70] [cursor=pointer]:
+            - generic [ref=e71]: Brand Voice
+            - generic [ref=e72]: ›
+          - generic [ref=e74]:
+            - generic [ref=e75]:
+              - heading "Brand Voice Guide — Audrey's Farmhouse" [level=1] [ref=e77]
+              - group [ref=e78]:
+                - generic "▸ Voice in three words" [ref=e79] [cursor=pointer]:
+                  - text: ▸
+                  - heading "Voice in three words" [level=2] [ref=e80]
+                - generic [ref=e81]:
+                  - strong [ref=e82]: Quiet. Considered. Particular.
+                  - paragraph
+                  - paragraph [ref=e83]: "Pulled directly from Doug's answer when asked what words the brand should use: \"Quiet. Generous. Considered. Lived-in. Particular.\" (interview) These three carry the most signal because they describe both the *places* (lived-in, specific) and the *posture* (unhurried, anti-spectacle) the founders described throughout the conversation."
+              - group [ref=e84]:
+                - generic "▸ What the brand sounds like now" [ref=e85] [cursor=pointer]:
+                  - text: ▸
+                  - heading "What the brand sounds like now" [level=2] [ref=e86]
+                - generic [ref=e87]:
+                  - paragraph [ref=e88]:
+                    - text: Verbatim from the current site and the founder interview, so we can see the gap between aspiration and execution.
+                    - strong [ref=e89]: "Current on-site testimonials (the public voice today):"
+                  - list [ref=e90]:
+                    - listitem [ref=e91]: "\"An unforgettable wedding experience!\" — Sarah Williams (current site)"
+                    - listitem [ref=e92]: "\"Magical venue with top-notch service.\" — Tom Anderson (current site)"
+                    - listitem [ref=e93]: "\"The Greenhouses was the perfect venue for our wedding!\" — Jane Smith (current site)"
+                    - listitem [ref=e94]: "\"Amazing service and beautiful location.\" — Mark Johnson (current site)"
+                  - strong [ref=e95]: "Current site language flagged in the audit:"
+                  - text: "\"stunning\" (3 pages), \"elevate\" (2 pages), \"seamlessly\" (2 pages), \"transform\" (2 pages) — all words Doug and Sally explicitly reject. (audit)"
+                  - strong [ref=e96]: "How the founders actually talk (the voice we want):"
+                  - list [ref=e97]:
+                    - listitem [ref=e98]: "\"The greenhouse smells like the geraniums in the corner. The fireplace is a working fireplace, not a fake one. The food at Old Mill last weekend was lamb shoulder from the farm down the road.\" (interview, Sally)"
+                    - listitem [ref=e99]: "\"We try to write like we would write a postcard from a friend who just stayed there.\" (interview, Sally)"
+                    - listitem [ref=e100]: "\"We have one wedding a weekend in season. Not three. Not a Friday-Saturday-Sunday turnover. One. The day is theirs.\" (interview, Doug)"
+                    - listitem [ref=e101]: "\"Magic is a word that gets used by people trying to sell you something.\" (interview, Doug)"
+                  - paragraph
+                  - paragraph [ref=e102]: The current site sounds like every other wedding venue. The interview sounds like Audrey's Farmhouse. The job of this guide is to close that gap.
+              - group [ref=e103]:
+                - generic "▸ What it should sound like" [ref=e104] [cursor=pointer]:
+                  - text: ▸
+                  - heading "What it should sound like" [level=2] [ref=e105]
+                - generic [ref=e106]:
+                  - paragraph [ref=e107]:
+                    - text: Five rewrites in the founders' actual vocabulary. Each one swaps abstract praise for concrete, sensory, specific writing — the "postcard from a friend" register Sally named.
+                    - strong [ref=e108]: 1. Hero copy
+                  - list [ref=e109]:
+                    - listitem [ref=e110]: "*Before (current style):* \"A stunning Hudson Valley venue where unforgettable moments come to life.\""
+                    - listitem [ref=e111]: "*After:* \"A 1740 farmhouse, three glass greenhouses, and one wedding a weekend. Two hours from the city, in Wallkill, New York.\""
+                  - strong [ref=e112]: 2. Property card (Old Mill)
+                  - list [ref=e113]:
+                    - listitem [ref=e114]: "*Before:* \"Discover the magic of Old Mill — a unique escape with rustic charm.\""
+                    - listitem [ref=e115]: "*After:* \"Twenty-four acres, a 4,500-square-foot pergola, seven lodging units, and a 19th-century farmhouse. Bring the dog. Bring the college friends. Take the whole place for the weekend.\""
+                  - strong [ref=e116]: 3. About / who we are
+                  - list [ref=e117]:
+                    - listitem [ref=e118]: "*Before:* \"Our world-class team is dedicated to creating your perfect day.\""
+                    - listitem [ref=e119]: "*After:* \"Sixteen of us, full-time and seasonal. Sally and Doug answer the phone. Emily knows your name by Friday night. The chef walks through dinner to see how it's going.\""
+                  - strong [ref=e120]: 4. Pets page intro
+                  - list [ref=e121]:
+                    - listitem [ref=e122]: "*Before:* \"We're proud to offer a pet-friendly experience.\""
+                    - listitem [ref=e123]: "*After:* \"About a third of the people who book Old Mill are bringing a dog. Here's the fee, where they can sleep, where they can run, and which porch has the best napping sun.\""
+                  - strong [ref=e124]: 5. FAQ entry — "Can we have a campfire?"
+                  - list [ref=e125]:
+                    - listitem [ref=e126]: "*Before:* \"Please inquire about outdoor fire amenities.\""
+                    - listitem [ref=e127]: "*After:* \"Yes, at Old Mill and Friends and Neighbors. We light it for you, we keep it stocked, and we put it out before bed so you don't have to think about it.\""
+                  - paragraph
+              - group [ref=e128]:
+                - generic "▸ Tone guidelines" [ref=e129] [cursor=pointer]:
+                  - text: ▸
+                  - heading "Tone guidelines" [level=2] [ref=e130]
+                - generic [ref=e131]:
+                  - list [ref=e132]:
+                    - listitem [ref=e133]:
+                      - strong [ref=e134]: Specific over superlative.
+                      - text: Name the thing, not the feeling. "The hero of an event isn't a feeling, it's a thing — the long table, the candles in the greenhouse, the dog asleep on the porch, the cheese board on the kitchen island." (interview)
+                    - listitem [ref=e135]:
+                      - strong [ref=e136]: Honest over performed.
+                      - text: "\"Less performance. More honesty.\" (interview, Doug) If the room is small in winter, say so. If we don't sleep 200 guests, say so."
+                    - listitem [ref=e137]:
+                      - strong [ref=e138]: Quietly confident, never boastful.
+                      - text: "\"Magic is a word that gets used by people trying to sell you something.\" (interview, Doug) We don't claim magic. We describe what's actually there."
+                    - listitem [ref=e139]:
+                      - strong [ref=e140]: Warm but unhurried.
+                      - text: "\"What would we want at our own wedding? And the answer was always: less of that, more of this.\" (interview, Sally) The pace of the writing should match the pace of a weekend here."
+                    - listitem [ref=e141]:
+                      - strong [ref=e142]: Run by people, not a brand.
+                      - text: "\"Sally and Doug aren't a brand. We are people. We answer the phone.\" (interview, Sally) First-person plural is fine. Names are better than titles."
+                    - listitem [ref=e143]:
+                      - strong [ref=e144]: Self-selecting, not selling.
+                      - text: "\"Inquiries that are better qualified… If the new site sets expectations, we should see better-fit inquiries.\" (interview, Sally) Tell people who we *aren't* for. The right couples will lean in."
+                    - listitem [ref=e145]:
+                      - strong [ref=e146]: Postcard, not press release.
+                      - text: "\"We try to write like we would write a postcard from a friend who just stayed there.\" (interview, Sally) Short sentences. Concrete nouns. No adjective stacks."
+                  - paragraph
+              - group [ref=e147]:
+                - generic "▸ Word choices" [ref=e148] [cursor=pointer]:
+                  - text: ▸
+                  - heading "Word choices" [level=2] [ref=e149]
+                - generic [ref=e150]:
+                  - heading "Use" [level=3] [ref=e151]
+                  - paragraph [ref=e152]: Drawn from the transcript and asset notes. These are words the founders actually said.
+                  - list [ref=e153]:
+                    - listitem [ref=e154]:
+                      - strong [ref=e155]: farmhouse
+                      - text: (interview, repeated)
+                    - listitem [ref=e156]:
+                      - strong [ref=e157]: greenhouse / under the glass
+                      - text: (interview)
+                    - listitem [ref=e158]:
+                      - strong [ref=e159]: lived-in
+                      - text: (interview, Doug)
+                    - listitem [ref=e160]:
+                      - strong [ref=e161]: considered
+                      - text: (interview, Doug)
+                    - listitem [ref=e162]:
+                      - strong [ref=e163]: particular
+                      - text: (interview, Doug)
+                    - listitem [ref=e164]:
+                      - strong [ref=e165]: generous
+                      - text: (interview, Doug)
+                    - listitem [ref=e166]:
+                      - strong [ref=e167]: quiet
+                      - text: (interview, Doug)
+                    - listitem [ref=e168]:
+                      - strong [ref=e169]: working fireplace
+                      - text: (interview, Sally — used as an honesty marker)
+                    - listitem [ref=e170]:
+                      - strong [ref=e171]: the long table
+                      - text: (interview, Sally)
+                    - listitem [ref=e172]:
+                      - strong [ref=e173]: one wedding a weekend
+                      - text: (interview, Doug)
+                    - listitem [ref=e174]:
+                      - strong [ref=e175]: nostalgic design with a modern approach
+                      - text: (interview, Sally — the line they already use)
+                    - listitem [ref=e176]:
+                      - strong [ref=e177]: bring the dog
+                      - text: (interview, Doug — concrete shorthand for the lodging proposition)
+                  - heading "Avoid" [level=3] [ref=e178]
+                  - paragraph [ref=e179]: Words explicitly rejected by the founders and/or flagged in the audit.
+                  - list [ref=e180]:
+                    - listitem [ref=e181]:
+                      - strong [ref=e182]: magical / magic
+                      - text: — "Magic is a word that gets used by people trying to sell you something." (interview, Doug)
+                    - listitem [ref=e183]:
+                      - strong [ref=e184]: stunning
+                      - text: — flagged on three current pages; founders don't use it. (audit; interview)
+                    - listitem [ref=e185]:
+                      - strong [ref=e186]: unforgettable
+                      - text: — appears in current testimonials but not in founder vocabulary; banned in voice draft. (audit)
+                    - listitem [ref=e187]:
+                      - strong [ref=e188]: perfect
+                      - text: — "We don't say 'perfect.'" (interview, Doug)
+                    - listitem [ref=e189]:
+                      - strong [ref=e190]: amazing
+                      - text: — "We don't say 'amazing.'" (interview, Doug)
+                    - listitem [ref=e191]:
+                      - strong [ref=e192]: luxury
+                      - text: — "We don't say 'luxury.'" (interview, Doug)
+                    - listitem [ref=e193]:
+                      - strong [ref=e194]: unique / one-of-a-kind
+                      - text: — "Every venue is unique in some way and the word means nothing." (interview, Doug)
+                    - listitem [ref=e195]:
+                      - strong [ref=e196]: world-class / top-notch
+                      - text: — generic praise, in the brand voice draft's banned list and absent from founder speech. (audit)
+                    - listitem [ref=e197]:
+                      - strong [ref=e198]: elevate
+                      - text: — flagged on two pages by audit; not in founder vocabulary. (audit)
+                    - listitem [ref=e199]:
+                      - strong [ref=e200]: seamlessly
+                      - text: — flagged on two pages; performance language, contradicts "less performance." (audit; interview)
+                    - listitem [ref=e201]:
+                      - strong [ref=e202]: transform
+                      - text: — flagged on two pages; promises a feeling instead of describing a thing. (audit)
+                    - listitem [ref=e203]:
+                      - strong [ref=e204]: destination wedding
+                      - text: "— explicitly disclaimed: \"They want a destination *feeling* but they want it within a two-hour drive of their apartment.\" (interview, Doug)"
+                  - paragraph
+              - group [ref=e205]:
+                - generic "▸ Sample headlines" [ref=e206] [cursor=pointer]:
+                  - text: ▸
+                  - heading "Sample headlines" [level=2] [ref=e207]
+                - generic [ref=e208]:
+                  - paragraph [ref=e209]: Ten headlines in the synthesized voice. Concrete nouns, real numbers, no superlatives.
+                  - list [ref=e210]:
+                    - listitem [ref=e211]: One wedding a weekend. Not three. The day is yours.
+                    - listitem [ref=e212]: A 1740 farmhouse, three greenhouses, and a long table under the glass.
+                    - listitem [ref=e213]: Three properties in the Hudson Valley. Each with its own weather.
+                    - listitem [ref=e214]: Two hours from the city. About as far from a wedding factory as you can get.
+                    - listitem [ref=e215]: The fireplace is a working fireplace. The lamb is from down the road.
+                    - listitem [ref=e216]: Bring the dog. Bring the college friends. Take Old Mill for the weekend.
+                    - listitem [ref=e217]: Sixteen of us. We answer the phone. Emily knows your name by Friday night.
+                    - listitem [ref=e218]: Smaller weddings, off-season, at Friends and Neighbors. December through April.
+                    - listitem [ref=e219]: Nineteen guest rooms, one greenhouse, one weekend that's only yours.
+                    - listitem [ref=e220]: We don't have a wedding package. Every couple gets the same coordination.
+                  - paragraph
+              - group [ref=e221]:
+                - generic "▸ Voice do's and don'ts" [ref=e222] [cursor=pointer]:
+                  - text: ▸
+                  - heading "Voice do's and don'ts" [level=2] [ref=e223]
+                - generic [ref=e224]:
+                  - strong [ref=e225]: "Do:"
+                  - list [ref=e226]:
+                    - listitem [ref=e227]:
+                      - strong [ref=e228]: Name the thing.
+                    - listitem [ref=e229]: "Don't: \"Our charming bridal suite offers a unique getting-ready experience.\""
+                    - listitem [ref=e230]: "Do: \"If you'd rather get ready in the kitchen, you can. People do.\""
+                    - listitem [ref=e231]:
+                      - strong [ref=e232]: Use real numbers.
+                    - listitem [ref=e233]: "Don't: \"Our spacious main venue accommodates large gatherings.\""
+                    - listitem [ref=e234]: "Do: \"3,000 square feet under glass. Up to 150 seated.\""
+                    - listitem [ref=e235]:
+                      - strong [ref=e236]: Tell people who we aren't for.
+                    - listitem [ref=e237]: "Don't: \"Perfect for every couple's dream wedding.\""
+                    - listitem [ref=e238]: "Do: \"If you want 200 guests on-site at the Greenhouses, we're not the right place. Friends and Neighbors might be.\""
+                    - listitem [ref=e239]:
+                      - strong [ref=e240]: Use the team's first names.
+                    - listitem [ref=e241]: "Don't: \"Our experienced coordinators will guide you through the process.\""
+                    - listitem [ref=e242]: "Do: \"Emily runs your wedding from the day you book until the day after.\""
+                    - listitem [ref=e243]:
+                      - strong [ref=e244]: Write like a postcard.
+                    - listitem [ref=e245]: "Don't: \"Experience the unparalleled beauty of our seasonal floral installations.\""
+                    - listitem [ref=e246]: "Do: \"The geraniums in the corner of the greenhouse are still the original ones.\""
+                  - strong [ref=e247]: "Don't:"
+                  - list [ref=e248]:
+                    - listitem [ref=e249]:
+                      - strong [ref=e250]: Don't promise feelings.
+                    - listitem [ref=e251]: "Avoid: \"An unforgettable, magical day.\""
+                    - listitem [ref=e252]: Replace with the things that produce the feeling — the fireplace, the table, the candles, the dog.
+                    - listitem [ref=e253]:
+                      - strong [ref=e254]: Don't use industry jargon.
+                    - listitem [ref=e255]: "Avoid: \"Turnkey wedding packages with seamless vendor coordination.\""
+                    - listitem [ref=e256]: "Replace with plain English: \"We coordinate every wedding ourselves. There aren't tiers.\""
+                    - listitem [ref=e257]:
+                      - strong [ref=e258]: Don't stack adjectives.
+                    - listitem [ref=e259]: "Avoid: \"A stunning, elegant, charming, rustic, unforgettable venue.\""
+                    - listitem [ref=e260]: "Replace with one specific noun: \"A c. 1740 farmhouse on a former flower nursery.\""
+                    - listitem [ref=e261]:
+                      - strong [ref=e262]: Don't claim uniqueness.
+                    - listitem [ref=e263]: "Avoid: \"A truly one-of-a-kind venue.\""
+                    - listitem [ref=e264]: "Replace with the actual differentiator: \"One wedding a weekend. Three properties, each different.\""
+                    - listitem [ref=e265]:
+                      - strong [ref=e266]: Don't hide behind "we."
+                    - listitem [ref=e267]: "Avoid: \"Our team is dedicated to your event.\""
+                    - listitem [ref=e268]: "Replace with names: \"Sally, Doug, Emily, and Michael. Sixteen of us when you count the rest of the team.\""
+                  - paragraph
+              - group [ref=e269]:
+                - generic "▸ Audience profile" [ref=e270] [cursor=pointer]:
+                  - text: ▸
+                  - heading "Audience profile" [level=2] [ref=e271]
+                - generic [ref=e272]:
+                  - paragraph [ref=e273]:
+                    - text: Pulled from Sally and Doug's description in the interview. Two distinct jobs-to-be-done.
+                    - strong [ref=e274]: Primary segment — wedding couples
+                  - list [ref=e275]:
+                    - listitem [ref=e276]: "*Profile:* 30–38 years old, household income roughly $200K–$500K, almost always from NYC metro, occasionally Boston or Philly, together 5–10 years, often in creative or design-adjacent fields — \"architects, editors, brand people, a lot of people in food.\" (interview, Sally)"
+                    - listitem [ref=e277]: "*Functional JTBD:* Host a wedding for ~80–150 guests within a two-hour drive of the city, with on-site lodging for at least the immediate party."
+                    - listitem [ref=e278]: "*Emotional JTBD:* Feel that the day is theirs and not a template. \"That nothing about the day felt like a wedding-industrial-complex transaction.\" (interview, Sally)"
+                    - listitem [ref=e279]: "*Social JTBD:* Have guests ask, \"where did you find this place?\" (interview, Sally)"
+                    - listitem [ref=e280]: "*Trigger event:* \"They've toured a couple of 'wedding factories' and felt sick. They've seen the day-of-week pricing tier sheet and the sign that says 'no candles' and the dance floor that obviously gets reused, and they want out.\" (interview, Sally)"
+                    - listitem [ref=e281]: "*Alternatives considered:* Hutton Brickyards, Roxbury Barn (named in interview), generic Hudson Valley barn venues, destination weddings."
+                    - listitem [ref=e282]: "*Key vocabulary they use:* \"wedding factory,\" \"destination feeling,\" \"two-hour drive\" (all from interview)."
+                  - strong [ref=e283]: Secondary segment — lodging guests
+                  - list [ref=e284]:
+                    - listitem [ref=e285]: "*Profile:* Couples and small groups, 30–50, NYC, often bringing a dog (\"probably a third of our lodging bookings mention bringing a dog\" — interview, Emily)."
+                    - listitem [ref=e286]: "*Functional JTBD:* Find a house for a weekend trip that sleeps a group, allows pets, and isn't an Airbnb."
+                    - listitem [ref=e287]: "*Emotional JTBD:* \"Airbnb fatigue is real. People want a place that's run by humans they can text.\" (interview, Emily)"
+                    - listitem [ref=e288]: "*Trigger event:* A friend's birthday weekend, an anniversary, a small reunion, or having attended a wedding at the property and wanting to come back as a guest. (interview, Sally — \"I want guests to leave a wedding here, go home, look us up, and book a long weekend stay.\")"
+                    - listitem [ref=e289]: "*Search vocabulary:* \"house rental Hudson Valley dog friendly\" (interview, Emily, near-verbatim)."
+                  - paragraph
+                  - paragraph [ref=e290]:
+                    - text: "*Confidence note:* Both segments are sourced only from the founder interview (single source). Per the skill's guardrails, this is"
+                    - strong [ref=e291]: Medium confidence
+                    - text: — the founders see thousands of inquiries a year, but we have no direct customer-side data points to triangulate. Mined public reviews returned no usable verbatims (see Confidence notes below).
+              - group [ref=e292]:
+                - generic "▸ Content type guidance" [ref=e293] [cursor=pointer]:
+                  - text: ▸
+                  - heading "Content type guidance" [level=2] [ref=e294]
+                - generic [ref=e295]:
+                  - strong [ref=e296]: Homepage hero
+                  - list [ref=e297]:
+                    - listitem [ref=e298]: One sentence, concrete nouns, geographic anchor. No adjectives ending in -ing.
+                    - listitem [ref=e299]: "*Pattern:* \"[Specific thing] in [specific place]. [What you do here].\""
+                    - listitem [ref=e300]: "*Example:* \"A 1740 farmhouse and three glass greenhouses in Wallkill, New York. We host one wedding a weekend.\""
+                  - strong [ref=e301]: Inquiry form
+                  - list [ref=e302]:
+                    - listitem [ref=e303]: Treat it like a conversation, not a CRM intake. Match Emily's voice.
+                    - listitem [ref=e304]: "*Intro line:* \"Tell us a little. Emily reads every one of these and writes back the same day.\""
+                    - listitem [ref=e305]: "*Field framing:* \"Roughly when?\" not \"Preferred Event Date (MM/DD/YYYY) (required).\""
+                    - listitem [ref=e306]: "Set expectations on next steps in plain English: \"We'll send a packet with pricing and what's included. If it's a fit, we'll set up a tour.\""
+                  - strong [ref=e307]: Email auto-reply (post-inquiry)
+                  - list [ref=e308]:
+                    - listitem [ref=e309]: Signed by a real person (Emily).
+                    - listitem [ref=e310]: Confirms what's coming and when. No corporate "thank you for reaching out."
+                    - listitem [ref=e311]: "*Example opener:* \"Thanks — got it. I'll write back today or tomorrow with a packet and a few times for a tour. — Emily\""
+                  - strong [ref=e312]: Instagram caption
+                  - list [ref=e313]:
+                    - listitem [ref=e314]: One observation, one detail, one credit.
+                    - listitem [ref=e315]: "*Pattern:* \"[Sensory detail from the day]. [One specific thing — the food, the flowers, the light]. [Photographer credit.]\""
+                    - listitem [ref=e316]: "*Example:* \"Long table under the glass on Saturday. Lamb shoulder from the farm down the road, geraniums from the corner of the greenhouse. Photo by Kate Edwards.\""
+                  - strong [ref=e317]: FAQ entry
+                  - list [ref=e318]:
+                    - listitem [ref=e319]: Question in the way a guest would ask it. Answer in two to four sentences. End with what to do next if they want more.
+                    - listitem [ref=e320]:
+                      - text: "*Example:*"
+                      - strong [ref=e321]: "\"Can we have a campfire?\""
+                      - text: Yes, at Old Mill and Friends and Neighbors — not at the Greenhouses (the glass and the candles are enough). We light it, we stock it, and we put it out before bed. If you want s'mores, tell Emily a week out and she'll have the kit ready.
+                  - paragraph
+              - group [ref=e322]:
+                - generic "▸ Money quotes bank" [ref=e323] [cursor=pointer]:
+                  - text: ▸
+                  - heading "Money quotes bank" [level=2] [ref=e324]
+                - generic [ref=e325]:
+                  - paragraph [ref=e326]: Verbatim from the founder interview (the only first-person source available — see Confidence notes). Use these directly in copy, sales packets, and tone training for any writer working on the rebuild.
+                  - list [ref=e327]:
+                    - listitem [ref=e328]: "\"We have one wedding a weekend in season. Not three. Not a Friday-Saturday-Sunday turnover. One. The day is theirs.\" — Doug (interview)"
+                    - listitem [ref=e329]: "\"We try to write like we would write a postcard from a friend who just stayed there.\" — Sally (interview)"
+                    - listitem [ref=e330]: "\"Magic is a word that gets used by people trying to sell you something.\" — Doug (interview)"
+                    - listitem [ref=e331]: "\"Less performance. More honesty.\" — Doug (interview)"
+                    - listitem [ref=e332]: "\"What would we want at our own wedding? And the answer was always: less of that, more of this.\" — Sally (interview)"
+                    - listitem [ref=e333]: "\"They've toured a couple of 'wedding factories' and felt sick.\" — Sally (interview)"
+                    - listitem [ref=e334]: "\"They want a destination *feeling* but they want it within a two-hour drive of their apartment.\" — Doug (interview)"
+                    - listitem [ref=e335]: "\"The greenhouse smells like the geraniums in the corner. The fireplace is a working fireplace, not a fake one.\" — Sally (interview)"
+                    - listitem [ref=e336]: "\"Sally and Doug aren't a brand. We are people. We answer the phone.\" — Sally (interview)"
+                    - listitem [ref=e337]: "\"Airbnb fatigue is real. People want a place that's run by humans they can text.\" — Emily (interview)"
+                    - listitem [ref=e338]: "\"Emily knows everyone's names by Friday night. The bartenders ask the parents about their drive up. The chef walks through the dining room during dinner to see how it's going.\" — Sally (interview)"
+                    - listitem [ref=e339]: "\"Nostalgic design with a modern approach.\" — Sally (interview, the line they already use internally)"
+                  - paragraph
+              - group [ref=e340]:
+                - generic "▸ Confidence notes" [ref=e341] [cursor=pointer]:
+                  - text: ▸
+                  - heading "Confidence notes" [level=2] [ref=e342]
+                - generic [ref=e343]:
+                  - paragraph [ref=e344]:
+                    - text: Per the customer-research skill's guardrails (High = 3+ independent sources, Medium = 2 sources or limited segment, Low = single source).
+                    - strong [ref=e345]: High confidence
+                  - list [ref=e346]:
+                    - listitem [ref=e347]:
+                      - text: "*Banned/avoid word list.* \"Magical,\" \"stunning,\" \"unforgettable,\" \"perfect,\" \"amazing,\" \"luxury,\" \"unique,\" \"world-class\" are explicitly rejected by the founders"
+                      - strong [ref=e348]: and
+                      - text: flagged in the audit's "Banned marketing language detected" finding
+                      - strong [ref=e349]: and
+                      - text: present in the brand voice draft's banned list. Three independent sources agree.
+                    - listitem [ref=e350]: "*The \"specific over superlative\" tone principle.* Stated repeatedly across both Sally and Doug in the interview, and structurally supported by the"
+                  - paragraph
+            - navigation "Document outline" [ref=e351]:
+              - generic [ref=e352]: On this page
+              - list [ref=e353]:
+                - listitem [ref=e354]:
+                  - link "Voice in three words" [ref=e355] [cursor=pointer]:
+                    - /url: "#voice-in-three-words"
+                - listitem [ref=e356]:
+                  - link "What the brand sounds like now" [ref=e357] [cursor=pointer]:
+                    - /url: "#what-the-brand-sounds-like-now"
+                - listitem [ref=e358]:
+                  - link "What it should sound like" [ref=e359] [cursor=pointer]:
+                    - /url: "#what-it-should-sound-like"
+                - listitem [ref=e360]:
+                  - link "Tone guidelines" [ref=e361] [cursor=pointer]:
+                    - /url: "#tone-guidelines"
+                - listitem [ref=e362]:
+                  - link "Word choices" [ref=e363] [cursor=pointer]:
+                    - /url: "#word-choices"
+                - listitem [ref=e364]:
+                  - link "Sample headlines" [ref=e365] [cursor=pointer]:
+                    - /url: "#sample-headlines"
+                - listitem [ref=e366]:
+                  - link "Voice do's and don'ts" [ref=e367] [cursor=pointer]:
+                    - /url: "#voice-dos-and-donts"
+                - listitem [ref=e368]:
+                  - link "Audience profile" [ref=e369] [cursor=pointer]:
+                    - /url: "#audience-profile"
+                - listitem [ref=e370]:
+                  - link "Content type guidance" [ref=e371] [cursor=pointer]:
+                    - /url: "#content-type-guidance"
+                - listitem [ref=e372]:
+                  - link "Money quotes bank" [ref=e373] [cursor=pointer]:
+                    - /url: "#money-quotes-bank"
+                - listitem [ref=e374]:
+                  - link "Confidence notes" [ref=e375] [cursor=pointer]:
+                    - /url: "#confidence-notes"
+        - group [ref=e376]:
+          - generic "FAQ Bank" [ref=e377] [cursor=pointer]:
+            - generic [ref=e378]: FAQ Bank
+            - generic [ref=e379]: ›
+          - text: ▸ ▸ ▸ ▸ ▸ ▸ ▸ ▸ ▸ ▸ ▸
+        - group [ref=e380]:
+          - generic "Overrides" [ref=e381] [cursor=pointer]:
+            - generic [ref=e382]: Overrides
+            - generic [ref=e383]: ›
+          - text: ▸ ▸ ▸ ▸ ▸ ▸ ▸ ▸ ▸
+        - group [ref=e384]:
+          - generic "Asset Gaps" [ref=e385] [cursor=pointer]:
+            - generic [ref=e386]: Asset Gaps
+            - generic [ref=e387]: ›
+          - text: ▸ ▸ ▸ ▸
+  - generic [ref=e390]:
+    - button "Menu" [ref=e391]:
+      - img [ref=e393]
+      - generic: Menu
+    - button "Inspect" [ref=e397]:
+      - img [ref=e399]
+      - generic: Inspect
+    - button "Audit" [ref=e401]:
+      - img [ref=e403]
+      - generic: Audit
+    - button "Settings" [ref=e406]:
+      - img [ref=e408]
+      - generic: Settings

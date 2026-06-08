@@ -1,0 +1,26 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - heading "Let's fill in a few details — Little Friends Learning Loft" [level=1] [ref=e4]
+      - paragraph [ref=e5]: A short chat. Answer what you can; skip anything that isn't a fit. Your answers save as we go.
+    - generic [ref=e6]:
+      - text: Prefer a form? The
+      - link "question list" [ref=e7] [cursor=pointer]:
+        - /url: /deliverables/littlefriends/interview?token=Wp6-YR-pWj7Ch51XlkFXFrP1gRnxvguL
+      - text: still works.
+  - generic [ref=e9]:
+    - textbox "Type your answer…" [ref=e10]
+    - button "Send" [disabled] [ref=e11]
+  - generic [ref=e14]:
+    - button "Menu" [ref=e15]:
+      - img [ref=e17]
+      - generic: Menu
+    - button "Inspect" [ref=e21]:
+      - img [ref=e23]
+      - generic: Inspect
+    - button "Audit" [ref=e25]:
+      - img [ref=e27]
+      - generic: Audit
+    - button "Settings" [ref=e30]:
+      - img [ref=e32]
+      - generic: Settings

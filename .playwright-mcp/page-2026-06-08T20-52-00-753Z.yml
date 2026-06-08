@@ -1,0 +1,190 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - navigation [ref=e13]:
+        - generic [ref=e14]: This client
+        - generic "Audrey's Farmhouse" [ref=e15]
+        - link "Overview" [ref=e16] [cursor=pointer]:
+          - /url: /clients/audreys
+          - generic [ref=e18]: Overview
+        - link "Intake" [ref=e19] [cursor=pointer]:
+          - /url: /clients/audreys/intake
+          - generic [ref=e21]: Intake
+        - link "Audit" [ref=e22] [cursor=pointer]:
+          - /url: /clients/audreys/audit
+          - generic [ref=e24]: Audit
+        - link "Clone Fidelity" [ref=e25] [cursor=pointer]:
+          - /url: /clients/audreys/clone-fidelity
+          - generic [ref=e27]: Clone Fidelity
+        - link "Brand Voice" [ref=e28] [cursor=pointer]:
+          - /url: /clients/audreys/voice
+          - generic [ref=e30]: Brand Voice
+        - link "Design Brief" [ref=e31] [cursor=pointer]:
+          - /url: /clients/audreys/design-brief
+          - generic [ref=e33]: Design Brief
+        - link "Site Preview" [ref=e34] [cursor=pointer]:
+          - /url: /clients/audreys/site
+          - generic [ref=e36]: Site Preview
+        - link "Fixes Plan" [ref=e37] [cursor=pointer]:
+          - /url: /clients/audreys/fixes
+          - generic [ref=e39]: Fixes Plan
+        - link "QA Report" [ref=e40] [cursor=pointer]:
+          - /url: /clients/audreys/qa
+          - generic [ref=e42]: QA Report
+        - link "Launch Checklist" [ref=e43] [cursor=pointer]:
+          - /url: /clients/audreys/launch-checklist
+          - generic [ref=e45]: Launch Checklist
+        - link "Export Audit" [ref=e46] [cursor=pointer]:
+          - /url: /deliverables/audreys
+          - generic [ref=e48]: Export Audit
+        - link "Export Brief" [ref=e49] [cursor=pointer]:
+          - /url: /deliverables/audreys/design-brief
+          - generic [ref=e51]: Export Brief
+        - link "Share Links" [ref=e52] [cursor=pointer]:
+          - /url: /clients/audreys/share
+          - generic [ref=e54]: Share Links
+      - generic [ref=e56]: v0.1.0
+    - main [ref=e57]:
+      - generic [ref=e58]:
+        - link "Clients" [ref=e59] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e60]: /
+        - link "Audrey's Farmhouse" [ref=e61] [cursor=pointer]:
+          - /url: /clients/audreys
+        - generic [ref=e62]: /
+        - generic [ref=e63]: Site Preview
+      - generic [ref=e64]:
+        - generic [ref=e65]:
+          - text: Site Preview
+          - heading "Audrey's Farmhouse" [level=1] [ref=e66]
+          - paragraph [ref=e67]:
+            - text: Cloned site at
+            - link "http://localhost:4322/" [ref=e68] [cursor=pointer]:
+              - /url: http://localhost:4322/
+            - generic [ref=e69]: live
+        - link "Open in new tab" [ref=e71] [cursor=pointer]:
+          - /url: http://localhost:4322/
+          - text: Open in new tab
+          - img [ref=e72]
+      - iframe [ref=e76]:
+        - generic [active] [ref=f2e1]:
+          - generic [ref=f2e2]:
+            - complementary [ref=f2e3]:
+              - link "Upriver" [ref=f2e4] [cursor=pointer]:
+                - /url: /clients
+                - img [ref=f2e5]
+                - generic [ref=f2e8]: Upriver
+              - navigation [ref=f2e9]:
+                - generic [ref=f2e10]: Navigation
+                - link "Clients" [ref=f2e11] [cursor=pointer]:
+                  - /url: /clients
+                - link "Deliverables" [ref=f2e12] [cursor=pointer]:
+                  - /url: /deliverables
+              - generic [ref=f2e14]: v0.1.0
+            - main [ref=f2e15]:
+              - generic:
+                - text: Upriver Dashboard
+                - heading "Clients" [level=1]
+                - paragraph: 3 of 3 clients in the pipeline
+              - generic:
+                - searchbox "Search clients" [ref=f2e16]
+                - tablist "Pipeline phase" [ref=f2e17]:
+                  - button "All" [ref=f2e18] [cursor=pointer]
+                  - button "Discover" [ref=f2e19] [cursor=pointer]
+                  - button "Audit" [ref=f2e20] [cursor=pointer]
+                  - button "Design" [ref=f2e21] [cursor=pointer]
+                  - button "Build" [ref=f2e22] [cursor=pointer]
+                  - button "QA" [ref=f2e23] [cursor=pointer]
+                  - button "Launch" [ref=f2e24] [cursor=pointer]
+              - table [ref=f2e26]:
+                - rowgroup [ref=f2e27]:
+                  - row "Client Platform Stage Score P0 P1 P2 Created" [ref=f2e28]:
+                    - columnheader "Client" [ref=f2e29]
+                    - columnheader "Platform" [ref=f2e30]
+                    - columnheader "Stage" [ref=f2e31]
+                    - columnheader "Score" [ref=f2e32]
+                    - columnheader "P0" [ref=f2e33]
+                    - columnheader "P1" [ref=f2e34]
+                    - columnheader "P2" [ref=f2e35]
+                    - columnheader "Created" [ref=f2e36]
+                - rowgroup [ref=f2e37]:
+                  - row "Little Friends Learning Loft https://littlefriendslearningloft.com — init — 0 0 0 Jun 3, 2026" [ref=f2e38]:
+                    - cell "Little Friends Learning Loft https://littlefriendslearningloft.com" [ref=f2e39]:
+                      - generic [ref=f2e40]:
+                        - link "Little Friends Learning Loft" [ref=f2e41] [cursor=pointer]:
+                          - /url: /clients/littlefriends
+                        - generic [ref=f2e42]: https://littlefriendslearningloft.com
+                    - cell "—" [ref=f2e43]
+                    - cell "init" [ref=f2e44]:
+                      - generic [ref=f2e45]: init
+                    - cell "—" [ref=f2e46]
+                    - cell "0" [ref=f2e47]
+                    - cell "0" [ref=f2e48]
+                    - cell "0" [ref=f2e49]
+                    - cell "Jun 3, 2026" [ref=f2e50]
+                  - row "Audrey's Farmhouse https://audreysfarmhouse.com squarespace launch — 0 0 0 Apr 24, 2026" [ref=f2e51]:
+                    - cell "Audrey's Farmhouse https://audreysfarmhouse.com" [ref=f2e52]:
+                      - generic [ref=f2e53]:
+                        - link "Audrey's Farmhouse" [ref=f2e54] [cursor=pointer]:
+                          - /url: /clients/audreys
+                        - generic [ref=f2e55]: https://audreysfarmhouse.com
+                    - cell "squarespace" [ref=f2e56]:
+                      - generic [ref=f2e57]: squarespace
+                    - cell "launch" [ref=f2e58]:
+                      - generic [ref=f2e59]: launch
+                    - cell "—" [ref=f2e60]
+                    - cell "0" [ref=f2e61]
+                    - cell "0" [ref=f2e62]
+                    - cell "0" [ref=f2e63]
+                    - cell "Apr 24, 2026" [ref=f2e64]
+                  - row "Audrey's Farmhouse https://audreysfarmhouse.com squarespace clone — 0 0 0 Apr 24, 2026" [ref=f2e65]:
+                    - cell "Audrey's Farmhouse https://audreysfarmhouse.com" [ref=f2e66]:
+                      - generic [ref=f2e67]:
+                        - link "Audrey's Farmhouse" [ref=f2e68] [cursor=pointer]:
+                          - /url: /clients/audreys
+                        - generic [ref=f2e69]: https://audreysfarmhouse.com
+                    - cell "squarespace" [ref=f2e70]:
+                      - generic [ref=f2e71]: squarespace
+                    - cell "clone" [ref=f2e72]:
+                      - generic [ref=f2e73]: clone
+                    - cell "—" [ref=f2e74]
+                    - cell "0" [ref=f2e75]
+                    - cell "0" [ref=f2e76]
+                    - cell "0" [ref=f2e77]
+                    - cell "Apr 24, 2026" [ref=f2e78]
+          - generic [ref=f2e81]:
+            - button "Menu" [ref=f2e82]:
+              - img [ref=f2e84]
+              - generic: Menu
+            - button "Inspect" [ref=f2e88]:
+              - img [ref=f2e90]
+              - generic: Inspect
+            - button "Audit" [ref=f2e92]:
+              - img [ref=f2e94]
+              - generic: Audit
+            - button "Settings" [ref=f2e97]:
+              - img [ref=f2e99]
+              - generic: Settings
+  - generic [ref=e79]:
+    - button "Menu" [ref=e80]:
+      - img [ref=e82]
+      - generic: Menu
+    - button "Inspect" [ref=e86]:
+      - img [ref=e88]
+      - generic: Inspect
+    - button "Audit" [ref=e90]:
+      - img [ref=e92]
+      - generic: Audit
+    - button "Settings" [ref=e95]:
+      - img [ref=e97]
+      - generic: Settings

@@ -1,0 +1,146 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - navigation [ref=e13]:
+        - generic [ref=e14]: This client
+        - generic "Audrey's Farmhouse" [ref=e15]
+        - link "Overview" [ref=e16] [cursor=pointer]:
+          - /url: /clients/audreys
+          - generic [ref=e18]: Overview
+        - link "Intake" [ref=e19] [cursor=pointer]:
+          - /url: /clients/audreys/intake
+          - generic [ref=e21]: Intake
+        - link "Audit" [ref=e22] [cursor=pointer]:
+          - /url: /clients/audreys/audit
+          - generic [ref=e24]: Audit
+        - link "Clone Fidelity" [ref=e25] [cursor=pointer]:
+          - /url: /clients/audreys/clone-fidelity
+          - generic [ref=e27]: Clone Fidelity
+        - link "Brand Voice" [ref=e28] [cursor=pointer]:
+          - /url: /clients/audreys/voice
+          - generic [ref=e30]: Brand Voice
+        - link "Design Brief" [ref=e31] [cursor=pointer]:
+          - /url: /clients/audreys/design-brief
+          - generic [ref=e33]: Design Brief
+        - link "Site Preview" [ref=e34] [cursor=pointer]:
+          - /url: /clients/audreys/site
+          - generic [ref=e36]: Site Preview
+        - link "Fixes Plan" [ref=e37] [cursor=pointer]:
+          - /url: /clients/audreys/fixes
+          - generic [ref=e39]: Fixes Plan
+        - link "QA Report" [ref=e40] [cursor=pointer]:
+          - /url: /clients/audreys/qa
+          - generic [ref=e42]: QA Report
+        - link "Launch Checklist" [ref=e43] [cursor=pointer]:
+          - /url: /clients/audreys/launch-checklist
+          - generic [ref=e45]: Launch Checklist
+        - link "Export Audit" [ref=e46] [cursor=pointer]:
+          - /url: /deliverables/audreys
+          - generic [ref=e48]: Export Audit
+        - link "Export Brief" [ref=e49] [cursor=pointer]:
+          - /url: /deliverables/audreys/design-brief
+          - generic [ref=e51]: Export Brief
+        - link "Share Links" [ref=e52] [cursor=pointer]:
+          - /url: /clients/audreys/share
+          - generic [ref=e54]: Share Links
+      - generic [ref=e56]: v0.1.0
+    - main [ref=e57]:
+      - generic [ref=e58]:
+        - link "Clients" [ref=e59] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e60]: /
+        - link "Audrey's Farmhouse" [ref=e61] [cursor=pointer]:
+          - /url: /clients/audreys
+        - generic [ref=e62]: /
+        - generic [ref=e63]: QA Report
+      - generic [ref=e65]:
+        - text: QA Report
+        - heading "Audrey's Farmhouse" [level=1] [ref=e66]
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - generic [ref=e69]:
+            - heading "QA report — Audrey's Farmhouse" [level=1] [ref=e70]
+            - paragraph [ref=e71]:
+              - text: "Generated: 2026-04-27 Slug:"
+              - code [ref=e72]: audreys
+              - text: "Source site: https://audreysfarmhouse.com Preview URL: https://audreysfarmhouse.com Scope: scope doc (31 finding(s))"
+              - strong [ref=e73]: "Score:"
+              - text: 72/100 → 63/100 (-9)
+            - paragraph [ref=e74]: "| Bucket | Count | |--------|-------| | In-scope fixed | 8 | | In-scope still open | 23 | | New issues introduced | 13 | | Out-of-scope still open (for reference) | 5 |"
+          - group [ref=e75]:
+            - generic "▸ In-scope items fixed" [ref=e76] [cursor=pointer]:
+              - text: ▸
+              - heading "In-scope items fixed" [level=2] [ref=e77]
+            - paragraph [ref=e79]: "| ID | Priority | Dimension | Title | |----|----------|-----------|-------| | seo-006 | P0 | seo | Indexation blocked: noindex meta tag | | content-011 | P1 | content | Images missing alt text | | design-012 | P1 | design | Inconsistent CTA copy (32 variations) | | local-029 | P1 | local | Inconsistent phone numbers across pages | | local-030 | P1 | local | Inconsistent address formats across pages | | schema-025 | P1 | schema | FAQ content present but no FAQPage schema markup | | schema-027 | P1 | schema | Testimonials present but no Review/AggregateRating schema | | seo-007 | P1 | seo | Duplicate title tags across pages |"
+          - group [ref=e80]:
+            - generic "▸ In-scope items still open" [ref=e81] [cursor=pointer]:
+              - text: ▸
+              - heading "In-scope items still open" [level=2] [ref=e82]
+            - paragraph [ref=e84]: "| ID | Priority | Dimension | Title | Why it still matters | |----|----------|-----------|-------|----------------------| | sales-014 | P0 | sales | Missing: Pricing or packages page | Every missing page is a prospect who hit a dead end and called a competitor instead. | | sales-016 | P0 | sales | Missing: Contact or inquiry page | Every missing page is a prospect who hit a dead end and called a competitor instead. | | seo-002 | P0 | seo | Pages missing title tags | Title tags are the single most important on-page SEO element. Missing titles mean Google writes its own — usually worse. | | seo-005 | P0 | seo | No analytics tool detected | Without analytics, every decision about the site is based on guesswork. This is the single most important tracking gap … | | aeo-028 | P1 | aeo | Low conversational language density — poor voice search and AI search readiness | Voice search queries are 3-5x longer and more conversational than typed queries. Conversational content captures both v… | | backlinks-033 | P1 | backlinks | Backlink profile not analyzed — Ahrefs API key not configured | Backlink authority is a top-3 Google ranking factor. Sites with more referring domains from quality sources consistentl… | | competitors-035 | P1 | competitors | No competitors defined in client configuration | Knowing what your top 3 competitors do better (more pages, better pricing page, more reviews) is the fastest route to i… | | competitors-036 | P1 | competitors | No virtual tour — increasingly standard among competing venues | Post-pandemic, couples expect to do significant venue research remotely. Competitors with virtual tours capture couples… | | competitors-039 | P1 | competitors | Only 4 testimonials — competing venues typically show 20+ | Top-performing venue websites display 20-50 testimonials. Social proof volume matters — more reviews = more trust. | | content-008 | P1 | content | Banned marketing language detected | Vague superlatives are invisible to readers — they've been trained to skip them. Specific claims are memorable and cred… | | content-010 | P1 | content | Thin content pages | 3 pages have fewer than 150 words of content — not enough to answer a visitor's questions or rank well. | | links-021 | P1 | links | 32 orphaned pages with no internal links pointing to them | Orphaned pages receive no PageRank flow and may be deindexed over time. They also represent wasted content investment. | | links-023 | P1 | links | Homepage has very few internal links | The homepage links to only 0 internal pages. A venue site should link to all major sections from the homepage. | | local-031 | P1 | local | No Google Business Profile link or embed detected | A Google Maps embed on the contact page directly increases the likelihood of appearing in Google's local 3-pack for ven… | | local-032 | P1 | local | Missing links to 6 major wedding/local directories | Each quality citation (consistent NAP on a reputable directory) is a local ranking signal. Wedding-specific directories… | | sales-013 | P1 | sales | Missing: Dedicated venue space pages | Every missing page is a prospect who hit a dead end and called a competitor instead. | | sales-015 | P1 | sales | Missing: FAQ page | Every missing page is a prospect who hit a dead end and called a competitor instead. | | sales-017 | P1 | sales | Missing: About page | Every missing page is a prospect who hit a dead end and called a competitor instead. | | sales-020 | P1 | sales | No review platform badges visible | Third-party review badges convert better than testimonials written on the site itself — they are perceived as unbiased. | | schema-024 | P1 | schema | LocalBusiness schema missing required properties | Incomplete schema reduces the eligibility for rich results and knowledge panel features. | | seo-001 | P1 | seo | Missing canonical tags | Without canonical tags, search engines may index duplicate or near-duplicate versions of the same page, splitting ranki… | | seo-003 | P1 | seo | Pages missing H1 tags | 4 pages have no H1 heading, which weakens keyword signals for those pages. | | seo-004 | P1 | seo | Thin content pages (under 200 words) | Thin content pages can drag down the overall quality assessment of the entire site, not just the individual pages. |"
+          - group [ref=e85]:
+            - generic "▸ New issues introduced on the preview" [ref=e86] [cursor=pointer]:
+              - text: ▸
+              - heading "New issues introduced on the preview" [level=2] [ref=e87]
+            - paragraph [ref=e89]: "| Priority | Dimension | Title | Recommendation | |----------|-----------|-------|----------------| | P1 | content | Insufficient social proof on site | Add at least 6-8 attributed testimonials from real clients. Include name, event type, and ideally a photo. Place the strongest one above th… | | P1 | content | Low FAQ coverage | Build a dedicated FAQ page with at least 30-50 questions. Group by topic: venue spaces, catering, pricing, logistics, day-of details. | | P1 | design | No design tokens extracted | Re-run: upriver scrape --pages home | | P1 | sales | Missing: Photo gallery or real weddings | Create a dedicated page for photo gallery or real weddings. This is a required page for any wedding venue site. | | P1 | sales | Missing: Catering or food & beverage page | Create a dedicated page for catering or food & beverage page. This is a required page for any wedding venue site. | | P0 | sales | No CTAs detected on homepage | Add a primary CTA above the fold: \"Book a Tour\" or \"Check Availability.\" Make it the most visually prominent element after the headline. | | P0 | sales | No inquiry form detected | Add an inquiry form to a dedicated contact page and embed a short version on the homepage. Fields needed: name, email, event date, event ty… | | P0 | sales | Insufficient social proof for a high-consideration purchase | Add at least 6 specific, attributed testimonials. Show them on the homepage, on each venue space page, and on the contact page. | | P0 | aeo | Only 0 FAQ entries — far below what AI engines need to answer venue questions | Build a comprehensive FAQ section with at least 40 questions grouped by topic: pricing, capacity, catering, vendors, logistics, day-of time… | | P1 | aeo | Business address and phone number not clearly marked up — AI cannot identify the entity | Mark up the address and phone number using Schema.org JSON-LD and display it prominently in the footer of every page. | | P0 | local | No NAP (Name, Address, Phone) information detected on the site | Add the full business name, physical address, and primary phone number to the footer of every page. Use consistent formatting matching your… | | P0 | competitors | No individual venue space pages — significant competitive gap | Create a dedicated page for each venue space. Each page should include: photos, dimensions, capacity range, layout options (ceremony/recept… | | P1 | competitors | Site has only 8 pages — likely fewer than competing venues | Build out content to 20+ pages: individual venue spaces, real weddings, planning guides, vendor resources, local area guide, seasonal conte… |"
+          - group [ref=e90]:
+            - generic "▸ Out-of-scope items still open (for the next engagement)" [ref=e91] [cursor=pointer]:
+              - text: ▸
+              - heading "Out-of-scope items still open (for the next engagement)" [level=2] [ref=e92]
+            - generic [ref=e93]:
+              - paragraph [ref=e94]: These findings are open on the preview but were not included in the fixes scope.
+              - paragraph [ref=e95]: "| ID | Priority | Dimension | Title | |----|----------|-----------|-------| | backlinks-034 | P2 | backlinks | No wedding directory profiles linked — missing easy citation backlinks | | competitors-037 | P2 | competitors | No real weddings portfolio — common competitive differentiator | | links-022 | P2 | links | Most pages have very few internal links | | sales-018 | P2 | sales | Missing: Preferred vendors list | | sales-019 | P2 | sales | Missing: Local area or directions page |"
+          - group [ref=e96]:
+            - generic "▸ What to do next" [ref=e97] [cursor=pointer]:
+              - text: ▸
+              - heading "What to do next" [level=2] [ref=e98]
+            - generic [ref=e99]:
+              - list [ref=e100]:
+                - listitem [ref=e101]:
+                  - text: Re-run
+                  - code [ref=e102]: upriver fixes apply audreys --finding
+                  - text: for each in-scope item still open, or fix manually and re-run
+                  - code [ref=e103]: upriver qa audreys
+                  - text: .
+                - listitem [ref=e104]: Review new issues — these were introduced during the fixes pass. File a finding for each before merging.
+              - paragraph
+        - navigation "Document outline" [ref=e105]:
+          - generic [ref=e106]: On this page
+          - list [ref=e107]:
+            - listitem [ref=e108]:
+              - link "In-scope items fixed" [ref=e109] [cursor=pointer]:
+                - /url: "#in-scope-items-fixed"
+            - listitem [ref=e110]:
+              - link "In-scope items still open" [ref=e111] [cursor=pointer]:
+                - /url: "#in-scope-items-still-open"
+            - listitem [ref=e112]:
+              - link "New issues introduced on the preview" [ref=e113] [cursor=pointer]:
+                - /url: "#new-issues-introduced-on-the-preview"
+            - listitem [ref=e114]:
+              - link "Out-of-scope items still open (for the next engagement)" [ref=e115] [cursor=pointer]:
+                - /url: "#out-of-scope-items-still-open-for-the-next-engagement"
+            - listitem [ref=e116]:
+              - link "What to do next" [ref=e117] [cursor=pointer]:
+                - /url: "#what-to-do-next"
+  - generic [ref=e120]:
+    - button "Menu" [ref=e121]:
+      - img [ref=e123]
+      - generic: Menu
+    - button "Inspect" [ref=e127]:
+      - img [ref=e129]
+      - generic: Inspect
+    - button "Audit" [ref=e131]:
+      - img [ref=e133]
+      - generic: Audit
+    - button "Settings" [ref=e136]:
+      - img [ref=e138]
+      - generic: Settings

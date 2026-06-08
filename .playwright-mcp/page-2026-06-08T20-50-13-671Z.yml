@@ -1,0 +1,388 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - navigation [ref=e13]:
+        - generic [ref=e14]: This client
+        - generic "Audrey's Farmhouse" [ref=e15]
+        - link "Overview" [ref=e16] [cursor=pointer]:
+          - /url: /clients/audreys
+          - generic [ref=e18]: Overview
+        - link "Intake" [ref=e19] [cursor=pointer]:
+          - /url: /clients/audreys/intake
+          - generic [ref=e21]: Intake
+        - link "Audit" [ref=e22] [cursor=pointer]:
+          - /url: /clients/audreys/audit
+          - generic [ref=e24]: Audit
+        - link "Clone Fidelity" [ref=e25] [cursor=pointer]:
+          - /url: /clients/audreys/clone-fidelity
+          - generic [ref=e27]: Clone Fidelity
+        - link "Brand Voice" [ref=e28] [cursor=pointer]:
+          - /url: /clients/audreys/voice
+          - generic [ref=e30]: Brand Voice
+        - link "Design Brief" [ref=e31] [cursor=pointer]:
+          - /url: /clients/audreys/design-brief
+          - generic [ref=e33]: Design Brief
+        - link "Site Preview" [ref=e34] [cursor=pointer]:
+          - /url: /clients/audreys/site
+          - generic [ref=e36]: Site Preview
+        - link "Fixes Plan" [ref=e37] [cursor=pointer]:
+          - /url: /clients/audreys/fixes
+          - generic [ref=e39]: Fixes Plan
+        - link "QA Report" [ref=e40] [cursor=pointer]:
+          - /url: /clients/audreys/qa
+          - generic [ref=e42]: QA Report
+        - link "Launch Checklist" [ref=e43] [cursor=pointer]:
+          - /url: /clients/audreys/launch-checklist
+          - generic [ref=e45]: Launch Checklist
+        - link "Export Audit" [ref=e46] [cursor=pointer]:
+          - /url: /deliverables/audreys
+          - generic [ref=e48]: Export Audit
+        - link "Export Brief" [ref=e49] [cursor=pointer]:
+          - /url: /deliverables/audreys/design-brief
+          - generic [ref=e51]: Export Brief
+        - link "Share Links" [ref=e52] [cursor=pointer]:
+          - /url: /clients/audreys/share
+          - generic [ref=e54]: Share Links
+      - generic [ref=e56]: v0.1.0
+    - main [ref=e57]:
+      - generic [ref=e58]:
+        - link "Clients" [ref=e59] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e60]: /
+        - link "Audrey's Farmhouse" [ref=e61] [cursor=pointer]:
+          - /url: /clients/audreys
+        - generic [ref=e62]: /
+        - generic [ref=e63]: Launch Checklist
+      - generic [ref=e65]:
+        - text: Launch Checklist
+        - heading "Audrey's Farmhouse" [level=1] [ref=e66]
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - generic [ref=e69]:
+            - heading "Launch checklist — Audrey's Farmhouse" [level=1] [ref=e70]
+            - paragraph [ref=e71]:
+              - text: "Generated: 2026-04-27 Source site: https://audreysfarmhouse.com Apex hostname:"
+              - code [ref=e72]: audreysfarmhouse.com
+            - paragraph [ref=e73]:
+              - text: This checklist is
+              - strong [ref=e74]: human-driven
+              - text: . Upriver does not automate any step below. Tick items as you complete them. Assume one operator runs through this in a single sitting on cutover day; pre-launch items can be staged over the preceding days.
+            - separator [ref=e75]
+            - paragraph
+          - group [ref=e76]:
+            - generic "▸ Pre-launch (T-7 to T-1 days)" [ref=e77] [cursor=pointer]:
+              - text: ▸
+              - heading "Pre-launch (T-7 to T-1 days)" [level=2] [ref=e78]
+            - generic [ref=e79]:
+              - heading "DNS plan" [level=3] [ref=e80]
+              - list [ref=e81]:
+                - listitem [ref=e82]:
+                  - text: "[ ] Confirm current DNS registrar for"
+                  - code [ref=e83]: audreysfarmhouse.com
+                  - text: and verify access to the account.
+                - listitem [ref=e84]:
+                  - text: "[ ] Capture current DNS state: A / AAAA / CNAME / MX / TXT / NS records into"
+                  - code [ref=e85]: dns-baseline.txt
+                  - text: in this client folder.
+                - listitem [ref=e86]:
+                  - text: "[ ] Lower TTL on A / CNAME for apex and"
+                  - code [ref=e87]: www
+                  - text: to 300s at least 24h before cutover.
+                - listitem [ref=e88]: "[ ] Add Vercel project under the production domain and verify ownership TXT record."
+                - listitem [ref=e89]:
+                  - text: "[ ] Decide apex vs."
+                  - code [ref=e90]: www
+                  - text: ": which is canonical? (Recommended: apex redirects to"
+                  - code [ref=e91]: www
+                  - text: ", or vice versa — pick one and stick with it.)"
+                - listitem [ref=e92]:
+                  - text: "[ ] Document the planned target records (A record to Vercel IP"
+                  - code [ref=e93]: 76.76.21.21
+                  - text: or CNAME to
+                  - code [ref=e94]: cname.vercel-dns.com.
+                  - text: ) in a migration note.
+                - listitem [ref=e95]: "[ ] Confirm MX records will not be touched during the DNS change."
+              - heading "Redirect map" [level=3] [ref=e96]
+              - text: Every URL that currently ranks, appears in backlinks, or is linked from external content must resolve on the new site or return a 301 to the right destination. 33 pages captured during audit; top paths below.
+              - paragraph
+              - paragraph [ref=e97]:
+                - text: "| Old path | New path | Code | Verified | |----------|----------|------|----------| |"
+                - code [ref=e98]: /404
+                - text: "|"
+                - code [ref=e99]: /404
+                - text: "| 301 | _pending_ | |"
+                - code [ref=e100]: /careers
+                - text: "|"
+                - code [ref=e101]: /careers
+                - text: "| 301 | _pending_ | |"
+                - code [ref=e102]: /cart
+                - text: "|"
+                - code [ref=e103]: /cart
+                - text: "| 301 | _pending_ | |"
+                - code [ref=e104]: /catering
+                - text: "|"
+                - code [ref=e105]: /catering
+                - text: "| 301 | _pending_ | |"
+                - code [ref=e106]: /events
+                - text: "|"
+                - code [ref=e107]: /events
+                - text: "| 301 | _pending_ | |"
+                - code [ref=e108]: /fn-nav
+                - text: "|"
+                - code [ref=e109]: /fn-nav
+                - text: "| 301 | _pending_ | |"
+                - code [ref=e110]: /forgetpassword
+                - text: "|"
+                - code [ref=e111]: /forgetpassword
+                - text: "| 301 | _pending_ | |"
+                - code [ref=e112]: /friends-and-neighbors-events
+                - text: "|"
+                - code [ref=e113]: /friends-and-neighbors-events
+                - text: "| 301 | _pending_ | |"
+                - code [ref=e114]: /friends-and-neighbors-lodging
+                - text: "|"
+                - code [ref=e115]: /friends-and-neighbors-lodging
+                - text: "| 301 | _pending_ | |"
+                - code [ref=e116]: /friends-and-neighbors
+                - text: "|"
+                - code [ref=e117]: /friends-and-neighbors
+                - text: "| 301 | _pending_ | |"
+                - code [ref=e118]: /home
+                - text: "|"
+                - code [ref=e119]: /home
+                - text: "| 301 | _pending_ | |"
+                - code [ref=e120]: /hudson-valley
+                - text: "|"
+                - code [ref=e121]: /hudson-valley
+                - text: "| 301 | _pending_ | |"
+                - code [ref=e122]: /livingston-manor-fly-fishing-club-events
+                - text: "|"
+                - code [ref=e123]: /livingston-manor-fly-fishing-club-events
+                - text: "| 301 | _pending_ | |"
+                - code [ref=e124]: /livingston-manor-fly-fishing-club-lodging
+                - text: "|"
+                - code [ref=e125]: /livingston-manor-fly-fishing-club-lodging
+                - text: "| 301 | _pending_ | |"
+                - code [ref=e126]: /livingston-manor-fly-fishing-club-photoshoots
+                - text: "|"
+                - code [ref=e127]: /livingston-manor-fly-fishing-club-photoshoots
+                - text: "| 301 | _pending_ |"
+              - list [ref=e128]:
+                - listitem [ref=e129]:
+                  - text: "[ ] Fill in the"
+                  - code [ref=e130]: New path
+                  - text: column for every row. Any path that doesn't have a 1:1 successor gets a redirect to the closest topical match (never the homepage unless no match exists).
+                - listitem [ref=e131]:
+                  - text: "[ ] Pull the full URL list from"
+                  - code [ref=e132]: clients//site-map.json
+                  - text: if the top 15 is not enough.
+                - listitem [ref=e133]: "[ ] Pull top-linked external pages from Google Search Console → Links report and ensure each is in the redirect map."
+                - listitem [ref=e134]:
+                  - text: "[ ] Implement redirects in"
+                  - code [ref=e135]: astro.config.mjs
+                  - text: (Astro redirects config) or
+                  - code [ref=e136]: vercel.json
+                  - text: .
+              - heading "Search Console" [level=3] [ref=e137]
+              - list [ref=e138]:
+                - listitem [ref=e139]:
+                  - text: "[ ] Create a new Google Search Console property for"
+                  - code [ref=e140]: audreysfarmhouse.com
+                  - text: (Domain property preferred — covers all subdomains).
+                - listitem [ref=e141]: "[ ] Verify ownership via DNS TXT record (do this before DNS cutover so verification persists)."
+                - listitem [ref=e142]:
+                  - text: "[ ] If Domain property isn't possible, create URL-prefix properties for"
+                  - code [ref=e143]: https://audreysfarmhouse.com
+                  - text: and
+                  - code [ref=e144]: https://www.audreysfarmhouse.com
+                  - text: .
+                - listitem [ref=e145]: "[ ] Grant access to client + Upriver consultant accounts."
+                - listitem [ref=e146]: "[ ] Note: the legacy Search Console property keeps reporting for the old site until Google stops crawling it — do not delete it."
+              - heading "Analytics" [level=3] [ref=e147]
+              - list [ref=e148]:
+                - listitem [ref=e149]: "[ ] Confirm which analytics tool will be used (GA4, Plausible, Umami). Recommended default: Plausible for simplicity, GA4 if the client already has an account."
+                - listitem [ref=e150]:
+                  - text: "[ ] Install the snippet in"
+                  - code [ref=e151]: src/layouts/BaseLayout.astro
+                  - text: with the production property ID (not the staging one).
+                - listitem [ref=e152]: "[ ] If GA4: create a data stream, link to Search Console, set up conversions for key events (form submit, phone click, email click)."
+                - listitem [ref=e153]: "[ ] If Plausible: add the domain, share the dashboard link with the client."
+                - listitem [ref=e154]:
+                  - text: "[ ] Verify pageviews fire in the tool's real-time view by loading the preview with the production domain spoofed via"
+                  - code [ref=e155]: /etc/hosts
+                  - text: .
+              - heading "Sitemap and robots" [level=3] [ref=e156]
+              - list [ref=e157]:
+                - listitem [ref=e158]:
+                  - text: "[ ] Build runs"
+                  - code [ref=e159]: "@astrojs/sitemap"
+                  - text: — confirm
+                  - code [ref=e160]: dist/sitemap-index.xml
+                  - text: exists after
+                  - code [ref=e161]: pnpm build
+                  - text: .
+                - listitem [ref=e162]:
+                  - text: "[ ]"
+                  - code [ref=e163]: public/robots.txt
+                  - text: references the production sitemap URL, not the preview URL.
+                - listitem [ref=e164]:
+                  - text: "[ ] robots.txt does not contain"
+                  - code [ref=e165]: "Disallow: /"
+                  - text: left over from staging.
+              - heading "Preview sign-off" [level=3] [ref=e166]
+              - list [ref=e167]:
+                - listitem [ref=e168]:
+                  - text: "[ ] Final"
+                  - code [ref=e169]:
+                    - text: upriver qa
+                    - generic [ref=e170]: "--preview-url"
+                  - text: run is clean (no in-scope items still open, no new issues introduced).
+                - listitem [ref=e171]:
+                  - text: "[ ] Client approves the preview URL in writing (email thread in"
+                  - code [ref=e172]: clients//docs/
+                  - text: ).
+                - listitem [ref=e173]:
+                  - text: "[ ] Changelog updated —"
+                  - code [ref=e174]: "[Unreleased]"
+                  - text: section renamed to
+                  - code [ref=e175]: "[1.0.0] —"
+                  - text: in
+                  - code [ref=e176]: CHANGELOG.md
+                  - text: .
+              - separator [ref=e177]
+              - paragraph
+          - group [ref=e178]:
+            - generic "▸ Launch day (T-0)" [ref=e179] [cursor=pointer]:
+              - text: ▸
+              - heading "Launch day (T-0)" [level=2] [ref=e180]
+            - generic [ref=e181]:
+              - heading "Cutover (do in order)" [level=3] [ref=e182]
+              - list [ref=e183]:
+                - listitem [ref=e184]: "[ ] Deploy the main branch to Vercel production from the merged main HEAD."
+                - listitem [ref=e185]: "[ ] Update DNS at the registrar:"
+                - listitem [ref=e186]: A record for apex → Vercel
+                - listitem [ref=e187]:
+                  - text: CNAME for
+                  - code [ref=e188]: www
+                  - text: →
+                  - code [ref=e189]: cname.vercel-dns.com.
+                  - text: (or reversed, depending on your canonical choice)
+                - listitem [ref=e190]:
+                  - text: "[ ] Wait for propagation (typically 5-30 min with TTL=300). Verify with"
+                  - code [ref=e191]: dig audreysfarmhouse.com
+                  - text: from a couple of networks.
+                - listitem [ref=e192]: "[ ] Confirm TLS certificate is issued by Vercel and the site loads over HTTPS without warnings."
+                - listitem [ref=e193]:
+                  - text: "[ ] Run the redirect smoke test: curl every row in the redirect map and confirm 301 status and correct"
+                  - code [ref=e194]: Location
+                  - text: header.
+                - listitem [ref=e195]:
+                  - text: "[ ] Submit the new sitemap in Search Console: Indexing → Sitemaps →"
+                  - code [ref=e196]: https://audreysfarmhouse.com/sitemap-index.xml
+                  - text: .
+                - listitem [ref=e197]: "[ ] Request indexing for the homepage and the top 5 pages via the URL Inspection tool."
+              - heading "Smoke test (human run-through)" [level=3] [ref=e198]
+              - list [ref=e199]:
+                - listitem [ref=e200]: "[ ] Load homepage on desktop, mobile, and tablet viewports. Check hero, nav, footer."
+                - listitem [ref=e201]: "[ ] Submit the contact form with a test entry. Confirm the submission hits Supabase and the client receives notification."
+                - listitem [ref=e202]: "[ ] Click every nav link and footer link. Confirm no 404s."
+                - listitem [ref=e203]: "[ ] Click phone number (mobile) and email link. Confirm they deep-link correctly."
+                - listitem [ref=e204]: "[ ] Test the site in an incognito window from a cold cache."
+              - heading "Announcement" [level=3] [ref=e205]
+              - list [ref=e206]:
+                - listitem [ref=e207]: "[ ] Notify client that the site is live. Share: production URL, analytics dashboard, Search Console property, redirect map."
+                - listitem [ref=e208]: "[ ] Update Google Business Profile website field if it changed."
+                - listitem [ref=e209]: "[ ] Update social profile bios (Instagram, Facebook, LinkedIn) to the production URL."
+                - listitem [ref=e210]: "[ ] Update email signature templates for the client team."
+              - separator [ref=e211]
+              - paragraph
+          - group [ref=e212]:
+            - generic "▸ Post-launch monitoring" [ref=e213] [cursor=pointer]:
+              - text: ▸
+              - heading "Post-launch monitoring" [level=2] [ref=e214]
+            - generic [ref=e215]:
+              - heading "T+1 day" [level=3] [ref=e216]
+              - list [ref=e217]:
+                - listitem [ref=e218]: "[ ] Check analytics for traffic dip/spike — compare to prior week."
+                - listitem [ref=e219]: "[ ] Search Console → Coverage: confirm no sudden spike in errors."
+                - listitem [ref=e220]:
+                  - text: "[ ]"
+                  - code [ref=e221]: site:audreysfarmhouse.com
+                  - text: "in Google: how many pages are indexed? (Should climb steadily over 7-14 days.)"
+              - heading "T+7 days" [level=3] [ref=e222]
+              - list [ref=e223]:
+                - listitem [ref=e224]:
+                  - text: "[ ] Re-run"
+                  - code [ref=e225]: upriver qa --preview-url https://audreysfarmhouse.com
+                  - text: against production and diff against the preview report.
+                - listitem [ref=e226]: "[ ] Search Console → Performance: compare clicks/impressions to the prior week on the old site (from the legacy property)."
+                - listitem [ref=e227]: "[ ] Check Core Web Vitals via PageSpeed Insights for the top 3 pages."
+              - heading "T+14 days" [level=3] [ref=e228]
+              - list [ref=e229]:
+                - listitem [ref=e230]: "[ ] Confirm old URLs are 301'd to new URLs (random spot check of 10 from the redirect map)."
+                - listitem [ref=e231]:
+                  - text: "[ ] Raise TTL back to 3600s or 14400s on the apex and"
+                  - code [ref=e232]: www
+                  - text: records now that the move is stable.
+                - listitem [ref=e233]: "[ ] Schedule a 30-day review with the client to walk through analytics and any remaining open P1/P2 findings from the audit."
+              - separator [ref=e234]
+              - paragraph
+          - group [ref=e235]:
+            - generic "▸ Rollback plan" [ref=e236] [cursor=pointer]:
+              - text: ▸
+              - heading "Rollback plan" [level=2] [ref=e237]
+            - generic [ref=e238]:
+              - paragraph [ref=e239]: "If the launch fails (site down, redirects broken, major regression):"
+              - list [ref=e240]:
+                - listitem [ref=e241]:
+                  - text: Revert DNS records to the pre-launch state captured in
+                  - code [ref=e242]: dns-baseline.txt
+                  - text: .
+                - listitem [ref=e243]: Because TTL was lowered to 300s, propagation back to the old site completes in under 15 minutes.
+                - listitem [ref=e244]:
+                  - text: File a postmortem in
+                  - code [ref=e245]:
+                    - text: clients/
+                    - generic [ref=e246]: /docs/postmortem-.md
+                  - text: before re-attempting cutover.
+              - separator [ref=e247]
+              - paragraph
+              - paragraph [ref=e248]: _This checklist is deliberately manual. Every step is reversible up to the DNS change; beyond that, rollback is a controlled process, not an automated one._
+        - navigation "Document outline" [ref=e249]:
+          - generic [ref=e250]: On this page
+          - list [ref=e251]:
+            - listitem [ref=e252]:
+              - link "Pre-launch (T-7 to T-1 days)" [ref=e253] [cursor=pointer]:
+                - /url: "#pre-launch-t-7-to-t-1-days"
+            - listitem [ref=e254]:
+              - link "Launch day (T-0)" [ref=e255] [cursor=pointer]:
+                - /url: "#launch-day-t-0"
+            - listitem [ref=e256]:
+              - link "Post-launch monitoring" [ref=e257] [cursor=pointer]:
+                - /url: "#post-launch-monitoring"
+            - listitem [ref=e258]:
+              - link "Rollback plan" [ref=e259] [cursor=pointer]:
+                - /url: "#rollback-plan"
+  - generic [ref=e262]:
+    - button "Menu" [ref=e263]:
+      - img [ref=e265]
+      - generic: Menu
+    - button "Inspect" [ref=e269]:
+      - img [ref=e271]
+      - generic: Inspect
+    - button "Audit" [ref=e273]:
+      - img [ref=e275]
+      - generic: Audit
+    - button "Settings" [ref=e278]:
+      - img [ref=e280]
+      - generic: Settings
