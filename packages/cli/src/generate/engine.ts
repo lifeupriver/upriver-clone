@@ -27,16 +27,25 @@ import { newlyUnblocked, renderDocLine, renderGenerationReport, renderReadiness,
 import { runDoc, type ClaudeCall } from './runner.js';
 import { loadDeliverableSpec } from './spec-loader.js';
 
-/** The M1 generation scope — single docs, 01–12 (PRD §8 / spec §1). */
+/**
+ * The full AI Operating System document scope — 01–18. Docs 13–18 (Master Build
+ * Sequence, Onboarding Kit, Retainer Playbook, Sales Collateral, Handoff, AOS
+ * Sales Document) were previously out of scope, but the i01 provisioning artifact
+ * ("Client Claude Project") requires ALL 18 docs in the client's knowledge base
+ * per its spec ("All 18 AI Operating System knowledge docs are uploaded"). The
+ * e2e run surfaced i01 as permanently blocked while 13–18 were ungeneratable, so
+ * they are now part of `generate --all`. They have specs and clean deps (only
+ * doc-16 depends on upstream docs 01–07; the rest are standalone).
+ */
 export const M1_DOCS: readonly DeliverableId[] = [
   'doc-01', 'doc-02', 'doc-03', 'doc-04', 'doc-05', 'doc-06',
   'doc-07', 'doc-08', 'doc-09', 'doc-10', 'doc-11', 'doc-12',
+  'doc-13', 'doc-14', 'doc-15', 'doc-16', 'doc-17', 'doc-18',
 ];
 
 /**
- * Everything `generate` can produce today: the M1 docs (01–12) plus the M5
- * provisioning artifacts (i01–i09, Build Spec 09). Operational docs 13–18 are
- * still out of scope (generated rarely, no per-client provisioning edge).
+ * Everything `generate` can produce: the 18 AI Operating System docs (01–18) plus
+ * the provisioning artifacts (i01–i09, Build Spec 09).
  */
 export const GENERATABLE: readonly DeliverableId[] = [...M1_DOCS, ...I_SERIES];
 
