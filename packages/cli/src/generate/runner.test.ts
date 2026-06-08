@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { runDoc, type ClaudeCall, type RunDocInput } from './runner.js';
 import type { ClaudeCliCallResult } from '../util/claude-cli.js';
@@ -49,9 +50,44 @@ test('runDoc throws on an empty file', async () => {
   await assert.rejects(() => runDoc(base, call), /empty/);
 });
 
-test('runDoc explains a cache hit that produced no file', async () => {
-  const call: ClaudeCall = async () => ok({ fromCache: true, text: 'cached' });
-  await assert.rejects(() => runDoc(base, call), /cached response/);
+test('F3: runDoc forces a fresh no-cache call when a cache hit produced no file', async () => {
+  let calls = 0;
+  const sawNoCache: boolean[] = [];
+  const call: ClaudeCall = async (opts) => {
+    calls++;
+    sawNoCache.push(Boolean(opts.noCache));
+    if (calls === 1) return ok({ fromCache: true, text: 'cached reply, no file written' });
+    writeFileSync(join(opts.cwd as string, base.outputFileName), '# Fresh\nbody');
+    return ok({ fromCache: false, text: 'wrote it on the forced retry' });
+  };
+  const r = await runDoc(base, call);
+  assert.equal(calls, 2, 'should retry exactly once');
+  assert.equal(sawNoCache[0], false, 'first attempt respects the cache');
+  assert.equal(sawNoCache[1], true, 'forced retry bypasses the cache');
+  assert.match(r.content, /# Fresh/);
+  assert.equal(r.fromCache, false);
+});
+
+test('F3: runDoc errors if the forced fresh retry still writes no file', async () => {
+  const call: ClaudeCall = async (opts) => ok({ fromCache: !opts.noCache, text: 'never writes a file' });
+  await assert.rejects(() => runDoc(base, call), /did not write/);
+});
+
+test('F4: runDoc relocates a file the session wrote to an absolute path outside staging', async () => {
+  const strayDir = mkdtempSync(join(tmpdir(), 'upriver-stray-'));
+  const abs = join(strayDir, base.outputFileName);
+  const call: ClaudeCall = async () => {
+    writeFileSync(abs, '# Relocated\nbody'); // writes OUTSIDE opts.cwd
+    return ok({ text: `Done. I wrote the deliverable to ${abs}` });
+  };
+  const r = await runDoc(base, call);
+  assert.match(r.content, /# Relocated/);
+  assert.equal(existsSync(abs), false, 'stray out-of-staging file is cleaned up after relocation');
+});
+
+test('F4: runDoc fails precisely naming an absolute path the session claims but did not write', async () => {
+  const call: ClaudeCall = async () => ok({ text: 'Saved to /nonexistent/abs/doc-01-brand-voice-guide.md' });
+  await assert.rejects(() => runDoc(base, call), /\/nonexistent\/abs\/doc-01-brand-voice-guide\.md/);
 });
 
 test('runDoc passes acceptEdits, write tools, a cwd, and the spec/slice cache key', async () => {

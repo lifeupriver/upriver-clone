@@ -20,7 +20,9 @@ import {
 import { readProfile } from './profile-io.js';
 import { profileSlice, renderSlice } from './profile-slice.js';
 import { buildPrompt, type UpstreamDoc } from './prompt-builder.js';
+import { buildUpstreamDigest, DIGEST_MAX_CHARS } from './upstream-digest.js';
 import { I_SERIES } from './provisioning.js';
+import { assessPromptSize, type PromptSize } from './prompt-size.js';
 import { newlyUnblocked, renderDocLine, renderGenerationReport, renderReadiness, titleFor } from './report.js';
 import { runDoc, type ClaudeCall } from './runner.js';
 import { loadDeliverableSpec } from './spec-loader.js';
@@ -59,6 +61,12 @@ export interface GenerateOptions {
    * are unaffected.
    */
   skipGate?: boolean;
+  /**
+   * Debug escape (`--full-upstream`): inject upstream docs whole instead of as
+   * F1 digests. Reproduces the pre-hardening (overflow-prone) prompt for
+   * comparison. Defaults to digests.
+   */
+  fullUpstream?: boolean;
 }
 
 export interface GenerateDeps {
@@ -86,21 +94,70 @@ export interface GenerateOutcome {
    * Build Spec 09). Empty for prose docs (whose prompt never asks for them).
    */
   operatorActions?: string[];
+  /** F2 pre-flight prompt-size estimate, set in `--dry-run`. */
+  promptSize?: PromptSize;
 }
 
+/**
+ * The upstream deps to inject for `id`: each approved `requiresDocs` doc passed
+ * as a compact F1 digest (default) rather than its full body — the fix for the
+ * prompt overflow that capped the prior run at doc-08. `fullUpstream` (the
+ * `--full-upstream` debug escape) restores the old whole-body behavior.
+ */
 async function loadUpstreamDocs(
   ds: ClientDataSource,
   slug: string,
   id: DeliverableId,
   manifest: Manifest,
+  fullUpstream: boolean,
 ): Promise<UpstreamDoc[]> {
   const entry = COVERAGE_MAP.find((d) => d.id === id);
   const out: UpstreamDoc[] = [];
   for (const depId of entry?.requiresDocs ?? []) {
     const m = manifest.docs[depId];
     if (!m || !m.approved) continue;
-    const content = await ds.readClientFileText(slug, m.path);
-    if (content) out.push({ id: depId, content });
+    if (fullUpstream) {
+      const content = await ds.readClientFileText(slug, m.path);
+      if (content) out.push({ id: depId, digest: content });
+    } else {
+      const { digest } = await buildUpstreamDigest(slug, depId, ds);
+      if (digest) out.push({ id: depId, digest });
+    }
+  }
+  return out;
+}
+
+/**
+ * Upstream set for the F2 dry-run estimate. Unlike {@link loadUpstreamDocs},
+ * this PROJECTS deps that aren't generated yet as a worst-case digest
+ * (DIGEST_MAX_CHARS), so the pre-flight size is an upper bound on the eventual
+ * prompt regardless of generation order. Without this, a fresh-tree dry-run (the
+ * e2e readiness phase) sees no upstream and reports every doc OK — useless as a
+ * gate. Already-generated deps contribute their real (≤ cap) digest.
+ */
+async function projectedUpstreamDocs(
+  ds: ClientDataSource,
+  slug: string,
+  id: DeliverableId,
+  manifest: Manifest,
+  fullUpstream: boolean,
+): Promise<UpstreamDoc[]> {
+  const entry = COVERAGE_MAP.find((d) => d.id === id);
+  const out: UpstreamDoc[] = [];
+  for (const depId of entry?.requiresDocs ?? []) {
+    const m = manifest.docs[depId];
+    if (m && m.approved) {
+      if (fullUpstream) {
+        const content = await ds.readClientFileText(slug, m.path);
+        out.push({ id: depId, digest: content ?? '' });
+      } else {
+        const { digest } = await buildUpstreamDigest(slug, depId, ds);
+        out.push({ id: depId, digest });
+      }
+    } else {
+      // Not generated yet → assume the worst case it will contribute under F1.
+      out.push({ id: depId, digest: 'x'.repeat(DIGEST_MAX_CHARS) });
+    }
   }
   return out;
 }
@@ -143,17 +200,30 @@ export async function runGenerate(
   const profileSliceHash = hashContent(sliceText);
   const outputFileName = docFileName(opts.id, title);
   const docPath = `docs/${outputFileName}`;
-  const upstreamDocs = await loadUpstreamDocs(ds, opts.slug, opts.id, manifest);
+  const upstreamDocs = await loadUpstreamDocs(ds, opts.slug, opts.id, manifest, opts.fullUpstream ?? false);
   const prompt = buildPrompt({ id: opts.id, profile, outputPath: outputFileName, upstreamDocs });
 
   if (opts.dryRun) {
+    // Estimate against the PROJECTED worst-case prompt (ungenerated deps padded
+    // to the digest cap), so the pre-flight catches overflow on a fresh tree.
+    const projected = await projectedUpstreamDocs(ds, opts.slug, opts.id, manifest, opts.fullUpstream ?? false);
+    const projectedPrompt = buildPrompt({ id: opts.id, profile, outputPath: outputFileName, upstreamDocs: projected });
+    const size = assessPromptSize(opts.id, projectedPrompt.system, projectedPrompt.user);
     log(renderReadiness(opts.id, readiness));
     log('');
-    log('Assembled prompts (no claude invocation in --dry-run):');
-    log(`  system prompt: ${prompt.system.length} chars`);
-    log(`  user prompt:   ${prompt.user.length} chars`);
-    log(`  upstream docs: ${upstreamDocs.length}`);
-    return { status: 'dry-run', exitCode: 0, approved: false, markers: [], docPath, claudeCalls: 0 };
+    log('Assembled prompts (no claude invocation in --dry-run; upstream projected at worst case):');
+    log(`  system prompt: ${projectedPrompt.system.length} chars`);
+    log(`  user prompt:   ${projectedPrompt.user.length} chars (${projected.length} upstream deps projected)`);
+    log(`  est. tokens:   ${size.estTokens} / ${size.ceiling} ceiling — ${size.overCeiling ? 'FAIL' : 'OK'}`);
+    return {
+      status: 'dry-run',
+      exitCode: size.overCeiling ? 2 : 0,
+      approved: false,
+      markers: [],
+      docPath,
+      claudeCalls: 0,
+      promptSize: size,
+    };
   }
 
   if (!readiness.ready) {

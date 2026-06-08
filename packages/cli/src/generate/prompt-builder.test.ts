@@ -59,6 +59,14 @@ test('system prompt carries spec, voice rules, marker instruction, and output pa
   assert.match(user, /no upstream documents/);
 });
 
+test('F4: a doc output contract requires a relative path inside the working directory', () => {
+  process.env['UPRIVER_SPECS_DIR'] = specsDir();
+  const p = profileWith({ 'identity.publicName': env('LF') });
+  const { system } = buildPrompt({ id: 'doc-01', profile: p, outputPath: 'doc-01.md', upstreamDocs: [] });
+  assert.match(system, /relative path/i);
+  assert.match(system, /absolute path/i);
+});
+
 test('a doc system prompt does NOT carry the provisioning operator-action contract', () => {
   process.env['UPRIVER_SPECS_DIR'] = specsDir();
   const p = profileWith({ 'identity.publicName': env('LF') });
@@ -85,15 +93,15 @@ test('an i-series system prompt swaps in the provisioning output contract + oper
   assert.ok(system.includes(MARKER_INSTRUCTION));
 });
 
-test('user prompt includes upstream doc contents when provided', () => {
+test('user prompt includes upstream doc digests when provided', () => {
   process.env['UPRIVER_SPECS_DIR'] = specsDir();
   const p = profileWith({ 'content.photos': { storage: env('Drive') } });
   const { user } = buildPrompt({
     id: 'doc-04',
     profile: p,
     outputPath: 'doc-04-content-library.md',
-    upstreamDocs: [{ id: 'doc-01', content: 'BRAND VOICE CONTENT' }],
+    upstreamDocs: [{ id: 'doc-01', digest: 'BRAND VOICE DIGEST' }],
   });
-  assert.match(user, /Upstream document: doc-01/);
-  assert.match(user, /BRAND VOICE CONTENT/);
+  assert.match(user, /Upstream document digest: doc-01/);
+  assert.match(user, /BRAND VOICE DIGEST/);
 });

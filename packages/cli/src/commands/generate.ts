@@ -25,7 +25,8 @@ import { resolveGateDecision } from '../generate/gate.js';
 import { generatedIds, readManifest, setApproved, writeManifest } from '../generate/manifest.js';
 import { readProfile } from '../generate/profile-io.js';
 import { I_SERIES } from '../generate/provisioning.js';
-import { renderBatchPlan, renderOperatorChecklist, renderTierReport, tierUnblocks } from '../generate/report.js';
+import type { PromptSize } from '../generate/prompt-size.js';
+import { renderBatchPlan, renderOperatorChecklist, renderPromptSizeTable, renderTierReport, tierUnblocks } from '../generate/report.js';
 import { claudeCliCall } from '../util/claude-cli.js';
 import { gitWorktreeProvider, resolveGitRepoRoot } from '../util/git-worktree.js';
 import { LocalFsClientDataSource, type ClientDataSource } from '@upriver/core/data';
@@ -39,6 +40,7 @@ interface AllFlags {
   yes: boolean;
   model: string;
   jobs: number;
+  'full-upstream': boolean;
 }
 
 export default class Generate extends BaseCommand {
@@ -99,6 +101,11 @@ export default class Generate extends BaseCommand {
       default: 1,
       dependsOn: ['all'],
     }),
+    'full-upstream': Flags.boolean({
+      description:
+        'Debug escape: inject upstream docs whole instead of as F1 digests (reproduces the pre-hardening, overflow-prone prompt). Slower and may exceed the model window.',
+      default: false,
+    }),
   };
 
   async run(): Promise<void> {
@@ -113,7 +120,14 @@ export default class Generate extends BaseCommand {
     if (!flags.doc) this.error('Specify --doc <id> for a single document, or --all for batch generation.');
 
     const outcome = await runGenerate(
-      { slug: args.slug, id: flags.doc as DeliverableId, dryRun: flags['dry-run'], yes: flags.yes, model: flags.model },
+      {
+        slug: args.slug,
+        id: flags.doc as DeliverableId,
+        dryRun: flags['dry-run'],
+        yes: flags.yes,
+        model: flags.model,
+        fullUpstream: flags['full-upstream'],
+      },
       this.makeDeps(ds, () => this.askApprove(flags.doc as string)),
     );
     if (outcome.exitCode !== 0) this.exit(outcome.exitCode);
@@ -135,19 +149,33 @@ export default class Generate extends BaseCommand {
     const deps = this.makeDeps(ds, async () => false);
 
     if (flags['dry-run']) {
-      for (const tier of plan.tiers) {
-        for (const id of tier.docs) {
-          this.log('');
-          await runGenerate({ slug, id, dryRun: true, yes: false, model: flags.model }, deps);
-        }
+      const sizes: PromptSize[] = [];
+      // Size EVERY in-scope doc, not just producible tiers: a doc that's
+      // field-blocked now (it needs gap-fill) is still generated this run after
+      // the operator fills it — and the prompt-size estimate is independent of
+      // field-readiness. Covering the blocked set keeps the F2 table complete, so
+      // the readiness gate can't miss an at-risk late doc (e.g. doc-08/doc-10).
+      const dryIds = [...plan.tiers.flatMap((t) => t.docs), ...plan.blocked.map((b) => b.id)];
+      for (const id of dryIds) {
+        this.log('');
+        const outcome = await runGenerate(
+          { slug, id, dryRun: true, yes: false, model: flags.model, fullUpstream: flags['full-upstream'] },
+          deps,
+        );
+        if (outcome.promptSize) sizes.push(outcome.promptSize);
       }
+      this.log('');
+      this.log(renderPromptSizeTable(sizes));
+      // A doc over the ceiling is a hard pre-run error (F2): stop here rather than
+      // let a ~2-hour run wall on it mid-flight.
+      if (sizes.some((s) => s.overCeiling)) this.exit(2);
       return;
     }
 
     const priorApproved = new Set<DeliverableId>(generatedIds(manifest));
     const startTier = this.resolveStartTier(plan, flags.from);
     const failed = new Set<DeliverableId>();
-    const base = { slug, dryRun: false, yes: flags.yes, model: flags.model };
+    const base = { slug, dryRun: false, yes: flags.yes, model: flags.model, fullUpstream: flags['full-upstream'] };
     const runDocs: DocResult[] = [];
 
     const jobs = Math.max(1, flags.jobs);

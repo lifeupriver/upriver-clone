@@ -7,6 +7,7 @@ import {
 } from '@upriver/schemas';
 
 import type { BatchPlan, BlockedDoc, MarkerAggregate, Tier, TierRunResult } from './batch.js';
+import type { PromptSize } from './prompt-size.js';
 
 export function titleFor(id: DeliverableId): string {
   return COVERAGE_MAP.find((d) => d.id === id)?.title ?? id;
@@ -127,6 +128,29 @@ export function renderBatchPlan(plan: BatchPlan): string {
   lines.push(`Blocked (${plan.blocked.length}):`);
   if (plan.blocked.length === 0) lines.push('  none');
   for (const b of plan.blocked) lines.push(...renderBlockedDoc(b));
+  return lines.join('\n');
+}
+
+/**
+ * Render the F2 pre-flight prompt-size table (Build Spec 11): one row per doc
+ * with its estimated tokens against the ceiling and an OK/FAIL flag, plus a
+ * summary naming any doc over the ceiling. A FAIL here is a 2-second pre-run stop
+ * instead of a mid-run wall hours later. `--all --dry-run` exits non-zero when
+ * the summary names any doc.
+ */
+export function renderPromptSizeTable(sizes: PromptSize[]): string {
+  const lines = ['Prompt-size pre-flight (F2) — est. tokens vs ceiling (worst-case upstream projected):'];
+  for (const s of sizes) {
+    lines.push(
+      `  ${s.id.padEnd(7)} ${String(s.estTokens).padStart(7)} / ${s.ceiling} est-tok  ${s.overCeiling ? 'FAIL' : 'OK'}`,
+    );
+  }
+  const failed = sizes.filter((s) => s.overCeiling).map((s) => s.id);
+  lines.push(
+    failed.length > 0
+      ? `  ${failed.length} doc(s) over ceiling: ${failed.join(', ')} — fix before generating (raise digest coverage or the ceiling).`
+      : '  all docs under ceiling.',
+  );
   return lines.join('\n');
 }
 

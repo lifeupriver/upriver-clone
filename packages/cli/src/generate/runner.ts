@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, readdirSync, rmSync, statSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 
@@ -43,32 +43,55 @@ export interface RunDocResult {
 export async function runDoc(input: RunDocInput, call: ClaudeCall = claudeCliCall): Promise<RunDocResult> {
   const staging = mkdtempSync(join(tmpdir(), `upriver-generate-${input.id}-`));
   try {
-    const result = await call({
+    const callOpts = {
       slug: input.slug,
       command: `generate:${input.id}`,
       model: input.model,
       systemPrompt: input.systemPrompt,
       userPrompt: input.userPrompt,
-      permissionMode: 'acceptEdits',
+      permissionMode: 'acceptEdits' as const,
       allowedTools: WRITE_TOOLS,
       cacheKey: `${input.specHash}.${input.profileSliceHash}`,
       cwd: staging,
-    });
+    };
+
+    let result = await call(callOpts);
     // The staging dir started empty, so read whichever document the session
     // wrote — the model follows the deliverable spec's own file-naming, which we
     // do not constrain. The CLI persists it under the canonical docs/ path.
-    const produced = findGeneratedFile(staging);
+    let produced = findGeneratedFile(staging);
+
+    // F3 (Build Spec 11): a cache hit that left no file is always wrong — the
+    // response cache stores TEXT, not the written file, so a replay can never
+    // satisfy a file output. Force exactly one fresh (cache-bypassing) session
+    // automatically rather than erroring and waiting for an operator.
+    if (!produced && result.fromCache) {
+      result = await call({ ...callOpts, noCache: true });
+      produced = findGeneratedFile(staging);
+    }
+
+    // F4 (Build Spec 11): the model may have written to an absolute path outside
+    // the staging cwd (doc-09's D9a failure). Recover the file into staging if it
+    // exists; otherwise fail precisely, naming the offending path.
     if (!produced) {
-      if (result.fromCache) {
+      const claimed = findClaimedAbsolutePath(result.text, input.outputFileName);
+      if (claimed && existsSync(claimed)) {
+        const dest = join(staging, basename(claimed));
+        copyFileSync(claimed, dest);
+        rmSync(claimed, { force: true }); // don't leave a stray file in the operator's tree
+        produced = dest;
+      } else if (claimed) {
         throw new Error(
-          'claude returned a cached response with no regenerated file. The response cache stores ' +
-            'text, not the written doc; set UPRIVER_LLM_NO_CACHE=1 to force a fresh session.',
+          `Session wrote outside the staging dir: it claims to have written ${claimed}, but no file is ` +
+            'there. The output contract requires a RELATIVE path inside the working directory.',
+        );
+      } else {
+        throw new Error(
+          `Session finished but did not write a document. Model reply: ${result.text.slice(0, 200)}`,
         );
       }
-      throw new Error(
-        `Session finished but did not write a document. Model reply: ${result.text.slice(0, 200)}`,
-      );
     }
+
     const content = readFileSync(produced, 'utf8');
     if (content.trim().length === 0) {
       throw new Error(`Session wrote an empty document (${basename(produced)}).`);
@@ -83,6 +106,18 @@ export async function runDoc(input: RunDocInput, call: ClaudeCall = claudeCliCal
   } finally {
     rmSync(staging, { recursive: true, force: true });
   }
+}
+
+/**
+ * Find an absolute path the model claims (in its reply text) to have written —
+ * the F4 recovery hook for a session that wrote outside its staging cwd. Prefers
+ * a path whose basename matches the expected output file; falls back to the first
+ * absolute markdown path mentioned. Returns null when none is named.
+ */
+function findClaimedAbsolutePath(text: string, outputFileName: string): string | null {
+  const matches = text.match(/\/[^\s'"`)]+\.(?:md|markdown)\b/gi) ?? [];
+  if (matches.length === 0) return null;
+  return matches.find((p) => basename(p) === outputFileName) ?? matches[0] ?? null;
 }
 
 /** The document the session wrote: prefer markdown, then the largest file. */

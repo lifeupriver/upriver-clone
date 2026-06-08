@@ -7,11 +7,36 @@ import {
   renderDocLine,
   renderBatchPlan,
   renderOperatorChecklist,
+  renderPromptSizeTable,
   renderTierReport,
   newlyUnblocked,
   titleFor,
 } from './report.js';
+import type { PromptSize } from './prompt-size.js';
 import { aggregateMarkers, aggregateOperatorActions, type BatchPlan, type DocResult, type TierRunResult } from './batch.js';
+
+test('renderPromptSizeTable flags over-ceiling docs FAIL and names them in the summary', () => {
+  const sizes: PromptSize[] = [
+    { id: 'doc-01', systemChars: 0, userChars: 0, totalChars: 0, estTokens: 14_000, ceiling: 50_000, overCeiling: false },
+    { id: 'doc-08', systemChars: 0, userChars: 0, totalChars: 0, estTokens: 58_000, ceiling: 50_000, overCeiling: true },
+  ];
+  const out = renderPromptSizeTable(sizes);
+  assert.match(out, /doc-01/);
+  assert.match(out, /14000/);
+  assert.match(out, /OK/);
+  assert.match(out, /doc-08/);
+  assert.match(out, /FAIL/);
+  assert.match(out, /over ceiling: doc-08/);
+});
+
+test('renderPromptSizeTable reports all-clear when nothing exceeds the ceiling', () => {
+  const sizes: PromptSize[] = [
+    { id: 'doc-01', systemChars: 0, userChars: 0, totalChars: 0, estTokens: 14_000, ceiling: 50_000, overCeiling: false },
+  ];
+  const out = renderPromptSizeTable(sizes);
+  assert.match(out, /all .* under ceiling/i);
+  assert.doesNotMatch(out, /FAIL/);
+});
 
 test('renderReadiness lists HV blockers with the no-force hint', () => {
   const r: Readiness = {
