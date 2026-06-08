@@ -8,11 +8,16 @@ import { LocalFsClientDataSource } from '@upriver/core/data';
 import { createEmptyProfile, type DeliverableId } from '@upriver/schemas';
 import { readManifest } from './manifest.js';
 import { writeProfile } from './profile-io.js';
-import { docFileName, runGenerate, type GenerateDeps } from './engine.js';
+import { docFileName, M1_DOCS, runGenerate, type GenerateDeps } from './engine.js';
 import { titleFor } from './report.js';
 import type { ClaudeCall } from './runner.js';
 
 const NOW = '2026-06-04T00:00:00.000Z';
+
+test('M1_DOCS covers the full 18-doc AI Operating System (i01 uploads all 18)', () => {
+  const expected = Array.from({ length: 18 }, (_, i) => `doc-${String(i + 1).padStart(2, '0')}`);
+  assert.deepEqual([...M1_DOCS], expected);
+});
 const FIXTURE = join(
   dirname(fileURLToPath(import.meta.url)),
   '../../../schemas/src/fixtures/littlefriends.profile.json',
