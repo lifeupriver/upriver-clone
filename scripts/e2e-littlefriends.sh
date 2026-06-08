@@ -37,6 +37,15 @@ phase_ge() { # true if current phase $1 is at/after START_PHASE
 
 log "=== e2e synthetic run start (from: $START_PHASE) ==="
 
+# F3 (Build Spec 11): a resume that starts at docs/provisioning (not a fresh
+# reset) can hit a stale text cache from the aborted partial run — a cached reply
+# with no written file, which never gets a genuine retry. Force fresh sessions so
+# a retried doc actually re-runs. (A from-reset run clears .cache, so this is a
+# no-op safety there.)
+case "$START_PHASE" in
+  docs|provisioning) export UPRIVER_LLM_NO_CACHE=1; log "F3: resume path → UPRIVER_LLM_NO_CACHE=1 (fresh doc sessions)" ;;
+esac
+
 # ---- Phase: reset ----------------------------------------------------------
 if phase_ge reset; then
   log "--- PHASE reset: clean client state (git preserves history) ---"
@@ -103,7 +112,15 @@ fi
 # ---- Phase: readiness gate (the one judgment checkpoint) -------------------
 if phase_ge readiness; then
   log "--- PHASE readiness: dry-run the full doc DAG ---"
-  run $UPRIVER generate $SLUG --all --dry-run
+  # F2 (Build Spec 11): the dry-run prints a per-doc prompt-size OK/FAIL table and
+  # exits non-zero if any doc's projected prompt would overflow the model session.
+  # That is a hard pre-run error — stop here rather than burn ~2 hours hitting the
+  # wall mid-generation. A FAIL means F1 did not bring that doc under the ceiling.
+  run $UPRIVER generate $SLUG --all --dry-run || {
+    log "CHECKPOINT: F2 prompt-size FAIL — a doc's projected prompt exceeds the ceiling (see table above)."
+    log "This is an F1 regression, not an operator gap-fill. Fix the digest/ceiling before generating."
+    exit 4
+  }
   BLOCKED=$(node -e '
     const fs=require("fs");
     const log=fs.readFileSync(process.argv[1],"utf8");

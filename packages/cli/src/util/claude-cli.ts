@@ -57,6 +57,13 @@ export interface ClaudeCliCallOptions {
    * callers leave it unset and run in the current working directory.
    */
   cwd?: string;
+  /**
+   * Force a fresh invocation, bypassing the on-disk cache for THIS call only —
+   * regardless of `UPRIVER_LLM_NO_CACHE`. Used by the generate runner's F3 retry
+   * (a cached text reply can never satisfy a file output), so concurrent callers
+   * don't have to mutate a global env var.
+   */
+  noCache?: boolean;
 }
 
 export interface ClaudeCliCallResult {
@@ -149,7 +156,7 @@ export async function claudeCliCall(opts: ClaudeCliCallOptions): Promise<ClaudeC
   const dir = llmCacheDir(opts.slug);
   const cachePath = join(dir, `${key}.json`);
 
-  const noCache = Boolean(process.env['UPRIVER_LLM_NO_CACHE']);
+  const noCache = Boolean(process.env['UPRIVER_LLM_NO_CACHE']) || opts.noCache === true;
   if (!noCache) {
     const hit = tryReadCache(cachePath);
     if (hit) {

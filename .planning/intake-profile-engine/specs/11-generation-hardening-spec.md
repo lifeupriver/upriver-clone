@@ -45,14 +45,23 @@ Recorded for the re-run prompt, not built here: the next synthetic run sets `FIR
 
 ## Definition of Done
 
-- [ ] Root `pnpm build` clean; all suites green
-- [ ] `upstream-digest.ts` + tests: digest of a long doc is under the char cap, preserves headings + lists, deterministic for a fixed input; cache hit when upstream hash unchanged
-- [ ] `prompt-builder` uses digests; a unit test asserts the assembled doc-08 user prompt with the real generated doc-01/02/03/07 digests is **under the F2 ceiling** (this is the regression test for the actual bug — use the committed e2e docs as fixtures)
-- [ ] `--dry-run --all` prints the per-doc prompt-size table with OK/FAIL; a doc over ceiling makes the dry-run exit non-zero with the offending doc named
-- [ ] runner: cache-hit-with-no-file auto-forces a fresh call (tested with a mocked cache); absolute-path write is relocated or precisely errored (tested)
-- [ ] `e2e-littlefriends.sh` resume paths export `UPRIVER_LLM_NO_CACHE=1`; `--full-upstream` escape flag exists
-- [ ] Changelog: which fix closed which finding (F1→D8, F3+F4→D9, F2→prevention); note v2 LLM-digest deferred; confirm no schemas/DAG change
+- [x] Root `pnpm build` clean; all suites green (CLI 388, core 21, schemas 44)
+- [x] `upstream-digest.ts` + tests: digest of a long doc is under the char cap, preserves headings + lists, deterministic for a fixed input; cache hit when upstream hash unchanged
+- [x] `prompt-builder` uses digests; a unit test asserts the assembled doc-08 user prompt with the real generated doc-01/02/03/07 digests is **under the F2 ceiling** (`prompt-overflow.test.ts`, using the committed e2e docs as fixtures); the full-body version overflows (regression proven both ways)
+- [x] `--dry-run --all` prints the per-doc prompt-size table with OK/FAIL; a doc over ceiling makes the dry-run exit non-zero with the offending doc named
+- [x] runner: cache-hit-with-no-file auto-forces a fresh call (tested); absolute-path write is relocated or precisely errored (tested)
+- [x] `e2e-littlefriends.sh` resume paths export `UPRIVER_LLM_NO_CACHE=1`; `--full-upstream` escape flag exists; readiness phase hard-stops on an F2 FAIL
+- [x] Changelog: which fix closed which finding (F1→D8, F3+F4→D9, F2→prevention); note v2 LLM-digest deferred; confirm no schemas/DAG change
 
 ## Changelog
 
 - 2026-06-08: spec written from `11-e2e-evaluation.md`. The single gate to a complete 12+9 run.
+- 2026-06-08: **built (branch `build/11-generation-hardening`).** Fix→finding map:
+  - **F1 → D8 (the overflow):** new `generate/upstream-digest.ts` — a deterministic, LLM-free structural extract (headings + each section's lede sentence + lists), hard-capped at `DIGEST_MAX_CHARS = 9000` (~1,500 words), cached at `docs/.digests/<id>.md` keyed by the upstream doc's content hash. `prompt-builder` now injects `digest` per upstream dep (not `content`); `engine.loadUpstreamDocs` builds the digests. `--full-upstream` restores whole-body injection for debugging.
+  - **F2 → prevention:** new `generate/prompt-size.ts` (`estimateTokens = chars/3.5`, ceiling) + `renderPromptSizeTable`. `--all --dry-run` prints a per-doc OK/FAIL table and exits non-zero (naming the doc) on overflow; the dry-run PROJECTS ungenerated deps at the digest cap so a fresh-tree run is still a real gate.
+  - **F3 → D9 (cache replay):** `runner.runDoc` auto-forces one fresh `noCache` session when a cache hit produced no file (new `noCache` option on `claudeCliCall`); `e2e-littlefriends.sh` resume paths export `UPRIVER_LLM_NO_CACHE=1`.
+  - **F4 → D9a (absolute-path write):** the doc output contract now requires a relative in-cwd path; `runDoc` relocates an out-of-staging file the reply names, or fails precisely naming the path.
+  - **v2 deferred:** the LLM-summarized digest is NOT built (v1 deterministic extract proved sufficient — see ceiling note).
+  - **No schemas/DAG change:** `git diff` shows zero `packages/schemas` edits; coverage-map, DAG edges, gating, merge model untouched.
+  - **Ceiling is empirical, deviating from the spec's nominal 150K.** By `chars/3.5`, the prior run's pass/fail boundary was doc-06 (largest pass) 39.3K est-tok vs doc-08 (first fail) 58.5K est-tok; a 150K ceiling never fires. **Default `DEFAULT_PROMPT_TOKEN_CEILING = 50_000`** (override: `UPRIVER_PROMPT_TOKEN_CEILING`) sits in that gap. Post-F1 the worst doc (doc-10, 9 deps) projects to 38.4K est-tok — inside the proven-passing zone. doc-08: 58.5K est-tok (full) → 29.6K (digest); doc-10: 86.5K → 38.4K.
+  - **Live A/B against the real binary (`claude` 2.1.168) confirms the calibration.** `--full-upstream` doc-08 fails with the exact prior error, `"Prompt is too long"`, at **~159K real input tokens** (cache_read 115,316 + cache_creation 43,581) — so the eval's "~160K" was accurate. This content tokenizes at ≈1.28 chars/tok under Claude Code (tool schemas + dense markdown), ~2.7× denser than the `chars/3.5` estimate; the estimator is therefore a *consistent proxy*, not an absolute count, and the 50K est-tok ceiling maps to the real overflow boundary. The digested doc-08 (29.6K est-tok) **generated live and clean in 14:40** (a 5,754-word email-templates doc, no overflow). F1 is proven both ways against the binary that failed before.

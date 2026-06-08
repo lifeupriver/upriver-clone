@@ -10,7 +10,14 @@ export const MARKER_INSTRUCTION =
 
 export interface UpstreamDoc {
   id: DeliverableId;
-  content: string;
+  /**
+   * What to inject for this upstream dep: a compact structural DIGEST (F1,
+   * Build Spec 11) — its headings, section ledes, and lists — not the full
+   * body. The engine builds it via `buildUpstreamDigest`; `--full-upstream`
+   * (debug) puts the whole body here instead. Passing full bodies is what made
+   * the prompt overflow down the DAG (07-e2e finding D8).
+   */
+  digest: string;
 }
 
 export interface BuiltPrompt {
@@ -48,6 +55,9 @@ export function buildPrompt(input: BuildPromptInput): BuiltPrompt {
     : [
         '## Output contract',
         `Write the deliverable to a single new Markdown file in your current working directory. Name it per the spec's file-naming convention (a reasonable default is ${input.outputPath}).`,
+        'Use a RELATIVE path inside the working directory (e.g. `./' +
+          input.outputPath +
+          '`). Do NOT write to an absolute path or anywhere outside this directory — a file written elsewhere will not be found.',
         "The file must follow the spec's section template and structure.",
         'Write only the document into that file. Do not print the document to the conversation; your reply should be a short summary only.',
         MARKER_INSTRUCTION,
@@ -63,13 +73,13 @@ export function buildPrompt(input: BuildPromptInput): BuiltPrompt {
   const sliceText = renderSlice(profileSlice(input.profile, input.id));
   const upstream =
     input.upstreamDocs.length > 0
-      ? input.upstreamDocs.map((d) => `### Upstream document: ${d.id}\n\n${d.content}`).join('\n\n')
+      ? input.upstreamDocs.map((d) => `### Upstream document digest: ${d.id}\n\n${d.digest}`).join('\n\n')
       : '(no upstream documents are required for this deliverable)';
 
   const user = [
     '## Client profile (the facts to build from — cite these, do not invent)',
     sliceText,
-    '## Upstream documents (already generated — use as context, do not restate wholesale)',
+    '## Upstream document digests (structure + key facts of the already-generated deps — use as context, do not restate)',
     upstream,
   ].join('\n\n');
 
