@@ -1,0 +1,1932 @@
+[12:59:48] === e2e synthetic run start (from: reset) ===
+[12:59:48] --- PHASE reset: clean client state (git preserves history) ---
+[12:59:48] $ node packages/cli/bin/run.js profile import littlefriends clients/littlefriends/e2e/seed.json --replace
+
+Profile created for "littlefriends" (revision 1).
+  applied: 0   conflicted: 0   unchanged: 0
+  coverage: doc-01 blocked (5 missing, 0 unverified HV); doc-02 blocked (14 missing, 10 unverified HV)
+[12:59:49] (exit 0)
+[12:59:49] --- PHASE recon ---
+[12:59:49] SKIP: FIRECRAWL_API_KEY not set
+[12:59:49] $ node packages/cli/bin/run.js recon littlefriends --dry-run
+[dry-run] No evidence gathered, no profile written.
+
+Adapters that would run: website, gbp, socials, geo, serp
+
+Recon targets currently unfilled (12):
+    - identity.legalName
+    - identity.publicName
+    - identity.gbp
+    - identity.socialHandles
+    - identity.hours
+    - pricing.shareable
+    - content.reviewPlatforms
+    - content.testimonials
+    - competitors.direct
+    - seo.baseline
+    - toolsAndAccess.websiteCms
+    - salesProcess.firstTouch
+[12:59:50] (exit 0)
+[12:59:50] --- PHASE extract: corpus → profile ---
+[12:59:50] $ node packages/cli/bin/run.js profile extract-transcript littlefriends .planning/intake-profile-engine/test-fixtures/little-friends-synthetic-onboarding-corpus.md
+  ingested md: 3 chunk(s), 25426 bytes
+[claude-cache] wrote d753e166c5f31125ed4d2f62 (profile:extract-transcript)
+  chunk 2: extracted
+[claude-cache] wrote 83d6997c6977d348db90d93d (profile:extract-transcript)
+  chunk 0: extracted
+[claude-cache] wrote 6dc692271002cf0d082708e5 (profile:extract-transcript)
+  chunk 1: extracted
+
+Transcript extraction — littlefriends
+  source: .planning/intake-profile-engine/test-fixtures/little-friends-synthetic-onboarding-corpus.md
+
+  applied 64   conflicted 0   dropped 31   discarded 26   unmapped 13
+  coverage: filled fields 0 → 64   (MUST-ASK empty 18 → 8)
+  deliverables ready 1 → 2; field coverage improved for 24 deliverable(s):
+    doc-01 Brand Voice Guide: missing 5 → 1 (HV still unverified: 0)
+    doc-02 Business Facts Reference: missing 14 → 7 (HV still unverified: 10)
+    doc-03 Sales Process Map: missing 7 → 4 (HV still unverified: 4)
+    doc-04 Content Library: missing 5 → 3 (HV still unverified: 3)
+    doc-05 Competitor Landscape: missing 5 → 3 (HV still unverified: 1)
+    doc-06 SEO & Keyword Strategy: missing 5 → 4 (HV still unverified: 1)
+    doc-07 FAQ Bank: missing 8 → 2 (HV still unverified: 6)
+    doc-08 Email Templates: missing 5 → 3 (HV still unverified: 1)
+    doc-09 Social Media Playbook: missing 5 → 3 (HV still unverified: 2)
+    doc-10 Website Audit: missing 6 → 1 (HV still unverified: 3)
+    doc-11 Automation Spec Package: missing 7 → 5 (HV still unverified: 5)
+    doc-12 Measurement & KPI Framework: missing 6 → 5 (HV still unverified: 4)
+    doc-13 Master Build Sequence: missing 1 → 0 (HV still unverified: 0)
+    doc-14 Client Onboarding Kit: missing 4 → 1 (HV still unverified: 1)
+    doc-15 Retainer Engagement Playbook: missing 2 → 1 (HV still unverified: 0)
+    doc-17 Handoff & Offboarding: missing 2 → 1 (HV still unverified: 2)
+    i07 Account Access & Governance: missing 6 → 2 (HV still unverified: 5)
+    i01 Client Claude Project: missing 3 → 0 (HV still unverified: 0)
+    i02 Client Skills Deployment: missing 3 → 0 (HV still unverified: 1)
+    i04 Client MCP Server Configuration: missing 4 → 2 (HV still unverified: 3)
+    i03 Client Routines / Cowork: missing 4 → 2 (HV still unverified: 1)
+    i05 Client Claude in Chrome: missing 2 → 1 (HV still unverified: 1)
+    i08 Client Custom Styles / Memory / Preferences: missing 2 → 1 (HV still unverified: 1)
+    i09 Client Artifacts & Deliverable Templates: missing 3 → 2 (HV still unverified: 2)
+
+  Per section:
+    capacity: applied 2, conflicted 0, dropped 1
+    content: applied 5, conflicted 0, dropped 2
+    customers: applied 6, conflicted 0, dropped 1
+    goals: applied 5, conflicted 0, dropped 1
+    governance: applied 1, conflicted 0, dropped 2
+    identity: applied 8, conflicted 0, dropped 1
+    offerings: applied 4, conflicted 0, dropped 2
+    operationsAutomation: applied 2, conflicted 0, dropped 2
+    people: applied 4, conflicted 0, dropped 1
+    positioning: applied 2, conflicted 0, dropped 0
+    pricing: applied 3, conflicted 0, dropped 5
+    salesProcess: applied 7, conflicted 0, dropped 7
+    seo: applied 2, conflicted 0, dropped 0
+    toolsAndAccess: applied 9, conflicted 0, dropped 2
+    voice: applied 4, conflicted 0, dropped 4
+
+  Dropped (invalid path/value or non-verbatim quote — not silent):
+    - identity.hours: quote not found verbatim in transcript
+    - people.routing.rules: invalid value (people.routing.rules.value.0.trigger: Required)
+    - offerings.core: invalid value (offerings.core.value.0: Expected object, received string)
+    - offerings.secondary: invalid value (offerings.secondary.value.0: Expected object, received string)
+    - pricing.nonShareable: invalid value (pricing.nonShareable.value.0.askedQuestion: Required)
+    - pricing.discounts: invalid value (pricing.discounts.value.0: Expected string, received object)
+    - voice.attributes: invalid value (voice.attributes.value.0: Expected object, received string)
+    - voice.bannedVocabulary: quote not found verbatim in transcript
+    - salesProcess.leadSources: invalid value (salesProcess.leadSources.value.0: Expected object, received string)
+    - salesProcess.bottlenecks: invalid value (salesProcess.bottlenecks.value.0: Expected object, received string)
+    - salesProcess.bottlenecks: invalid value (salesProcess.bottlenecks.value.0: Expected object, received string)
+    - salesProcess.funnel.stageVolumes: invalid value (salesProcess.funnel.stageVolumes.value.0.volume: Expected number, received string)
+    - toolsAndAccess.stack: invalid value (toolsAndAccess.stack.value.0: Expected object, received string)
+    - operationsAutomation.recurringTasks: invalid value (operationsAutomation.recurringTasks.value.0: Expected object, received string)
+    - goals.redLines: quote not found verbatim in transcript
+    - voice.attributes: invalid value (voice.attributes.value.0: Expected object, received string)
+    - voice.bannedVocabulary: invalid value (voice.bannedVocabulary.value.0: Expected object, received string)
+    - capacity.metrics: invalid value (capacity.metrics.value.0.label: Required)
+    - pricing.nonShareable: invalid value (pricing.nonShareable.value.0.askedQuestion: Required)
+    - pricing.discounts: quote not found verbatim in transcript
+    - operationsAutomation.escalationRouting: invalid value (operationsAutomation.escalationRouting.value.0.type: Required)
+    - content.photos.counts: invalid value (content.photos.counts.value.0.category: Required)
+    - content.videos.counts: invalid value (content.videos.counts.value.0.category: Required)
+    - toolsAndAccess.accessChecklist: invalid value (toolsAndAccess.accessChecklist.value.0: Expected object, received string)
+    - salesProcess.funnel.stageVolumes: invalid value (salesProcess.funnel.stageVolumes.value.0.volume: Expected number, received string)
+    - salesProcess.bottlenecks: invalid value (salesProcess.bottlenecks.value.0: Expected object, received string)
+    - salesProcess.firstTouch.responseTime: quote not found verbatim in transcript
+    - customers.optionsConsidered: invalid value (customers.optionsConsidered.value.0: Expected string, received object)
+    - governance.complianceCerts: invalid value (governance.complianceCerts.value.0: Expected string, received object)
+    - pricing.nonShareable: invalid value (pricing.nonShareable.value.0: Expected object, received string)
+    - governance.regulatedData: quote not found verbatim in transcript
+
+  Discarded duplicate values (kept the higher-confidence reading):
+    - people.keyTeam: dropped [{"name":"Rebecca Raisley","title":"Director"},{"name":"Miss Dana","title":"Lead Teacher, Pre-K"},{"name":"Miss Carla","title":"Lead Teacher, Threes"},{"name":"Miss Tova","title":"Lead Teacher, Twos"}] (kept [{"name":"Rebecca","role":"Director"},{"name":"Miss Dana","role":"Pre-K lead teacher"},{"name":"Miss Carla","role":"Threes lead teacher"},{"name":"Miss Tova","role":"Twos lead teacher"},{"name":"Yael","role":"Aftercare"},{"name":"Linda","role":"Bookkeeper, part-time, JCC"},{"name":"JCC Executive Director","role":"Above Rebecca; board-level decisions route through her"}])
+    - people.billingContact: dropped {"name":"Linda","role":"Bookkeeper","type":"part-time, JCC staff"} (kept {"name":"Linda","role":"Bookkeeper","note":"part-time, employed through the JCC"})
+    - pricing.visibilityPolicy: dropped "Tuition rates deliberately not published; disclosed only after families tour the school" (kept "Do not lead with price; invite to tour first; explain tuition depends on program and days selected")
+    - pricing.deposit: dropped "deposit required at enrollment (amount not disclosed)" (kept "One month's tuition, due at enrollment, non-refundable")
+    - customers.discoveryChannels: dropped ["Community events — fall open house, holiday programs, spring fundraiser, parent-ed nights, monthly story time (open to community)","JCC community / word of mouth (implied)"] (kept ["word of mouth","JCC community referral","Google search","Instagram direct messages"])
+    - positioning.keyDifferentiator: dropped "Play-based, warm, and intentionally small" (kept "Small, warm, families meet the director and teachers personally — clearly not a factory; JCC community connection for families where that matters")
+    - voice.toneSpectrum: dropped {"informal":"high","note":"writes as she speaks, conversational register"} (kept {"goal":"calming over selling","description":"A frazzled parent should feel calmer after reading, not sold to"})
+    - salesProcess.firstTouch.steps: dropped ["Send warm reply immediately in Rebecca's voice","Offer tour times","Answer basic questions","Flag to Rebecca that a real human must handle anything beyond this initial response"] (kept ["family sends email or Instagram message","Rebecca replies (typically same evening after teaching day ends)","tour scheduled via Sign-Up Genius after back-and-forth exchange","Rebecca personally conducts 45–60 minute tour"])
+    - salesProcess.funnel.dataQualityNotes: dropped "Inquiries are untracked; Rebecca's personal inbox is the only record" (kept "Director does not track conversion metrics; all funnel data lives in email inbox and director memory")
+    - salesProcess.seasonality: dropped [{"season":"winter/enrollment season","inquiry_volume":"high — 10–12/month"},{"season":"summer","inquiry_volume":"low — ~2/month"}] (kept [{"season":"winter and spring","pattern":"peak inquiry volume for upcoming fall enrollment"},{"season":"summer","pattern":"inquiry volume essentially zero"}])
+    - toolsAndAccess.emailPlatform: dropped {"platform":"Mailchimp","usage":"sporadic"} (kept {"name":"Mailchimp","status":"have it, barely used, possibly redundant"})
+    - toolsAndAccess.crm: dropped {"platform":"none","note":"inquiries tracked in email inbox and director memory"} (kept {"name":"Brightwheel","use":"billing, daily reports, parent communication","decision":"keeping through this year"})
+    - toolsAndAccess.socialAccounts: dropped [{"platform":"Instagram"}] (kept [{"platform":"Instagram","owner":"Rebecca personally — not JCC-owned","risk":"single point of failure, credentials in Rebecca's head"}])
+    - toolsAndAccess.paymentProcessor: dropped {"name":"Square","note":"also hosts current website"} (kept {"platform":"Brightwheel","usedFor":"tuition billing and invoicing"})
+    - governance.regulatedData: dropped ["child immunization records with due dates and exclusion tracking","staff training hours: MAT, CPR, EIP topics with individual expiration dates","CPSE and IEP records; coordination with school district","OCFS inspection readiness"] (kept ["Child immunization records and exemption forms","Staff training certifications (15-hr OCFS, MAT, CPR/first aid) with rolling expiration dates","Fire and shelter drill logs","Photo permission forms per child"])
+    - content.photos.storage: dropped "Slack (teachers post classroom photos; photos are not organized or redistributed)" (kept "Teachers post to Slack channel named 'photos'; secondary archive on Instagram")
+    - content.photos.rights: dropped "Permission tracking maintained as a spreadsheet that is not kept current" (kept "Paper permission form per child's file; working digital spreadsheet months out of date; 6 families have no-photo status this year but identities not readily retrievable without pulling physical files")
+    - content.photos.rights: dropped "Child faces may not be shown without a signed consent form on file" (kept "Paper permission form per child's file; working digital spreadsheet months out of date; 6 families have no-photo status this year but identities not readily retrievable without pulling physical files")
+    - content.productionGaps: dropped ["classroom photos accumulate in Slack unorganized and unshared with parents","photo release/permission spreadsheet outdated and unreliable"] (kept ["Welcome or tour video — Rebecca wants one to replace repetitive 45-minute in-person tours but has never had capacity to produce it"])
+    - goals.primaryOutcome: dropped "Read to the Twos at circle time on a Tuesday without being interrupted by phone notifications" (kept "Be back in a classroom three days a week and trust that the office is not on fire")
+    - goals.primaryOutcome: dropped "Director returns to teaching role; administrative workload removed from personal evenings and weekends" (kept "Be back in a classroom three days a week and trust that the office is not on fire")
+    - goals.urgencyTimeline: dropped "Retainer at minimum through fall following September go-live" (kept "System must be live before September (re-enrollment and fall tour season)")
+    - goals.urgencyTimeline: dropped "Summer build, live for September; office person identified by mid-July so they are trained before school year" (kept "System must be live before September (re-enrollment and fall tour season)")
+    - voice.antiAiRules: dropped ["One exclamation point maximum — never used like confetti","Bot must not pretend to be Rebecca on hard topics; escalate to human immediately"] (kept ["Never make a parent feel like they are talking to a robot about their kid"])
+    - goals.redLines: dropped ["No AI or bot to handle: child wellbeing or incidents, money matters, upset parents, hiring decisions, state or OCFS communications — always escalate to human"] (kept ["Never publish tuition","Never show a child's face without the form","Never make a parent feel like they are talking to a robot about their kid","Keep the teachers' names but not their personal details public"])
+    - goals.engagementScope: dropped {"type":"retainer","startTrigger":"after September","minimumDuration":"through the fall","condition":"until office person is hired and trained"} (kept {"wave_1":["inquiry-to-tour flow automation","newsletter self-assembly","compliance tracking with automated reminders","photo pipeline with permissions gate"],"wave_2":["new website rebuild readable by Google and AI search engines","office knowledge documentation"],"ongoing":"light monthly retainer through fall while systems bed in"})
+
+  ▸ UNMAPPED TOPICS (13) — no schema field; review for a schema gap:
+    - OCFS staff-to-child ratio requirement (1:5 in Twos room) as operational constraint: "If Miss Tova is out in the Twos I am in the Twos, because the ratio is one to five and I cannot break it, OCFS will have my head."
+    - Director's personal motivation: entered field to work with children, not to do administrative work: "I did not get into this to sit at a computer."
+    - Enrollment availability: Twos room has remaining capacity: "I could take a few more twos."
+    - Director workload spilling into weekends: "My weekends are gone."
+    - community-events-email-capture-gap: "The fundraiser especially is a Sign-Up Genius and Google Form nightmare and I never capture anyone's email for later."
+    - music-teacher-barter-arrangement-tracked-on-paper: "A barter thing, we trade space with a music teacher and I track it on paper."
+    - jcc-holiday-calendar-family-confusion-communication-gap: "We follow the JCC calendar mostly, plus Jewish holidays, which trips up families who do not realize. That should be clearer somewhere."
+    - compliance-training-currency-unknown-fear-of-finding-gaps: "Whether everyone's training is actually current. That is the honest answer. I would have to dig through the sheet and I am afraid of what I would find."
+    - surprise-inspection-readiness-as-non-event-goal: "We can make a surprise inspection a non-event."
+    - office-hire-needed-before-september: "I do not have an office person yet, that is a hire I need to make."
+    - compliance as highest personal-stress priority: "Compliance might even be first for my blood pressure."
+    - office administrator role not yet filled — hire needed: "I do not have an office person yet, that is a hire I need to make."
+    - mid-July deadline to identify office hire for pre-September training: "Then we identify that person by mid-July so they are trained before September."
+
+  MUST-ASK session fields still empty (8):
+    - voice.attributes
+    - pricing.nonShareable
+    - salesProcess.qualificationCriteria
+    - operationsAutomation.escalationRouting
+    - toolsAndAccess.browserDeviceLandscape
+    - modules.preschool.enrollmentCapacity
+    - toolsAndAccess.apiSpend.caps
+    - governance.dataResidency
+[13:06:52] (exit 0)
+[13:06:52] --- PHASE conflicts: keep candidate (corpus/transcript beats stale recon) ---
+/Users/joshua/Code/upriver-clone/node_modules/.pnpm/@oclif+core@3.27.0/node_modules/@oclif/core/lib/errors/error.js:37
+        err = new cli_1.CLIError(input, options);
+              ^
+
+CLIError: No conflict #1 (the queue has 0).
+    at Object.error (/Users/joshua/Code/upriver-clone/node_modules/.pnpm/@oclif+core@3.27.0/node_modules/@oclif/core/lib/errors/error.js:37:15)
+    at ProfileConflicts.error (/Users/joshua/Code/upriver-clone/node_modules/.pnpm/@oclif+core@3.27.0/node_modules/@oclif/core/lib/command.js:177:23)
+    at ProfileConflicts.run (file:///Users/joshua/Code/upriver-clone/packages/cli/dist/commands/profile/conflicts.js:46:25)
+    at async ProfileConflicts._run (/Users/joshua/Code/upriver-clone/node_modules/.pnpm/@oclif+core@3.27.0/node_modules/@oclif/core/lib/command.js:311:22)
+    at async Config.runCommand (/Users/joshua/Code/upriver-clone/node_modules/.pnpm/@oclif+core@3.27.0/node_modules/@oclif/core/lib/config/config.js:433:25)
+    at async run (/Users/joshua/Code/upriver-clone/node_modules/.pnpm/@oclif+core@3.27.0/node_modules/@oclif/core/lib/main.js:92:16)
+    at async file:///Users/joshua/Code/upriver-clone/packages/cli/bin/run.js:14:1 {
+  code: undefined,
+  oclif: { exit: 2 },
+  skipOclifErrorHandling: undefined,
+  suggestions: undefined
+}
+
+Node.js v20.20.2
+[13:06:53] $ node packages/cli/bin/run.js profile conflicts littlefriends
+Conflict queue (0): none
+[13:06:54] (exit 0)
+[13:06:54] --- PHASE verify: all filled HV fields (synthetic authorization) ---
+[13:06:54] $ node packages/cli/bin/run.js profile show littlefriends --json
+{
+  "slug": "littlefriends",
+  "revision": 2,
+  "ready": [
+    {
+      "id": "doc-13",
+      "title": "Master Build Sequence",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-18",
+      "title": "AI Operating System Sales Document",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    }
+  ],
+  "blocked": [
+    {
+      "id": "doc-01",
+      "title": "Brand Voice Guide",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "voice.attributes"
+        ],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-02",
+      "title": "Business Facts Reference",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "people.owners",
+          "pricing.shareable",
+          "governance.dataRetention",
+          "modules.preschool.ocfs.licenseStatus",
+          "modules.preschool.immunizationPolicy",
+          "modules.preschool.enrollmentCapacity",
+          "modules.preschool.trainingMatrix"
+        ],
+        "unverifiedHv": [
+          "offerings.core.*.priceRange",
+          "offerings.dontDo",
+          "pricing.shareable",
+          "pricing.deposit",
+          "capacity.metrics",
+          "governance.dataRetention",
+          "modules.preschool.ocfs.licenseStatus",
+          "modules.preschool.immunizationPolicy",
+          "modules.preschool.enrollmentCapacity",
+          "modules.preschool.trainingMatrix"
+        ],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-03",
+      "title": "Sales Process Map",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "salesProcess.leadSources",
+          "salesProcess.qualificationCriteria",
+          "salesProcess.funnel.revenuePerCustomer",
+          "capacity.bookingLeadTime"
+        ],
+        "unverifiedHv": [
+          "salesProcess.close.definition",
+          "salesProcess.funnel.revenuePerCustomer",
+          "toolsAndAccess.crm",
+          "capacity.bookingLeadTime"
+        ],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-04",
+      "title": "Content Library",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "content.videos.rights",
+          "toolsAndAccess.assetStorage",
+          "positioning.awards"
+        ],
+        "unverifiedHv": [
+          "content.photos.rights",
+          "content.videos.rights",
+          "toolsAndAccess.assetStorage"
+        ],
+        "missingDocs": [
+          "doc-01",
+          "doc-02"
+        ]
+      }
+    },
+    {
+      "id": "doc-05",
+      "title": "Competitor Landscape",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "competitors.direct",
+          "competitors.marketContext",
+          "pricing.shareable"
+        ],
+        "unverifiedHv": [
+          "pricing.shareable"
+        ],
+        "missingDocs": [
+          "doc-01",
+          "doc-02"
+        ]
+      }
+    },
+    {
+      "id": "doc-06",
+      "title": "SEO & Keyword Strategy",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "seo.primaryKeywordTargets",
+          "identity.primaryAddress",
+          "toolsAndAccess.analytics",
+          "content.written"
+        ],
+        "unverifiedHv": [
+          "toolsAndAccess.analytics"
+        ],
+        "missingDocs": [
+          "doc-01",
+          "doc-02",
+          "doc-05"
+        ]
+      }
+    },
+    {
+      "id": "doc-07",
+      "title": "FAQ Bank",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "pricing.nonShareable",
+          "operationsAutomation.escalationRouting"
+        ],
+        "unverifiedHv": [
+          "offerings.dontDo",
+          "pricing.nonShareable",
+          "capacity.metrics",
+          "operationsAutomation.sensitiveTopics",
+          "operationsAutomation.escalationRouting",
+          "people.routing.doNotRoute"
+        ],
+        "missingDocs": [
+          "doc-01",
+          "doc-02",
+          "doc-03"
+        ]
+      }
+    },
+    {
+      "id": "doc-08",
+      "title": "Email Templates",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "salesProcess.conversionEvent",
+          "salesProcess.followUpCadences",
+          "operationsAutomation.responseSlas"
+        ],
+        "unverifiedHv": [
+          "toolsAndAccess.scheduling"
+        ],
+        "missingDocs": [
+          "doc-01",
+          "doc-02",
+          "doc-03",
+          "doc-07"
+        ]
+      }
+    },
+    {
+      "id": "doc-09",
+      "title": "Social Media Playbook",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "content.performingThemes",
+          "content.videos.rights",
+          "operationsAutomation.responseSlas"
+        ],
+        "unverifiedHv": [
+          "content.videos.rights",
+          "toolsAndAccess.socialAccounts"
+        ],
+        "missingDocs": [
+          "doc-01",
+          "doc-02",
+          "doc-04",
+          "doc-05",
+          "doc-06"
+        ]
+      }
+    },
+    {
+      "id": "doc-10",
+      "title": "Website Audit",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "salesProcess.conversionEvent"
+        ],
+        "unverifiedHv": [
+          "toolsAndAccess.websiteCms",
+          "pricing.visibilityPolicy",
+          "goals.budgetConstraints"
+        ],
+        "missingDocs": [
+          "doc-01",
+          "doc-02",
+          "doc-03",
+          "doc-04",
+          "doc-05",
+          "doc-06",
+          "doc-07",
+          "doc-08",
+          "doc-09"
+        ]
+      }
+    },
+    {
+      "id": "doc-11",
+      "title": "Automation Spec Package",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "operationsAutomation.escalationRouting",
+          "operationsAutomation.spendCap",
+          "toolsAndAccess.automationPlatform",
+          "toolsAndAccess.apiSpend.caps",
+          "salesProcess.leadSources"
+        ],
+        "unverifiedHv": [
+          "operationsAutomation.escalationRouting",
+          "operationsAutomation.spendCap",
+          "toolsAndAccess.automationPlatform",
+          "toolsAndAccess.apiSpend.caps",
+          "goals.redLines"
+        ],
+        "missingDocs": [
+          "doc-02",
+          "doc-03",
+          "doc-07",
+          "doc-08"
+        ]
+      }
+    },
+    {
+      "id": "doc-12",
+      "title": "Measurement & KPI Framework",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "seo.measurementTargets",
+          "salesProcess.funnel.revenuePerCustomer",
+          "toolsAndAccess.analytics",
+          "operationsAutomation.spendCap",
+          "operationsAutomation.monitoring"
+        ],
+        "unverifiedHv": [
+          "salesProcess.funnel.revenuePerCustomer",
+          "toolsAndAccess.analytics",
+          "goals.budgetConstraints",
+          "operationsAutomation.spendCap"
+        ],
+        "missingDocs": [
+          "doc-03",
+          "doc-06",
+          "doc-09",
+          "doc-11"
+        ]
+      }
+    },
+    {
+      "id": "doc-14",
+      "title": "Client Onboarding Kit",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "toolsAndAccess.accessChecklist"
+        ],
+        "unverifiedHv": [
+          "toolsAndAccess.accessChecklist"
+        ],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-15",
+      "title": "Retainer Engagement Playbook",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "operationsAutomation.monitoring"
+        ],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-16",
+      "title": "Sales Collateral",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "positioning.recommendedStatement",
+          "pricing.shareable",
+          "content.testimonials"
+        ],
+        "unverifiedHv": [
+          "pricing.shareable"
+        ],
+        "missingDocs": [
+          "doc-01",
+          "doc-02",
+          "doc-03",
+          "doc-04",
+          "doc-05",
+          "doc-06",
+          "doc-07"
+        ]
+      }
+    },
+    {
+      "id": "doc-17",
+      "title": "Handoff & Offboarding",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "governance.offboardingPlan"
+        ],
+        "unverifiedHv": [
+          "governance.offboardingPlan",
+          "toolsAndAccess.stack"
+        ],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "i07",
+      "title": "Account Access & Governance",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "governance.dataResidency",
+          "governance.offboardingPlan"
+        ],
+        "unverifiedHv": [
+          "people.billingContact",
+          "governance.dataResidency",
+          "governance.offboardingPlan",
+          "toolsAndAccess.plan.billingOwner",
+          "goals.budgetConstraints"
+        ],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "i01",
+      "title": "Client Claude Project",
+      "readiness": {
+        "ready": false,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": [
+          "doc-01",
+          "doc-02",
+          "doc-03",
+          "doc-04",
+          "doc-05",
+          "doc-06",
+          "doc-07",
+          "doc-08",
+          "doc-09",
+          "doc-10",
+          "doc-11",
+          "doc-12",
+          "doc-13",
+          "doc-14",
+          "doc-15",
+          "doc-16",
+          "doc-17",
+          "doc-18",
+          "i07"
+        ]
+      }
+    },
+    {
+      "id": "i02",
+      "title": "Client Skills Deployment",
+      "readiness": {
+        "ready": false,
+        "missingFields": [],
+        "unverifiedHv": [
+          "toolsAndAccess.stack"
+        ],
+        "missingDocs": [
+          "doc-01",
+          "doc-03",
+          "doc-04",
+          "doc-06",
+          "doc-07",
+          "doc-11",
+          "i01"
+        ]
+      }
+    },
+    {
+      "id": "i04",
+      "title": "Client MCP Server Configuration",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "toolsAndAccess.apiSpend.caps",
+          "governance.dataResidency"
+        ],
+        "unverifiedHv": [
+          "toolsAndAccess.stack",
+          "toolsAndAccess.apiSpend.caps",
+          "governance.dataResidency"
+        ],
+        "missingDocs": [
+          "doc-11",
+          "i02"
+        ]
+      }
+    },
+    {
+      "id": "i03",
+      "title": "Client Routines / Cowork",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "operationsAutomation.monitoring",
+          "toolsAndAccess.browserDeviceLandscape"
+        ],
+        "unverifiedHv": [
+          "toolsAndAccess.browserDeviceLandscape"
+        ],
+        "missingDocs": [
+          "doc-02",
+          "doc-04",
+          "doc-06",
+          "doc-07",
+          "doc-11",
+          "doc-12",
+          "i02",
+          "i04"
+        ]
+      }
+    },
+    {
+      "id": "i05",
+      "title": "Client Claude in Chrome",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "toolsAndAccess.browserDeviceLandscape"
+        ],
+        "unverifiedHv": [
+          "toolsAndAccess.browserDeviceLandscape"
+        ],
+        "missingDocs": [
+          "doc-01",
+          "doc-02",
+          "doc-11",
+          "i01"
+        ]
+      }
+    },
+    {
+      "id": "i06",
+      "title": "Client Claude Code Setup",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "people.technicalCollaborator",
+          "toolsAndAccess.apiSpend.caps"
+        ],
+        "unverifiedHv": [
+          "toolsAndAccess.apiSpend.caps"
+        ],
+        "missingDocs": [
+          "i01"
+        ]
+      }
+    },
+    {
+      "id": "i08",
+      "title": "Client Custom Styles / Memory / Preferences",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "governance.memoryIncognitoPosture"
+        ],
+        "unverifiedHv": [
+          "governance.memoryIncognitoPosture"
+        ],
+        "missingDocs": [
+          "doc-01",
+          "i01"
+        ]
+      }
+    },
+    {
+      "id": "i09",
+      "title": "Client Artifacts & Deliverable Templates",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "toolsAndAccess.assetStorage",
+          "governance.reviewResponsePolicy"
+        ],
+        "unverifiedHv": [
+          "toolsAndAccess.assetStorage",
+          "governance.reviewResponsePolicy"
+        ],
+        "missingDocs": [
+          "doc-02",
+          "doc-04",
+          "doc-06",
+          "doc-11",
+          "doc-12",
+          "i01"
+        ]
+      }
+    }
+  ],
+  "unapprovedBlocking": [],
+  "conflicts": [],
+  "fill": [
+    {
+      "section": "identity",
+      "filled": 8,
+      "total": 8
+    },
+    {
+      "section": "people",
+      "filled": 4,
+      "total": 4
+    },
+    {
+      "section": "offerings",
+      "filled": 4,
+      "total": 4
+    },
+    {
+      "section": "pricing",
+      "filled": 3,
+      "total": 3
+    },
+    {
+      "section": "capacity",
+      "filled": 2,
+      "total": 2
+    },
+    {
+      "section": "customers",
+      "filled": 6,
+      "total": 6
+    },
+    {
+      "section": "positioning",
+      "filled": 2,
+      "total": 2
+    },
+    {
+      "section": "voice",
+      "filled": 4,
+      "total": 4
+    },
+    {
+      "section": "salesProcess",
+      "filled": 7,
+      "total": 7
+    },
+    {
+      "section": "content",
+      "filled": 5,
+      "total": 5
+    },
+    {
+      "section": "seo",
+      "filled": 2,
+      "total": 2
+    },
+    {
+      "section": "toolsAndAccess",
+      "filled": 9,
+      "total": 9
+    },
+    {
+      "section": "operationsAutomation",
+      "filled": 2,
+      "total": 2
+    },
+    {
+      "section": "governance",
+      "filled": 1,
+      "total": 1
+    },
+    {
+      "section": "goals",
+      "filled": 5,
+      "total": 5
+    }
+  ],
+  "generated": []
+}
+[13:06:55] (exit 0)
+[13:06:56] $ node packages/cli/bin/run.js profile verify littlefriends offerings.core.*.priceRange offerings.dontDo pricing.shareable pricing.deposit capacity.metrics governance.dataRetention modules.preschool.ocfs.licenseStatus modules.preschool.immunizationPolicy modules.preschool.enrollmentCapacity modules.preschool.trainingMatrix salesProcess.close.definition salesProcess.funnel.revenuePerCustomer toolsAndAccess.crm capacity.bookingLeadTime content.photos.rights content.videos.rights toolsAndAccess.assetStorage toolsAndAccess.analytics pricing.nonShareable operationsAutomation.sensitiveTopics operationsAutomation.escalationRouting people.routing.doNotRoute toolsAndAccess.scheduling toolsAndAccess.socialAccounts toolsAndAccess.websiteCms pricing.visibilityPolicy goals.budgetConstraints operationsAutomation.spendCap toolsAndAccess.automationPlatform toolsAndAccess.apiSpend.caps goals.redLines toolsAndAccess.accessChecklist governance.offboardingPlan toolsAndAccess.stack people.billingContact governance.dataResidency toolsAndAccess.plan.billingOwner toolsAndAccess.browserDeviceLandscape governance.memoryIncognitoPosture governance.reviewResponsePolicy --evidence synthetic e2e run
+  verified offerings.core.*.priceRange
+  verified offerings.dontDo
+  skipped  pricing.shareable: empty value — nothing to verify
+  verified pricing.deposit
+  verified capacity.metrics
+  skipped  governance.dataRetention: empty value — nothing to verify
+  skipped  modules.preschool.ocfs.licenseStatus: empty value — nothing to verify
+  skipped  modules.preschool.immunizationPolicy: empty value — nothing to verify
+  skipped  modules.preschool.enrollmentCapacity: empty value — nothing to verify
+  skipped  modules.preschool.trainingMatrix: empty value — nothing to verify
+  verified salesProcess.close.definition
+  skipped  salesProcess.funnel.revenuePerCustomer: empty value — nothing to verify
+  verified toolsAndAccess.crm
+  skipped  capacity.bookingLeadTime: empty value — nothing to verify
+  verified content.photos.rights
+  skipped  content.videos.rights: empty value — nothing to verify
+  skipped  toolsAndAccess.assetStorage: empty value — nothing to verify
+  skipped  toolsAndAccess.analytics: empty value — nothing to verify
+  skipped  pricing.nonShareable: empty value — nothing to verify
+  verified operationsAutomation.sensitiveTopics
+  skipped  operationsAutomation.escalationRouting: empty value — nothing to verify
+  verified people.routing.doNotRoute
+  verified toolsAndAccess.scheduling
+  verified toolsAndAccess.socialAccounts
+  verified toolsAndAccess.websiteCms
+  verified pricing.visibilityPolicy
+  verified goals.budgetConstraints
+  skipped  operationsAutomation.spendCap: empty value — nothing to verify
+  skipped  toolsAndAccess.automationPlatform: empty value — nothing to verify
+  skipped  toolsAndAccess.apiSpend.caps: empty value — nothing to verify
+  verified goals.redLines
+  skipped  toolsAndAccess.accessChecklist: empty value — nothing to verify
+  skipped  governance.offboardingPlan: empty value — nothing to verify
+  verified toolsAndAccess.stack
+  verified people.billingContact
+  skipped  governance.dataResidency: empty value — nothing to verify
+  verified toolsAndAccess.plan.billingOwner
+  skipped  toolsAndAccess.browserDeviceLandscape: empty value — nothing to verify
+  skipped  governance.memoryIncognitoPosture: empty value — nothing to verify
+  skipped  governance.reviewResponsePolicy: empty value — nothing to verify
+
+18 field(s) verified. revision 3.
+no deliverables newly unblocked.
+[13:06:56] (exit 0)
+[13:06:56] --- PHASE readiness: dry-run the full doc DAG ---
+[13:06:56] $ node packages/cli/bin/run.js generate littlefriends --all --dry-run
+Batch plan — scope 12 doc(s) (doc-01, doc-02, doc-03, doc-04, doc-05, doc-06, doc-07, doc-08, doc-09, doc-10, doc-11, doc-12)
+  already approved (0): none
+
+Tiers: none eligible — every in-scope doc is blocked (see below).
+
+Blocked (12):
+  doc-01 (Brand Voice Guide)
+    missing fields (1): voice.attributes
+  doc-02 (Business Facts Reference)
+    missing fields (7): people.owners, pricing.shareable, governance.dataRetention, modules.preschool.ocfs.licenseStatus, modules.preschool.immunizationPolicy, modules.preschool.enrollmentCapacity, modules.preschool.trainingMatrix
+    unverified HV (6): pricing.shareable, governance.dataRetention, modules.preschool.ocfs.licenseStatus, modules.preschool.immunizationPolicy, modules.preschool.enrollmentCapacity, modules.preschool.trainingMatrix
+  doc-03 (Sales Process Map)
+    missing fields (4): salesProcess.leadSources, salesProcess.qualificationCriteria, salesProcess.funnel.revenuePerCustomer, capacity.bookingLeadTime
+    unverified HV (2): salesProcess.funnel.revenuePerCustomer, capacity.bookingLeadTime
+  doc-04 (Content Library)
+    missing fields (3): content.videos.rights, toolsAndAccess.assetStorage, positioning.awards
+    unverified HV (2): content.videos.rights, toolsAndAccess.assetStorage
+    blocked by upstream needing data (2): doc-01, doc-02
+  doc-05 (Competitor Landscape)
+    missing fields (3): competitors.direct, competitors.marketContext, pricing.shareable
+    unverified HV (1): pricing.shareable
+    blocked by upstream needing data (2): doc-01, doc-02
+  doc-06 (SEO & Keyword Strategy)
+    missing fields (4): seo.primaryKeywordTargets, identity.primaryAddress, toolsAndAccess.analytics, content.written
+    unverified HV (1): toolsAndAccess.analytics
+    blocked by upstream needing data (3): doc-01, doc-02, doc-05
+  doc-07 (FAQ Bank)
+    missing fields (2): pricing.nonShareable, operationsAutomation.escalationRouting
+    unverified HV (2): pricing.nonShareable, operationsAutomation.escalationRouting
+    blocked by upstream needing data (3): doc-01, doc-02, doc-03
+  doc-08 (Email Templates)
+    missing fields (3): salesProcess.conversionEvent, salesProcess.followUpCadences, operationsAutomation.responseSlas
+    blocked by upstream needing data (4): doc-01, doc-02, doc-03, doc-07
+  doc-09 (Social Media Playbook)
+    missing fields (3): content.performingThemes, content.videos.rights, operationsAutomation.responseSlas
+    unverified HV (1): content.videos.rights
+    blocked by upstream needing data (5): doc-01, doc-02, doc-04, doc-05, doc-06
+  doc-10 (Website Audit)
+    missing fields (1): salesProcess.conversionEvent
+    blocked by upstream needing data (9): doc-01, doc-02, doc-03, doc-04, doc-05, doc-06, doc-07, doc-08, doc-09
+  doc-11 (Automation Spec Package)
+    missing fields (5): operationsAutomation.escalationRouting, operationsAutomation.spendCap, toolsAndAccess.automationPlatform, toolsAndAccess.apiSpend.caps, salesProcess.leadSources
+    unverified HV (4): operationsAutomation.escalationRouting, operationsAutomation.spendCap, toolsAndAccess.automationPlatform, toolsAndAccess.apiSpend.caps
+    blocked by upstream needing data (4): doc-02, doc-03, doc-07, doc-08
+  doc-12 (Measurement & KPI Framework)
+    missing fields (5): seo.measurementTargets, salesProcess.funnel.revenuePerCustomer, toolsAndAccess.analytics, operationsAutomation.spendCap, operationsAutomation.monitoring
+    unverified HV (3): salesProcess.funnel.revenuePerCustomer, toolsAndAccess.analytics, operationsAutomation.spendCap
+    blocked by upstream needing data (4): doc-03, doc-06, doc-09, doc-11
+[13:06:57] (exit 0)
+[13:06:58] CHECKPOINT: docs blocked — operator gap-fill needed before generation.
+[13:06:58] doc-01: missingFields=[voice.attributes] unverifiedHv=[] missingDocs=[]
+doc-02: missingFields=[people.owners,pricing.shareable,governance.dataRetention,modules.preschool.ocfs.licenseStatus,modules.preschool.immunizationPolicy,modules.preschool.enrollmentCapacity,modules.preschool.trainingMatrix] unverifiedHv=[pricing.shareable,governance.dataRetention,modules.preschool.ocfs.licenseStatus,modules.preschool.immunizationPolicy,modules.preschool.enrollmentCapacity,modules.preschool.trainingMatrix] missingDocs=[]
+doc-03: missingFields=[salesProcess.leadSources,salesProcess.qualificationCriteria,salesProcess.funnel.revenuePerCustomer,capacity.bookingLeadTime] unverifiedHv=[salesProcess.funnel.revenuePerCustomer,capacity.bookingLeadTime] missingDocs=[]
+doc-04: missingFields=[content.videos.rights,toolsAndAccess.assetStorage,positioning.awards] unverifiedHv=[content.videos.rights,toolsAndAccess.assetStorage] missingDocs=[doc-01,doc-02]
+doc-05: missingFields=[competitors.direct,competitors.marketContext,pricing.shareable] unverifiedHv=[pricing.shareable] missingDocs=[doc-01,doc-02]
+doc-06: missingFields=[seo.primaryKeywordTargets,identity.primaryAddress,toolsAndAccess.analytics,content.written] unverifiedHv=[toolsAndAccess.analytics] missingDocs=[doc-01,doc-02,doc-05]
+doc-07: missingFields=[pricing.nonShareable,operationsAutomation.escalationRouting] unverifiedHv=[pricing.nonShareable,operationsAutomation.escalationRouting] missingDocs=[doc-01,doc-02,doc-03]
+doc-08: missingFields=[salesProcess.conversionEvent,salesProcess.followUpCadences,operationsAutomation.responseSlas] unverifiedHv=[] missingDocs=[doc-01,doc-02,doc-03,doc-07]
+doc-09: missingFields=[content.performingThemes,content.videos.rights,operationsAutomation.responseSlas] unverifiedHv=[content.videos.rights] missingDocs=[doc-01,doc-02,doc-04,doc-05,doc-06]
+doc-10: missingFields=[salesProcess.conversionEvent] unverifiedHv=[] missingDocs=[doc-01,doc-02,doc-03,doc-04,doc-05,doc-06,doc-07,doc-08,doc-09]
+doc-11: missingFields=[operationsAutomation.escalationRouting,operationsAutomation.spendCap,toolsAndAccess.automationPlatform,toolsAndAccess.apiSpend.caps,salesProcess.leadSources] unverifiedHv=[operationsAutomation.escalationRouting,operationsAutomation.spendCap,toolsAndAccess.automationPlatform,toolsAndAccess.apiSpend.caps] missingDocs=[doc-02,doc-03,doc-07,doc-08]
+doc-12: missingFields=[seo.measurementTargets,salesProcess.funnel.revenuePerCustomer,toolsAndAccess.analytics,operationsAutomation.spendCap,operationsAutomation.monitoring] unverifiedHv=[salesProcess.funnel.revenuePerCustomer,toolsAndAccess.analytics,operationsAutomation.spendCap] missingDocs=[doc-03,doc-06,doc-09,doc-11]
+doc-14: missingFields=[toolsAndAccess.accessChecklist] unverifiedHv=[toolsAndAccess.accessChecklist] missingDocs=[]
+doc-15: missingFields=[operationsAutomation.monitoring] unverifiedHv=[] missingDocs=[]
+doc-16: missingFields=[positioning.recommendedStatement,pricing.shareable,content.testimonials] unverifiedHv=[pricing.shareable] missingDocs=[doc-01,doc-02,doc-03,doc-04,doc-05,doc-06,doc-07]
+doc-17: missingFields=[governance.offboardingPlan] unverifiedHv=[governance.offboardingPlan] missingDocs=[]
+[13:06:58] Gap-fill with: node packages/cli/bin/run.js profile set littlefriends <path> <value> --evidence 'operator gap-fill, synthetic e2e'
+[13:06:58] Then resume:   UPRIVER_GATE_AUTO=1 bash scripts/e2e-littlefriends.sh docs
+[13:27:07] === e2e synthetic run start (from: docs) ===
+[13:27:07] --- PHASE docs: generate the 12-doc AI Operating System (auto-gated) ---
+[13:27:07] $ node packages/cli/bin/run.js generate littlefriends --all
+Batch plan — scope 12 doc(s) (doc-01, doc-02, doc-03, doc-04, doc-05, doc-06, doc-07, doc-08, doc-09, doc-10, doc-11, doc-12)
+  already approved (0): none
+
+Tiers (5) — generated in order, gated per tier:
+  Tier 0 (3): doc-01, doc-02, doc-03
+  Tier 1 (3): doc-04, doc-05, doc-07
+  Tier 2 (2): doc-06, doc-08
+  Tier 3 (2): doc-09, doc-11
+  Tier 4 (2): doc-10, doc-12
+
+Blocked (0):
+  none
+[claude-cache] wrote d515924811106c96.027313cd2cae19f4 (generate:doc-01)
+  generated doc-01 — 3036 words, 27 marker(s) → docs/doc-01-brand-voice-guide.md
+[claude-cache] wrote 5568da8f3e4032ce.12a9a2cf72338049 (generate:doc-02)
+  generated doc-02 — 3587 words, 63 marker(s) → docs/doc-02-business-facts-reference.md
+[claude-cache] wrote ea2f1a9ee003146d.1a54ffffb9481e71 (generate:doc-03)
+  generated doc-03 — 4637 words, 70 marker(s) → docs/doc-03-sales-process-map.md
+
+Tier 0 report:
+  [produced] doc-01 — 3036 words, 27 marker(s) → docs/doc-01-brand-voice-guide.md
+  [produced] doc-02 — 3587 words, 63 marker(s) → docs/doc-02-business-facts-reference.md
+  [produced] doc-03 — 4637 words, 70 marker(s) → docs/doc-03-sales-process-map.md
+
+  [NEEDS CONFIRMATION] across tier (160), by doc:
+    doc-01 (27):
+      1. Newburgh, NY assumed; please confirm city and state
+      2. is "the Loft" used informally by families and staff?
+      3. specific class or program names, e.g., "Twos," "Threes," "Pre-K Room"
+      4. how the school frames its geography publicly
+      5. does the school draw families from a specific surrounding area, e.g., Orange County, the broader mid-Hudson region?
+      6. actual space names, e.g., block corner, art table
+      7. actual class sizes and ratios.
+      8. current enrollment status for the twos class and September availability.
+      9. days and hours
+      10. number
+      11. teacher count
+      12. how the director typically offers tour options.
+      13. director's first name
+      14. phone or direct email
+      15. number of years in early childhood education
+      16. child's first name if used in the review
+      17. lead teacher's name
+      18. director's first name
+      19. email or phone
+      20. director's first name
+      21. full address
+      22. primary geographic draw (city of Newburgh, Orange County, mid-Hudson Valley?)
+      23. year founded
+      24. director's name and role; any lead teachers named in family communications
+      25. tuition range or structure; any scholarship or subsidy options through the JCC
+      26. September school year start? Year-round program? Summer session?
+      27. class sizes, student-to-teacher ratios, number of classrooms, total enrollment capacity, years in operation
+    doc-02 (63):
+      1. Is Little Friends Learning Loft the registered legal entity, or does it operate as a program under the Newburgh JCC's legal registration? Clarify which entity name appears on the OCFS license and any enrollment contracts.
+      2. What year did Little Friends Learning Loft open, or in what year did it begin operating as a program of the Newburgh JCC?
+      3. 2-3 sentences on how the school came to exist and its relationship to the JCC's mission and history.
+      4. Full street address of the Newburgh JCC / Little Friends Learning Loft
+      5. Same as primary, or provide separate mailing address
+      6. Are there specific towns, school districts, or counties the school actively draws from? Any geographic limits on enrollment?
+      7. URL, and confirm whether it is claimed and actively maintained
+      8. Active platforms and handles
+      9. Drop-off window open and close times; pickup window open and close times; aftercare end time; office hours for responding to family inquiries; whether the school runs any summer programming.
+      10. OCFS license number and current renewal or expiration date.
+      11. Held under the JCC's EIN or a separate Little Friends entity?
+      12. Last name
+      13. Name of the current JCC executive director, in case it is relevant in communications involving the parent organization.
+      14. Classroom email or extension, if shared with families
+      15. Names and roles of remaining staff members, and which roles families interact with directly (aftercare staff, administrative support, etc.).
+      16. Does Rebecca handle these directly, or is there a JCC finance contact?
+      17. Who is the designated health or first aid contact on site?
+      18. Half-day or full-day? How many days per week (3-day, 5-day, or other options)?
+      19. Days and hours
+      20. Half-day or full-day? Days per week?
+      21. What is the curriculum approach and what does kindergarten-readiness preparation look like at this school?
+      22. Half-day or full-day? Days per week?
+      23. Exact aftercare hours; which age groups are eligible; whether aftercare takes place in the child's classroom or a separate space.
+      24. Is aftercare included in base tuition, or charged separately? Available every weekday?
+      25. Are there specific local infant-care programs Rebecca refers inquiring families to?
+      26. Are there other programs families regularly ask about that the school does not offer? For example: summer camp, full-day kindergarten, before-school care, enrichment classes (music, languages, swim), or therapeutic services?
+      27. Any programs discontinued or changed in format that families familiar with the school's history might still reference?
+      28. Due at the time of application, or at enrollment commitment? Is it refundable if the family does not ultimately enroll?
+      29. Does tuition vary by program (for example, Twos vs. Pre-K)? Does aftercare carry a separate monthly charge? Are there JCC member vs. non-member pricing tiers? Does the school accept state or county child care subsidy programs (ACS vouchers, Child Care Assistance Program, or similar)? Are sibling discounts available?
+      30. Sibling discounts, early enrollment discounts, JCC member discounts, financial aid, or subsidy program acceptance?
+      31. When were tuition rates last changed?
+      32. Is any classroom currently waitlisted or closed to new enrollment?
+      33. When does enrollment for the following school year open? Is there a priority window for returning families or siblings?
+      34. Does the school offer a 3-day per week option, a 5-day option, or both, across any age group?
+      35. School-year calendar (September through June), year-round, or other? List vacation weeks, holidays, and any early dismissal days.
+      36. Rebecca to review the staff training tracking sheet and identify which staff members are current and which have a gap to close before their next renewal date.
+      37. Standard response time target and who handles first response (Rebecca, or another staff member)?
+      38. Is there a formal orientation or welcome visit before a child's first day? What does the school do to support children and families through separation in the first weeks?
+      39. Monthly, semester, or annual? Specific due dates?
+      40. Required notice period to withdraw a child mid-year? Is any portion of tuition refunded for mid-year withdrawal?
+      41. Emergency contact form, authorization for emergency medical treatment, field trip permission form, photo and media release, and any other documents required at enrollment?
+      42. Open and close times
+      43. Open and close times
+      44. Is there a fee for pickup after the close of aftercare? At what point does late pickup trigger a policy response?
+      45. What symptoms require a child to stay home? What is the return-to-school criteria (for example, 24 hours fever-free)?
+      46. Does the school administer medications? If so, what is the documentation and authorization process? Note: OCFS requires MAT certification for any staff who administer medications.
+      47. Does the school provide snacks, or do families bring food from home? Is there a nut-free or allergen-aware policy for the building?
+      48. How are life-threatening allergies communicated to all staff? Are EpiPens stored on site, and who is trained to administer them?
+      49. Do any classrooms have a nap or rest period? What is the policy on rest mats, sleep requirements, or alternatives for non-napping children?
+      50. Is there outdoor play space associated with the school? What is the weather threshold for staying inside?
+      51. Frequency, parent consent process, and whether parent chaperones participate
+      52. Brief description of the school's discipline and behavior guidance philosophy. For example, does it follow a specific positive behavior support framework?
+      53. License number and renewal date.
+      54. Does the school have a written policy for how long each record category is retained after a child's last attendance? OCFS guidance and state law set minimums; confirm whether a written policy exists.
+      55. Is the Newburgh JCC facility ADA accessible? Are the classrooms, bathrooms, and any outdoor spaces usable by children and families with mobility needs?
+      56. Are any staff members bilingual (Spanish or other languages)? Does the school serve families who communicate primarily in a language other than English, and if so, what accommodations are in place?
+      57. Does the school enroll children with IEPs or 504 plans? Does it coordinate with the school district's Committee on Preschool Special Education (CPSE) for children who qualify for services?
+      58. Is there Jewish programming or holiday observance integrated into the school curriculum? Is the school open to families of all backgrounds regardless of religious affiliation? Both affect how this differentiator is communicated to prospective families.
+      59. Does the school operate at actual ratios better than the required maximum in any classroom? If yes, that is a more specific and stronger differentiator.
+      60. Who are the primary preschools in the Newburgh area that families compare Little Friends to? This context is needed to position the differentiators accurately and avoid overclaiming.
+      61. Any NAEYC accreditation, New York State quality rating (QUALITYstarsNY), press coverage, JCC network recognition, or community awards?
+      62. How many years has the school been operating? Approximate total number of children who have graduated from the program? These specific numbers are what make the "experience" claim factual rather than vague.
+      63. Does JCC membership affect tuition, enrollment priority, or access to the program?
+    doc-03 (70):
+      1. confirm the public-facing program name used with prospective families
+      2. approximately how many inquiries per year come through parent referrals?
+      3. phone call to Rebecca, email to the program, walk-in at the JCC front desk, or a combination?
+      4. Rebecca, or a designated intake contact?
+      5. approximately how many inquiries per year originate from within the JCC community?
+      6. who qualifies for this discount, and is it restricted to JCC members?
+      7. email, phone, or in-person introduction through JCC staff?
+      8. approximately how many DMs per month?
+      9. conversion rate from Instagram is unknown. Quality may be mixed; Instagram reaches families at varying stages of research, from curious browsers to ready-to-tour families.
+      10. who is responsible for monitoring the program's Instagram DMs, and how frequently are they checked?
+      11. approximately how many emails per month?
+      12. which email address, and who monitors it?
+      13. does the program have a Google Business Profile listing, and does it currently generate inquiries?
+      14. are any such referral relationships active or being developed?
+      15. is the program present or active on any of these?
+      16. are there channels the program has consciously decided not to pursue, such as paid digital advertising or listing platforms? Documenting these decisions prevents relitigating them later.
+      17. walk through what happens from the moment a new inquiry comes in. Which channel does it arrive on? Who sees it first? What happens next? How long before the family receives a substantive response?
+      18. who receives the inquiry first, and on which channels? Is it Rebecca, or is intake shared across the team?
+      19. is there any auto-acknowledgment (a thank-you or receipt confirmation) before a personal response goes out?
+      20. does a first-response template exist, or is each reply written fresh each time?
+      21. what does the first response typically include, a tour invitation, pricing overview, program description, or something else?
+      22. is Rebecca the primary first-touch responder, or does this responsibility fall to another team member?
+      23. who covers inquiries when the primary responder is unavailable?
+      24. does a written template exist? If so, please share it.
+      25. not tracked
+      26. are there other disqualification factors, such as no current classroom availability and no waitlist capacity?
+      27. when a family inquires about an infant or a child clearly outside the program's scope, what does the program say? Is there a referral to another program, or a polite decline only?
+      28. what specific information does the program need before offering a tour? The profile implies that child age and program interest are the threshold. Are other intake questions asked before a tour is confirmed?
+      29. does Brightwheel currently track pre-enrollment stages such as inquiry received, tour scheduled, and tour completed? Or is it used primarily for enrolled families? If the inquiry stage is not tracked in Brightwheel, where do pre-enrollment conversations currently live?
+      30. where do inquiries most often get stuck before a tour is scheduled? Does the program have any data or intuition on this?
+      31. how long does it typically take to go from the first reply to a confirmed tour on the calendar?
+      32. is the term "tour," "school visit," "open house," or something else used with prospective families?
+      33. what is the actual length of the program's tours?
+      34. confirm the address and which spaces are included in the tour path
+      35. does Rebecca lead all tours, or do lead teachers (Miss Dana, Miss Carla, Miss Tova) participate? Is the tour format consistent, or does it vary by who is available?
+      36. who runs a tour if the primary person is unavailable?
+      37. manual back-and-forth via email, a scheduling link, or by phone?
+      38. is a confirmation email sent at booking? Is a reminder sent the day before?
+      39. not tracked
+      40. if a family does not show up for a scheduled tour, what happens next?
+      41. is any preparation done before a family arrives, such as reviewing their inquiry notes, printing program materials, or arranging classroom access?
+      42. what does a typical tour cover? A reasonable starting framework for a JCC Preschool tour is listed below. Confirm which steps reflect the actual current tour, and note anything that is missing or different.
+      43. does the family leave with printed materials, a pricing sheet, an application link, or nothing?
+      44. does the staff member who ran the tour record any notes? Is Brightwheel updated after each tour to reflect the family's interest level or next step?
+      45. not tracked
+      46. walk through what happens after a family says they want to enroll. The steps below are a reasonable starting framework; please confirm or correct each one.
+      47. is this through Brightwheel, a paper form, or a separate system?
+      48. what is the deposit amount, what payment method is used, and who processes it? Linda the bookkeeper is part-time at the JCC; confirm her specific role in this step.
+      49. does this happen, and what does it include?
+      50. at what point does the child enter Brightwheel, and who creates the record?
+      51. digital via Brightwheel, or paper?
+      52. how is the deposit collected?
+      53. who updates Brightwheel at the close stage, and when?
+      54. how often does a family express intent to enroll and then not complete the application or deposit? Is this tracked anywhere?
+      55. what does the family receive when enrollment is confirmed? Orientation dates, a classroom supply list, Brightwheel account setup instructions, or other onboarding materials?
+      56. does the program use email, phone, Instagram DM, or a combination for follow-up? Are there any channels the team prefers to avoid because they feel too aggressive for this audience?
+      57. when a family chooses a different school and communicates that, what does the program do? Is there a polite acknowledgment, an archive in Brightwheel, or no action?
+      58. does the program have any mechanism for staying in touch with families who toured but did not enroll, or who are on a waitlist for a future school year?
+      59. for families whose children have graduated from the program, are there systematic touches for sibling enrollment or referral asks? Or does that outreach happen informally if at all?
+      60. not tracked. This is the single most important number in this document and it does not currently exist.
+      61. not tracked. Channel attribution for enrollments is unknown.
+      62. is Brightwheel currently being used to track inquiry stage, tour stage, and enrollment stage separately? If not, where does pre-enrollment information currently live, and is any of it retrievable for a backward-looking baseline?
+      63. does this match the team's experience? Are there specific months that feel particularly intense?
+      64. does the program accept mid-year enrollment if classroom capacity allows? If so, what is the minimum lead time a family needs before a start date?
+      65. which classroom (Twos, Threes, or Pre-K) tends to reach capacity first during the enrollment cycle?
+      66. does the program maintain a waitlist, and if so, how is it managed? Is it tracked in Brightwheel?
+      67. what are the licensed or operational capacity limits per room?
+      68. does higher inquiry volume in January through April strain the team's ability to respond quickly?
+      69. does response time improve when inquiry volume drops?
+      70. does the team fall behind on follow-ups or tour scheduling during the busiest months?
+[gate] AUTO-APPROVED (UPRIVER_GATE_AUTO) — unattended/synthetic runs only.
+  approving tier 0 unblocks: doc-04, doc-05, doc-07
+  snapshot this approved tier in git (local data source):
+    git add -f clients/littlefriends/docs/doc-01-brand-voice-guide.md clients/littlefriends/docs/doc-02-business-facts-reference.md clients/littlefriends/docs/doc-03-sales-process-map.md clients/littlefriends/docs/manifest.json && git commit -m "generate(littlefriends): approve tier 0 — doc-01, doc-02, doc-03"
+[claude-cache] wrote 547180afefb1733c.e5db15942365758c (generate:doc-04)
+  generated doc-04 — 4303 words, 32 marker(s) → docs/doc-04-content-library.md
+[claude-cache] wrote 2592d4973fb7c31d.6893da0bed0e516a (generate:doc-05)
+  generated doc-05 — 6174 words, 32 marker(s) → docs/doc-05-competitor-landscape.md
+[claude-cache] wrote 1fc4d71cf7d30579.25599e39ea7743c9 (generate:doc-07)
+  generated doc-07 — 10122 words, 38 marker(s) → docs/doc-07-faq-bank.md
+
+Tier 1 report:
+  [produced] doc-04 — 4303 words, 32 marker(s) → docs/doc-04-content-library.md
+  [produced] doc-05 — 6174 words, 32 marker(s) → docs/doc-05-competitor-landscape.md
+  [produced] doc-07 — 10122 words, 38 marker(s) → docs/doc-07-faq-bank.md
+
+  [NEEDS CONFIRMATION] across tier (102), by doc:
+    doc-04 (32):
+      1. when did the Slack #photos channel begin? What is the earliest photo in the Instagram archive?
+      2. once the permission reconciliation in Section 9 is complete and a safe-to-use subset is identified, flag 3-5 hero shots here
+      3. does the school provide any staff with a dedicated device for classroom photography?
+      4. how many special events are held per school year, and are they routinely photographed?
+      5. is there an outdoor play area associated with the school or the JCC building?
+      6. does the current paper permission form explicitly cover video, or does it need to be amended?
+      7. does the school maintain a blog on its website? If yes, please provide the URL and access to the post archive so this section can be inventoried. If no blog exists, this is a content gap.
+      8. has the school produced any guides, ebooks, or long-form written material? Examples common for preschools: "what to bring on the first day," "how to prepare your two-year-old for school," a printed family handbook, or a welcome packet. If any of these exist as PDFs or printed documents, note their location here.
+      9. is there a FAQ page on the website, or a written FAQ in the enrollment packet? If yes, please share so it can be inventoried here and cross-referenced with Document 07 (FAQ Bank).
+      10. has the school been featured in any local press, JCC newsletter, Hudson Valley parenting publication, or community outlet? If yes, please share dates, source names, and links or clippings. The client profile notes no press was captured during intake; this question should be answered directly by Rebecca before this section is marked complete.
+      11. does the school hold any accreditation (for example, NAEYC) or participate in any quality rating program (for example, QUALITYstarsNY)? Has it received any JCC network recognition, community awards, or local "best of" recognition? The intake data did not capture this, so no claim of "none" can be made until Rebecca confirms. Please also check the website for any badges or seals currently displayed.
+      12. does the school send newsletters or family updates via email? If yes, what platform is used (Mailchimp, a JCC shared platform, direct email, HoneyBook)?
+      13. are past newsletters accessible for review?
+      14. any data on open rates or click rates if a platform with analytics is in use?
+      15. the school's Google Business Profile URL is not yet confirmed in doc-02. Please confirm whether the GBP is claimed and actively maintained, and provide the URL so the review count and rating can be verified. Also note whether the school appears on any parenting directories, JCC network listings, or local review sites.
+      16. does Rebecca have thank-you emails, notes from families, or messages from referral sources that contain testimonial-quality language? If yes, I would like to review them with permission to select the strongest for this section.
+      17. does the school have a logo file in a vector or high-resolution format (SVG, AI, EPS, or high-res PNG)? If yes, where does it live and who has access? If only a low-resolution version exists (copied from the website, for example), that should be noted as a gap. Please also confirm whether there are any alternate versions (horizontal, stacked, icon only, light or dark variants).
+      18. the website should reflect the working color palette; once the URL is confirmed from doc-02, I will extract the hex codes and document them here. If the school has a brand guidelines document or a Canva account with saved brand colors, please share access.
+      19. what fonts are in use on the website and in printed materials? If there is a designer who built the website or printed materials, they may have this information.
+      20. is there a formal brand guidelines document, or are the visual choices informal and undocumented? If no guidelines exist, the working approach is to extract what is currently in use from the live website and treat that as the de facto reference.
+      21. does the school have any of the following: a family communications email template, an enrollment packet PDF, social post templates in Canva or a similar tool, or a printed brochure or flyer? Please note where each lives and who has access.
+      22. the JCC executive director's name is not yet confirmed in doc-02; fill in when available.
+      23. are there pediatricians, family therapists, speech language pathologists, special education professionals, or other local service providers who refer families to the school, or who the school refers families to? These relationships are often significant drivers of enrollment for preschools and should be documented here if they exist.
+      24. is the school a member of any local chamber of commerce, parenting network, or community coalition that could be referenced in content or cross-promotional communications?
+      25. NAEYC membership or accreditation; QUALITYstarsNY participation; National Association for Family Child Care or similar; any JCC network early childhood professional group. Rebecca should confirm current standing for any of these.
+      26. once the social media archive and blog are reviewed, this section will document which formats (classroom moment photos, short captions, longer posts, email updates) have generated the most engagement or inquiry responses.
+      27. does the school currently use any hashtags on Instagram? Are there any accounts it tags regularly (JCC accounts, local parenting groups)?
+      28. is there any other staff member who contributes to written content, or is all writing done by Rebecca?
+      29. who posts to the Instagram account? Rebecca only, or do teachers contribute? Is there a posting schedule or is posting ad hoc?
+      30. how many hours per week does Rebecca realistically spend on content (writing, posting, responding to comments, shooting photos)? This matters for setting realistic content calendar expectations.
+      31. email platform; design tools such as Canva; any scheduling tools for social posting
+      32. is there budget for a professional photographer to shoot facility and staff photos? Even a single half-day shoot would address multiple gaps at once.
+    doc-05 (32):
+      1. Does the school draw primarily from within Newburgh city limits, or from surrounding towns such as New Windsor, Marlboro, or Cornwall? This affects how competitor geography gets framed in SEO and content.
+      2. No market-size data was available in the intake materials. A useful number here would be the approximate count of children ages 2-5 in Newburgh and Orange County, or total licensed preschool seats within a 15-mile radius. This feeds the keyword-targeting work in Document 06.
+      3. Recon was not completed for this engagement phase. My read from general market dynamics is that Newburgh has several preschool options and competition for enrolled slots is real, but I cannot confirm whether the market is growing, flat, or contracting without primary research.
+      4. Has Little Friends' enrollment been growing, stable, or contracting over the past 3-5 years? This is the most important market-dynamics signal available without a full competitive recon.
+      5. Where does most of the school's inquiry traffic actually originate? Rebecca would have this from asking families at tours, and it is worth capturing explicitly.
+      6. Tuition ranges were not researched for this version. The Orange County preschool market likely spans from subsidized or sliding-scale programs around $500-$700 per month at the low end to franchise preschools at $1,200-$1,600 per month or higher. These are directional estimates only; actual competitor rates should be pulled before using this section in any pricing strategy conversation.
+      7. Requires knowing the actual tuition rate.
+      8. Does Little Friends participate in any state or county child care subsidy programs? See Document 02 Section 4 for the open question.
+      9. URL for the specific Newburgh location page.
+      10. Street address. "Toward the highway" likely means the Route 9W or I-87 corridor, which places it in a different part of Newburgh from the JCC.
+      11. Exact founding year for the franchise; and when the Newburgh location specifically opened and how long it has been in this market.
+      12. Name of the Newburgh franchisee and any named director or lead staff who families interact with.
+      13. Licensed capacity, number of classrooms, and total staff for the Newburgh location.
+      14. Actual tuition rates. Goddard franchise pricing is typically not published and requires a direct inquiry call to the local location.
+      15. Age range and licensed capacity for the Newburgh location specifically.
+      16. Requires a visit to the specific Newburgh location page. Goddard franchise sites follow a national template, which is professionally designed but not locally distinctive.
+      17. Handles and activity for the Newburgh location specifically. National Goddard handles exist; local pages are more relevant for this analysis.
+      18. No Ahrefs data was collected for this version. Pull Domain Rating, estimated organic traffic, organic keyword count, and top keywords for the Newburgh Goddard location page URL before finalizing the SEO Strategy (Document 06). Note that the Newburgh location page sits on the national goddardschool.com domain, which likely carries substantial domain authority from the franchise network. This structural advantage means Little Friends should not compete with Goddard on brand-adjacent search terms and should focus on geography-plus-philosophy keywords instead.
+      19. Pull from the Google Maps listing for the Newburgh Goddard location. Read at least 15-20 reviews.
+      20. Based on Goddard's national positioning, families typically praise consistent routines, clean facilities, and the comfort of a recognizable brand. Whether these patterns hold for the Newburgh location is worth confirming.
+      21. This is the most useful section for positioning work. Common Goddard franchise criticisms nationally include staff turnover, administrative processes that feel standardized rather than personal, and a sense that the program is more corporate than warm. Whether these themes appear in the Newburgh location's reviews should drive how Little Friends positions against them in enrollment conversations.
+      22. No specific program names were provided in the client profile for this category. Before this section can be completed, identify the 1-3 most active church-affiliated preschools in Newburgh that families are actually comparing to Little Friends. Rebecca likely knows these by name.
+      23. Actual tuition rates at the specific Newburgh programs competing with Little Friends.
+      24. Requires visits to specific program websites and social accounts. Most church preschool websites are low-investment; this is worth confirming because it affects the SEO analysis.
+      25. Name, address, tuition range, age range, and enrollment size of the specific New Paltz Montessori program referenced in the client profile. There may be more than one Montessori-affiliated school in that area.
+      26. Are any private school early childhood programs actively drawing Newburgh-area families? If yes, it matters for positioning. If no, this category can be ignored.
+      27. Requires reading actual program websites. Likely: community-focused, faith-adjacent framing even when secular, heavy use of "family" and "community."
+      28. Requires a review of each competitor's website and Instagram to document the dominant visual style. My working assumption is that Goddard leans on bright primary colors and produced franchise photography; church preschool sites likely use phone-quality images and a template design. The open visual space for Little Friends is probably documentary-style photography of children doing actual things, without the staged quality of franchise materials. This should be confirmed visually before shaping the Social Media Playbook (Document 08).
+      29. Requires actual tuition data from both Little Friends and competitors.
+      30. Deferred until actual tuition numbers are in hand. The most important question to answer first: does the current rate reflect what the program actually delivers, or has it been held artificially low out of community-pricing instinct? Each scenario leads to a different recommendation.
+      31. No Ahrefs data was collected for this version. Before finalizing the SEO Strategy (Document 06), pull Domain Rating, estimated organic traffic, organic keyword count, and backlink count for Little Friends Learning Loft and the Newburgh Goddard location. The New Paltz Montessori is in a different geographic market and is lower priority for this comparison. Church preschool programs should be pulled once named programs are confirmed in Section 2.
+      32. Requires visiting each competitor's website to assess blog or content activity. Most preschool websites in this market have minimal content investment. If that holds for the Newburgh competitors, even a modest cadence (1-2 posts per month) would create a meaningful long-term SEO and authority advantage for Little Friends.
+    doc-07 (38):
+      1. days and hours for each program
+      2. exact minimum age cutoff, for example, must a child turn two by September 1st?
+      3. specific local infant-care programs Rebecca refers families to
+      4. actual days, hours, and any curriculum framework for each program
+      5. confirm actual space names and whether there is dedicated outdoor time and space
+      6. specific curriculum framework, if any, for example High/Scope or Reggio-influenced, or no named framework
+      7. is the fee due at the time of submitting the application, or at the point of enrollment commitment? Is it refundable if the family decides not to enroll after paying it?
+      8. when is the deposit due, at signing the enrollment agreement or at a different point? What payment method is accepted?
+      9. sibling discounts, JCC member discounts, early enrollment discounts, and financial aid options have not been confirmed for public sharing as of June 2026. Once confirmed, this answer will include the specific discount types, amounts, and who qualifies for each.
+      10. does the school accept ACS vouchers, the Child Care Assistance Program, or any other state or county subsidy programs? This has not been confirmed in the Business Facts Reference as of June 2026.
+      11. current waitlist status by classroom; which classrooms, if any, are at or near capacity as of the writing date
+      12. is the enrollment application in Brightwheel, on paper, or a separate online form?
+      13. is there a priority enrollment window for siblings or returning families? What is the application deadline for a September start?
+      14. does the school currently maintain a waitlist? How does it operate? Can families request a specific classroom, and do returning families or siblings receive enrollment priority?
+      15. what other required documents are collected at enrollment, for example: emergency contact form, medical treatment authorization, photo and media release, field trip permission, allergy action plan?
+      16. drop-off window open and close times; pickup window open and close times; aftercare end time. The school runs on a school-year calendar, so hours follow the school-year schedule, but specific times have not been confirmed in the Business Facts Reference as of June 2026.
+      17. whether programs are offered three days per week, five days per week, or both, and which specific days each age group meets. The answer may differ by program.
+      18. September through June? Specific vacation weeks, observed holidays, early dismissal days, and whether there is any summer programming
+      19. confirm actual space names; whether there is a dedicated outdoor area and when outdoor time happens; full daily schedule structure
+      20. what specific symptoms require a child to stay home; what the return-to-school criteria are, for example 24 hours fever-free; OCFS-required illness exclusion rules
+      21. whether the school provides snacks or families bring them; whether the building has a nut-free or allergen-aware policy; any other food restrictions families should know about
+      22. whether all three age groups (Twos, Threes, Pre-K) are eligible or only certain ones; whether aftercare takes place in the child's classroom or a separate space
+      23. exact aftercare start and end times; whether it runs every weekday; any exceptions tied to the school calendar
+      24. is aftercare included in base tuition, or is it a separate add-on? If separate, what is the monthly or per-day rate?
+      25. is there any integration of Jewish holiday observance or JCC programming into the school calendar or classroom? If so, what specifically?
+      26. does JCC membership affect tuition rates, enrollment priority, or access to the program? Who qualifies for any member pricing, and what does it look like?
+      27. last name
+      28. names and roles of any remaining staff who interact with families directly
+      29. Rebecca's direct email or phone; main school email or phone for general inquiries
+      30. confirm Brightwheel is the family-facing communication tool and add to Business Facts Reference; also confirm whether the school sends daily updates via Brightwheel, how quickly messages are typically read and responded to, and how teachers and families use it in practice
+      31. which specific features the school uses Brightwheel for, for example daily updates, messaging, billing, or check-in and check-out; how families get set up and onboarded to it
+      32. what is the school's protocol when a child becomes ill during the school day? Who contacts the parent? What symptoms trigger a call home? Is there a designated health contact on site?
+      33. what is the school's allergy policy? Is the building nut-free? Who is trained to administer an EpiPen if needed? How are life-threatening allergies communicated to all staff?
+      34. OCFS license number and renewal date
+      35. does the school have a specific transition support process, a gradual entry option, or a recommended first-day approach?
+      36. local infant-care referral resources
+      37. what is the minimum realistic program cost after confirmed discounts?
+      38. director's last name
+[gate] AUTO-APPROVED (UPRIVER_GATE_AUTO) — unattended/synthetic runs only.
+  approving tier 1 unblocks: doc-06, doc-08
+  snapshot this approved tier in git (local data source):
+    git add -f clients/littlefriends/docs/doc-04-content-library.md clients/littlefriends/docs/doc-05-competitor-landscape.md clients/littlefriends/docs/doc-07-faq-bank.md clients/littlefriends/docs/manifest.json && git commit -m "generate(littlefriends): approve tier 1 — doc-04, doc-05, doc-07"
+[claude-cache] wrote f3d8d883c437799f.5a562b06908308fa (generate:doc-06)
+  generated doc-06 — 6892 words, 43 marker(s) → docs/doc-06-seo-keyword-strategy.md
+
+Tier 2 report:
+  [produced] doc-06 — 6892 words, 43 marker(s) → docs/doc-06-seo-keyword-strategy.md
+  [failed] doc-08 — claude CLI exited 1: {"type":"result","subtype":"success","is_error":true,"api_error_status":null,"duration_ms":721413,"duration_api_ms":721262,"num_turns":2,"result":"Prompt is too long","stop_reason":"stop_sequence","session_id":"2e304dee-6e3d-4c92-baa6-28b273d8fc22","total_cost_usd":1.51641715,"usage":{"input_tokens":3,"cache_creation_input_tokens":61621,"cache_read_input_tokens":97498,"output_tokens":26631,"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":59350,"ephemeral_5m_input_tokens":0},"inference_geo":"not_available"
+
+  [NEEDS CONFIRMATION] across tier (43), by doc:
+    doc-06 (43):
+      1. Pull from Ahrefs once the site URL is confirmed. Given the school's profile, a DR in the low single digits or unranked is the most likely starting point.
+      2. Pull from Ahrefs and cross-reference with GSC once connected. Rebecca's description of the school as "basically invisible" on Google suggests near-zero non-branded organic traffic.
+      3. Requires GSC access. For a small school site, 10-30 indexed pages would be typical. Provisioning GSC is the first technical action before any content work begins.
+      4. Requires GSC access (top pages by clicks, last 90 days) and Ahrefs site explorer. Once pulled, populate the table below with the pages currently driving the most organic traffic.
+      5. Pull from GSC "Search results" filtered to positions 1-10, last 90 days. For a school with minimal content history, I expect this list to be short and anchored almost entirely on brand-name searches and possibly the JCC-name-plus-preschool term.
+      6. Pull from GSC filtered to positions 11-30. These are the highest-ROI targets because a modest optimization push can move them onto page one.
+      7. Pull from GSC filtered to queries containing "little friends learning loft" and name variations.
+      8. Everything except brand-name queries.
+      9. Once GSC, GA4, and Ahrefs are connected, document which tool sourced each metric and the date range pulled. Until then, this section has no confirmed data and no measurement baseline exists.
+      10. Sum after Ahrefs validation
+      11. Set after baseline and volume pulls are complete
+      12. Verify by searching "Little Friends Learning Loft Newburgh" in Google Maps. If it is claimed, confirm the account owner email is one Rebecca controls. If it has been auto-generated by Google and never actively claimed, claiming it is the first priority above everything else.
+      13. Should be "Preschool" or "Early childhood education center." Confirm what is currently set and whether it matches how families actually search.
+      14. Potential additions may include "Child care agency" if it fits the OCFS license category. Avoid categories that signal the wrong service type or age range.
+      15. Confirm drop-off and pickup windows are accurately listed. Incorrect hours are among the most damaging trust signals a local business listing can carry.
+      16. Count and date of most recent upload. Classroom photos, outdoor space if any, and the general building entrance are the most useful categories for a preschool GBP.
+      17. Active or inactive. For a school, enrollment-season and open-house posts are the most natural cadence.
+      18. Check for unanswered questions and for whether any incorrect crowd-sourced answers have accumulated. Unseeded Q&A sections often get filled with wrong information from well-meaning strangers.
+      19. Should include: Twos class, Threes class, Pre-K program, Aftercare. These map to the programs confirmed in Document 02 §3.
+      20. How old are the most recent GBP photos? If the last upload was more than six months ago, a new batch is a fast, high-impact action.
+      21. Full street address of the Newburgh JCC. Document 02 §1 flags this as pending. This is the most important operational gap to close before any citation work begins. Everything in local SEO depends on a verified, exact address.
+      22. Document 02 §1 flags this as pending.
+      23. No citation audit has been performed. Once the verified NAP is confirmed, run a scan using BrightLocal or Whitespark to document (1) which directories have a correct listing, (2) which have inconsistent or outdated entries, and (3) which high-value directories are missing a listing entirely.
+      24. Does the JCC site link clearly to the school's own page? If not, this is a high-authority local backlink sitting unused.
+      25. What is the current practice? A well-timed, personal request from Rebecca to enrolled families at approximately 4-6 weeks after a child's start date tends to produce the most thoughtful responses. The timing matters: too early and the family does not have enough to say; too late and the moment has passed.
+      26. Once the class-size numbers are confirmed per Document 02 §5, those numbers belong in every post that touches on class size. "Eight children, two teachers" is extractable. "A warm, small environment" is not.
+      27. A full schema audit requires access to the website source. The prioritized list below is based on what is most impactful for this type of school and most commonly absent from small program sites.
+      28. Run the website URL through Google's Rich Results Test and the Schema.org validator once the URL is confirmed. Most small school websites have minimal schema beyond whatever a theme provides by default. Confirm before assuming anything is in place.
+      29. Requires a website content inventory. Based on the client's own description of being "basically invisible" on Google, I expect the published content is minimal or close to zero.
+      30. All of the following requires access to the website, Google Search Console, and the Rich Results Test tool. None of this can be assessed without a verified URL and active GSC connection.
+      31. Verify the site is served over HTTPS. An HTTP site in 2026 is a security and ranking issue.
+      32. The list below reflects typical gaps for a small school website with minimal ongoing maintenance. Each item should be validated against an actual technical audit before scheduling work.
+      33. Requires reviewing the actual site navigation and URL structure. For a school of this size, the recommended structure is: homepage, per-program pages (Twos, Threes, Pre-K, Aftercare), an About page, a Blog, a Contact or Tour page, and an Enrollment page. Internal linking between blog posts and program pages is where most small school sites have the largest gap and the easiest short-term fix.
+      34. Verify at [domain
+      35. Verify at [domain
+      36. Document 02 §1 notes analytics tools as "to be provisioned." GA4 connection is a prerequisite for measuring the targets in Section 8.
+      37. Same as above. This is the single most important tool to connect before any SEO work begins.
+      38. The primary conversion events for this school are: tour inquiry form submitted, phone call initiated, and tour scheduled (if an online scheduling tool exists). All three should be tracked as GA4 conversion events before any content campaign begins.
+      39. Every row below requires GSC, Ahrefs, and GA4 access. Pull all of these before any other measurement work begins. Without a confirmed baseline, the 90-day and 12-month targets that follow are frameworks, not commitments.
+      40. set as baseline + 20-30% once baseline is known
+      41. set as baseline + 25-40% once baseline is known
+      42. Set as baseline + 4-6 points. Realistic for a consistent 12-month content and local citation effort.
+      43. For a local preschool starting from near-zero, a realistic 12-month target with consistent content output is 400-800 organic visits per month. This should be revised up or down once the baseline is confirmed.
+  failed: doc-08
+[gate] AUTO-APPROVED (UPRIVER_GATE_AUTO) — unattended/synthetic runs only.
+  approving tier 2 unblocks: doc-09, doc-11
+  snapshot this approved tier in git (local data source):
+    git add -f clients/littlefriends/docs/doc-06-seo-keyword-strategy.md clients/littlefriends/docs/manifest.json && git commit -m "generate(littlefriends): approve tier 2 — doc-06, doc-08"
+[claude-cache] wrote feb9a82da872f6c6.101ae93016f15a62 (generate:doc-09)
+
+Tier 3 report:
+  [failed] doc-09 — Session finished but did not write a document. Model reply: The document is at `/Users/joshua/little-friends-learning-loft-09-social-media-playbook.md`. Here's a brief summary of what was produced:
+
+**What's in the file**
+
+All 9 required sections are complete.
+  [skipped] doc-11 — upstream not available this run: doc-08
+
+  [NEEDS CONFIRMATION] across tier: none
+  failed: doc-09
+  skipped (upstream not available): doc-11
+  Tier 3: nothing produced to approve; continuing.
+
+Tier 4 report:
+  [skipped] doc-10 — upstream not available this run: doc-08, doc-09
+  [skipped] doc-12 — upstream not available this run: doc-09, doc-11
+
+  [NEEDS CONFIRMATION] across tier: none
+  skipped (upstream not available): doc-10, doc-12
+  Tier 4: nothing produced to approve; continuing.
+All tiers processed.
+[15:41:35] (exit 0)
+[15:41:35] --- PHASE provisioning: I01–I09 artifacts ---
+[15:41:35] $ node packages/cli/bin/run.js generate littlefriends --all --provisioning
+Batch plan — scope 9 doc(s) (i01, i02, i03, i04, i05, i06, i07, i08, i09)
+  already approved (7): doc-01, doc-02, doc-03, doc-04, doc-05, doc-07, doc-06
+
+Tiers: none eligible — every in-scope doc is blocked (see below).
+
+Blocked (9):
+  i01 (Client Claude Project)
+    blocked by upstream needing data (1): i07
+    upstream out of scope / unapproved (11): doc-08, doc-09, doc-10, doc-11, doc-12, doc-13, doc-14, doc-15, doc-16, doc-17, doc-18
+  i02 (Client Skills Deployment)
+    blocked by upstream needing data (1): i01
+    upstream out of scope / unapproved (1): doc-11
+  i03 (Client Routines / Cowork)
+    missing fields (1): toolsAndAccess.browserDeviceLandscape
+    unverified HV (1): toolsAndAccess.browserDeviceLandscape
+    blocked by upstream needing data (2): i02, i04
+    upstream out of scope / unapproved (2): doc-11, doc-12
+  i04 (Client MCP Server Configuration)
+    missing fields (1): governance.dataResidency
+    unverified HV (1): governance.dataResidency
+    blocked by upstream needing data (1): i02
+    upstream out of scope / unapproved (1): doc-11
+  i05 (Client Claude in Chrome)
+    missing fields (1): toolsAndAccess.browserDeviceLandscape
+    unverified HV (1): toolsAndAccess.browserDeviceLandscape
+    blocked by upstream needing data (1): i01
+    upstream out of scope / unapproved (1): doc-11
+  i06 (Client Claude Code Setup)
+    missing fields (1): people.technicalCollaborator
+    blocked by upstream needing data (1): i01
+  i07 (Account Access & Governance)
+    missing fields (1): governance.dataResidency
+    unverified HV (1): governance.dataResidency
+  i08 (Client Custom Styles / Memory / Preferences)
+    missing fields (1): governance.memoryIncognitoPosture
+    unverified HV (1): governance.memoryIncognitoPosture
+    blocked by upstream needing data (1): i01
+  i09 (Client Artifacts & Deliverable Templates)
+    missing fields (1): governance.reviewResponsePolicy
+    unverified HV (1): governance.reviewResponsePolicy
+    blocked by upstream needing data (1): i01
+    upstream out of scope / unapproved (2): doc-11, doc-12
+
+  hint: provisioning consumes generated docs. Generate and approve them first: upriver generate littlefriends --all
+All tiers processed.
+[15:41:35] (exit 0)
+[15:41:35] --- PHASE final: snapshots ---
+[15:41:36] $ node packages/cli/bin/run.js profile show littlefriends
+Profile: littlefriends  (revision 57)
+
+Fill by section:
+  identity              9/9
+  people                5/5
+  offerings             4/4
+  pricing               5/5
+  capacity              3/3
+  customers             6/6
+  positioning           4/4
+  voice                 5/5
+  salesProcess          12/12
+  content               9/9
+  competitors           2/2
+  seo                   4/4
+  toolsAndAccess        14/14
+  operationsAutomation  6/6
+  governance            3/3
+  goals                 5/5
+  modules               4/4
+
+Ready (15):
+  doc-01  Brand Voice Guide
+  doc-02  Business Facts Reference
+  doc-03  Sales Process Map
+  doc-04  Content Library
+  doc-05  Competitor Landscape
+  doc-06  SEO & Keyword Strategy
+  doc-07  FAQ Bank
+  doc-08  Email Templates
+  doc-09  Social Media Playbook
+  doc-13  Master Build Sequence
+  doc-14  Client Onboarding Kit
+  doc-15  Retainer Engagement Playbook
+  doc-16  Sales Collateral
+  doc-17  Handoff & Offboarding
+  doc-18  AI Operating System Sales Document
+
+Blocked (12):
+  blocked by missing fields (7): i07, i04, i03, i05, i06, i08, i09
+  blocked by unverified HV (6): i07, i04, i03, i05, i08, i09
+  blocked by upstream docs (11): doc-10, doc-11, doc-12, i01, i02, i04, i03, i05, i06, i08, i09
+  (use `profile show <slug> --deliverable <id>` for the exact missing paths)
+
+Conflict queue (0): none
+[15:41:37] (exit 0)
+[15:41:37] $ node packages/cli/bin/run.js profile conflicts littlefriends
+Conflict queue (0): none
+[15:41:37] (exit 0)
+[15:41:37] === e2e synthetic run COMPLETE ===
+[15:41:37] Artifacts: clients/littlefriends/docs/  clients/littlefriends/coverage-final.json  clients/littlefriends/e2e/
+[15:45:34] === e2e synthetic run start (from: docs) ===
+[15:45:34] --- PHASE docs: generate the 12-doc AI Operating System (auto-gated) ---
+[15:45:34] $ node packages/cli/bin/run.js generate littlefriends --all
+Batch plan — scope 12 doc(s) (doc-01, doc-02, doc-03, doc-04, doc-05, doc-06, doc-07, doc-08, doc-09, doc-10, doc-11, doc-12)
+  already approved (7): doc-01, doc-02, doc-03, doc-04, doc-05, doc-07, doc-06
+
+Tiers (5) — generated in order, gated per tier:
+  Tier 0 (3): doc-01, doc-02, doc-03
+  Tier 1 (3): doc-04, doc-05, doc-07
+  Tier 2 (2): doc-06, doc-08
+  Tier 3 (2): doc-09, doc-11
+  Tier 4 (2): doc-10, doc-12
+
+Blocked (0):
+  none
+  reused doc-01 — 3036 words, 27 marker(s) → docs/doc-01-brand-voice-guide.md
+  reused doc-02 — 3587 words, 63 marker(s) → docs/doc-02-business-facts-reference.md
+  reused doc-03 — 4637 words, 70 marker(s) → docs/doc-03-sales-process-map.md
+
+Tier 0 report:
+  [reused] doc-01 — 3036 words, 27 marker(s) → docs/doc-01-brand-voice-guide.md
+  [reused] doc-02 — 3587 words, 63 marker(s) → docs/doc-02-business-facts-reference.md
+  [reused] doc-03 — 4637 words, 70 marker(s) → docs/doc-03-sales-process-map.md
+
+  [NEEDS CONFIRMATION] across tier (160), by doc:
+    doc-01 (27):
+      1. Newburgh, NY assumed; please confirm city and state
+      2. is "the Loft" used informally by families and staff?
+      3. specific class or program names, e.g., "Twos," "Threes," "Pre-K Room"
+      4. how the school frames its geography publicly
+      5. does the school draw families from a specific surrounding area, e.g., Orange County, the broader mid-Hudson region?
+      6. actual space names, e.g., block corner, art table
+      7. actual class sizes and ratios.
+      8. current enrollment status for the twos class and September availability.
+      9. days and hours
+      10. number
+      11. teacher count
+      12. how the director typically offers tour options.
+      13. director's first name
+      14. phone or direct email
+      15. number of years in early childhood education
+      16. child's first name if used in the review
+      17. lead teacher's name
+      18. director's first name
+      19. email or phone
+      20. director's first name
+      21. full address
+      22. primary geographic draw (city of Newburgh, Orange County, mid-Hudson Valley?)
+      23. year founded
+      24. director's name and role; any lead teachers named in family communications
+      25. tuition range or structure; any scholarship or subsidy options through the JCC
+      26. September school year start? Year-round program? Summer session?
+      27. class sizes, student-to-teacher ratios, number of classrooms, total enrollment capacity, years in operation
+    doc-02 (63):
+      1. Is Little Friends Learning Loft the registered legal entity, or does it operate as a program under the Newburgh JCC's legal registration? Clarify which entity name appears on the OCFS license and any enrollment contracts.
+      2. What year did Little Friends Learning Loft open, or in what year did it begin operating as a program of the Newburgh JCC?
+      3. 2-3 sentences on how the school came to exist and its relationship to the JCC's mission and history.
+      4. Full street address of the Newburgh JCC / Little Friends Learning Loft
+      5. Same as primary, or provide separate mailing address
+      6. Are there specific towns, school districts, or counties the school actively draws from? Any geographic limits on enrollment?
+      7. URL, and confirm whether it is claimed and actively maintained
+      8. Active platforms and handles
+      9. Drop-off window open and close times; pickup window open and close times; aftercare end time; office hours for responding to family inquiries; whether the school runs any summer programming.
+      10. OCFS license number and current renewal or expiration date.
+      11. Held under the JCC's EIN or a separate Little Friends entity?
+      12. Last name
+      13. Name of the current JCC executive director, in case it is relevant in communications involving the parent organization.
+      14. Classroom email or extension, if shared with families
+      15. Names and roles of remaining staff members, and which roles families interact with directly (aftercare staff, administrative support, etc.).
+      16. Does Rebecca handle these directly, or is there a JCC finance contact?
+      17. Who is the designated health or first aid contact on site?
+      18. Half-day or full-day? How many days per week (3-day, 5-day, or other options)?
+      19. Days and hours
+      20. Half-day or full-day? Days per week?
+      21. What is the curriculum approach and what does kindergarten-readiness preparation look like at this school?
+      22. Half-day or full-day? Days per week?
+      23. Exact aftercare hours; which age groups are eligible; whether aftercare takes place in the child's classroom or a separate space.
+      24. Is aftercare included in base tuition, or charged separately? Available every weekday?
+      25. Are there specific local infant-care programs Rebecca refers inquiring families to?
+      26. Are there other programs families regularly ask about that the school does not offer? For example: summer camp, full-day kindergarten, before-school care, enrichment classes (music, languages, swim), or therapeutic services?
+      27. Any programs discontinued or changed in format that families familiar with the school's history might still reference?
+      28. Due at the time of application, or at enrollment commitment? Is it refundable if the family does not ultimately enroll?
+      29. Does tuition vary by program (for example, Twos vs. Pre-K)? Does aftercare carry a separate monthly charge? Are there JCC member vs. non-member pricing tiers? Does the school accept state or county child care subsidy programs (ACS vouchers, Child Care Assistance Program, or similar)? Are sibling discounts available?
+      30. Sibling discounts, early enrollment discounts, JCC member discounts, financial aid, or subsidy program acceptance?
+      31. When were tuition rates last changed?
+      32. Is any classroom currently waitlisted or closed to new enrollment?
+      33. When does enrollment for the following school year open? Is there a priority window for returning families or siblings?
+      34. Does the school offer a 3-day per week option, a 5-day option, or both, across any age group?
+      35. School-year calendar (September through June), year-round, or other? List vacation weeks, holidays, and any early dismissal days.
+      36. Rebecca to review the staff training tracking sheet and identify which staff members are current and which have a gap to close before their next renewal date.
+      37. Standard response time target and who handles first response (Rebecca, or another staff member)?
+      38. Is there a formal orientation or welcome visit before a child's first day? What does the school do to support children and families through separation in the first weeks?
+      39. Monthly, semester, or annual? Specific due dates?
+      40. Required notice period to withdraw a child mid-year? Is any portion of tuition refunded for mid-year withdrawal?
+      41. Emergency contact form, authorization for emergency medical treatment, field trip permission form, photo and media release, and any other documents required at enrollment?
+      42. Open and close times
+      43. Open and close times
+      44. Is there a fee for pickup after the close of aftercare? At what point does late pickup trigger a policy response?
+      45. What symptoms require a child to stay home? What is the return-to-school criteria (for example, 24 hours fever-free)?
+      46. Does the school administer medications? If so, what is the documentation and authorization process? Note: OCFS requires MAT certification for any staff who administer medications.
+      47. Does the school provide snacks, or do families bring food from home? Is there a nut-free or allergen-aware policy for the building?
+      48. How are life-threatening allergies communicated to all staff? Are EpiPens stored on site, and who is trained to administer them?
+      49. Do any classrooms have a nap or rest period? What is the policy on rest mats, sleep requirements, or alternatives for non-napping children?
+      50. Is there outdoor play space associated with the school? What is the weather threshold for staying inside?
+      51. Frequency, parent consent process, and whether parent chaperones participate
+      52. Brief description of the school's discipline and behavior guidance philosophy. For example, does it follow a specific positive behavior support framework?
+      53. License number and renewal date.
+      54. Does the school have a written policy for how long each record category is retained after a child's last attendance? OCFS guidance and state law set minimums; confirm whether a written policy exists.
+      55. Is the Newburgh JCC facility ADA accessible? Are the classrooms, bathrooms, and any outdoor spaces usable by children and families with mobility needs?
+      56. Are any staff members bilingual (Spanish or other languages)? Does the school serve families who communicate primarily in a language other than English, and if so, what accommodations are in place?
+      57. Does the school enroll children with IEPs or 504 plans? Does it coordinate with the school district's Committee on Preschool Special Education (CPSE) for children who qualify for services?
+      58. Is there Jewish programming or holiday observance integrated into the school curriculum? Is the school open to families of all backgrounds regardless of religious affiliation? Both affect how this differentiator is communicated to prospective families.
+      59. Does the school operate at actual ratios better than the required maximum in any classroom? If yes, that is a more specific and stronger differentiator.
+      60. Who are the primary preschools in the Newburgh area that families compare Little Friends to? This context is needed to position the differentiators accurately and avoid overclaiming.
+      61. Any NAEYC accreditation, New York State quality rating (QUALITYstarsNY), press coverage, JCC network recognition, or community awards?
+      62. How many years has the school been operating? Approximate total number of children who have graduated from the program? These specific numbers are what make the "experience" claim factual rather than vague.
+      63. Does JCC membership affect tuition, enrollment priority, or access to the program?
+    doc-03 (70):
+      1. confirm the public-facing program name used with prospective families
+      2. approximately how many inquiries per year come through parent referrals?
+      3. phone call to Rebecca, email to the program, walk-in at the JCC front desk, or a combination?
+      4. Rebecca, or a designated intake contact?
+      5. approximately how many inquiries per year originate from within the JCC community?
+      6. who qualifies for this discount, and is it restricted to JCC members?
+      7. email, phone, or in-person introduction through JCC staff?
+      8. approximately how many DMs per month?
+      9. conversion rate from Instagram is unknown. Quality may be mixed; Instagram reaches families at varying stages of research, from curious browsers to ready-to-tour families.
+      10. who is responsible for monitoring the program's Instagram DMs, and how frequently are they checked?
+      11. approximately how many emails per month?
+      12. which email address, and who monitors it?
+      13. does the program have a Google Business Profile listing, and does it currently generate inquiries?
+      14. are any such referral relationships active or being developed?
+      15. is the program present or active on any of these?
+      16. are there channels the program has consciously decided not to pursue, such as paid digital advertising or listing platforms? Documenting these decisions prevents relitigating them later.
+      17. walk through what happens from the moment a new inquiry comes in. Which channel does it arrive on? Who sees it first? What happens next? How long before the family receives a substantive response?
+      18. who receives the inquiry first, and on which channels? Is it Rebecca, or is intake shared across the team?
+      19. is there any auto-acknowledgment (a thank-you or receipt confirmation) before a personal response goes out?
+      20. does a first-response template exist, or is each reply written fresh each time?
+      21. what does the first response typically include, a tour invitation, pricing overview, program description, or something else?
+      22. is Rebecca the primary first-touch responder, or does this responsibility fall to another team member?
+      23. who covers inquiries when the primary responder is unavailable?
+      24. does a written template exist? If so, please share it.
+      25. not tracked
+      26. are there other disqualification factors, such as no current classroom availability and no waitlist capacity?
+      27. when a family inquires about an infant or a child clearly outside the program's scope, what does the program say? Is there a referral to another program, or a polite decline only?
+      28. what specific information does the program need before offering a tour? The profile implies that child age and program interest are the threshold. Are other intake questions asked before a tour is confirmed?
+      29. does Brightwheel currently track pre-enrollment stages such as inquiry received, tour scheduled, and tour completed? Or is it used primarily for enrolled families? If the inquiry stage is not tracked in Brightwheel, where do pre-enrollment conversations currently live?
+      30. where do inquiries most often get stuck before a tour is scheduled? Does the program have any data or intuition on this?
+      31. how long does it typically take to go from the first reply to a confirmed tour on the calendar?
+      32. is the term "tour," "school visit," "open house," or something else used with prospective families?
+      33. what is the actual length of the program's tours?
+      34. confirm the address and which spaces are included in the tour path
+      35. does Rebecca lead all tours, or do lead teachers (Miss Dana, Miss Carla, Miss Tova) participate? Is the tour format consistent, or does it vary by who is available?
+      36. who runs a tour if the primary person is unavailable?
+      37. manual back-and-forth via email, a scheduling link, or by phone?
+      38. is a confirmation email sent at booking? Is a reminder sent the day before?
+      39. not tracked
+      40. if a family does not show up for a scheduled tour, what happens next?
+      41. is any preparation done before a family arrives, such as reviewing their inquiry notes, printing program materials, or arranging classroom access?
+      42. what does a typical tour cover? A reasonable starting framework for a JCC Preschool tour is listed below. Confirm which steps reflect the actual current tour, and note anything that is missing or different.
+      43. does the family leave with printed materials, a pricing sheet, an application link, or nothing?
+      44. does the staff member who ran the tour record any notes? Is Brightwheel updated after each tour to reflect the family's interest level or next step?
+      45. not tracked
+      46. walk through what happens after a family says they want to enroll. The steps below are a reasonable starting framework; please confirm or correct each one.
+      47. is this through Brightwheel, a paper form, or a separate system?
+      48. what is the deposit amount, what payment method is used, and who processes it? Linda the bookkeeper is part-time at the JCC; confirm her specific role in this step.
+      49. does this happen, and what does it include?
+      50. at what point does the child enter Brightwheel, and who creates the record?
+      51. digital via Brightwheel, or paper?
+      52. how is the deposit collected?
+      53. who updates Brightwheel at the close stage, and when?
+      54. how often does a family express intent to enroll and then not complete the application or deposit? Is this tracked anywhere?
+      55. what does the family receive when enrollment is confirmed? Orientation dates, a classroom supply list, Brightwheel account setup instructions, or other onboarding materials?
+      56. does the program use email, phone, Instagram DM, or a combination for follow-up? Are there any channels the team prefers to avoid because they feel too aggressive for this audience?
+      57. when a family chooses a different school and communicates that, what does the program do? Is there a polite acknowledgment, an archive in Brightwheel, or no action?
+      58. does the program have any mechanism for staying in touch with families who toured but did not enroll, or who are on a waitlist for a future school year?
+      59. for families whose children have graduated from the program, are there systematic touches for sibling enrollment or referral asks? Or does that outreach happen informally if at all?
+      60. not tracked. This is the single most important number in this document and it does not currently exist.
+      61. not tracked. Channel attribution for enrollments is unknown.
+      62. is Brightwheel currently being used to track inquiry stage, tour stage, and enrollment stage separately? If not, where does pre-enrollment information currently live, and is any of it retrievable for a backward-looking baseline?
+      63. does this match the team's experience? Are there specific months that feel particularly intense?
+      64. does the program accept mid-year enrollment if classroom capacity allows? If so, what is the minimum lead time a family needs before a start date?
+      65. which classroom (Twos, Threes, or Pre-K) tends to reach capacity first during the enrollment cycle?
+      66. does the program maintain a waitlist, and if so, how is it managed? Is it tracked in Brightwheel?
+      67. what are the licensed or operational capacity limits per room?
+      68. does higher inquiry volume in January through April strain the team's ability to respond quickly?
+      69. does response time improve when inquiry volume drops?
+      70. does the team fall behind on follow-ups or tour scheduling during the busiest months?
+[gate] AUTO-APPROVED (UPRIVER_GATE_AUTO) — unattended/synthetic runs only.
+  approving tier 0 unblocks: doc-04, doc-05, doc-07
+  snapshot this approved tier in git (local data source):
+    git add -f clients/littlefriends/docs/doc-01-brand-voice-guide.md clients/littlefriends/docs/doc-02-business-facts-reference.md clients/littlefriends/docs/doc-03-sales-process-map.md clients/littlefriends/docs/manifest.json && git commit -m "generate(littlefriends): approve tier 0 — doc-01, doc-02, doc-03"
+  reused doc-04 — 4303 words, 32 marker(s) → docs/doc-04-content-library.md
+  reused doc-05 — 6174 words, 32 marker(s) → docs/doc-05-competitor-landscape.md
+  reused doc-07 — 10122 words, 38 marker(s) → docs/doc-07-faq-bank.md
+
+Tier 1 report:
+  [reused] doc-04 — 4303 words, 32 marker(s) → docs/doc-04-content-library.md
+  [reused] doc-05 — 6174 words, 32 marker(s) → docs/doc-05-competitor-landscape.md
+  [reused] doc-07 — 10122 words, 38 marker(s) → docs/doc-07-faq-bank.md
+
+  [NEEDS CONFIRMATION] across tier (102), by doc:
+    doc-04 (32):
+      1. when did the Slack #photos channel begin? What is the earliest photo in the Instagram archive?
+      2. once the permission reconciliation in Section 9 is complete and a safe-to-use subset is identified, flag 3-5 hero shots here
+      3. does the school provide any staff with a dedicated device for classroom photography?
+      4. how many special events are held per school year, and are they routinely photographed?
+      5. is there an outdoor play area associated with the school or the JCC building?
+      6. does the current paper permission form explicitly cover video, or does it need to be amended?
+      7. does the school maintain a blog on its website? If yes, please provide the URL and access to the post archive so this section can be inventoried. If no blog exists, this is a content gap.
+      8. has the school produced any guides, ebooks, or long-form written material? Examples common for preschools: "what to bring on the first day," "how to prepare your two-year-old for school," a printed family handbook, or a welcome packet. If any of these exist as PDFs or printed documents, note their location here.
+      9. is there a FAQ page on the website, or a written FAQ in the enrollment packet? If yes, please share so it can be inventoried here and cross-referenced with Document 07 (FAQ Bank).
+      10. has the school been featured in any local press, JCC newsletter, Hudson Valley parenting publication, or community outlet? If yes, please share dates, source names, and links or clippings. The client profile notes no press was captured during intake; this question should be answered directly by Rebecca before this section is marked complete.
+      11. does the school hold any accreditation (for example, NAEYC) or participate in any quality rating program (for example, QUALITYstarsNY)? Has it received any JCC network recognition, community awards, or local "best of" recognition? The intake data did not capture this, so no claim of "none" can be made until Rebecca confirms. Please also check the website for any badges or seals currently displayed.
+      12. does the school send newsletters or family updates via email? If yes, what platform is used (Mailchimp, a JCC shared platform, direct email, HoneyBook)?
+      13. are past newsletters accessible for review?
+      14. any data on open rates or click rates if a platform with analytics is in use?
+      15. the school's Google Business Profile URL is not yet confirmed in doc-02. Please confirm whether the GBP is claimed and actively maintained, and provide the URL so the review count and rating can be verified. Also note whether the school appears on any parenting directories, JCC network listings, or local review sites.
+      16. does Rebecca have thank-you emails, notes from families, or messages from referral sources that contain testimonial-quality language? If yes, I would like to review them with permission to select the strongest for this section.
+      17. does the school have a logo file in a vector or high-resolution format (SVG, AI, EPS, or high-res PNG)? If yes, where does it live and who has access? If only a low-resolution version exists (copied from the website, for example), that should be noted as a gap. Please also confirm whether there are any alternate versions (horizontal, stacked, icon only, light or dark variants).
+      18. the website should reflect the working color palette; once the URL is confirmed from doc-02, I will extract the hex codes and document them here. If the school has a brand guidelines document or a Canva account with saved brand colors, please share access.
+      19. what fonts are in use on the website and in printed materials? If there is a designer who built the website or printed materials, they may have this information.
+      20. is there a formal brand guidelines document, or are the visual choices informal and undocumented? If no guidelines exist, the working approach is to extract what is currently in use from the live website and treat that as the de facto reference.
+      21. does the school have any of the following: a family communications email template, an enrollment packet PDF, social post templates in Canva or a similar tool, or a printed brochure or flyer? Please note where each lives and who has access.
+      22. the JCC executive director's name is not yet confirmed in doc-02; fill in when available.
+      23. are there pediatricians, family therapists, speech language pathologists, special education professionals, or other local service providers who refer families to the school, or who the school refers families to? These relationships are often significant drivers of enrollment for preschools and should be documented here if they exist.
+      24. is the school a member of any local chamber of commerce, parenting network, or community coalition that could be referenced in content or cross-promotional communications?
+      25. NAEYC membership or accreditation; QUALITYstarsNY participation; National Association for Family Child Care or similar; any JCC network early childhood professional group. Rebecca should confirm current standing for any of these.
+      26. once the social media archive and blog are reviewed, this section will document which formats (classroom moment photos, short captions, longer posts, email updates) have generated the most engagement or inquiry responses.
+      27. does the school currently use any hashtags on Instagram? Are there any accounts it tags regularly (JCC accounts, local parenting groups)?
+      28. is there any other staff member who contributes to written content, or is all writing done by Rebecca?
+      29. who posts to the Instagram account? Rebecca only, or do teachers contribute? Is there a posting schedule or is posting ad hoc?
+      30. how many hours per week does Rebecca realistically spend on content (writing, posting, responding to comments, shooting photos)? This matters for setting realistic content calendar expectations.
+      31. email platform; design tools such as Canva; any scheduling tools for social posting
+      32. is there budget for a professional photographer to shoot facility and staff photos? Even a single half-day shoot would address multiple gaps at once.
+    doc-05 (32):
+      1. Does the school draw primarily from within Newburgh city limits, or from surrounding towns such as New Windsor, Marlboro, or Cornwall? This affects how competitor geography gets framed in SEO and content.
+      2. No market-size data was available in the intake materials. A useful number here would be the approximate count of children ages 2-5 in Newburgh and Orange County, or total licensed preschool seats within a 15-mile radius. This feeds the keyword-targeting work in Document 06.
+      3. Recon was not completed for this engagement phase. My read from general market dynamics is that Newburgh has several preschool options and competition for enrolled slots is real, but I cannot confirm whether the market is growing, flat, or contracting without primary research.
+      4. Has Little Friends' enrollment been growing, stable, or contracting over the past 3-5 years? This is the most important market-dynamics signal available without a full competitive recon.
+      5. Where does most of the school's inquiry traffic actually originate? Rebecca would have this from asking families at tours, and it is worth capturing explicitly.
+      6. Tuition ranges were not researched for this version. The Orange County preschool market likely spans from subsidized or sliding-scale programs around $500-$700 per month at the low end to franchise preschools at $1,200-$1,600 per month or higher. These are directional estimates only; actual competitor rates should be pulled before using this section in any pricing strategy conversation.
+      7. Requires knowing the actual tuition rate.
+      8. Does Little Friends participate in any state or county child care subsidy programs? See Document 02 Section 4 for the open question.
+      9. URL for the specific Newburgh location page.
+      10. Street address. "Toward the highway" likely means the Route 9W or I-87 corridor, which places it in a different part of Newburgh from the JCC.
+      11. Exact founding year for the franchise; and when the Newburgh location specifically opened and how long it has been in this market.
+      12. Name of the Newburgh franchisee and any named director or lead staff who families interact with.
+      13. Licensed capacity, number of classrooms, and total staff for the Newburgh location.
+      14. Actual tuition rates. Goddard franchise pricing is typically not published and requires a direct inquiry call to the local location.
+      15. Age range and licensed capacity for the Newburgh location specifically.
+      16. Requires a visit to the specific Newburgh location page. Goddard franchise sites follow a national template, which is professionally designed but not locally distinctive.
+      17. Handles and activity for the Newburgh location specifically. National Goddard handles exist; local pages are more relevant for this analysis.
+      18. No Ahrefs data was collected for this version. Pull Domain Rating, estimated organic traffic, organic keyword count, and top keywords for the Newburgh Goddard location page URL before finalizing the SEO Strategy (Document 06). Note that the Newburgh location page sits on the national goddardschool.com domain, which likely carries substantial domain authority from the franchise network. This structural advantage means Little Friends should not compete with Goddard on brand-adjacent search terms and should focus on geography-plus-philosophy keywords instead.
+      19. Pull from the Google Maps listing for the Newburgh Goddard location. Read at least 15-20 reviews.
+      20. Based on Goddard's national positioning, families typically praise consistent routines, clean facilities, and the comfort of a recognizable brand. Whether these patterns hold for the Newburgh location is worth confirming.
+      21. This is the most useful section for positioning work. Common Goddard franchise criticisms nationally include staff turnover, administrative processes that feel standardized rather than personal, and a sense that the program is more corporate than warm. Whether these themes appear in the Newburgh location's reviews should drive how Little Friends positions against them in enrollment conversations.
+      22. No specific program names were provided in the client profile for this category. Before this section can be completed, identify the 1-3 most active church-affiliated preschools in Newburgh that families are actually comparing to Little Friends. Rebecca likely knows these by name.
+      23. Actual tuition rates at the specific Newburgh programs competing with Little Friends.
+      24. Requires visits to specific program websites and social accounts. Most church preschool websites are low-investment; this is worth confirming because it affects the SEO analysis.
+      25. Name, address, tuition range, age range, and enrollment size of the specific New Paltz Montessori program referenced in the client profile. There may be more than one Montessori-affiliated school in that area.
+      26. Are any private school early childhood programs actively drawing Newburgh-area families? If yes, it matters for positioning. If no, this category can be ignored.
+      27. Requires reading actual program websites. Likely: community-focused, faith-adjacent framing even when secular, heavy use of "family" and "community."
+      28. Requires a review of each competitor's website and Instagram to document the dominant visual style. My working assumption is that Goddard leans on bright primary colors and produced franchise photography; church preschool sites likely use phone-quality images and a template design. The open visual space for Little Friends is probably documentary-style photography of children doing actual things, without the staged quality of franchise materials. This should be confirmed visually before shaping the Social Media Playbook (Document 08).
+      29. Requires actual tuition data from both Little Friends and competitors.
+      30. Deferred until actual tuition numbers are in hand. The most important question to answer first: does the current rate reflect what the program actually delivers, or has it been held artificially low out of community-pricing instinct? Each scenario leads to a different recommendation.
+      31. No Ahrefs data was collected for this version. Before finalizing the SEO Strategy (Document 06), pull Domain Rating, estimated organic traffic, organic keyword count, and backlink count for Little Friends Learning Loft and the Newburgh Goddard location. The New Paltz Montessori is in a different geographic market and is lower priority for this comparison. Church preschool programs should be pulled once named programs are confirmed in Section 2.
+      32. Requires visiting each competitor's website to assess blog or content activity. Most preschool websites in this market have minimal content investment. If that holds for the Newburgh competitors, even a modest cadence (1-2 posts per month) would create a meaningful long-term SEO and authority advantage for Little Friends.
+    doc-07 (38):
+      1. days and hours for each program
+      2. exact minimum age cutoff, for example, must a child turn two by September 1st?
+      3. specific local infant-care programs Rebecca refers families to
+      4. actual days, hours, and any curriculum framework for each program
+      5. confirm actual space names and whether there is dedicated outdoor time and space
+      6. specific curriculum framework, if any, for example High/Scope or Reggio-influenced, or no named framework
+      7. is the fee due at the time of submitting the application, or at the point of enrollment commitment? Is it refundable if the family decides not to enroll after paying it?
+      8. when is the deposit due, at signing the enrollment agreement or at a different point? What payment method is accepted?
+      9. sibling discounts, JCC member discounts, early enrollment discounts, and financial aid options have not been confirmed for public sharing as of June 2026. Once confirmed, this answer will include the specific discount types, amounts, and who qualifies for each.
+      10. does the school accept ACS vouchers, the Child Care Assistance Program, or any other state or county subsidy programs? This has not been confirmed in the Business Facts Reference as of June 2026.
+      11. current waitlist status by classroom; which classrooms, if any, are at or near capacity as of the writing date
+      12. is the enrollment application in Brightwheel, on paper, or a separate online form?
+      13. is there a priority enrollment window for siblings or returning families? What is the application deadline for a September start?
+      14. does the school currently maintain a waitlist? How does it operate? Can families request a specific classroom, and do returning families or siblings receive enrollment priority?
+      15. what other required documents are collected at enrollment, for example: emergency contact form, medical treatment authorization, photo and media release, field trip permission, allergy action plan?
+      16. drop-off window open and close times; pickup window open and close times; aftercare end time. The school runs on a school-year calendar, so hours follow the school-year schedule, but specific times have not been confirmed in the Business Facts Reference as of June 2026.
+      17. whether programs are offered three days per week, five days per week, or both, and which specific days each age group meets. The answer may differ by program.
+      18. September through June? Specific vacation weeks, observed holidays, early dismissal days, and whether there is any summer programming
+      19. confirm actual space names; whether there is a dedicated outdoor area and when outdoor time happens; full daily schedule structure
+      20. what specific symptoms require a child to stay home; what the return-to-school criteria are, for example 24 hours fever-free; OCFS-required illness exclusion rules
+      21. whether the school provides snacks or families bring them; whether the building has a nut-free or allergen-aware policy; any other food restrictions families should know about
+      22. whether all three age groups (Twos, Threes, Pre-K) are eligible or only certain ones; whether aftercare takes place in the child's classroom or a separate space
+      23. exact aftercare start and end times; whether it runs every weekday; any exceptions tied to the school calendar
+      24. is aftercare included in base tuition, or is it a separate add-on? If separate, what is the monthly or per-day rate?
+      25. is there any integration of Jewish holiday observance or JCC programming into the school calendar or classroom? If so, what specifically?
+      26. does JCC membership affect tuition rates, enrollment priority, or access to the program? Who qualifies for any member pricing, and what does it look like?
+      27. last name
+      28. names and roles of any remaining staff who interact with families directly
+      29. Rebecca's direct email or phone; main school email or phone for general inquiries
+      30. confirm Brightwheel is the family-facing communication tool and add to Business Facts Reference; also confirm whether the school sends daily updates via Brightwheel, how quickly messages are typically read and responded to, and how teachers and families use it in practice
+      31. which specific features the school uses Brightwheel for, for example daily updates, messaging, billing, or check-in and check-out; how families get set up and onboarded to it
+      32. what is the school's protocol when a child becomes ill during the school day? Who contacts the parent? What symptoms trigger a call home? Is there a designated health contact on site?
+      33. what is the school's allergy policy? Is the building nut-free? Who is trained to administer an EpiPen if needed? How are life-threatening allergies communicated to all staff?
+      34. OCFS license number and renewal date
+      35. does the school have a specific transition support process, a gradual entry option, or a recommended first-day approach?
+      36. local infant-care referral resources
+      37. what is the minimum realistic program cost after confirmed discounts?
+      38. director's last name
+[gate] AUTO-APPROVED (UPRIVER_GATE_AUTO) — unattended/synthetic runs only.
+  approving tier 1 unblocks: doc-06, doc-08
+  snapshot this approved tier in git (local data source):
+    git add -f clients/littlefriends/docs/doc-04-content-library.md clients/littlefriends/docs/doc-05-competitor-landscape.md clients/littlefriends/docs/doc-07-faq-bank.md clients/littlefriends/docs/manifest.json && git commit -m "generate(littlefriends): approve tier 1 — doc-04, doc-05, doc-07"
+  reused doc-06 — 6892 words, 43 marker(s) → docs/doc-06-seo-keyword-strategy.md
+
+Tier 2 report:
+  [reused] doc-06 — 6892 words, 43 marker(s) → docs/doc-06-seo-keyword-strategy.md
+  [failed] doc-08 — claude CLI exited 1: {"type":"result","subtype":"success","is_error":true,"api_error_status":null,"duration_ms":705317,"duration_api_ms":705159,"num_turns":2,"result":"Prompt is too long","stop_reason":"stop_sequence","session_id":"06e14ca0-8625-4cd3-83d0-62ee9780aafb","total_cost_usd":1.4755969,"usage":{"input_tokens":3,"cache_creation_input_tokens":44906,"cache_read_input_tokens":115068,"output_tokens":24931,"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":41604,"ephemeral_5m_input_tokens":0},"inference_geo":"not_available"
+
+  [NEEDS CONFIRMATION] across tier (43), by doc:
+    doc-06 (43):
+      1. Pull from Ahrefs once the site URL is confirmed. Given the school's profile, a DR in the low single digits or unranked is the most likely starting point.
+      2. Pull from Ahrefs and cross-reference with GSC once connected. Rebecca's description of the school as "basically invisible" on Google suggests near-zero non-branded organic traffic.
+      3. Requires GSC access. For a small school site, 10-30 indexed pages would be typical. Provisioning GSC is the first technical action before any content work begins.
+      4. Requires GSC access (top pages by clicks, last 90 days) and Ahrefs site explorer. Once pulled, populate the table below with the pages currently driving the most organic traffic.
+      5. Pull from GSC "Search results" filtered to positions 1-10, last 90 days. For a school with minimal content history, I expect this list to be short and anchored almost entirely on brand-name searches and possibly the JCC-name-plus-preschool term.
+      6. Pull from GSC filtered to positions 11-30. These are the highest-ROI targets because a modest optimization push can move them onto page one.
+      7. Pull from GSC filtered to queries containing "little friends learning loft" and name variations.
+      8. Everything except brand-name queries.
+      9. Once GSC, GA4, and Ahrefs are connected, document which tool sourced each metric and the date range pulled. Until then, this section has no confirmed data and no measurement baseline exists.
+      10. Sum after Ahrefs validation
+      11. Set after baseline and volume pulls are complete
+      12. Verify by searching "Little Friends Learning Loft Newburgh" in Google Maps. If it is claimed, confirm the account owner email is one Rebecca controls. If it has been auto-generated by Google and never actively claimed, claiming it is the first priority above everything else.
+      13. Should be "Preschool" or "Early childhood education center." Confirm what is currently set and whether it matches how families actually search.
+      14. Potential additions may include "Child care agency" if it fits the OCFS license category. Avoid categories that signal the wrong service type or age range.
+      15. Confirm drop-off and pickup windows are accurately listed. Incorrect hours are among the most damaging trust signals a local business listing can carry.
+      16. Count and date of most recent upload. Classroom photos, outdoor space if any, and the general building entrance are the most useful categories for a preschool GBP.
+      17. Active or inactive. For a school, enrollment-season and open-house posts are the most natural cadence.
+      18. Check for unanswered questions and for whether any incorrect crowd-sourced answers have accumulated. Unseeded Q&A sections often get filled with wrong information from well-meaning strangers.
+      19. Should include: Twos class, Threes class, Pre-K program, Aftercare. These map to the programs confirmed in Document 02 §3.
+      20. How old are the most recent GBP photos? If the last upload was more than six months ago, a new batch is a fast, high-impact action.
+      21. Full street address of the Newburgh JCC. Document 02 §1 flags this as pending. This is the most important operational gap to close before any citation work begins. Everything in local SEO depends on a verified, exact address.
+      22. Document 02 §1 flags this as pending.
+      23. No citation audit has been performed. Once the verified NAP is confirmed, run a scan using BrightLocal or Whitespark to document (1) which directories have a correct listing, (2) which have inconsistent or outdated entries, and (3) which high-value directories are missing a listing entirely.
+      24. Does the JCC site link clearly to the school's own page? If not, this is a high-authority local backlink sitting unused.
+      25. What is the current practice? A well-timed, personal request from Rebecca to enrolled families at approximately 4-6 weeks after a child's start date tends to produce the most thoughtful responses. The timing matters: too early and the family does not have enough to say; too late and the moment has passed.
+      26. Once the class-size numbers are confirmed per Document 02 §5, those numbers belong in every post that touches on class size. "Eight children, two teachers" is extractable. "A warm, small environment" is not.
+      27. A full schema audit requires access to the website source. The prioritized list below is based on what is most impactful for this type of school and most commonly absent from small program sites.
+      28. Run the website URL through Google's Rich Results Test and the Schema.org validator once the URL is confirmed. Most small school websites have minimal schema beyond whatever a theme provides by default. Confirm before assuming anything is in place.
+      29. Requires a website content inventory. Based on the client's own description of being "basically invisible" on Google, I expect the published content is minimal or close to zero.
+      30. All of the following requires access to the website, Google Search Console, and the Rich Results Test tool. None of this can be assessed without a verified URL and active GSC connection.
+      31. Verify the site is served over HTTPS. An HTTP site in 2026 is a security and ranking issue.
+      32. The list below reflects typical gaps for a small school website with minimal ongoing maintenance. Each item should be validated against an actual technical audit before scheduling work.
+      33. Requires reviewing the actual site navigation and URL structure. For a school of this size, the recommended structure is: homepage, per-program pages (Twos, Threes, Pre-K, Aftercare), an About page, a Blog, a Contact or Tour page, and an Enrollment page. Internal linking between blog posts and program pages is where most small school sites have the largest gap and the easiest short-term fix.
+      34. Verify at [domain
+      35. Verify at [domain
+      36. Document 02 §1 notes analytics tools as "to be provisioned." GA4 connection is a prerequisite for measuring the targets in Section 8.
+      37. Same as above. This is the single most important tool to connect before any SEO work begins.
+      38. The primary conversion events for this school are: tour inquiry form submitted, phone call initiated, and tour scheduled (if an online scheduling tool exists). All three should be tracked as GA4 conversion events before any content campaign begins.
+      39. Every row below requires GSC, Ahrefs, and GA4 access. Pull all of these before any other measurement work begins. Without a confirmed baseline, the 90-day and 12-month targets that follow are frameworks, not commitments.
+      40. set as baseline + 20-30% once baseline is known
+      41. set as baseline + 25-40% once baseline is known
+      42. Set as baseline + 4-6 points. Realistic for a consistent 12-month content and local citation effort.
+      43. For a local preschool starting from near-zero, a realistic 12-month target with consistent content output is 400-800 organic visits per month. This should be revised up or down once the baseline is confirmed.
+  failed: doc-08
+[gate] AUTO-APPROVED (UPRIVER_GATE_AUTO) — unattended/synthetic runs only.
+  approving tier 2 unblocks: doc-09, doc-11
+  snapshot this approved tier in git (local data source):
+    git add -f clients/littlefriends/docs/doc-06-seo-keyword-strategy.md clients/littlefriends/docs/manifest.json && git commit -m "generate(littlefriends): approve tier 2 — doc-06, doc-08"
+[claude-cache] hit feb9a82da872f6c6.101ae93016f15a62 (generate:doc-09)
+
+Tier 3 report:
+  [failed] doc-09 — claude returned a cached response with no regenerated file. The response cache stores text, not the written doc; set UPRIVER_LLM_NO_CACHE=1 to force a fresh session.
+  [skipped] doc-11 — upstream not available this run: doc-08
+
+  [NEEDS CONFIRMATION] across tier: none
+  failed: doc-09
+  skipped (upstream not available): doc-11
+  Tier 3: nothing produced to approve; continuing.
+
+Tier 4 report:
+  [skipped] doc-10 — upstream not available this run: doc-08, doc-09
+  [skipped] doc-12 — upstream not available this run: doc-09, doc-11
+
+  [NEEDS CONFIRMATION] across tier: none
+  skipped (upstream not available): doc-10, doc-12
+  Tier 4: nothing produced to approve; continuing.
+All tiers processed.
+[15:57:22] (exit 0)
+[15:57:22] --- PHASE provisioning: I01–I09 artifacts ---
+[15:57:22] $ node packages/cli/bin/run.js generate littlefriends --all --provisioning
+Batch plan — scope 9 doc(s) (i01, i02, i03, i04, i05, i06, i07, i08, i09)
+  already approved (7): doc-01, doc-02, doc-03, doc-04, doc-05, doc-07, doc-06
+
+Tiers: none eligible — every in-scope doc is blocked (see below).
+
+Blocked (9):
+  i01 (Client Claude Project)
+    blocked by upstream needing data (1): i07
+    upstream out of scope / unapproved (11): doc-08, doc-09, doc-10, doc-11, doc-12, doc-13, doc-14, doc-15, doc-16, doc-17, doc-18
+  i02 (Client Skills Deployment)
+    blocked by upstream needing data (1): i01
+    upstream out of scope / unapproved (1): doc-11
+  i03 (Client Routines / Cowork)
+    missing fields (1): toolsAndAccess.browserDeviceLandscape
+    unverified HV (1): toolsAndAccess.browserDeviceLandscape
+    blocked by upstream needing data (2): i02, i04
+    upstream out of scope / unapproved (2): doc-11, doc-12
+  i04 (Client MCP Server Configuration)
+    missing fields (1): governance.dataResidency
+    unverified HV (1): governance.dataResidency
+    blocked by upstream needing data (1): i02
+    upstream out of scope / unapproved (1): doc-11
+  i05 (Client Claude in Chrome)
+    missing fields (1): toolsAndAccess.browserDeviceLandscape
+    unverified HV (1): toolsAndAccess.browserDeviceLandscape
+    blocked by upstream needing data (1): i01
+    upstream out of scope / unapproved (1): doc-11
+  i06 (Client Claude Code Setup)
+    missing fields (1): people.technicalCollaborator
+    blocked by upstream needing data (1): i01
+  i07 (Account Access & Governance)
+    missing fields (1): governance.dataResidency
+    unverified HV (1): governance.dataResidency
+  i08 (Client Custom Styles / Memory / Preferences)
+    missing fields (1): governance.memoryIncognitoPosture
+    unverified HV (1): governance.memoryIncognitoPosture
+    blocked by upstream needing data (1): i01
+  i09 (Client Artifacts & Deliverable Templates)
+    missing fields (1): governance.reviewResponsePolicy
+    unverified HV (1): governance.reviewResponsePolicy
+    blocked by upstream needing data (1): i01
+    upstream out of scope / unapproved (2): doc-11, doc-12
+
+  hint: provisioning consumes generated docs. Generate and approve them first: upriver generate littlefriends --all
+All tiers processed.
+[15:57:22] (exit 0)
+[15:57:22] --- PHASE final: snapshots ---
+[15:57:23] $ node packages/cli/bin/run.js profile show littlefriends
+Profile: littlefriends  (revision 57)
+
+Fill by section:
+  identity              9/9
+  people                5/5
+  offerings             4/4
+  pricing               5/5
+  capacity              3/3
+  customers             6/6
+  positioning           4/4
+  voice                 5/5
+  salesProcess          12/12
+  content               9/9
+  competitors           2/2
+  seo                   4/4
+  toolsAndAccess        14/14
+  operationsAutomation  6/6
+  governance            3/3
+  goals                 5/5
+  modules               4/4
+
+Ready (15):
+  doc-01  Brand Voice Guide
+  doc-02  Business Facts Reference
+  doc-03  Sales Process Map
+  doc-04  Content Library
+  doc-05  Competitor Landscape
+  doc-06  SEO & Keyword Strategy
+  doc-07  FAQ Bank
+  doc-08  Email Templates
+  doc-09  Social Media Playbook
+  doc-13  Master Build Sequence
+  doc-14  Client Onboarding Kit
+  doc-15  Retainer Engagement Playbook
+  doc-16  Sales Collateral
+  doc-17  Handoff & Offboarding
+  doc-18  AI Operating System Sales Document
+
+Blocked (12):
+  blocked by missing fields (7): i07, i04, i03, i05, i06, i08, i09
+  blocked by unverified HV (6): i07, i04, i03, i05, i08, i09
+  blocked by upstream docs (11): doc-10, doc-11, doc-12, i01, i02, i04, i03, i05, i06, i08, i09
+  (use `profile show <slug> --deliverable <id>` for the exact missing paths)
+
+Conflict queue (0): none
+[15:57:24] (exit 0)
+[15:57:24] $ node packages/cli/bin/run.js profile conflicts littlefriends
+Conflict queue (0): none
+[15:57:24] (exit 0)
+[15:57:24] === e2e synthetic run COMPLETE ===
+[15:57:24] Artifacts: clients/littlefriends/docs/  clients/littlefriends/coverage-final.json  clients/littlefriends/e2e/

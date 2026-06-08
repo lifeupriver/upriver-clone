@@ -3,7 +3,7 @@
 **Prepared by:** Joshua Brown / Upriver Consulting
 **Date:** June 2026
 **Version:** 1.0
-**For:** All content creation, AI-generated content, social media, email marketing, website copy, inquiry responses, and staff communications
+**For:** All content creation, AI-generated content, social media, enrollment inquiry emails, website copy, family communications, review responses, and staff-facing communications
 
 **Companion documents:**
 - Document 02: Business Facts Reference (factual accuracy)
@@ -17,270 +17,313 @@
 
 ## 1. Identity statement
 
-Little Friends Learning Loft is a preschool and child care program [NEEDS CONFIRMATION: city, state, and neighborhood or local area] serving children aged 2 to 5. Its families are typically dual-income households who believe the early years matter and who want their child somewhere the caregivers know them by name. The Loft runs on low child-to-teacher ratios and a play-led curriculum, which means children have room to explore at their own pace and teachers have enough time to actually notice what each child needs on a given day. What families find here is the same face at pickup that was there at drop-off, and a program built around how young children actually learn rather than how they look on a brochure.
-
-[NEEDS CONFIRMATION: Does this read like how you'd describe the school to a new acquaintance? Any geographic detail, founding story, or specific curriculum framework (Reggio Emilia, HighScope, a proprietary approach) to anchor it further?]
+Little Friends Learning Loft is a play-based preschool for children ages two through pre-K, located inside the Newburgh JCC [NEEDS CONFIRMATION: Newburgh, NY assumed; please confirm city and state]. It is a small program on purpose: families meet the director and the teachers before they enroll, and the classes stay small enough that the teachers actually know each child by the end of the first week. For families in the Jewish community, the JCC setting matters and that connection is real; for families who aren't part of the J, the school stands on its own. The promise is simple: an unhurried, calm place for young children to learn through play, where a frazzled parent can reach a real person and get a real answer.
 
 ---
 
 ## 2. Voice attributes
 
-The way Little Friends Learning Loft sounds rests on four attributes. Every piece of content should reflect at least two. Content that reflects all four is the strongest signal of the brand.
+I've built this voice around three attributes. Every piece of content should reflect at least two of them. Content that reflects all three is the strongest signal of the brand.
 
 ### Attribute 1: Warm
 
-**What this means:** The voice speaks like a trusted caregiver, not a marketing department. Families should feel like they are hearing from someone who knows their child's name and is genuinely glad they are here.
+**What this means:** A frazzled parent should feel calmer after reading or hearing from this school. Warmth is not cheerfulness and it is not reassurance through adjectives. It is the feeling of being seen by someone who has been through exactly this before and is not rattled by it.
 
-**How it sounds:** "We can't wait to welcome your little one to the Loft."
+**How it sounds:** "I hear you, the first couple weeks can be tender, and that is so normal."
 
-**What to avoid:** "Enroll today and give your child the best possible start in life." [NEEDS CONFIRMATION: Does this anti-example land as the right contrast, or is there a specific tone or phrase the owner has a personal reaction against?]
+**What to avoid:** "We welcome each child into our warm, nurturing environment with loving care and support."
 
-### Attribute 2: Steady
+---
 
-**What this means:** Consistency is the product, not just a selling point. Low ratios mean the same teachers, the same routines, the same faces. The voice reflects that steadiness: calm, unhurried, reliable. Nothing in the copy needs urgency or manufactured excitement.
+### Attribute 2: Honest
 
-**How it sounds:** "The same teachers greet your child every morning. That consistency is part of the program, not a coincidence."
+**What this means:** Plain and kind, never brochure-speak. Honest means naming the real thing (separation anxiety, what a typical drop-off actually looks like, what the schedule actually is) rather than softening it into marketing language. A parent reading these communications should trust what they're reading because it sounds like a person wrote it with their actual opinion, not a committee.
 
-**What to avoid:** "Our passionate, dedicated team brings excitement and energy to every single day!" [NEEDS CONFIRMATION: Does "steady" feel right as a named attribute, or would you describe this quality differently?]
+**How it sounds:** "Drop-off can be hard for some twos, especially in the first month. Here is what we do when a child is having a rough morning."
 
-### Attribute 3: Curious
+**What to avoid:** "We create a seamlessly supportive transition experience for children at every developmental stage."
 
-**What this means:** Play-led learning is a real educational philosophy, not a tagline. The voice reflects that curiosity is worth taking seriously. When we talk about what children do at the Loft, we talk about it with genuine interest, not with performance.
+---
 
-**How it sounds:** "Last week the 3s got interested in shadows. That turned into two days of exploring with flashlights, paper, and a lot of questions we didn't answer for them."
+### Attribute 3: Calm
 
-**What to avoid:** "Children love to learn and play at Little Friends!" [NEEDS CONFIRMATION: Does this resonate with how you talk about the curriculum? Is there a more specific framing, or a particular example you've used to describe the play-led approach?]
+**What this means:** Unhurried, never over-eager. This school does not perform enthusiasm and does not use exclamation points to prove it cares. Calm means writing that sounds steady, like someone who has done this a long time and trusts the process.
 
-### Attribute 4: Plain-spoken
+**How it sounds:** "The children had snack, sang a little, and spent most of the morning in the block corner. It was a good day."
 
-**What this means:** Families with young children are busy and often anxious about new transitions. They don't have time for dense copy or jargon, and vague reassurances don't help them. We say what we mean in plain language. When there's a policy, we state it clearly. When something changes, we say what changed and why.
-
-**How it sounds:** "Pickup is at 3:30. If you're running late, call us by 3:15 and we'll let your child's teacher know."
-
-**What to avoid:** "In order to ensure an optimal transition experience for all enrolled families, please adhere to the following procedural guidelines." [NEEDS CONFIRMATION: Is "plain-spoken" the right label, or do you use a different word for this quality when you think about how the school communicates?]
+**What to avoid:** "We are SO excited to welcome our newest families! Amazing things are happening in our classrooms EVERY DAY!"
 
 ---
 
 ## 3. Tone spectrum
 
-These four sliders calibrate the voice when the right register isn't obvious.
+I use these four sliders to calibrate the voice when it's not clear how something should land.
 
-**Formal ←→ Casual:** Lean casual, but complete.
-- What this looks like: First names, contractions, short sentences. Not breezy or chatty. A parent should feel like they are hearing from someone who is competent and present, not a friend who happens to work in child care.
-- Where this might break: Lean slightly more formal in any communication about enrollment contracts, tuition policies, or a concern about a specific child's development.
+**Formal vs. casual:** Lean casual, but not chatty.
+- What this looks like: First-name basis with families, contractions, plain vocabulary, complete thoughts. Not texty. Not corporate.
+- Where this might break: Lean slightly more formal in policy communications (illness exclusion, contract terms, fee schedules).
 
-**Serious ←→ Playful:** Middle, with a slight lean toward serious.
-- What this looks like: The playfulness comes through in stories about what children are doing, not in the institutional voice. The enrollment process, the policies, the inquiry response — those stay grounded and direct.
-- Where this might break: Social posts featuring a specific classroom moment can carry more playfulness. Policy emails are not the place for it.
+**Serious vs. playful:** Slightly serious, with moments of quiet warmth.
+- What this looks like: The school deals with real parent anxieties around separation, development, and school readiness. The tone respects that weight. Occasional lightness is fine when it is dry and grounded ("two-year-olds are a lot"), but the default is measured.
+- Where this might break: Social media captions of funny or sweet classroom moments can carry more lightness. Never jokey in communication about a child's behavior, development, or a family concern.
 
-**Traditional ←→ Modern:** Lean modern.
-- What this looks like: The curriculum is grounded in current early-childhood research and we talk about it that way. We don't sell parents a nostalgic idea of childhood.
-- Where this might break: Talking about the value of unstructured play, slow mornings, and face-to-face connection can earn a slightly more timeless register. [NEEDS CONFIRMATION: Does the school see itself as rooted in a specific educational tradition, or is the framing more contemporary and practical?]
+**Traditional vs. modern:** Middle, with a nod to the JCC's community roots.
+- What this looks like: Play-based learning is a contemporary educational approach; the JCC is a long-standing community institution. The school lives in both. Don't romanticize either.
+- Where this might break: When addressing Jewish holidays or JCC programming, the community-rooted register fits. When describing the teaching philosophy, the modern and specific register fits better.
 
-**Understated ←→ Bold:** Lean understated.
-- What this looks like: We don't sell hard. We describe what we do, let families draw their own conclusions, and trust that the facts (the ratio, the curriculum, the consistency) do the work.
-- Where this might break: Almost never. If a piece of copy feels like it is pitching, that is usually the signal to pull back.
+**Understated vs. bold:** Strongly understated.
+- What this looks like: The school does not oversell and does not claim to be the best. It describes what it is and trusts parents to recognize the value. One specific, concrete sentence does more than three superlatives.
+- Where this might break: Almost never. If the copy sounds bold, it is probably wrong.
+
+**Restrained vs. effusive:** Lean restrained.
+- What this looks like: No multiple exclamation points. No "absolutely thrilled" or "couldn't be more grateful." If a feeling is real, name it in plain language.
+- Where this might break: A response to a particularly meaningful review can be slightly warmer, but never gushing.
 
 ---
 
 ## 4. Operating modes
 
-The voice has two modes. Use the right one for the audience.
+This voice has two modes. Use the right one for the audience.
 
 ### Marketing mode
 
-**Audience:** Parents in the early-research stage browsing the website, reading the Google listing, or comparing local preschool options for a child who is 12 to 24 months away from starting.
+**Audience:** Parents who are researching preschool options for the first time, or who heard about the Loft from a friend and are just beginning to look. Also: prospective families from the JCC community who may already know the building.
 
-**Where it shows up:** Website copy, Google Business Profile description, social media, any paid ads, printed materials.
+**Where it shows up:** Website copy, JCC newsletter features, community board postings, brochures, social media, any listings on parenting sites or local directories.
 
-**What's different about this mode:** Slightly more atmospheric. This is where the philosophy and the experience get articulated before families have any particular reason to trust us. More about what it is like for a child to be here. Less transactional. Still specific. Let the ratio, the curriculum description, and the stories do the work rather than the adjectives.
+**What's different about this mode:** More atmospheric, more about the school's philosophy and what it feels like to be there. Less about logistics. The goal is to give a parent the quiet confidence that this place is real, small, and run by people who know what they're doing. Not a hard sell, not a pitch. More like a door left open.
 
-**Sample line in this mode:** "Small groups, familiar faces, and a curriculum built around the question children are already asking: what happens if I try this?"
+**Sample line in this mode:** "Little Friends is a small preschool inside the Newburgh JCC. Small on purpose: the teachers know the children, the director knows the families, and the mornings are unhurried."
+
+---
 
 ### Client mode
 
-**Audience:** Families who have inquired and are in the enrollment conversation, families currently enrolled, and anyone receiving operational communications.
+**Audience:** Families who have toured and are considering enrollment, families who are actively enrolling, and current families in the program.
 
-**Where it shows up:** Inquiry email replies, tour follow-ups, enrollment paperwork, tuition reminders, sick-day policies, schedule changes, day-to-day parent communication.
+**Where it shows up:** Inquiry email replies, tour scheduling, enrollment paperwork, daily parent notes, pickup and drop-off communications, policy reminders, conversations about a child's day.
 
-**What's different about this mode:** Warmer, more direct, operational. Specifics first. Don't make families hunt for the answer to a practical question. First-person singular is appropriate for individual teacher or director communications ("I'll check on that and get back to you").
+**What's different about this mode:** Warmer and more direct. Faster with specifics. Gives a parent the information they actually need without decorating it. Says "Tuesday and Thursday, 9 to noon" rather than "flexible scheduling options." Comfortable naming hard things because that honesty is part of the brand.
 
-**Sample line in this mode:** "The tour takes about 20 minutes. I'll walk you through the Loft, answer your questions, and you'll have a chance to meet a couple of the teachers. Does Tuesday at 9am or Thursday at 10am work?"
-
----
-
-## 5. Vocabulary — use these
-
-[NEEDS CONFIRMATION: The entries below are a starting draft. Most need to be verified against the words and phrases you actually use. Please flag anything that doesn't sound right and add any phrases you reach for when describing the school.]
-
-### Descriptive language for the program
-- The Loft — the shortened name, used naturally in conversation and in copy
-- Play-led — the curriculum descriptor [NEEDS CONFIRMATION: Do you say "play-led" or "play-based"? Which one is yours?]
-- Low ratios — shorthand for the child-to-teacher ratio differentiator [NEEDS CONFIRMATION: Specific ratio to cite, e.g., "one teacher for every four children"]
-- Small groups — the experience families get from the low ratios
-- Consistent caregivers — the staffing approach as families experience it
-
-### Words for families and children
-- Families (not just "parents" — accounts for the range of household structures)
-- Your child (preferred in body copy)
-- Children (in formal copy; "kids" is fine in casual social captions)
-- Little one (fine in warm, direct communication — as in the confirmed example above; not in formal body copy)
-
-### Language about learning and development
-- Explore
-- Notice (as in what teachers notice about a specific child)
-- Curiosity
-- At their own pace
-- Try, test, figure out (active verbs that describe what children do)
-- [NEEDS CONFIRMATION: Does the curriculum use any specific terms — "provocations," "invitations to play," "loose parts," or others from a named framework? If so, which are appropriate for parent-facing copy?]
-
-### Phrases confirmed from discovery
-- "We can't wait to welcome your little one to the Loft."
-- [NEEDS CONFIRMATION: What other phrases do you find yourself using when you describe the school to a prospective family? Anything you've said enough times that it feels like yours?]
+**Sample line in this mode:** "Drop-off on Monday was rough. She cried for about ten minutes and then she was fine. She spent the whole morning painting and ate all her snack. I'll keep you posted, but this is really normal for the first few weeks."
 
 ---
 
-## 6. Vocabulary — avoid these
+## 5. Vocabulary: use these
+
+### Descriptive language for the school itself
+- Little Friends (informal short form)
+- Play-based
+- Small group
+- A small preschool
+- "Not a factory" (contrast language; use sparingly, only when the context makes it clear)
+- [NEEDS CONFIRMATION: is "the Loft" used informally by families and staff?]
+- [NEEDS CONFIRMATION: specific class or program names, e.g., "Twos," "Threes," "Pre-K Room"]
+
+### Words for the children
+- Little ones
+- The children (preferred over "the kids" in formal or family-facing contexts)
+- Twos, threes, pre-K (age-group shorthand when talking with families who know the program)
+
+### Words for families and parents
+- Families (preferred over "parents" when addressing the household)
+- A parent, the parents (when referring to specific people in context)
+- "You" (direct, second-person address in emails and posts)
+
+### Community and location language
+- The JCC
+- The J (informal; appropriate with families already in the JCC orbit)
+- Newburgh
+- The Hudson Valley [NEEDS CONFIRMATION: how the school frames its geography publicly]
+- Jewish community
+- JCC community
+- [NEEDS CONFIRMATION: does the school draw families from a specific surrounding area, e.g., Orange County, the broader mid-Hudson region?]
+
+### Experience and practice language
+- Morning routine
+- Drop-off, pickup (not "arrival" or "dismissal")
+- Snack
+- Play
+- Explore, exploring
+- [NEEDS CONFIRMATION: actual space names, e.g., block corner, art table]
+- Separation (the honest, plain-language term for a real and common thing)
+- Transition (a child adjusting to a new class or to the start of the school year)
+- Ready for kindergarten (use sparingly and only when tied to something specific)
+- A good day
+- A hard morning
+
+### Phrases that capture how the director talks
+- "I hear you."
+- "That is so normal."
+- "They meet me and the teachers."
+- "Small, warm."
+- "Not a factory."
+- "The first couple weeks can be tender."
+- "The J community, for some families that matters a lot."
+
+---
+
+## 6. Vocabulary: avoid these
 
 ### Preschool industry clichés
-- Nurturing environment, where children thrive, loving and caring teachers, our little learners, second family, safe and loving environment, enriching experience, holistic development, whole child (unless it is a specific framework the school uses by name), bright futures, precious moments
+- "Nurturing environment"
+- "Where children thrive"
+- "Loving, caring teachers"
+- "Our little learners"
+- "Second family"
+- "School family"
+- "Young minds"
+- "The whole child"
+- "Child-centered learning" (true of this school, but so overused it means nothing; say what specifically happens instead)
+- "Age-appropriate activities" (say what the activity actually is)
+- "Developmentally appropriate" (save for policy documents; if used, define it)
+- "A love of learning"
+- "Lifelong learners"
+- "Safe space to grow"
+- "Enriching experiences"
+- "Holistic development"
+- "Stimulating environment"
 
-### Generic marketing language
-- Stunning, transform, elevate, unlock, seamlessly, robust, synergy, game-changer, leverage, curated, best-in-class, world-class, premier, passionate, dedicated, experienced (without specifics), proven, results-driven
+### Generic marketing language (banned site-wide)
+- Stunning, transform, elevate, unlock, seamlessly, robust, synergy, game-changer, leverage, curated, best-in-class, world-class, premier, passionate, dedicated, proven, results-driven
+- "Look no further"
+- "Whether you're [X] or [Y], we have you covered"
+- "We pride ourselves on..."
+- "At Little Friends, we believe..."
+- Any sentence starting with "In today's world,"
 
 ### AI writing tells
-- "Look no further"
-- "Whether you're looking for X or Y, we have you covered"
-- "We pride ourselves on..."
-- "At Little Friends Learning Loft, we believe..."
-- Any sentence starting with "In today's fast-paced world,"
+- "Not just a preschool, but a community" (banned entirely)
+- Three-adjective lists: "warm, nurturing, and supportive"
+- Any opener that starts with "When it comes to early childhood education..."
 - Em dashes (site-wide rule)
-- "Not just a preschool, but a community"
-- "Your child's journey begins here"
 
-### Little Friends Learning Loft specific avoids
-- "Your child's future starts here" — too much weight on a preschool enrollment decision
-- "Like a second home" — every preschool says this, it does no work
-- "Expert teachers" — vague and expected; cite the ratios and the tenure instead [NEEDS CONFIRMATION: Do you have average teacher tenure to cite?]
-- "Stimulating environment" — the word "stimulating" does nothing
-- "Enriching activities" — "enriching" does nothing
-- "Your child will love it here" — a promise that belongs to the family, not us to make
-- [NEEDS CONFIRMATION: Are there specific words or phrases you have heard from competitors, or from your own old copy, that you actively want to leave behind?]
+### Little Friends-specific avoids
+- "Childcare" (this is a preschool and early learning program, not a daycare)
+- "Innovative" applied to teaching methods (the school is play-based; say that specifically, don't claim novelty)
+- "Trusted by families" (let families say this in reviews; the school does not claim it)
+- "Curriculum" as a selling point without describing what it actually looks like in practice
+- Any claim about kindergarten readiness that cannot be tied to something specific
+- Framing the JCC connection in a way that signals the school is only for Jewish families (it is open to all; say so plainly when the context calls for it)
 
 ---
 
 ## 7. Anti-AI writing rules
 
-These are construction-level rules. Every piece of content should pass these checks before it goes out.
+These are construction-level rules. Every piece of content should pass all of them.
 
 ### No throat-clearing openers
-Don't start with "As a parent, you want the best for your child," "When it comes to choosing a preschool," "It's no secret that early childhood development matters," or any variation. Start with the point.
+Don't start with "When it comes to choosing a preschool," "As parents, you want the best for your child," or "It's no secret that early childhood is a critical time." Start with the point.
 
 ### No three-item lists where two will do
-"Warm, caring, and nurturing" becomes "warm and consistent." Two items is the default. Three is the AI default.
+"Warm, caring, and nurturing" becomes "warm and calm." Two items is the default. Three is the AI reflex; resist it.
 
 ### No em dashes
 Site-wide rule. Use a period or a comma. Never an em dash.
 
 ### No "not just X but Y" constructions
-"Not just a preschool, but a family" is banned across all copy.
+"Not just a preschool, but a community" is banned. So is every variation.
 
 ### No bullet-point soup in place of paragraphs
-Real prose paragraphs of 2 to 4 sentences carry voice better than fragmented bullets. Use bullets for actual lists: what to pack, enrollment steps, pickup procedures.
+Real paragraphs of 2 to 4 sentences carry voice better than bulleted fragments. Use bullets only for things that are genuinely list-like: what to pack on the first day, not a description of the classroom environment.
 
 ### Vary sentence length
-Three medium-length sentences in a row is the AI default. Break the pattern. Short sentence. Then one that develops the idea further. Then short again.
+Three medium-length sentences in a row is the AI default. Break the pattern. Short sentence. Then a longer one that develops the thought. Then short again.
 
 ### Lead with the specific, not the general
-"One teacher for every [X] children, same teachers every day" beats "exceptional child-to-staff ratios in a nurturing environment." [NEEDS CONFIRMATION: Specific ratio needed here.]
+"The twos class has eight children and two teachers" beats "We maintain low student-to-teacher ratios in a supportive environment." [NEEDS CONFIRMATION: actual class sizes and ratios.]
 
 ### Real numbers beat adjectives
-"[X] years in operation" beats "established and trusted." "[X:X] ratio" beats "low ratios." "[X] children per classroom" beats "small groups." [NEEDS CONFIRMATION: Years in operation, specific ratios, class sizes needed to put real numbers into copy.]
+"Eight children per class" beats "small classes." "Two teachers in every room" beats "a dedicated teaching team."
 
-### Don't write about children's emotional outcomes as guarantees
-"Your child will love it here" is a promise no school can make for every child. "Most families tell us their kids ask to go on off days" is something we can say, if it is true.
-
-### No emoji in any client-facing copy
-Site-wide rule.
+### Acknowledge real things
+Separation anxiety is real. Two-year-olds cry. Some children take three weeks to settle. Naming this honestly is part of the brand. Never write as if drop-off is easy or every family has a smooth first month.
 
 ### Preschool-specific rules
-- Don't write about what children feel; write about what they do. "Children spend the morning building, sorting, and testing different materials" is stronger than "children feel inspired and excited to learn."
-- Don't use "second family" or any variation. The school is the school. The family is the family.
-- When referencing a child's progress or a classroom moment in any communication, be descriptive and specific, not evaluative. "She spent 20 minutes at the water table today, working through different containers" is stronger than "She had a wonderful day."
-- Don't over-reassure families about the transition to school. Acknowledge that drop-off is a real transition. Plain acknowledgment of the challenge builds more trust than "don't worry, they all adjust!"
+- Don't describe children's emotional states in abstract developmental language. Say what happened. "She cried at drop-off for ten minutes and then was fine" is better than "She experienced some separation anxiety during the transition period."
+- Don't perform warmth. Describe the action that demonstrates it. "The director gives every family a tour in person before they enroll" is better than "We warmly welcome every family into our community."
+- Don't use parent-guilt language. "As a parent, you know how important these early years are" is a manipulation. This brand does not use it.
 
 ---
 
 ## 8. Sample content
 
-### Sample 1: Social media post (classroom moment)
+### Sample 1: Social media caption (classroom moment)
 
-**Context:** A post about something that happened in the classroom this week, no specific event or milestone.
+**Context:** A photo of three two-year-olds sitting at a low table, each doing something completely different with colored paper.
 
 **Caption:**
-"The 3s found a caterpillar on the playground on Monday.
+"Three twos, one table, three completely different projects.
 
-By Wednesday we had a temporary habitat set up in the corner of the room, a pile of books pulled from the shelf, and a running debate about what it was going to turn into.
+Mira was folding. Jonah was tearing (very deliberately). Sam had moved past paper entirely and was working on the table with a crayon.
 
-We didn't tell them. They're still watching."
+We let it go.
 
-[NEEDS CONFIRMATION: Does this match the tone of the posts you're already happy with? Please share 2 to 3 captions that feel like yours so we can calibrate the social voice more precisely.]
+This is the block of the morning where nobody is in charge of what comes next. It is usually the best part."
 
-### Sample 2: First reply to a tour request
+---
 
-**Context:** A parent has submitted the contact form asking about enrolling their 3-year-old in the fall.
+### Sample 2: First reply to a new inquiry
+
+**Context:** A parent emailed asking whether there is an open spot for her two-year-old, starting in September.
 
 **Email:**
 
-Subject: Tour at Little Friends Learning Loft
+Subject: Open spot for September
 
-Hi [Parent name],
+Hi [Parent first name],
 
-Thanks for reaching out. I'd love to show you the Loft.
+Thanks for reaching out. [NEEDS CONFIRMATION: current enrollment status for the twos class and September availability.]
 
-Tours run about 20 minutes. I'll walk you through the space, answer your questions, and you'll get a chance to meet a couple of the teachers. I can usually do mornings during the school week.
+The twos class runs [NEEDS CONFIRMATION: days and hours]. We have [NEEDS CONFIRMATION: number] children in the class with [NEEDS CONFIRMATION: teacher count] teachers.
 
-Does [day] at [time] or [day] at [time] work? If neither does, let me know what's easier and we'll find something.
+If there is a spot, the next step is a short tour, usually about 30 minutes. I show families the space, introduce whoever is around that day, and you get a chance to ask whatever is on your mind. No pitch.
 
-[Director name]
+Do any of these times work for you? [NEEDS CONFIRMATION: how the director typically offers tour options.]
+
+[NEEDS CONFIRMATION: director's first name]
 Little Friends Learning Loft
-[phone]
+[NEEDS CONFIRMATION: phone or direct email]
 
-[NEEDS CONFIRMATION: Who handles tour requests, you or a director? What is the typical response turnaround you want families to expect?]
+---
 
 ### Sample 3: Blog post opening paragraph
 
-**Context:** Post on preparing a 2-year-old for starting preschool. Target keyword: "starting preschool [city]." [NEEDS CONFIRMATION: City name needed for local SEO anchor.]
+**Context:** Blog post for parents considering preschool for the first time. Working topic: what to actually pay attention to when you visit a preschool.
 
 **Opening:**
 
-Most 2-year-olds have never been in a room without a parent for more than a few hours. Even at a school they are going to love, the first drop-offs are a transition. The families who have the smoothest time with it tend to do one thing: they talk about it plainly, without over-reassuring.
+When you visit a preschool, you are going to be shown a lot of classrooms. Some will look like preschool classrooms. Some will look like preschool classrooms designed to be photographed for a brochure.
 
-"You're going to love it" puts the expectation on the child. "Your teacher's name is [name]. You'll play, have a snack, and I'll pick you up after lunch" gives them something concrete to hold onto.
+The difference is usually visible in about five minutes. In the first kind, the children are doing something and the teachers are watching, occasionally stepping in. In the second kind, the activities feel performed.
 
-Here's what we tell families at Little Friends in the weeks before the first day.
+Here is what I actually think matters, after [NEEDS CONFIRMATION: number of years in early childhood education]. You can use this list before or after you come visit us. It applies to any school.
+
+---
 
 ### Sample 4: Positive review response
 
-**Context:** A parent left a 5-star Google review praising the consistency of the teachers and how clearly the director communicates.
+**Context:** A parent left a five-star Google review praising the director's communication and how the teachers handled a difficult September for their child.
 
 **Response:**
-Thank you for this. Consistent teachers and clear communication are the two things we work hardest to get right, so it's good to hear they're landing that way. We're glad [child's name] is with us.
 
-[Director name]
+Thank you for writing this. September is often the hardest month, and watching [NEEDS CONFIRMATION: child's first name if used in the review] find her footing made it worth it for all of us. [NEEDS CONFIRMATION: lead teacher's name] will be glad to see this. Thank you for trusting us with your family.
 
-[NEEDS CONFIRMATION: Should review responses be signed with the director's name, the school name, or both?]
+[NEEDS CONFIRMATION: director's first name]
+
+---
 
 ### Sample 5: Critical review response
 
-**Context:** A review noted that communication during a staffing change was unclear and parents were left with unanswered questions.
+**Context:** A parent left a three-star review saying they felt communication was inconsistent and that they did not always hear back quickly.
 
 **Response:**
-Hi [Reviewer name], this is [Director name] at Little Friends. You're right that our communication during that transition could have been clearer. When staffing changes, families deserve more notice and more detail than we gave, and I understand why that was frustrating.
 
-If you'd like to talk through what happened or ask anything I didn't answer at the time, I'm at [email] or [phone]. We value your family being here.
+Thank you for leaving this. You are right that response time was not where it should have been, and I am sorry for that. Communication from our end needs to be faster and more consistent, especially early in the year, and this is useful feedback to have.
 
-[Director name]
+If you are still enrolled and want to talk through anything, I am at [NEEDS CONFIRMATION: email or phone]. Either way, I am glad you said something.
+
+[NEEDS CONFIRMATION: director's first name]
 
 ---
 
@@ -290,20 +333,20 @@ Copy this block into any AI prompt about Little Friends Learning Loft to ground 
 
 ```
 BUSINESS: Little Friends Learning Loft
-CATEGORY: Preschool and child care
-LOCATION: [NEEDS CONFIRMATION: City, state, neighborhood]
-SERVICE AREA: [NEEDS CONFIRMATION: Geographic radius or specific nearby communities served]
-ESTABLISHED: [NEEDS CONFIRMATION: Year founded]
-OWNER / KEY PEOPLE: [NEEDS CONFIRMATION: Owner name and role, director name if different, any lead teachers worth naming]
-WHAT THEY DO: Play-led preschool and child care for children aged 2-5, built around low child-to-teacher ratios and consistent caregiving staff
-WHO THEY SERVE: Dual-income families with children aged 2-5 who prioritize early-childhood education and want consistent, known caregivers for their child
-PRICE POSITION: [NEEDS CONFIRMATION: Monthly tuition range and how that positions relative to comparable local programs]
+CATEGORY: Preschool / early learning center (nonprofit, housed within the Newburgh JCC)
+LOCATION: Newburgh, NY [NEEDS CONFIRMATION: full address]
+SERVICE AREA: [NEEDS CONFIRMATION: primary geographic draw (city of Newburgh, Orange County, mid-Hudson Valley?)]
+ESTABLISHED: [NEEDS CONFIRMATION: year founded]
+OWNER / KEY PEOPLE: [NEEDS CONFIRMATION: director's name and role; any lead teachers named in family communications]
+WHAT THEY DO: Play-based preschool serving children ages two through pre-K in small classes inside the Newburgh JCC; open to all families
+WHO THEY SERVE: Families with children ages 2 to pre-K seeking a small, personal program; includes families drawn by the JCC community connection and families with no JCC affiliation
+PRICE POSITION: [NEEDS CONFIRMATION: tuition range or structure; any scholarship or subsidy options through the JCC]
 KEY DIFFERENTIATORS:
-- Low child-to-teacher ratios [NEEDS CONFIRMATION: specific ratio, e.g., 1:4 or 1:6]
-- Play-led curriculum [NEEDS CONFIRMATION: named framework or proprietary approach?]
-- Consistent caregivers [NEEDS CONFIRMATION: confirm low staff turnover is accurate to cite and, if so, average tenure]
-SEASONALITY: [NEEDS CONFIRMATION: Year-round program or academic-year? When does enrollment open for each cycle?]
-KEY NUMBERS: [NEEDS CONFIRMATION: Total enrollment capacity, number of classrooms, years in operation, staff count]
+- Small class sizes; families meet the director and teachers before enrolling
+- Housed in the Newburgh JCC; accessible to the Jewish community and open to all
+- Play-based; not a franchise or chain program
+SEASONALITY: [NEEDS CONFIRMATION: September school year start? Year-round program? Summer session?]
+KEY NUMBERS: [NEEDS CONFIRMATION: class sizes, student-to-teacher ratios, number of classrooms, total enrollment capacity, years in operation]
 WEBSITE: [NEEDS CONFIRMATION]
 INSTAGRAM: [NEEDS CONFIRMATION]
 GOOGLE BUSINESS PROFILE: [NEEDS CONFIRMATION]

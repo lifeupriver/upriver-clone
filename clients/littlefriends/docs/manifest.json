@@ -4,11 +4,65 @@
     "doc-01": {
       "id": "doc-01",
       "path": "docs/doc-01-brand-voice-guide.md",
-      "generatedAt": "2026-06-04T17:35:13.904Z",
+      "generatedAt": "2026-06-05T19:45:35.345Z",
       "specHash": "d515924811106c96",
-      "profileSliceHash": "c50543f05bcf033d",
-      "markers": 30,
-      "approved": false
+      "profileSliceHash": "027313cd2cae19f4",
+      "markers": 27,
+      "approved": true
+    },
+    "doc-02": {
+      "id": "doc-02",
+      "path": "docs/doc-02-business-facts-reference.md",
+      "generatedAt": "2026-06-05T19:45:35.348Z",
+      "specHash": "5568da8f3e4032ce",
+      "profileSliceHash": "12a9a2cf72338049",
+      "markers": 63,
+      "approved": true
+    },
+    "doc-03": {
+      "id": "doc-03",
+      "path": "docs/doc-03-sales-process-map.md",
+      "generatedAt": "2026-06-05T19:45:35.351Z",
+      "specHash": "ea2f1a9ee003146d",
+      "profileSliceHash": "1a54ffffb9481e71",
+      "markers": 70,
+      "approved": true
+    },
+    "doc-04": {
+      "id": "doc-04",
+      "path": "docs/doc-04-content-library.md",
+      "generatedAt": "2026-06-05T19:45:35.353Z",
+      "specHash": "547180afefb1733c",
+      "profileSliceHash": "e5db15942365758c",
+      "markers": 32,
+      "approved": true
+    },
+    "doc-05": {
+      "id": "doc-05",
+      "path": "docs/doc-05-competitor-landscape.md",
+      "generatedAt": "2026-06-05T19:45:35.355Z",
+      "specHash": "2592d4973fb7c31d",
+      "profileSliceHash": "6893da0bed0e516a",
+      "markers": 32,
+      "approved": true
+    },
+    "doc-07": {
+      "id": "doc-07",
+      "path": "docs/doc-07-faq-bank.md",
+      "generatedAt": "2026-06-05T19:45:35.357Z",
+      "specHash": "1fc4d71cf7d30579",
+      "profileSliceHash": "25599e39ea7743c9",
+      "markers": 38,
+      "approved": true
+    },
+    "doc-06": {
+      "id": "doc-06",
+      "path": "docs/doc-06-seo-keyword-strategy.md",
+      "generatedAt": "2026-06-05T19:45:35.360Z",
+      "specHash": "f3d8d883c437799f",
+      "profileSliceHash": "5a562b06908308fa",
+      "markers": 43,
+      "approved": true
     }
   }
 }

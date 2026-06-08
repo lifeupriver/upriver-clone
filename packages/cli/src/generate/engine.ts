@@ -240,12 +240,21 @@ export async function runGenerate(
   );
   log('');
 
-  const decision = resolveGateDecision({ yes: opts.yes, isTty: deps.isTty, priorApproved });
+  const decision = resolveGateDecision({
+    yes: opts.yes,
+    isTty: deps.isTty,
+    priorApproved,
+    gateAuto: process.env.UPRIVER_GATE_AUTO === '1',
+  });
   let approved = priorApproved;
   switch (decision) {
     case 'auto-approve':
       approved = true;
       log('Auto-approved (--yes; this doc was previously approved).');
+      break;
+    case 'auto-approve-gate':
+      approved = true;
+      log('[gate] AUTO-APPROVED (UPRIVER_GATE_AUTO) — unattended/synthetic runs only.');
       break;
     case 'refuse-yes':
       log('Refusing --yes on a never-approved doc. Review it and approve interactively (or re-run --yes once approved).');
