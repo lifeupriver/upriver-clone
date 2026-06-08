@@ -30,6 +30,7 @@ function specsDir(): string {
   writeFileSync(join(dir, 'ai-operating-system', '02-business-facts-reference-spec.md'), '# DOC-02 SPEC BODY');
   mkdirSync(join(dir, 'infrastructure'), { recursive: true });
   writeFileSync(join(dir, 'infrastructure', 'I07-client-account-access-governance-spec.md'), '# I07 SPEC BODY');
+  writeFileSync(join(dir, 'infrastructure', 'I01-client-claude-project-setup-spec.md'), '# I01 SPEC BODY');
   return dir;
 }
 function ds(): LocalFsClientDataSource {
@@ -174,6 +175,24 @@ test('a provisioning id (i07) is in scope — dry-run loads its spec, reports re
   assert.equal(r.claudeCalls, 0);
   assert.match(out(), /BLOCKED/);
   assert.match(out(), /system prompt: \d+ chars/);
+});
+
+test('a provisioning artifact (i01) references upstream docs by TITLE, not full digests, so its 19-way fan-in stays tiny', async () => {
+  // i01 ("Client Claude Project") requires all 18 docs + i07. Ingesting 19 full
+  // digests (~171K chars) overflows the model session — i01 is a runbook that
+  // UPLOADS the docs by filename, it does not synthesize from their content. So
+  // provisioning artifacts get a title list, keeping the prompt small.
+  process.env['UPRIVER_SPECS_DIR'] = specsDir();
+  const d = ds();
+  await seedFixture(d);
+  const { deps: dp } = deps(d, explodingCall);
+  const r = await runGenerate(opts('i01' as DeliverableId, { dryRun: true }), dp);
+  assert.equal(r.status, 'dry-run');
+  assert.ok(
+    (r.promptSize?.userChars ?? 0) < 5_000,
+    `i01 upstream should be a title list (small), got ${r.promptSize?.userChars} user chars`,
+  );
+  assert.equal(r.promptSize?.overCeiling, false);
 });
 
 test('the engine scans [OPERATOR ACTION] click-ops into operatorActions alongside [NEEDS CONFIRMATION]', async () => {

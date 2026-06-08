@@ -21,7 +21,7 @@ import { readProfile } from './profile-io.js';
 import { profileSlice, renderSlice } from './profile-slice.js';
 import { buildPrompt, type UpstreamDoc } from './prompt-builder.js';
 import { buildUpstreamDigest, DIGEST_MAX_CHARS } from './upstream-digest.js';
-import { I_SERIES } from './provisioning.js';
+import { I_SERIES, isProvisioning } from './provisioning.js';
 import { assessPromptSize, type PromptSize } from './prompt-size.js';
 import { newlyUnblocked, renderDocLine, renderGenerationReport, renderReadiness, titleFor } from './report.js';
 import { runDoc, type ClaudeCall } from './runner.js';
@@ -121,11 +121,19 @@ async function loadUpstreamDocs(
   fullUpstream: boolean,
 ): Promise<UpstreamDoc[]> {
   const entry = COVERAGE_MAP.find((d) => d.id === id);
+  // Provisioning artifacts are infrastructure runbooks that REFERENCE the AOS
+  // docs by title (i01 uploads all 18 to the client's Claude Project; others cite
+  // specific deliverables) — they do not synthesize from doc content. Injecting
+  // full digests of every requiresDocs dep overflows the prompt at i01's 19-way
+  // fan-in, so provisioning gets a title list instead.
+  const titleRefs = isProvisioning(id);
   const out: UpstreamDoc[] = [];
   for (const depId of entry?.requiresDocs ?? []) {
     const m = manifest.docs[depId];
     if (!m || !m.approved) continue;
-    if (fullUpstream) {
+    if (titleRefs) {
+      out.push({ id: depId, digest: titleFor(depId) });
+    } else if (fullUpstream) {
       const content = await ds.readClientFileText(slug, m.path);
       if (content) out.push({ id: depId, digest: content });
     } else {
@@ -152,8 +160,15 @@ async function projectedUpstreamDocs(
   fullUpstream: boolean,
 ): Promise<UpstreamDoc[]> {
   const entry = COVERAGE_MAP.find((d) => d.id === id);
+  // Mirror loadUpstreamDocs: provisioning artifacts reference docs by title, so
+  // their projected prompt is a title list (tiny), not 19 worst-case digests.
+  const titleRefs = isProvisioning(id);
   const out: UpstreamDoc[] = [];
   for (const depId of entry?.requiresDocs ?? []) {
+    if (titleRefs) {
+      out.push({ id: depId, digest: titleFor(depId) });
+      continue;
+    }
     const m = manifest.docs[depId];
     if (m && m.approved) {
       if (fullUpstream) {
