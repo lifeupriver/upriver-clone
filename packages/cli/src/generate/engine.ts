@@ -50,7 +50,7 @@ export const M1_DOCS: readonly DeliverableId[] = [
  * decision). `doc-web-prd` is the buildable website-requirements doc; the
  * `design-system` doc + its `tokens.json` feed the new-design path.
  */
-export const WEB_DOCS: readonly DeliverableId[] = ['doc-web-prd'];
+export const WEB_DOCS: readonly DeliverableId[] = ['doc-web-prd', 'design-system'];
 
 /**
  * Everything `generate` can produce: the 18 AI Operating System docs (01–18),

@@ -170,6 +170,13 @@ export const COVERAGE_MAP: readonly DeliverableCoverage[] = [
     specPath: `${AOS}/19-website-prd-spec.md`,
   },
   {
+    id: 'design-system', title: 'Design System',
+    requiresFields: ['voice.attributes', 'content.visualBrandAssets', 'positioning.keyDifferentiator', 'goals.engagementScope.websiteScope'],
+    requiresHvVerified: ['goals.engagementScope.websiteScope'],
+    requiresDocs: ['doc-01', 'doc-05', 'doc-10'],
+    specPath: `${AOS}/20-design-system-spec.md`,
+  },
+  {
     id: 'i07', title: 'Account Access & Governance',
     requiresFields: ['people.keyTeam', 'people.billingContact', 'governance.dataResidency', 'governance.offboardingPlan', 'toolsAndAccess.plan.billingOwner', 'goals.budgetConstraints'],
     requiresHvVerified: ['people.billingContact', 'governance.dataResidency', 'governance.offboardingPlan', 'toolsAndAccess.plan.billingOwner', 'goals.budgetConstraints'],
