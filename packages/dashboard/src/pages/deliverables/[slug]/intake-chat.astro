@@ -55,7 +55,7 @@ const config = (await readClientConfig(slug))!;
       </header>
       <div class="log" id="log"></div>
       <footer class="fallback">
-        Prefer a form? The <a href={`/deliverables/${slug}/interview?token=${token}`}>question list</a> still works.
+        Prefer a form? The <a href={`/deliverables/${slug}/interview?t=${token}&token=${token}`}>question list</a> still works.
       </footer>
     </main>
     <div class="composer">
