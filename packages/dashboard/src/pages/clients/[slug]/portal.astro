@@ -1,0 +1,223 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import { readClientConfig, clientExists } from '@/lib/fs-reader';
+import { readInterviewShare } from '@/lib/interview';
+import { listShareTokens } from '@/lib/share-token';
+import { PORTAL_LABEL, portalUrl } from '@/pages/api/portal/_portal-handler';
+
+// Operator-only: the middleware gates /clients/* on an operator session in
+// supabase mode (and bypasses on the operator's local laptop). The POST route
+// re-checks the operator gate as defense-in-depth.
+const { slug } = Astro.params;
+if (!slug || !(await clientExists(slug))) {
+  return Astro.redirect('/clients');
+}
+const config = (await readClientConfig(slug))!;
+
+// Current state. interview-share.json holds the token the link carries (the
+// `?token=` gate); the portal-labelled share_token is the `?t=` gate. A link is
+// fully "live" only when both agree.
+const share = await readInterviewShare(slug);
+let portalToken: { token: string; createdAt: string; expiresAt: string | null } | null = null;
+try {
+  const tokens = await listShareTokens(slug);
+  const match = tokens.find((t) => t.label === PORTAL_LABEL) ?? null;
+  portalToken = match ? { token: match.token, createdAt: match.createdAt, expiresAt: match.expiresAt } : null;
+} catch {
+  portalToken = null; // Supabase not reachable from this render — show what we can.
+}
+
+const origin = share?.baseUrl ?? Astro.url.origin;
+const currentUrl = share ? portalUrl(origin, slug, share.token) : null;
+const live = !!(share && portalToken && share.token === portalToken.token);
+const status: 'live' | 'partial' | 'none' = live ? 'live' : share ? 'partial' : 'none';
+const createdAt = share?.createdAt ?? null;
+
+const suggestedMessage = currentUrl
+  ? `Hi ${config.name} — here is your private intake link. Open it whenever you have a few minutes and answer what you can; it saves as you go. No login needed, and the link is just for you:\n\n${currentUrl}`
+  : '';
+---
+
+<DashboardLayout title={`${config.name} — Client portal`} section="clients">
+  <div class="breadcrumb">
+    <a href="/clients">Clients</a>
+    <span class="sep">/</span>
+    <a href={`/clients/${slug}`}>{config.name}</a>
+    <span class="sep">/</span>
+    <span class="current">Portal</span>
+  </div>
+
+  <header class="page-header">
+    <span class="eyebrow">Client portal</span>
+    <h1>Hand off the intake link</h1>
+    <p class="lede">
+      Create one private link that drops {config.name} straight into their
+      coverage chatbot. They self-serve the questionnaire — no login, no account.
+      You copy the link and send it yourself; the dashboard never messages the
+      client.
+    </p>
+  </header>
+
+  <section class="card" data-slug={slug}>
+    <div class="status-row">
+      <span class={`pill pill-${status}`} id="status-pill">
+        {status === 'live' && 'Portal link is live'}
+        {status === 'partial' && 'Link needs regenerating'}
+        {status === 'none' && 'No portal link yet'}
+      </span>
+      {createdAt && <span class="muted" id="created-at">Created {new Date(createdAt).toLocaleString()}</span>}
+    </div>
+
+    {status === 'partial' && (
+      <p class="hint warn">
+        A link exists (likely minted from the CLI) but it isn't wired for the
+        hosted gate, so it won't open online. Click <strong>Regenerate</strong> to
+        issue a portal link that works on the live site.
+      </p>
+    )}
+
+    <div class="link-block" id="link-block" hidden={!currentUrl}>
+      <label for="portal-url">Client link</label>
+      <div class="copy-row">
+        <input id="portal-url" type="text" readonly value={currentUrl ?? ''} />
+        <button type="button" class="btn ghost" id="copy-url">Copy link</button>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn primary" id="regen">
+        {currentUrl ? 'Regenerate link' : 'Create portal link'}
+      </button>
+      <span class="muted danger-note">
+        Regenerating issues a new link and <strong>immediately disables the
+        current one</strong>.
+      </span>
+    </div>
+    <p class="result" id="result" role="status"></p>
+  </section>
+
+  <section class="card" id="message-card" hidden={!suggestedMessage}>
+    <h2>Suggested hand-off message</h2>
+    <p class="muted">Copy this into your own email or text. Nothing is sent from here.</p>
+    <textarea id="handoff" rows="6" readonly>{suggestedMessage}</textarea>
+    <div class="actions">
+      <button type="button" class="btn ghost" id="copy-msg">Copy message</button>
+    </div>
+  </section>
+
+  <style>
+    .breadcrumb { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; font-size: var(--fs-sm); color: var(--text-muted); }
+    .breadcrumb a { color: var(--text-muted); }
+    .breadcrumb a:hover { color: var(--accent); }
+    .breadcrumb .sep { opacity: 0.5; }
+    .breadcrumb .current { color: var(--text-body); }
+
+    .page-header { margin-bottom: 1.75rem; max-width: 56rem; }
+    .page-header h1 { margin: 0.5rem 0 0.75rem; font-size: 2rem; letter-spacing: -0.015em; }
+    .eyebrow { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.72rem; color: var(--accent); font-weight: 600; }
+    .lede { color: var(--text-muted); max-width: 46rem; }
+
+    .card { background: var(--surface, #fff); border: 1px solid var(--border, #e6e6df); border-radius: 12px; padding: 1.25rem 1.35rem; margin-bottom: 1.25rem; max-width: 56rem; }
+    .card h2 { margin: 0 0 0.35rem; font-size: 1.05rem; }
+
+    .status-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .pill { display: inline-block; padding: 0.25rem 0.7rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
+    .pill-live { background: #e7f6ee; color: #1c7a4d; }
+    .pill-partial { background: #fdf3e0; color: #9a6212; }
+    .pill-none { background: #eee; color: #555; }
+    .muted { color: var(--text-muted, #6b7280); font-size: 0.85rem; }
+
+    .hint { margin: 0.85rem 0 0; font-size: 0.9rem; }
+    .hint.warn { color: #9a6212; }
+
+    .link-block { margin-top: 1rem; }
+    .link-block label { display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .copy-row { display: flex; gap: 0.5rem; }
+    .copy-row input { flex: 1; padding: 0.55rem 0.7rem; border: 1px solid var(--border, #e6e6df); border-radius: 8px; font: 0.85rem ui-monospace, SFMono-Regular, Menlo, monospace; background: #f7f7f3; }
+
+    .actions { display: flex; align-items: center; gap: 0.85rem; margin-top: 1rem; flex-wrap: wrap; }
+    .btn { border: 0; border-radius: 8px; padding: 0.55rem 1.1rem; font: inherit; font-weight: 600; cursor: pointer; }
+    .btn.primary { background: #1a1a1a; color: #fff; }
+    .btn.primary:disabled { opacity: 0.5; cursor: default; }
+    .btn.ghost { background: #f0f0ea; color: #1a1a1a; }
+    .danger-note { color: #9a3412; }
+
+    textarea { width: 100%; box-sizing: border-box; padding: 0.7rem 0.8rem; border: 1px solid var(--border, #e6e6df); border-radius: 8px; font: 0.9rem/1.5 ui-sans-serif, system-ui, sans-serif; background: #f7f7f3; resize: vertical; }
+
+    .result { margin: 0.85rem 0 0; font-size: 0.9rem; min-height: 1.2em; }
+    .result.ok { color: #1c7a4d; }
+    .result.err { color: #b91c1c; }
+  </style>
+
+  <script is:inline define:vars={{ slug }}>
+    (function () {
+      const regenBtn = document.getElementById('regen');
+      const urlInput = document.getElementById('portal-url');
+      const linkBlock = document.getElementById('link-block');
+      const copyUrlBtn = document.getElementById('copy-url');
+      const copyMsgBtn = document.getElementById('copy-msg');
+      const handoff = document.getElementById('handoff');
+      const messageCard = document.getElementById('message-card');
+      const statusPill = document.getElementById('status-pill');
+      const result = document.getElementById('result');
+
+      function setResult(text, cls) {
+        result.textContent = text;
+        result.className = 'result ' + (cls || '');
+      }
+
+      async function copy(text, btn, label) {
+        try {
+          await navigator.clipboard.writeText(text);
+          const prev = btn.textContent;
+          btn.textContent = 'Copied ✓';
+          setTimeout(() => { btn.textContent = prev; }, 1500);
+        } catch (e) {
+          setResult('Copy failed — select the ' + label + ' and copy manually.', 'err');
+        }
+      }
+
+      if (copyUrlBtn) copyUrlBtn.addEventListener('click', () => copy(urlInput.value, copyUrlBtn, 'link'));
+      if (copyMsgBtn) copyMsgBtn.addEventListener('click', () => copy(handoff.value, copyMsgBtn, 'message'));
+
+      regenBtn.addEventListener('click', async () => {
+        const wasLive = !!urlInput && !!urlInput.value;
+        regenBtn.disabled = true;
+        setResult(wasLive ? 'Rotating the link…' : 'Creating the link…', '');
+        try {
+          const res = await fetch('/api/portal/' + encodeURIComponent(slug), {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: '{}',
+          });
+          const data = await res.json();
+          if (!res.ok || !data.ok) {
+            setResult(data.error || ('Request failed (' + res.status + ').'), 'err');
+            return;
+          }
+          // Swap in the new link + message; reflect that the old link is dead.
+          urlInput.value = data.url;
+          if (linkBlock) linkBlock.hidden = false;
+          const msg =
+            'Hi — here is your private intake link. Open it whenever you have a few ' +
+            'minutes and answer what you can; it saves as you go. No login needed, and ' +
+            'the link is just for you:\n\n' + data.url;
+          if (handoff) handoff.value = msg;
+          if (messageCard) messageCard.hidden = false;
+          regenBtn.textContent = 'Regenerate link';
+          if (statusPill) { statusPill.textContent = 'Portal link is live'; statusPill.className = 'pill pill-live'; }
+          setResult(
+            data.rotated
+              ? 'New link issued. The previous link is now disabled.'
+              : 'Portal link created. Copy it and send it to the client.',
+            'ok',
+          );
+        } catch (e) {
+          setResult('Network error — nothing changed. Try again.', 'err');
+        } finally {
+          regenBtn.disabled = false;
+        }
+      });
+    })();
+  </script>
+</DashboardLayout>
