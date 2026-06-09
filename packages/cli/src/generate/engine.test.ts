@@ -8,7 +8,8 @@ import { LocalFsClientDataSource } from '@upriver/core/data';
 import { createEmptyProfile, type DeliverableId } from '@upriver/schemas';
 import { readManifest } from './manifest.js';
 import { writeProfile } from './profile-io.js';
-import { docFileName, M1_DOCS, runGenerate, type GenerateDeps } from './engine.js';
+import { docFileName, GENERATABLE, M1_DOCS, WEB_DOCS, runGenerate, type GenerateDeps } from './engine.js';
+import { ALL_DOCS } from './batch.js';
 import { titleFor } from './report.js';
 import type { ClaudeCall } from './runner.js';
 
@@ -17,6 +18,17 @@ const NOW = '2026-06-04T00:00:00.000Z';
 test('M1_DOCS covers the full 18-doc AI Operating System (i01 uploads all 18)', () => {
   const expected = Array.from({ length: 18 }, (_, i) => `doc-${String(i + 1).padStart(2, '0')}`);
   assert.deepEqual([...M1_DOCS], expected);
+});
+
+test('website tier (--web) is excluded from --all default scope and registered in GENERATABLE (Build Spec 10)', () => {
+  // `--all` defaults to ALL_DOCS (= M1_DOCS): the website tier must NOT ride it.
+  for (const id of WEB_DOCS) {
+    assert.ok(!ALL_DOCS.includes(id), `${id} must be excluded from --all's default scope`);
+    assert.ok(!M1_DOCS.includes(id), `${id} must not be in M1_DOCS`);
+    assert.ok(GENERATABLE.includes(id), `${id} must be generatable (single --doc / --web)`);
+  }
+  // The bridge registers doc-web-prd (A); design-system (C) is added with its row.
+  assert.ok(WEB_DOCS.includes('doc-web-prd'), 'doc-web-prd is in the website tier');
 });
 const FIXTURE = join(
   dirname(fileURLToPath(import.meta.url)),

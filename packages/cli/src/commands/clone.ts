@@ -6,7 +6,7 @@ import { parse as parseYaml } from 'yaml';
 import { readFileSync } from 'node:fs';
 import { BaseCommand } from '../base-command.js';
 import type { AuditPackage, ClientConfig, ClientIntake, SitePage } from '@upriver/core';
-import { loadAuditPackage, resolveScaffoldPaths } from '../scaffold/template-writer.js';
+import { resolveScaffoldPaths } from '../scaffold/template-writer.js';
 import type { FidelitySummary, PageFidelity } from '../clone-qa/fidelity-scorer.js';
 import { verifyClonePage } from '../clone/verify.js';
 import {
@@ -16,7 +16,7 @@ import {
   type RewriteOptions,
 } from '../clone/rewrite-links.js';
 import { withKeyedLock } from '../util/keyed-lock.js';
-import { readIntake } from '../util/intake-reader.js';
+import { resolveWebInputs } from '../web-bridge/inputs.js';
 import { extractEmbeds, pageFileSlug as embedPageSlug } from '../clone/embed-audit.js';
 
 const CLAUDE_BIN = process.env['CLAUDE_BIN'] || 'claude';
@@ -57,8 +57,10 @@ export default class Clone extends BaseCommand {
 
     if (!existsSync(repoDir)) this.error(`Scaffolded repo not found at ${repoDir}. Run "upriver scaffold ${slug}" first.`);
 
-    const pkg = loadAuditPackage(clientDir);
-    const intake = await readIntake(slug);
+    // Profile-first inputs (Build Spec 10): verified profile facts override stale
+    // scraped copy; the scraped pages stay from the package. `intakeDecisions` is
+    // the profile's migrated auditDecisions (or the legacy intake).
+    const { pkg, intakeDecisions: intake } = await resolveWebInputs(slug);
     const priorFidelity = readPriorFidelity(clientDir);
     if (priorFidelity) {
       this.log(`  Loaded prior fidelity report (${priorFidelity.size} pages) — verify loop will be plan-aware.`);

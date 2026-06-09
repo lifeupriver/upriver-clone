@@ -60,3 +60,39 @@ Acceptance runs against littlefriends after the e2e synthetic run has populated 
 ## Changelog
 
 - 2026-06-05: spec written (closes capability-audit G6). Depends on: e2e synthetic run merged (the littlefriends profile is the acceptance fixture); recommended after Cowork's run evaluation in case it amends the coverage map.
+
+- 2026-06-09: built on branch `build/10-website-bridge`. Pieces A/B/C + the e2e fix, compiled and tested after each. Root `pnpm build` clean; schemas suite 44/44 (cross-check green with the two new rows + the new HV leaf); cli suite 396/396.
+
+  **A — doc-web-prd.** `DeliverableId` + `COVERAGE_MAP` row (requires identity/offerings/positioning/customers/seo(targets+local)/salesProcess(conversion)/content + `goals.engagementScope.websiteScope`; HV-gated; requiresDocs doc-01/02/06/10). `goals.engagementScope.websiteScope` added to `HV_FIELDS`. New `WEB_DOCS` in `engine.ts`, added to `GENERATABLE` but NOT `M1_DOCS`/`ALL_DOCS`; `--web` flag in `generate.ts` routes into `runAll` with the website scope. Spec 19 authored. Test asserts `--web` is excluded from `--all`'s default scope.
+
+  **B — resolveWebInputs.** `packages/cli/src/web-bridge/inputs.ts`: pure `mergeWebInputs` (profile-only / package-only / merged / neither, 4-case unit tests) + filesystem-based `resolveWebInputs`. The three command reads were swapped one line each (`design-brief`, `scaffold/index`, `clone`) with no other diff.
+
+  **C — design-system.** `COVERAGE_MAP` row (requires voice/content.visualBrandAssets/positioning + websiteScope; requiresDocs doc-01/05/10; `--web`). Spec 20 authored; tokens shape documented + smoke-tested through `applyDesignTokens` → `global.css`.
+
+  **§D live acceptance (dry-run + documented operator steps; no LLM doc spend — per the chosen scope):**
+  - `goals.engagementScope.websiteScope` set to `B` and verified (operator fork act; verifying the leaf verifies the enclosing `goals.engagementScope` envelope). After verification, `generate littlefriends --web --dry-run` shows the 2-doc tier plan with the **websiteScope HV blocker cleared** — the remaining blockers (`seo.local`, `content.visualBrandAssets`, upstream `doc-10`) are normal field gap-fill + DAG ordering an operator resolves in a real run.
+  - `scaffold littlefriends` ran with `resolveWebInputs` reporting **`source: merged`**. Three profile-sourced facts grep-proven in scaffold output, each OVERRIDING a stale package value:
+    - offering **"Twos class"** → `clients/littlefriends/repo/.agents/product-marketing-context.md` (over stale "Old Program Name").
+    - hours **"Mon–Fri 8:00am–5:30pm; …"** → `repo/src/content/faqs/what-are-your-hours-1.json` (over stale "Open 9 to 3").
+    - capacity **"licensed capacity: 58"** → `repo/src/content/faqs/what-is-your-capacity-2.json` (package had none).
+    Negative check: stale "Old Program Name" / "Open 9 to 3" absent from the output.
+  - **audreys (audit-package, no profile) byte-identical regression:** `design-brief`, the scaffold fact-builders, and `clone --dry-run` all produced output byte-identical to a pre-change snapshot; `resolveWebInputs` reported `source: audit-package` and returned the package object unchanged.
+  - Acceptance setup was a hand-authored stale `clients/littlefriends/audit-package.json` (gitignored; not in the PR); the littlefriends profile + generated artifacts were restored/removed afterward so the e2e fixture is left pristine.
+
+  **e2e fix:** `scripts/e2e-littlefriends.sh readiness-only` runs the F2 readiness dry-run and exits before the docs phase (`STOP_AFTER` guard) — `readiness` alone auto-advanced into doc generation and burned LLM calls.
+
+  **DoD verifications:** grep check passed — no external design-tool API/SDK calls in `packages/cli/src` (the "Claude Design" hits are pre-existing prose in the `design-brief`/`capture-major` handoff workflow; `web-bridge/` has zero network imports/calls), and spec 20 emits its 13 external-tool steps as `[OPERATOR ACTION:]` markers. The repo defines no `lint` script / eslint config, so the strict `tsc` build (`exactOptionalPropertyTypes`) is the type gate and is clean. `--web` is `exclusive` with `--all` (and `--provisioning`/`--doc`), so `generate --all --web` errors rather than silently running web-only.
+
+  **Deviations from the spec letter (all to honor its constraints):**
+  - `WebInputs` carries `pkg` and `intakeDecisions` in addition to the spec's listed resolved fields (voice/facts/offerings/seoTargets/brandTokens/pages). All three commands consume the full `AuditPackage` shape extensively, so a carrier `pkg` is the only way to keep the seam a one-line swap with NO other diff and byte-identical output. The resolved fields are exposed for reporting/acceptance.
+  - `resolveWebInputs` reads profile + intake from the local filesystem (explicit `LocalFsClientDataSource`, not `resolveClientDataSource`). This keeps `design-brief`/`scaffold` working with no data-source/env requirement (preserving byte-identicality) and is consistent with the filesystem-based website pipeline. Side effect: `clone`'s intake is now read from the local tree rather than the env-selected data source (equivalent under `UPRIVER_DATA_SOURCE=local`, which clone already required).
+  - The fact-override surfaces through the **existing** renderers (rendering logic untouched): offerings → `contentInventory.pricing` (product-marketing-context "Key offers"); hours + capacity → `contentInventory.faqs` (rendered to files by `seedFaqs`) and their semantic homes (`contactInfo.hours`, `eventSpaces`).
+  - design-system `tokens.json`: the engine writes a single doc file and (hard rule) isn't modified to emit a second file, so the generated doc embeds the machine-readable token block (spec 20 §8) and an `[OPERATOR ACTION]` step writes it to `clients/<slug>/design-system/tokens.json` — matching the playbook's "reconcile approved tokens (operator step)."
+  - The profile-only `source: profile` branch returns a MINIMAL synthesized package (enough to carry the facts + not crash), not a faithful-package generator — the merged path is the real acceptance per the spec's "previously could only come from audit-package" phrasing.
+
+  **Follow-ups (not in this build):**
+  - New-site build playbook doc — already authored as `09-website-workflow-playbook.md` (the three client paths); a reusable Claude Code build-prompt template is still a follow-up (write after the first real Path-2 client).
+  - web-PRD → proposal (G1) linkage: doc-web-prd is the natural input to a generated proposal; wire when G1 lands.
+  - stage field (G2) interaction: web-tier deliverables should carry the stage field once G2 adds it.
+  - Before the `--web` tier is producible in a real run: gap-fill `seo.local` + `content.visualBrandAssets` and generate/approve doc-08/09/10 (the audit chain) — all normal pipeline steps, intentionally not done here (no LLM spend).
+  - Reference-site per-site "why" notes (playbook Path 3) still want a schema slot + a chatbot/session question; `websiteScope` A/B/C → name all four real outcomes (iterative / platform-conversion / keep-the-feel / reimagine).

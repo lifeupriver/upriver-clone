@@ -36,6 +36,11 @@ export const HV_FIELDS: readonly string[] = [
   'operationsAutomation.spendCap',
   'goals.budgetConstraints',
   'goals.redLines',
+  // The website scope fork (doc-10 §9): which website path the engagement takes
+  // (A iterative / B partial / C full) is a money decision — Build Spec 10 gates
+  // every website deliverable on it. Verifying it verifies the enclosing
+  // `goals.engagementScope` envelope.
+  'goals.engagementScope.websiteScope',
   // Preschool module additions (Little Friends).
   'modules.preschool.ocfs.**',
   'modules.preschool.trainingMatrix.**',

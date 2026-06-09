@@ -12,7 +12,6 @@ import {
   ensureClaudeMd,
   ensureProductMarketingContext,
   generateNav,
-  loadAuditPackage,
   loadDesignTokens,
   loadPageRecords,
   resolveScaffoldPaths,
@@ -22,6 +21,7 @@ import {
   seedTestimonials,
   writeChangelog,
 } from '../../scaffold/template-writer.js';
+import { resolveWebInputs } from '../../web-bridge/inputs.js';
 
 export default class Scaffold extends BaseCommand {
   static override description = 'Generate Astro 6 hybrid repo for the client';
@@ -44,7 +44,9 @@ export default class Scaffold extends BaseCommand {
 
     this.log(`\nScaffolding "${slug}" into ${repoDir}`);
 
-    const pkg = loadAuditPackage(clientDir);
+    // Profile-first inputs (Build Spec 10): verified profile facts override stale
+    // scraped copy in the seeded content; pages/screenshots stay from the package.
+    const { pkg } = await resolveWebInputs(slug);
     const tokens = loadDesignTokens(clientDir);
     const typography = loadTypographyCapture(clientDir);
     const pages = loadPageRecords(clientDir);
