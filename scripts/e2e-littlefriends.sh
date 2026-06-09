@@ -4,7 +4,8 @@
 # Code session or Joshua) only ever needs the tail of the log plus the
 # structured JSON artifacts — never the doc bodies. Resumable: pass a phase
 # name (reset|recon|extract|conflicts|verify|readiness|docs|provisioning|final)
-# to start there.
+# to start there. Use `readiness-only` to run the F2 readiness dry-run and stop
+# before the docs phase (no LLM doc calls) — plain `readiness` auto-advances.
 #
 # REQUIRES: UPRIVER_GATE_AUTO=1 support in gate.ts (step 0 of the run prompt).
 # Refuses to start without it set, so it can never be mistaken for a live run.
@@ -22,6 +23,14 @@ mkdir -p "$RUN_DIR"
 
 UPRIVER="node packages/cli/bin/run.js"
 START_PHASE="${1:-reset}"
+# `readiness-only`: run through the F2 readiness dry-run and STOP, before the docs
+# phase. START_PHASE means "this phase and all after", so plain `readiness` would
+# auto-advance into doc generation and burn LLM calls — this guard prevents that.
+STOP_AFTER=""
+if [ "$START_PHASE" = "readiness-only" ]; then
+  START_PHASE=readiness
+  STOP_AFTER=readiness
+fi
 PHASES=(reset recon extract conflicts verify readiness docs provisioning final)
 
 log() { echo "[$(date +%H:%M:%S)] $*" | tee -a "$LOG"; }
@@ -150,6 +159,12 @@ if phase_ge readiness; then
     exit 3
   fi
   log "All docs READY."
+fi
+
+# `readiness-only` stops here: the F2 dry-run has run; do NOT enter the docs phase.
+if [ "$STOP_AFTER" = "readiness" ]; then
+  log "STOP: readiness-only mode — F2 dry-run complete; not entering the docs phase (no LLM doc calls)."
+  exit 0
 fi
 
 # ---- Phase: docs -----------------------------------------------------------
