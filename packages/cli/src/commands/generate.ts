@@ -82,7 +82,7 @@ export default class Generate extends BaseCommand {
       description:
         'Generate the website tier (doc-web-prd, design-system) — the post-fork web deliverables, gated on the doc-10 §9 websiteScope. Its own batch scope; excluded from --all. Use standalone (`generate <slug> --web`).',
       default: false,
-      exclusive: ['provisioning', 'doc'],
+      exclusive: ['provisioning', 'doc', 'all'],
     }),
     docs: Flags.string({
       description: 'Comma-separated subset for --all (e.g. doc-01,doc-02 or, with --provisioning, i07,i01). Defaults to the full scope.',
