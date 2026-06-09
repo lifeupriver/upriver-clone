@@ -1,0 +1,441 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - navigation [ref=e13]:
+        - generic [ref=e14]: This client
+        - generic "Audrey's Farmhouse" [ref=e15]
+        - link "Overview" [ref=e16] [cursor=pointer]:
+          - /url: /clients/audreys
+          - generic [ref=e18]: Overview
+        - link "Intake" [ref=e19] [cursor=pointer]:
+          - /url: /clients/audreys/intake
+          - generic [ref=e21]: Intake
+        - link "Audit" [ref=e22] [cursor=pointer]:
+          - /url: /clients/audreys/audit
+          - generic [ref=e24]: Audit
+        - link "Clone Fidelity" [ref=e25] [cursor=pointer]:
+          - /url: /clients/audreys/clone-fidelity
+          - generic [ref=e27]: Clone Fidelity
+        - link "Brand Voice" [ref=e28] [cursor=pointer]:
+          - /url: /clients/audreys/voice
+          - generic [ref=e30]: Brand Voice
+        - link "Design Brief" [ref=e31] [cursor=pointer]:
+          - /url: /clients/audreys/design-brief
+          - generic [ref=e33]: Design Brief
+        - link "Site Preview" [ref=e34] [cursor=pointer]:
+          - /url: /clients/audreys/site
+          - generic [ref=e36]: Site Preview
+        - link "Fixes Plan" [ref=e37] [cursor=pointer]:
+          - /url: /clients/audreys/fixes
+          - generic [ref=e39]: Fixes Plan
+        - link "QA Report" [ref=e40] [cursor=pointer]:
+          - /url: /clients/audreys/qa
+          - generic [ref=e42]: QA Report
+        - link "Launch Checklist" [ref=e43] [cursor=pointer]:
+          - /url: /clients/audreys/launch-checklist
+          - generic [ref=e45]: Launch Checklist
+        - link "Export Audit" [ref=e46] [cursor=pointer]:
+          - /url: /deliverables/audreys
+          - generic [ref=e48]: Export Audit
+        - link "Export Brief" [ref=e49] [cursor=pointer]:
+          - /url: /deliverables/audreys/design-brief
+          - generic [ref=e51]: Export Brief
+        - link "Share Links" [ref=e52] [cursor=pointer]:
+          - /url: /clients/audreys/share
+          - generic [ref=e54]: Share Links
+      - generic [ref=e56]: v0.1.0
+    - main [ref=e57]:
+      - generic [ref=e58]:
+        - link "Clients" [ref=e59] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e60]: /
+        - link "Audrey's Farmhouse" [ref=e61] [cursor=pointer]:
+          - /url: /clients/audreys
+        - generic [ref=e62]: /
+        - generic [ref=e63]: Design Brief
+      - generic [ref=e64]:
+        - generic [ref=e65]:
+          - text: Design Brief
+          - heading "Audrey's Farmhouse" [level=1] [ref=e66]
+        - link "Export for Client" [ref=e67] [cursor=pointer]:
+          - /url: /deliverables/audreys/design-brief
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - generic [ref=e70]:
+            - heading "Claude Design Brief — Audrey's Farmhouse" [level=1] [ref=e71]
+            - blockquote [ref=e72]: This file goes to Claude Design. Read it top to bottom before generating any deck output.
+            - paragraph
+          - group [ref=e73]:
+            - generic "▸ Use this base" [ref=e74] [cursor=pointer]:
+              - text: ▸
+              - heading "Use this base" [level=2] [ref=e75]
+            - paragraph [ref=e77]:
+              - text: Use the
+              - strong [ref=e78]: Upriver Consulting
+              - text: repo as your base design system. The blocks below are the per-client overrides — apply them on top of the Upriver shell. The audit deliverable is a Claude Design slide deck (cover → executive summary → scorecard → visual audit → findings → missing pages → brand voice → design system → competitor comparison → implementation plan → scope sign-off → what we need from you).
+          - group [ref=e79]:
+            - generic "▸ Client meta" [ref=e80] [cursor=pointer]:
+              - text: ▸
+              - heading "Client meta" [level=2] [ref=e81]
+            - generic [ref=e82]:
+              - list [ref=e83]:
+                - listitem [ref=e84]:
+                  - text: "Client:"
+                  - strong [ref=e85]: Audrey's Farmhouse
+                  - text: (
+                  - code [ref=e86]: audreys
+                  - text: )
+                - listitem [ref=e87]: "Site: https://audreysfarmhouse.com"
+                - listitem [ref=e88]: "Audit date: 2026-04-24T18:02:37.968Z"
+                - listitem [ref=e89]:
+                  - text: "Overall score:"
+                  - strong [ref=e90]: 72/100
+                - listitem [ref=e91]: "Total findings: 38 (P0: 5, P1: 26, P2: 7)"
+              - paragraph
+          - group [ref=e92]:
+            - generic "▸ Design system (per-client overrides)" [ref=e93] [cursor=pointer]:
+              - text: ▸
+              - heading "Design system (per-client overrides)" [level=2] [ref=e94]
+            - generic [ref=e95]:
+              - heading "Colors" [level=3] [ref=e96]
+              - list [ref=e97]:
+                - listitem [ref=e98]:
+                  - text: "primary:"
+                  - code [ref=e99]: "#2F3A55"
+                - listitem [ref=e100]:
+                  - text: "secondary:"
+                  - code [ref=e101]: "#B68534"
+                - listitem [ref=e102]:
+                  - text: "accent:"
+                  - code [ref=e103]: "#B68534"
+                - listitem [ref=e104]:
+                  - text: "background:"
+                  - code [ref=e105]: "#FCFAF7"
+                - listitem [ref=e106]:
+                  - text: "textPrimary:"
+                  - code [ref=e107]: "#1B1B1B"
+                - listitem [ref=e108]:
+                  - text: "textSecondary:"
+                  - code [ref=e109]: "#555555"
+                - listitem [ref=e110]:
+                  - text: "link:"
+                  - code [ref=e111]: "#424922"
+              - heading "Typography" [level=3] [ref=e112]
+              - list [ref=e113]:
+                - listitem [ref=e114]:
+                  - text: "heading font:"
+                  - code [ref=e115]: Brandon Grotesque
+                - listitem [ref=e116]:
+                  - text: "body font:"
+                  - code [ref=e117]: Halis Rmedium
+                - listitem [ref=e118]:
+                  - text: "mono font:"
+                  - code [ref=e119]: monospace
+                - listitem [ref=e120]:
+                  - text: "scale: h1="
+                  - code [ref=e121]: 40px
+                  - text: ", h2="
+                  - code [ref=e122]: 16px
+                  - text: ", h3="
+                  - code [ref=e123]: 1.5rem
+                  - text: ", body="
+                  - code [ref=e124]: 13.6px
+                  - text: ", small="
+                  - code [ref=e125]: 0.875rem
+              - heading "Spacing" [level=3] [ref=e126]
+              - list [ref=e127]:
+                - listitem [ref=e128]: "base unit: 4px"
+                - listitem [ref=e129]: "scale: [4, 8, 12, 16, 24, 32, 48, 64, 96, 128]"
+                - listitem [ref=e130]:
+                  - text: "border radius:"
+                  - code [ref=e131]: 0px
+              - heading "Components" [level=3] [ref=e132]
+              - list [ref=e133]:
+                - listitem [ref=e134]:
+                  - text: "primary button:"
+                  - code [ref=e135]: "{\"background\":\"#B68534\",\"textColor\":\"#FCFAF7\",\"borderRadius\":\"0px\",\"borderRadiusCorners\":{\"topLeft\":\"0px\",\"topRight\":\"0px\",\"bottomRight\":\"0px\",\"bottomLeft\":\"0px\"},\"shadow\":\"none\"}"
+                - listitem [ref=e136]:
+                  - text: "secondary button:"
+                  - code [ref=e137]: "{\"background\":\"#2F3A55\",\"textColor\":\"#EDE8CE\",\"borderRadius\":\"0px\",\"borderRadiusCorners\":{\"topLeft\":\"0px\",\"topRight\":\"0px\",\"bottomRight\":\"0px\",\"bottomLeft\":\"0px\"},\"shadow\":\"none\"}"
+                - listitem [ref=e138]:
+                  - text: "input field:"
+                  - code [ref=e139]: "{\"background\":\"transparent\",\"textColor\":\"#000000\",\"borderColor\":null,\"borderRadius\":\"0px\",\"borderRadiusCorners\":{\"topLeft\":\"0px\",\"topRight\":\"0px\",\"bottomRight\":\"0px\",\"bottomLeft\":\"0px\"},\"shadow\":\"none\"}"
+              - heading "Brand" [level=3] [ref=e140]
+              - list [ref=e141]:
+                - listitem [ref=e142]:
+                  - text: "logo:"
+                  - code [ref=e143]: https://images.squarespace-cdn.com/content/v1/61899d0186d59c6b7d882aea/f3d6d5b8-157e-4408-ae20-b7d3e5917d79/Audreys-Farmhouse-Logo-Black.png?format=1500w
+                - listitem [ref=e144]:
+                  - text: "favicon:"
+                  - code [ref=e145]: https://images.squarespace-cdn.com/content/v1/61899d0186d59c6b7d882aea/6f1bb12c-f4af-4568-8a2f-2b348763d3a0/favicon.ico?format=100w
+                - listitem [ref=e146]: "color scheme: light"
+                - listitem [ref=e147]: "personality: (none extracted)"
+              - paragraph
+          - group [ref=e148]:
+            - generic "▸ Suggested deck structure (copy-paste prompts per slide)" [ref=e149] [cursor=pointer]:
+              - text: ▸
+              - heading "Suggested deck structure (copy-paste prompts per slide)" [level=2] [ref=e150]
+            - generic [ref=e151]:
+              - heading "Slide 1 — Cover" [level=3] [ref=e152]
+              - blockquote [ref=e153]:
+                - text: Generate a cover slide for "Audrey's Farmhouse". Include the client name, the site URL (https://audreysfarmhouse.com), the audit date (4/24/2026), the overall score
+                - code [ref=e154]: 72/100
+                - text: as a large number with a one-line interpretation, and the Upriver Consulting auditor mark. Use the design system above for colors and typography.
+              - heading "Slide 2 — Executive summary" [level=3] [ref=e155]
+              - blockquote [ref=e156]:
+                - text: Use the executive summary in
+                - code [ref=e157]: docs/brand-voice-guide.md
+                - text: "(the section after \"Executive summary (auto-drafted)\"). Format as three short cards: \"What's working\", \"What's costing you inquiries\", \"What we're recommending\". Plain language, no jargon."
+              - heading "Slide 3 — Scorecard (visual)" [level=3] [ref=e158]
+              - blockquote [ref=e159]: "Render a radar chart or grid showing the score (0-100) across all 10 dimensions:"
+              - list [ref=e160]:
+                - listitem [ref=e161]: "aeo: 93/100"
+                - listitem [ref=e162]: "backlinks: 90/100"
+                - listitem [ref=e163]: "competitors: 76/100"
+                - listitem [ref=e164]: "content: 76/100"
+                - listitem [ref=e165]: "design: 93/100"
+                - listitem [ref=e166]: "links: 83/100"
+                - listitem [ref=e167]: "local: 72/100"
+                - listitem [ref=e168]: "sales: 36/100"
+                - listitem [ref=e169]: "schema: 76/100"
+                - listitem [ref=e170]: "seo: 27/100"
+              - blockquote [ref=e171]: "Color-code: green ≥ 70, amber 40-69, red < 40."
+              - heading "Slide 4 — Visual audit (before photos)" [level=3] [ref=e172]
+              - blockquote [ref=e173]: Full-page screenshots of the homepage and 3-5 key pages with annotation overlays marking specific problems. Each annotation links to a finding card. Use the screenshots listed below.
+              - list [ref=e174]:
+                - listitem [ref=e175]:
+                  - strong [ref=e176]: "404"
+                  - text: (https://audreysfarmhouse.com/404)
+                - listitem [ref=e177]:
+                  - text: "desktop:"
+                  - code [ref=e178]: clients/audreys/screenshots/desktop/404.png
+                - listitem [ref=e179]:
+                  - text: "mobile:"
+                  - code [ref=e180]: clients/audreys/screenshots/mobile/404.png
+                - listitem [ref=e181]:
+                  - strong [ref=e182]: careers
+                  - text: (https://audreysfarmhouse.com/careers)
+                - listitem [ref=e183]:
+                  - text: "desktop:"
+                  - code [ref=e184]: clients/audreys/screenshots/desktop/careers.png
+                - listitem [ref=e185]:
+                  - text: "mobile:"
+                  - code [ref=e186]: clients/audreys/screenshots/mobile/careers.png
+                - listitem [ref=e187]:
+                  - strong [ref=e188]: cart
+                  - text: (https://audreysfarmhouse.com/cart)
+                - listitem [ref=e189]:
+                  - text: "desktop:"
+                  - code [ref=e190]: clients/audreys/screenshots/desktop/cart.png
+                - listitem [ref=e191]:
+                  - text: "mobile:"
+                  - code [ref=e192]: clients/audreys/screenshots/mobile/cart.png
+                - listitem [ref=e193]:
+                  - strong [ref=e194]: catering
+                  - text: (https://audreysfarmhouse.com/catering)
+                - listitem [ref=e195]:
+                  - text: "desktop:"
+                  - code [ref=e196]: clients/audreys/screenshots/desktop/catering.png
+                - listitem [ref=e197]:
+                  - text: "mobile:"
+                  - code [ref=e198]: clients/audreys/screenshots/mobile/catering.png
+                - listitem [ref=e199]:
+                  - strong [ref=e200]: events
+                  - text: (https://audreysfarmhouse.com/events)
+                - listitem [ref=e201]:
+                  - text: "desktop:"
+                  - code [ref=e202]: clients/audreys/screenshots/desktop/events.png
+                - listitem [ref=e203]:
+                  - text: "mobile:"
+                  - code [ref=e204]: clients/audreys/screenshots/mobile/events.png
+                - listitem [ref=e205]:
+                  - strong [ref=e206]: fn-nav
+                  - text: (https://audreysfarmhouse.com/fn-nav)
+                - listitem [ref=e207]:
+                  - text: "desktop:"
+                  - code [ref=e208]: clients/audreys/screenshots/desktop/fn-nav.png
+                - listitem [ref=e209]:
+                  - text: "mobile:"
+                  - code [ref=e210]: clients/audreys/screenshots/mobile/fn-nav.png
+                - listitem [ref=e211]:
+                  - strong [ref=e212]: forgetpassword
+                  - text: (https://app.audreysfarmhouse.com/ForgetPassword)
+                - listitem [ref=e213]:
+                  - text: "desktop:"
+                  - code [ref=e214]: clients/audreys/screenshots/desktop/forgetpassword.png
+                - listitem [ref=e215]:
+                  - text: "mobile:"
+                  - code [ref=e216]: (missing)
+                - listitem [ref=e217]:
+                  - strong [ref=e218]: friends-and-neighbors-events
+                  - text: (https://audreysfarmhouse.com/friends-and-neighbors/events)
+                - listitem [ref=e219]:
+                  - text: "desktop:"
+                  - code [ref=e220]: clients/audreys/screenshots/desktop/friends-and-neighbors-events.png
+                - listitem [ref=e221]:
+                  - text: "mobile:"
+                  - code [ref=e222]: clients/audreys/screenshots/mobile/friends-and-neighbors-events.png
+                - listitem [ref=e223]:
+                  - strong [ref=e224]: friends-and-neighbors-lodging
+                  - text: (https://audreysfarmhouse.com/friends-and-neighbors/lodging)
+                - listitem [ref=e225]:
+                  - text: "desktop:"
+                  - code [ref=e226]: clients/audreys/screenshots/desktop/friends-and-neighbors-lodging.png
+                - listitem [ref=e227]:
+                  - text: "mobile:"
+                  - code [ref=e228]: clients/audreys/screenshots/mobile/friends-and-neighbors-lodging.png
+                - listitem [ref=e229]:
+                  - strong [ref=e230]: friends-and-neighbors
+                  - text: (https://audreysfarmhouse.com/friends-and-neighbors)
+                - listitem [ref=e231]:
+                  - text: "desktop:"
+                  - code [ref=e232]: clients/audreys/screenshots/desktop/friends-and-neighbors.png
+                - listitem [ref=e233]:
+                  - text: "mobile:"
+                  - code [ref=e234]: clients/audreys/screenshots/mobile/friends-and-neighbors.png
+                - listitem [ref=e235]:
+                  - strong [ref=e236]: home
+                  - text: (https://audreysfarmhouse.com)
+                - listitem [ref=e237]:
+                  - text: "desktop:"
+                  - code [ref=e238]: clients/audreys/screenshots/desktop/home.png
+                - listitem [ref=e239]:
+                  - text: "mobile:"
+                  - code [ref=e240]: clients/audreys/screenshots/mobile/home.png
+                - listitem [ref=e241]:
+                  - strong [ref=e242]: hudson-valley
+                  - text: (https://audreysfarmhouse.com/hudson-valley)
+                - listitem [ref=e243]:
+                  - text: "desktop:"
+                  - code [ref=e244]: clients/audreys/screenshots/desktop/hudson-valley.png
+                - listitem [ref=e245]:
+                  - text: "mobile:"
+                  - code [ref=e246]: clients/audreys/screenshots/mobile/hudson-valley.png
+              - blockquote [ref=e247]:
+                - strong [ref=e248]: "Note:"
+                - text: screenshots are local files. The human running the design pass uploads them manually to Claude Design — do not assume URLs.
+              - heading "Slides 5-14 — Findings by dimension (one per dimension)" [level=3] [ref=e249]
+              - blockquote [ref=e250]:
+                - text: "For each of the 10 dimensions, generate a section with: dimension score + letter grade, 2-3 sentence summary (use the"
+                - code [ref=e251]: summary
+                - text: field from each pass), and finding cards (title, severity badge P0/P1/P2, evidence, business impact, recommendation, estimated effort). Pull every finding from
+                - code [ref=e252]: audit-package.json#/findings
+                - text: filtered by dimension.
+              - paragraph
+              - paragraph [ref=e253]: "Top P0 findings to lead with:"
+              - list [ref=e254]:
+                - listitem [ref=e255]: "[sales] Missing: Pricing or packages page"
+                - listitem [ref=e256]: "[sales] Missing: Contact or inquiry page"
+                - listitem [ref=e257]: "[seo] Pages missing title tags"
+                - listitem [ref=e258]: "[seo] No analytics tool detected"
+                - listitem [ref=e259]: "[seo] Indexation blocked: noindex meta tag"
+              - heading "Slide 15 — Missing pages analysis" [level=3] [ref=e260]
+              - blockquote [ref=e261]: "Render as a table: page type → reason → priority. Every missing page is a P1 or P2 finding. Frame the gap as opportunity."
+              - list [ref=e262]:
+                - listitem [ref=e263]:
+                  - strong [ref=e264]: Dedicated venue space pages
+                  - text: (p1) — No page matching "Dedicated venue space pages" was found. Visitors looking for this information leave to find it elsewhere.
+                - listitem [ref=e265]:
+                  - strong [ref=e266]: Pricing or packages page
+                  - text: (p0) — No page matching "Pricing or packages page" was found. Visitors looking for this information leave to find it elsewhere.
+                - listitem [ref=e267]:
+                  - strong [ref=e268]: FAQ page
+                  - text: (p1) — No page matching "FAQ page" was found. Visitors looking for this information leave to find it elsewhere.
+                - listitem [ref=e269]:
+                  - strong [ref=e270]: Contact or inquiry page
+                  - text: (p0) — No page matching "Contact or inquiry page" was found. Visitors looking for this information leave to find it elsewhere.
+                - listitem [ref=e271]:
+                  - strong [ref=e272]: About page
+                  - text: (p1) — No page matching "About page" was found. Visitors looking for this information leave to find it elsewhere.
+                - listitem [ref=e273]:
+                  - strong [ref=e274]: Preferred vendors list
+                  - text: (p2) — No page matching "Preferred vendors list" was found. Visitors looking for this information leave to find it elsewhere.
+                - listitem [ref=e275]:
+                  - strong [ref=e276]: Local area or directions page
+                  - text: (p2) — No page matching "Local area or directions page" was found. Visitors looking for this information leave to find it elsewhere.
+              - heading "Slide 16 — Brand voice analysis" [level=3] [ref=e277]
+              - blockquote [ref=e278]:
+                - text: "Side-by-side: \"How the site sounds now\" (3-5 verbatim site quotes) vs. \"How it could sound\" (rewrites in the proposed voice). Source:"
+                - code [ref=e279]: docs/brand-voice-guide.md
+                - text: and
+                - code [ref=e280]: audit-package.json#/brandVoiceDraft
+                - text: . Highlight any banned phrases that appear on the site.
+              - heading "Slide 17 — Design system audit" [level=3] [ref=e281]
+              - blockquote [ref=e282]: Show the current design system components (buttons, typography, color palette, form fields) using the design system block above, with commentary on consistency. Flag inconsistencies surfaced in the design audit pass.
+              - heading "Slide 18 — Competitor comparison" [level=3] [ref=e283]
+              - blockquote [ref=e284]:
+                - text: "Comparison table: Audrey's Farmhouse vs. 2-3 competitors. Rows: Domain Rating, referring domains, top keyword positions, page count, has pricing page (Y/N), has virtual tour (Y/N), has team page (Y/N), has FAQ page (Y/N), mobile score. Source:"
+                - code [ref=e285]: audit/competitors.json
+                - text: . Include one competitor homepage screenshot for visual contrast.
+              - heading "Slide 19 — Implementation plan" [level=3] [ref=e286]
+              - blockquote [ref=e287]:
+                - text: "Lay out the phased plan as a visual timeline. Source:"
+                - code [ref=e288]: audit-package.json#/implementationPlan
+                - text: ". Each phase = a card with name, what's included, estimated effort, estimated impact. Phase order: 1=Quick wins, 2=Structural fixes, 3=Content build-out, 4=AEO and authority."
+              - heading "Slide 20 — Scope sign-off" [level=3] [ref=e289]
+              - blockquote [ref=e290]: "Render a checklist where every material item in the implementation plan has three checkboxes: \"Include in rebuild scope\", \"Skip for now\", \"Needs discussion\". Below: proposed price (derived from what they check), proposed timeline, signature line. This is the decision point — when the client returns this page signed, we have a scoped agreement."
+              - heading "Slide 21 — What we need from you" [level=3] [ref=e291]
+              - blockquote [ref=e292]:
+                - text: List the items in
+                - code [ref=e293]: audit-package.json#/implementationPlan/requiresClientInput
+                - text: ","
+                - code [ref=e294]: /requiresNewContent
+                - text: ", and"
+                - code [ref=e295]: /requiresAssets
+                - text: . Frame as a checklist the client can work through after signing scope.
+              - paragraph
+          - group [ref=e296]:
+            - generic "▸ Content inventory snapshot (for reference)" [ref=e297] [cursor=pointer]:
+              - text: ▸
+              - heading "Content inventory snapshot (for reference)" [level=2] [ref=e298]
+            - generic [ref=e299]:
+              - list [ref=e300]:
+                - listitem [ref=e301]: "Testimonials: 4"
+                - listitem [ref=e302]: "Team members: 4"
+                - listitem [ref=e303]: "FAQs: 92"
+                - listitem [ref=e304]: "Pricing items: 12"
+                - listitem [ref=e305]: "Event spaces: 41"
+                - listitem [ref=e306]: "Social links: 11"
+                - listitem [ref=e307]: "Contact info: email ✓ · phone ✓ · address ✓"
+              - paragraph
+        - navigation "Document outline" [ref=e308]:
+          - generic [ref=e309]: On this page
+          - list [ref=e310]:
+            - listitem [ref=e311]:
+              - link "Use this base" [ref=e312] [cursor=pointer]:
+                - /url: "#use-this-base"
+            - listitem [ref=e313]:
+              - link "Client meta" [ref=e314] [cursor=pointer]:
+                - /url: "#client-meta"
+            - listitem [ref=e315]:
+              - link "Design system (per-client overrides)" [ref=e316] [cursor=pointer]:
+                - /url: "#design-system-per-client-overrides"
+            - listitem [ref=e317]:
+              - link "Suggested deck structure (copy-paste prompts per slide)" [ref=e318] [cursor=pointer]:
+                - /url: "#suggested-deck-structure-copy-paste-prompts-per-slide"
+            - listitem [ref=e319]:
+              - link "Content inventory snapshot (for reference)" [ref=e320] [cursor=pointer]:
+                - /url: "#content-inventory-snapshot-for-reference"
+  - generic [ref=e323]:
+    - button "Menu" [ref=e324]:
+      - img [ref=e326]
+      - generic: Menu
+    - button "Inspect" [ref=e330]:
+      - img [ref=e332]
+      - generic: Inspect
+    - button "Audit" [ref=e334]:
+      - img [ref=e336]
+      - generic: Audit
+    - button "Settings" [ref=e339]:
+      - img [ref=e341]
+      - generic: Settings

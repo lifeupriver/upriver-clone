@@ -275,7 +275,9 @@ const stageGroups: Array<{ id: string; label: string }> = [
     background: var(--bg-surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    overflow: hidden;
+    /* Scroll horizontally on narrow viewports instead of clipping columns
+       (PLATFORM/STAGE/SCORE were cut off at 390px with no affordance). */
+    overflow-x: auto;
   }
 
   .empty-result {

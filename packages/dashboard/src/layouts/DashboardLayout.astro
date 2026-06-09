@@ -44,8 +44,14 @@ interface SubNavItem {
   label: string;
   has: boolean;
 }
+interface SubNavGroup {
+  label: string;
+  items: SubNavItem[];
+}
 
-let clientSubNav: { name: string; slug: string; items: SubNavItem[] } | null = null;
+let clientSubNav:
+  | { name: string; slug: string; overviewHref: string; groups: SubNavGroup[] }
+  | null = null;
 if (slugFromPath && (await clientExists(slugFromPath))) {
   const [config, artifacts] = await Promise.all([
     readClientConfig(slugFromPath),
@@ -53,23 +59,36 @@ if (slugFromPath && (await clientExists(slugFromPath))) {
   ]);
   if (config) {
     const a: ClientArtifacts = artifacts;
+    // Grouped by the same phases as the overview spine, so the sidebar and the
+    // page tell one story instead of being two competing menus.
     clientSubNav = {
       name: config.name,
       slug: slugFromPath,
-      items: [
-        { href: `/clients/${slugFromPath}`,                  label: 'Overview',         has: true },
-        { href: `/clients/${slugFromPath}/intake`,           label: 'Intake',           has: a.hasIntake },
-        { href: `/clients/${slugFromPath}/audit`,            label: 'Audit',            has: a.hasAudit },
-        { href: `/clients/${slugFromPath}/clone-fidelity`,   label: 'Clone Fidelity',   has: a.hasFidelity },
-        { href: `/clients/${slugFromPath}/voice`,            label: 'Brand Voice',      has: a.hasVoice },
-        { href: `/clients/${slugFromPath}/design-brief`,     label: 'Design Brief',     has: a.hasBrief },
-        { href: `/clients/${slugFromPath}/site`,             label: 'Site Preview',     has: a.hasRepo },
-        { href: `/clients/${slugFromPath}/fixes`,            label: 'Fixes Plan',       has: a.hasFixes },
-        { href: `/clients/${slugFromPath}/qa`,               label: 'QA Report',        has: a.hasQa },
-        { href: `/clients/${slugFromPath}/launch-checklist`, label: 'Launch Checklist', has: a.hasLaunch },
-        { href: `/deliverables/${slugFromPath}`,             label: 'Export Audit',     has: a.hasAudit },
-        { href: `/deliverables/${slugFromPath}/design-brief`, label: 'Export Brief',    has: a.hasBrief },
-        { href: `/clients/${slugFromPath}/share`,            label: 'Share Links',      has: true },
+      overviewHref: `/clients/${slugFromPath}`,
+      groups: [
+        { label: 'Intake', items: [
+          { href: `/clients/${slugFromPath}/intake`,    label: 'Intake',    has: a.hasIntake },
+          { href: `/clients/${slugFromPath}/interview`, label: 'Interview', has: a.hasInterviewResponses },
+        ] },
+        { label: 'Audit', items: [
+          { href: `/clients/${slugFromPath}/audit`, label: 'Audit',       has: a.hasAudit },
+          { href: `/clients/${slugFromPath}/voice`, label: 'Brand Voice', has: a.hasVoice },
+        ] },
+        { label: 'Build', items: [
+          { href: `/clients/${slugFromPath}/design-brief`,   label: 'Design Brief',   has: a.hasBrief },
+          { href: `/clients/${slugFromPath}/site`,           label: 'Site Preview',   has: a.hasRepo },
+          { href: `/clients/${slugFromPath}/clone-fidelity`, label: 'Clone Fidelity', has: a.hasFidelity },
+          { href: `/clients/${slugFromPath}/fixes`,          label: 'Fixes Plan',     has: a.hasFixes },
+          { href: `/clients/${slugFromPath}/qa`,             label: 'QA Report',      has: a.hasQa },
+        ] },
+        { label: 'Launch', items: [
+          { href: `/clients/${slugFromPath}/launch-checklist`, label: 'Launch Checklist', has: a.hasLaunch },
+        ] },
+        { label: 'Share', items: [
+          { href: `/deliverables/${slugFromPath}`,              label: 'Export Audit', has: a.hasAudit },
+          { href: `/deliverables/${slugFromPath}/design-brief`, label: 'Export Brief', has: a.hasBrief },
+          { href: `/clients/${slugFromPath}/share`,             label: 'Share Links',  has: true },
+        ] },
       ],
     };
   }
@@ -111,14 +130,26 @@ if (slugFromPath && (await clientExists(slugFromPath))) {
           <nav class="sidebar-subnav">
             <span class="eyebrow nav-section-label">This client</span>
             <span class="sub-name" title={clientSubNav.name}>{clientSubNav.name}</span>
-            {clientSubNav.items.map(item => (
-              <a
-                href={item.href}
-                class:list={['sub-link', { active: currentPath === item.href, dim: !item.has }]}
-              >
-                <span class:list={['sub-dot', { has: item.has }]} aria-hidden="true" />
-                <span class="sub-label">{item.label}</span>
-              </a>
+            <a
+              href={clientSubNav.overviewHref}
+              class:list={['sub-link', 'sub-overview', { active: currentPath === clientSubNav.overviewHref }]}
+            >
+              <span class="sub-dot has" aria-hidden="true" />
+              <span class="sub-label">Overview</span>
+            </a>
+            {clientSubNav.groups.map(group => (
+              <div class="subnav-group">
+                <span class="subnav-group-label">{group.label}</span>
+                {group.items.map(item => (
+                  <a
+                    href={item.href}
+                    class:list={['sub-link', { active: currentPath === item.href, dim: !item.has }]}
+                  >
+                    <span class:list={['sub-dot', { has: item.has }]} aria-hidden="true" />
+                    <span class="sub-label">{item.label}</span>
+                  </a>
+                ))}
+              </div>
             ))}
           </nav>
         )}
@@ -232,6 +263,20 @@ if (slugFromPath && (await clientExists(slugFromPath))) {
   .sub-link.active { color: var(--accent); border-left-color: var(--accent); }
   .sub-link.dim { opacity: 0.55; }
 
+  .sub-overview { margin-bottom: 0.15rem; }
+
+  .subnav-group { display: flex; flex-direction: column; gap: 0.02rem; margin-top: 0.35rem; }
+  .subnav-group-label {
+    padding: 0.3rem 1.25rem 0.15rem;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+
   .sub-dot {
     width: 6px;
     height: 6px;
@@ -306,5 +351,51 @@ if (slugFromPath && (await clientExists(slugFromPath))) {
     min-width: 0;
     padding: 2rem 2.5rem;
     max-width: 1400px;
+  }
+
+  /* ── Mobile: stop the 220px sidebar from eating ~half the viewport ──
+     Below 860px the shell stacks: the sidebar becomes a compact top strip
+     (nav + per-client links flow horizontally) and content gets full width. */
+  @media (max-width: 860px) {
+    .shell { flex-direction: column; }
+    .sidebar {
+      width: 100%;
+      height: auto;
+      position: static;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { border-bottom: none; padding-bottom: 0.75rem; }
+
+    .sidebar-nav {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.25rem 1.25rem;
+      padding: 0 1.25rem 0.5rem;
+    }
+    .sidebar-nav .nav-section-label { display: none; }
+
+    .sidebar-subnav {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.2rem 0.9rem;
+      margin-top: 0;
+      padding: 0.6rem 1.25rem 0.75rem;
+    }
+    .sidebar-subnav .nav-section-label,
+    .sub-name { width: 100%; }
+    .subnav-group { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 0.75rem; margin-top: 0.15rem; }
+    .subnav-group-label { width: 100%; padding: 0.2rem 0 0; }
+
+    .nav-link,
+    .sub-link { border-left: none; padding-left: 0; padding-right: 0; }
+    .nav-link.active,
+    .sub-link.active { border-left-color: transparent; text-decoration: underline; text-underline-offset: 4px; }
+
+    .sidebar-footer { display: none; }
+
+    .main { padding: 1.5rem 1.25rem; max-width: 100%; }
   }
 </style>

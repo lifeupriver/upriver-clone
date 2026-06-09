@@ -1,0 +1,69 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - link "Back to Audrey's Farmhouse" [ref=e4] [cursor=pointer]:
+        - /url: /clients/audreys
+        - img [ref=e5]
+        - text: Back to Audrey's Farmhouse
+      - generic [ref=e7]: Audit Report
+      - button "Save as PDF" [ref=e8] [cursor=pointer]
+    - article [ref=e9]:
+      - navigation "Report sections" [ref=e10]:
+        - link "Overview" [ref=e11] [cursor=pointer]:
+          - /url: /deliverables/audreys
+        - link "Scorecard" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables/audreys/scorecard
+        - link "Findings" [ref=e13] [cursor=pointer]:
+          - /url: /deliverables/audreys/findings
+        - link "Next steps" [ref=e14] [cursor=pointer]:
+          - /url: /deliverables/audreys/next-steps
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - img "Audrey's Farmhouse"
+          - generic [ref=e17]:
+            - generic [ref=e18]: Website Audit
+            - generic [ref=e19]: June 8, 2026
+        - heading "Audrey's Farmhouse" [level=1] [ref=e20]
+        - paragraph [ref=e21]: https://audreysfarmhouse.com
+        - generic [ref=e22]:
+          - generic [ref=e23]: Overall score
+          - generic [ref=e24]: "72"
+        - paragraph [ref=e25]: Audit by Upriver Consulting
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - generic [ref=e28]: "5"
+          - generic [ref=e29]: Critical issues blocking growth
+        - generic [ref=e30]:
+          - generic [ref=e31]: "6"
+          - generic [ref=e32]: Dimensions below shippable threshold
+        - generic [ref=e33]:
+          - generic [ref=e34]: "38"
+          - generic [ref=e35]: Total opportunities identified
+      - generic [ref=e36]:
+        - generic [ref=e37]: Executive summary
+        - paragraph [ref=e38]: Detailed narrative will appear here once synthesis completes.
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - heading "Ready to act on this?" [level=3] [ref=e42]
+          - paragraph [ref=e43]: Walk through the recommended fixes and pick the scope that fits.
+        - link "See what we'd do about it" [ref=e44] [cursor=pointer]:
+          - /url: /deliverables/audreys/next-steps
+    - contentinfo [ref=e45]:
+      - img [ref=e46]
+      - generic [ref=e49]:
+        - text: Prepared by
+        - strong [ref=e50]: Upriver Consulting
+        - text: — June 8, 2026
+  - generic [ref=e53]:
+    - button "Menu" [ref=e54]:
+      - img [ref=e56]
+      - generic: Menu
+    - button "Inspect" [ref=e60]:
+      - img [ref=e62]
+      - generic: Inspect
+    - button "Audit" [ref=e64]:
+      - img [ref=e66]
+      - generic: Audit
+    - button "Settings" [ref=e69]:
+      - img [ref=e71]
+      - generic: Settings

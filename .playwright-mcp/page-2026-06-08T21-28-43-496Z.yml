@@ -1,0 +1,331 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - link "Upriver" [ref=e4] [cursor=pointer]:
+      - /url: /clients
+      - img [ref=e5]
+      - generic [ref=e8]: Upriver
+    - navigation [ref=e9]:
+      - generic [ref=e10]: Navigation
+      - link "Clients" [ref=e11] [cursor=pointer]:
+        - /url: /clients
+      - link "Deliverables" [ref=e12] [cursor=pointer]:
+        - /url: /deliverables
+    - navigation [ref=e13]:
+      - generic [ref=e14]: This client
+      - generic "Audrey's Farmhouse" [ref=e15]
+      - link "Overview" [ref=e16] [cursor=pointer]:
+        - /url: /clients/audreys
+        - generic [ref=e18]: Overview
+      - generic [ref=e19]:
+        - generic [ref=e20]: Intake
+        - link "Intake" [ref=e21] [cursor=pointer]:
+          - /url: /clients/audreys/intake
+          - generic [ref=e23]: Intake
+        - link "Interview" [ref=e24] [cursor=pointer]:
+          - /url: /clients/audreys/interview
+          - generic [ref=e26]: Interview
+      - generic [ref=e27]:
+        - generic [ref=e28]: Audit
+        - link "Audit" [ref=e29] [cursor=pointer]:
+          - /url: /clients/audreys/audit
+          - generic [ref=e31]: Audit
+        - link "Brand Voice" [ref=e32] [cursor=pointer]:
+          - /url: /clients/audreys/voice
+          - generic [ref=e34]: Brand Voice
+      - generic [ref=e35]:
+        - generic [ref=e36]: Build
+        - link "Design Brief" [ref=e37] [cursor=pointer]:
+          - /url: /clients/audreys/design-brief
+          - generic [ref=e39]: Design Brief
+        - link "Site Preview" [ref=e40] [cursor=pointer]:
+          - /url: /clients/audreys/site
+          - generic [ref=e42]: Site Preview
+        - link "Clone Fidelity" [ref=e43] [cursor=pointer]:
+          - /url: /clients/audreys/clone-fidelity
+          - generic [ref=e45]: Clone Fidelity
+        - link "Fixes Plan" [ref=e46] [cursor=pointer]:
+          - /url: /clients/audreys/fixes
+          - generic [ref=e48]: Fixes Plan
+        - link "QA Report" [ref=e49] [cursor=pointer]:
+          - /url: /clients/audreys/qa
+          - generic [ref=e51]: QA Report
+      - generic [ref=e52]:
+        - generic [ref=e53]: Launch
+        - link "Launch Checklist" [ref=e54] [cursor=pointer]:
+          - /url: /clients/audreys/launch-checklist
+          - generic [ref=e56]: Launch Checklist
+      - generic [ref=e57]:
+        - generic [ref=e58]: Share
+        - link "Export Audit" [ref=e59] [cursor=pointer]:
+          - /url: /deliverables/audreys
+          - generic [ref=e61]: Export Audit
+        - link "Export Brief" [ref=e62] [cursor=pointer]:
+          - /url: /deliverables/audreys/design-brief
+          - generic [ref=e64]: Export Brief
+        - link "Share Links" [ref=e65] [cursor=pointer]:
+          - /url: /clients/audreys/share
+          - generic [ref=e67]: Share Links
+    - generic [ref=e69]: v0.1.0
+  - main [ref=e70]:
+    - generic [ref=e71]:
+      - generic [ref=e72]:
+        - link "Clients" [ref=e73] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e74]: /
+        - generic [ref=e75]: Audrey's Farmhouse
+      - generic [ref=e76]:
+        - generic [ref=e77]:
+          - text: Client
+          - heading "Audrey's Farmhouse" [level=1] [ref=e78]
+          - link "https://audreysfarmhouse.com" [ref=e79] [cursor=pointer]:
+            - /url: https://audreysfarmhouse.com
+            - text: https://audreysfarmhouse.com
+            - img [ref=e80]
+        - generic [ref=e84]: squarespace
+      - region "Status summary" [ref=e85]:
+        - generic [ref=e86]:
+          - generic [ref=e87]: Launch
+          - generic [ref=e88]: phase
+        - generic [ref=e89]:
+          - generic [ref=e90]: "72"
+          - generic [ref=e91]: audit score
+        - generic [ref=e92]:
+          - generic [ref=e93]: "5"
+          - generic [ref=e94]: critical · P0
+        - generic [ref=e95]:
+          - generic [ref=e96]: 7/10
+          - generic [ref=e97]: deliverables
+      - generic [ref=e98]:
+        - generic [ref=e99]:
+          - generic [ref=e100]: Next step
+          - heading "Ready to ship" [level=2] [ref=e101]
+          - paragraph [ref=e102]: Launch checklist is ready. Walk it before going live.
+        - link "Open checklist →" [ref=e103] [cursor=pointer]:
+          - /url: /clients/audreys/launch-checklist
+      - region "Project phases" [ref=e104]:
+        - article [ref=e105]:
+          - generic [ref=e106]:
+            - generic [ref=e107]: "1"
+            - generic [ref=e108]:
+              - heading "Intake" [level=3] [ref=e109]
+              - paragraph [ref=e110]: Capture what the business is and who it serves.
+            - generic [ref=e111]: Not started
+          - generic [ref=e112]:
+            - link "Intake — Not generated yet" [ref=e113] [cursor=pointer]:
+              - /url: /clients/audreys/intake
+              - generic [ref=e115]:
+                - generic [ref=e116]: Intake
+                - generic [ref=e117]: Not generated yet
+              - generic [ref=e118]: Set up →
+            - link "Interview — Not generated yet" [ref=e119] [cursor=pointer]:
+              - /url: /clients/audreys/interview
+              - generic [ref=e121]:
+                - generic [ref=e122]: Interview
+                - generic [ref=e123]: Not generated yet
+              - generic [ref=e124]: Set up →
+        - article [ref=e125]:
+          - generic [ref=e126]:
+            - generic [ref=e127]: "2"
+            - generic [ref=e128]:
+              - heading "Audit" [level=3] [ref=e129]
+              - paragraph [ref=e130]: Crawl the live site and score every dimension.
+            - generic [ref=e131]: Done
+          - generic [ref=e132]:
+            - link "Audit Report — Ready" [ref=e133] [cursor=pointer]:
+              - /url: /clients/audreys/audit
+              - generic [ref=e135]:
+                - generic [ref=e136]: Audit Report
+                - generic [ref=e137]: 5 P0 · 38 findings · score 72
+              - generic [ref=e138]: Open →
+            - link "Brand Voice — Ready" [ref=e139] [cursor=pointer]:
+              - /url: /clients/audreys/voice
+              - generic [ref=e141]:
+                - generic [ref=e142]: Brand Voice
+                - generic [ref=e143]: Ready
+              - generic [ref=e144]: Open →
+        - article [ref=e145]:
+          - generic [ref=e146]:
+            - generic [ref=e147]: "3"
+            - generic [ref=e148]:
+              - heading "Build" [level=3] [ref=e149]
+              - paragraph [ref=e150]: Rebuild the site from the brief and verify fidelity.
+            - generic [ref=e151]: 4/5 ready
+          - generic [ref=e152]:
+            - link "Design Brief — Ready" [ref=e153] [cursor=pointer]:
+              - /url: /clients/audreys/design-brief
+              - generic [ref=e155]:
+                - generic [ref=e156]: Design Brief
+                - generic [ref=e157]: Ready
+              - generic [ref=e158]: Open →
+            - link "Site Preview — Ready" [ref=e159] [cursor=pointer]:
+              - /url: /clients/audreys/site
+              - generic [ref=e161]:
+                - generic [ref=e162]: Site Preview
+                - generic [ref=e163]: Cloned repo available
+              - generic [ref=e164]: Open →
+            - link "Clone Fidelity — Not generated yet" [ref=e165] [cursor=pointer]:
+              - /url: /clients/audreys/clone-fidelity
+              - generic [ref=e167]:
+                - generic [ref=e168]: Clone Fidelity
+                - generic [ref=e169]: Not generated yet
+              - generic [ref=e170]: Set up →
+            - link "Fixes Plan — Ready" [ref=e171] [cursor=pointer]:
+              - /url: /clients/audreys/fixes
+              - generic [ref=e173]:
+                - generic [ref=e174]: Fixes Plan
+                - generic [ref=e175]: Ready
+              - generic [ref=e176]: Open →
+            - link "QA Report — Ready" [ref=e177] [cursor=pointer]:
+              - /url: /clients/audreys/qa
+              - generic [ref=e179]:
+                - generic [ref=e180]: QA Report
+                - generic [ref=e181]: Ready
+              - generic [ref=e182]: Open →
+        - article [ref=e183]:
+          - generic [ref=e184]:
+            - generic [ref=e185]: "4"
+            - generic [ref=e186]:
+              - heading "Launch" [level=3] [ref=e187]
+              - paragraph [ref=e188]: Ship the new site and keep it healthy.
+            - generic [ref=e189]: Done
+          - link "Launch Checklist — Ready" [ref=e191] [cursor=pointer]:
+            - /url: /clients/audreys/launch-checklist
+            - generic [ref=e193]:
+              - generic [ref=e194]: Launch Checklist
+              - generic [ref=e195]: Ready
+            - generic [ref=e196]: Open →
+      - group [ref=e197]:
+        - generic "Run a pipeline stage Advanced — invoke any of 22 stages by hand" [ref=e198] [cursor=pointer]:
+          - generic [ref=e199]:
+            - generic [ref=e200]: Run a pipeline stage
+            - generic [ref=e201]: Advanced — invoke any of 22 stages by hand
+          - img [ref=e203]
+      - generic [ref=e205]:
+        - generic [ref=e206]:
+          - heading "Audit scores" [level=3] [ref=e207]
+          - generic [ref=e208]: Overall
+        - generic [ref=e209]:
+          - link "93 A aeo 1 finding" [ref=e210] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=aeo
+            - generic [ref=e211]: "93"
+            - generic [ref=e212]: A
+            - generic [ref=e213]: aeo
+            - generic [ref=e214]: 1 finding
+          - link "90 A backlinks 2 findings" [ref=e215] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=backlinks
+            - generic [ref=e216]: "90"
+            - generic [ref=e217]: A
+            - generic [ref=e218]: backlinks
+            - generic [ref=e219]: 2 findings
+          - link "76 C competitors 4 findings" [ref=e220] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=competitors
+            - generic [ref=e221]: "76"
+            - generic [ref=e222]: C
+            - generic [ref=e223]: competitors
+            - generic [ref=e224]: 4 findings
+          - link "76 C content 4 findings" [ref=e225] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=content
+            - generic [ref=e226]: "76"
+            - generic [ref=e227]: C
+            - generic [ref=e228]: content
+            - generic [ref=e229]: 4 findings
+          - link "93 A design 1 finding" [ref=e230] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=design
+            - generic [ref=e231]: "93"
+            - generic [ref=e232]: A
+            - generic [ref=e233]: design
+            - generic [ref=e234]: 1 finding
+          - link "83 B links 3 findings" [ref=e235] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=links
+            - generic [ref=e236]: "83"
+            - generic [ref=e237]: B
+            - generic [ref=e238]: links
+            - generic [ref=e239]: 3 findings
+          - link "72 C local 4 findings" [ref=e240] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=local
+            - generic [ref=e241]: "72"
+            - generic [ref=e242]: C
+            - generic [ref=e243]: local
+            - generic [ref=e244]: 4 findings
+          - link "36 F sales 8 findings" [ref=e245] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=sales
+            - generic [ref=e246]: "36"
+            - generic [ref=e247]: F
+            - generic [ref=e248]: sales
+            - generic [ref=e249]: 8 findings
+          - link "76 C schema 4 findings" [ref=e250] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=schema
+            - generic [ref=e251]: "76"
+            - generic [ref=e252]: C
+            - generic [ref=e253]: schema
+            - generic [ref=e254]: 4 findings
+          - link "27 F seo 7 findings" [ref=e255] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=seo
+            - generic [ref=e256]: "27"
+            - generic [ref=e257]: F
+            - generic [ref=e258]: seo
+            - generic [ref=e259]: 7 findings
+      - generic [ref=e260]:
+        - generic [ref=e261]:
+          - heading "Critical findings" [level=3] [ref=e262]
+          - link "See all →" [ref=e263] [cursor=pointer]:
+            - /url: /clients/audreys/audit
+        - table [ref=e265]:
+          - rowgroup [ref=e266]:
+            - row "Priority Dimension Finding Effort" [ref=e267]:
+              - columnheader "Priority" [ref=e268]
+              - columnheader "Dimension" [ref=e269]
+              - columnheader "Finding" [ref=e270]
+              - columnheader "Effort" [ref=e271]
+          - rowgroup [ref=e272]:
+            - 'row "P0 sales Missing: Pricing or packages page heavy" [ref=e273]':
+              - cell "P0" [ref=e274]:
+                - generic [ref=e275]: P0
+              - cell "sales" [ref=e276]
+              - 'cell "Missing: Pricing or packages page" [ref=e277]'
+              - cell "heavy" [ref=e278]:
+                - generic [ref=e279]: heavy
+            - 'row "P0 sales Missing: Contact or inquiry page heavy" [ref=e280]':
+              - cell "P0" [ref=e281]:
+                - generic [ref=e282]: P0
+              - cell "sales" [ref=e283]
+              - 'cell "Missing: Contact or inquiry page" [ref=e284]'
+              - cell "heavy" [ref=e285]:
+                - generic [ref=e286]: heavy
+            - row "P0 seo Pages missing title tags light" [ref=e287]:
+              - cell "P0" [ref=e288]:
+                - generic [ref=e289]: P0
+              - cell "seo" [ref=e290]
+              - cell "Pages missing title tags" [ref=e291]
+              - cell "light" [ref=e292]:
+                - generic [ref=e293]: light
+            - row "P0 seo No analytics tool detected light" [ref=e294]:
+              - cell "P0" [ref=e295]:
+                - generic [ref=e296]: P0
+              - cell "seo" [ref=e297]
+              - cell "No analytics tool detected" [ref=e298]
+              - cell "light" [ref=e299]:
+                - generic [ref=e300]: light
+            - 'row "P0 seo Indexation blocked: noindex meta tag light" [ref=e301]':
+              - cell "P0" [ref=e302]:
+                - generic [ref=e303]: P0
+              - cell "seo" [ref=e304]
+              - 'cell "Indexation blocked: noindex meta tag" [ref=e305]'
+              - cell "light" [ref=e306]:
+                - generic [ref=e307]: light
+      - generic [ref=e308]:
+        - generic [ref=e309]:
+          - generic [ref=e310]:
+            - generic [ref=e311]: Slug
+            - generic [ref=e312]: audreys
+          - generic [ref=e313]:
+            - generic [ref=e314]: Created
+            - generic [ref=e315]: April 24, 2026
+        - generic [ref=e316]:
+          - generic [ref=e317]: Share with client
+          - link "Audit report →" [ref=e318] [cursor=pointer]:
+            - /url: /deliverables/audreys
+          - link "Design brief →" [ref=e319] [cursor=pointer]:
+            - /url: /deliverables/audreys/design-brief
+          - link "Share links →" [ref=e320] [cursor=pointer]:
+            - /url: /clients/audreys/share

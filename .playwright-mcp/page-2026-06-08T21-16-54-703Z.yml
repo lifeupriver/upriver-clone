@@ -1,0 +1,228 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - link "Clients" [ref=e10] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e11] [cursor=pointer]:
+          - /url: /deliverables
+      - navigation [ref=e12]:
+        - generic [ref=e13]: This client
+        - generic "Little Friends Learning Loft" [ref=e14]
+        - link "Overview" [ref=e15] [cursor=pointer]:
+          - /url: /clients/littlefriends
+          - generic [ref=e17]: Overview
+        - generic [ref=e18]:
+          - generic [ref=e19]: Intake
+          - link "Intake" [ref=e20] [cursor=pointer]:
+            - /url: /clients/littlefriends/intake
+            - generic [ref=e22]: Intake
+          - link "Interview" [ref=e23] [cursor=pointer]:
+            - /url: /clients/littlefriends/interview
+            - generic [ref=e25]: Interview
+        - generic [ref=e26]:
+          - generic [ref=e27]: Audit
+          - link "Audit" [ref=e28] [cursor=pointer]:
+            - /url: /clients/littlefriends/audit
+            - generic [ref=e30]: Audit
+          - link "Brand Voice" [ref=e31] [cursor=pointer]:
+            - /url: /clients/littlefriends/voice
+            - generic [ref=e33]: Brand Voice
+        - generic [ref=e34]:
+          - generic [ref=e35]: Build
+          - link "Design Brief" [ref=e36] [cursor=pointer]:
+            - /url: /clients/littlefriends/design-brief
+            - generic [ref=e38]: Design Brief
+          - link "Site Preview" [ref=e39] [cursor=pointer]:
+            - /url: /clients/littlefriends/site
+            - generic [ref=e41]: Site Preview
+          - link "Clone Fidelity" [ref=e42] [cursor=pointer]:
+            - /url: /clients/littlefriends/clone-fidelity
+            - generic [ref=e44]: Clone Fidelity
+          - link "Fixes Plan" [ref=e45] [cursor=pointer]:
+            - /url: /clients/littlefriends/fixes
+            - generic [ref=e47]: Fixes Plan
+          - link "QA Report" [ref=e48] [cursor=pointer]:
+            - /url: /clients/littlefriends/qa
+            - generic [ref=e50]: QA Report
+        - generic [ref=e51]:
+          - generic [ref=e52]: Launch
+          - link "Launch Checklist" [ref=e53] [cursor=pointer]:
+            - /url: /clients/littlefriends/launch-checklist
+            - generic [ref=e55]: Launch Checklist
+        - generic [ref=e56]:
+          - generic [ref=e57]: Share
+          - link "Export Audit" [ref=e58] [cursor=pointer]:
+            - /url: /deliverables/littlefriends
+            - generic [ref=e60]: Export Audit
+          - link "Export Brief" [ref=e61] [cursor=pointer]:
+            - /url: /deliverables/littlefriends/design-brief
+            - generic [ref=e63]: Export Brief
+          - link "Share Links" [ref=e64] [cursor=pointer]:
+            - /url: /clients/littlefriends/share
+            - generic [ref=e66]: Share Links
+    - main [ref=e67]:
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - link "Clients" [ref=e70] [cursor=pointer]:
+            - /url: /clients
+          - generic [ref=e71]: /
+          - generic [ref=e72]: Little Friends Learning Loft
+        - generic [ref=e74]:
+          - text: Client
+          - heading "Little Friends Learning Loft" [level=1] [ref=e75]
+          - link "https://littlefriendslearningloft.com" [ref=e76] [cursor=pointer]:
+            - /url: https://littlefriendslearningloft.com
+            - text: https://littlefriendslearningloft.com
+            - img [ref=e77]
+        - region "Status summary" [ref=e81]:
+          - generic [ref=e82]:
+            - generic [ref=e83]: Not started
+            - generic [ref=e84]: phase
+          - generic [ref=e85]:
+            - generic [ref=e86]: —
+            - generic [ref=e87]: audit score
+          - generic [ref=e88]:
+            - generic [ref=e89]: —
+            - generic [ref=e90]: critical · P0
+          - generic [ref=e91]:
+            - generic [ref=e92]: 0/10
+            - generic [ref=e93]: deliverables
+        - generic [ref=e94]:
+          - generic [ref=e95]:
+            - generic [ref=e96]: Next step
+            - heading "Discover the site" [level=2] [ref=e97]
+            - paragraph [ref=e98]: Crawl pages and competitors to seed the audit.
+          - link "Run discover →" [ref=e99] [cursor=pointer]:
+            - /url: /clients/littlefriends#pipeline
+        - region "Project phases" [ref=e100]:
+          - article [ref=e101]:
+            - generic [ref=e102]:
+              - generic [ref=e103]: "1"
+              - generic [ref=e104]:
+                - heading "Intake" [level=3] [ref=e105]
+                - paragraph [ref=e106]: Capture what the business is and who it serves.
+              - generic [ref=e107]: Not started
+            - generic [ref=e108]:
+              - link "Intake — Not generated yet" [ref=e109] [cursor=pointer]:
+                - /url: /clients/littlefriends/intake
+                - generic [ref=e111]:
+                  - generic [ref=e112]: Intake
+                  - generic [ref=e113]: Not generated yet
+                - generic [ref=e114]: Set up →
+              - link "Interview — Not generated yet" [ref=e115] [cursor=pointer]:
+                - /url: /clients/littlefriends/interview
+                - generic [ref=e117]:
+                  - generic [ref=e118]: Interview
+                  - generic [ref=e119]: Not generated yet
+                - generic [ref=e120]: Set up →
+          - article [ref=e121]:
+            - generic [ref=e122]:
+              - generic [ref=e123]: "2"
+              - generic [ref=e124]:
+                - heading "Audit" [level=3] [ref=e125]
+                - paragraph [ref=e126]: Crawl the live site and score every dimension.
+              - generic [ref=e127]: Up next
+            - generic [ref=e128]:
+              - link "Audit Report — Not generated yet" [ref=e129] [cursor=pointer]:
+                - /url: /clients/littlefriends/audit
+                - generic [ref=e131]:
+                  - generic [ref=e132]: Audit Report
+                  - generic [ref=e133]: Not generated yet
+                - generic [ref=e134]: Set up →
+              - link "Brand Voice — Not generated yet" [ref=e135] [cursor=pointer]:
+                - /url: /clients/littlefriends/voice
+                - generic [ref=e137]:
+                  - generic [ref=e138]: Brand Voice
+                  - generic [ref=e139]: Not generated yet
+                - generic [ref=e140]: Set up →
+          - article [ref=e141]:
+            - generic [ref=e142]:
+              - generic [ref=e143]: "3"
+              - generic [ref=e144]:
+                - heading "Build" [level=3] [ref=e145]
+                - paragraph [ref=e146]: Rebuild the site from the brief and verify fidelity.
+              - generic [ref=e147]: Not started
+            - generic [ref=e148]:
+              - link "Design Brief — Not generated yet" [ref=e149] [cursor=pointer]:
+                - /url: /clients/littlefriends/design-brief
+                - generic [ref=e151]:
+                  - generic [ref=e152]: Design Brief
+                  - generic [ref=e153]: Not generated yet
+                - generic [ref=e154]: Set up →
+              - link "Site Preview — Not generated yet" [ref=e155] [cursor=pointer]:
+                - /url: /clients/littlefriends/site
+                - generic [ref=e157]:
+                  - generic [ref=e158]: Site Preview
+                  - generic [ref=e159]: Not generated yet
+                - generic [ref=e160]: Set up →
+              - link "Clone Fidelity — Not generated yet" [ref=e161] [cursor=pointer]:
+                - /url: /clients/littlefriends/clone-fidelity
+                - generic [ref=e163]:
+                  - generic [ref=e164]: Clone Fidelity
+                  - generic [ref=e165]: Not generated yet
+                - generic [ref=e166]: Set up →
+              - link "Fixes Plan — Not generated yet" [ref=e167] [cursor=pointer]:
+                - /url: /clients/littlefriends/fixes
+                - generic [ref=e169]:
+                  - generic [ref=e170]: Fixes Plan
+                  - generic [ref=e171]: Not generated yet
+                - generic [ref=e172]: Set up →
+              - link "QA Report — Not generated yet" [ref=e173] [cursor=pointer]:
+                - /url: /clients/littlefriends/qa
+                - generic [ref=e175]:
+                  - generic [ref=e176]: QA Report
+                  - generic [ref=e177]: Not generated yet
+                - generic [ref=e178]: Set up →
+          - article [ref=e179]:
+            - generic [ref=e180]:
+              - generic [ref=e181]: "4"
+              - generic [ref=e182]:
+                - heading "Launch" [level=3] [ref=e183]
+                - paragraph [ref=e184]: Ship the new site and keep it healthy.
+              - generic [ref=e185]: Not started
+            - link "Launch Checklist — Not generated yet" [ref=e187] [cursor=pointer]:
+              - /url: /clients/littlefriends/launch-checklist
+              - generic [ref=e189]:
+                - generic [ref=e190]: Launch Checklist
+                - generic [ref=e191]: Not generated yet
+              - generic [ref=e192]: Set up →
+        - group [ref=e193]:
+          - generic "Run a pipeline stage Advanced — invoke any of 22 stages by hand" [ref=e194] [cursor=pointer]:
+            - generic [ref=e195]:
+              - generic [ref=e196]: Run a pipeline stage
+              - generic [ref=e197]: Advanced — invoke any of 22 stages by hand
+            - img [ref=e199]
+        - generic [ref=e201]:
+          - generic [ref=e202]:
+            - generic [ref=e203]:
+              - generic [ref=e204]: Slug
+              - generic [ref=e205]: littlefriends
+            - generic [ref=e206]:
+              - generic [ref=e207]: Created
+              - generic [ref=e208]: June 3, 2026
+          - generic [ref=e209]:
+            - generic [ref=e210]: Share with client
+            - link "Audit report →" [ref=e211] [cursor=pointer]:
+              - /url: /deliverables/littlefriends
+            - link "Design brief →" [ref=e212] [cursor=pointer]:
+              - /url: /deliverables/littlefriends/design-brief
+            - link "Share links →" [ref=e213] [cursor=pointer]:
+              - /url: /clients/littlefriends/share
+  - generic [ref=e216]:
+    - button "Menu" [ref=e217]:
+      - img [ref=e219]
+      - generic: Menu
+    - button "Inspect" [ref=e223]:
+      - img [ref=e225]
+      - generic: Inspect
+    - button "Audit" [ref=e227]:
+      - img [ref=e229]
+      - generic: Audit
+    - button "Settings" [ref=e232]:
+      - img [ref=e234]
+      - generic: Settings

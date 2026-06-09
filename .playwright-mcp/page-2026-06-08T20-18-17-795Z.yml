@@ -1,0 +1,224 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - navigation [ref=e13]:
+        - generic [ref=e14]: This client
+        - generic "Little Friends Learning Loft" [ref=e15]
+        - link "Overview" [ref=e16] [cursor=pointer]:
+          - /url: /clients/littlefriends
+          - generic [ref=e18]: Overview
+        - link "Intake" [ref=e19] [cursor=pointer]:
+          - /url: /clients/littlefriends/intake
+          - generic [ref=e21]: Intake
+        - link "Audit" [ref=e22] [cursor=pointer]:
+          - /url: /clients/littlefriends/audit
+          - generic [ref=e24]: Audit
+        - link "Clone Fidelity" [ref=e25] [cursor=pointer]:
+          - /url: /clients/littlefriends/clone-fidelity
+          - generic [ref=e27]: Clone Fidelity
+        - link "Brand Voice" [ref=e28] [cursor=pointer]:
+          - /url: /clients/littlefriends/voice
+          - generic [ref=e30]: Brand Voice
+        - link "Design Brief" [ref=e31] [cursor=pointer]:
+          - /url: /clients/littlefriends/design-brief
+          - generic [ref=e33]: Design Brief
+        - link "Site Preview" [ref=e34] [cursor=pointer]:
+          - /url: /clients/littlefriends/site
+          - generic [ref=e36]: Site Preview
+        - link "Fixes Plan" [ref=e37] [cursor=pointer]:
+          - /url: /clients/littlefriends/fixes
+          - generic [ref=e39]: Fixes Plan
+        - link "QA Report" [ref=e40] [cursor=pointer]:
+          - /url: /clients/littlefriends/qa
+          - generic [ref=e42]: QA Report
+        - link "Launch Checklist" [ref=e43] [cursor=pointer]:
+          - /url: /clients/littlefriends/launch-checklist
+          - generic [ref=e45]: Launch Checklist
+        - link "Export Audit" [ref=e46] [cursor=pointer]:
+          - /url: /deliverables/littlefriends
+          - generic [ref=e48]: Export Audit
+        - link "Export Brief" [ref=e49] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/design-brief
+          - generic [ref=e51]: Export Brief
+        - link "Share Links" [ref=e52] [cursor=pointer]:
+          - /url: /clients/littlefriends/share
+          - generic [ref=e54]: Share Links
+      - generic [ref=e56]: v0.1.0
+    - main [ref=e57]:
+      - generic [ref=e58]:
+        - link "Clients" [ref=e59] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e60]: /
+        - link "Little Friends Learning Loft" [ref=e61] [cursor=pointer]:
+          - /url: /clients/littlefriends
+        - generic [ref=e62]: /
+        - generic [ref=e63]: Coverage
+      - generic [ref=e64]:
+        - generic [ref=e65]:
+          - text: Client Profile
+          - heading "Coverage — Little Friends Learning Loft" [level=1] [ref=e66]
+        - generic [ref=e67]: revision 148
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - generic [ref=e70]: "25"
+          - generic [ref=e71]: ready
+        - generic [ref=e72]:
+          - generic [ref=e73]: "2"
+          - generic [ref=e74]: blocked
+        - generic [ref=e75]:
+          - generic [ref=e76]: "0"
+          - generic [ref=e77]: conflicts
+        - generic [ref=e78]:
+          - generic [ref=e79]: "20"
+          - generic [ref=e80]: generated
+      - generic [ref=e81]:
+        - heading "Fill by section" [level=3] [ref=e82]
+        - generic [ref=e83]:
+          - generic [ref=e84]:
+            - generic [ref=e85]: identity
+            - generic [ref=e88]: 11/11
+          - generic [ref=e89]:
+            - generic [ref=e90]: people
+            - generic [ref=e93]: 7/7
+          - generic [ref=e94]:
+            - generic [ref=e95]: offerings
+            - generic [ref=e98]: 4/4
+          - generic [ref=e99]:
+            - generic [ref=e100]: pricing
+            - generic [ref=e103]: 4/4
+          - generic [ref=e104]:
+            - generic [ref=e105]: capacity
+            - generic [ref=e108]: 2/2
+          - generic [ref=e109]:
+            - generic [ref=e110]: customers
+            - generic [ref=e113]: 5/5
+          - generic [ref=e114]:
+            - generic [ref=e115]: positioning
+            - generic [ref=e118]: 5/5
+          - generic [ref=e119]:
+            - generic [ref=e120]: voice
+            - generic [ref=e123]: 4/4
+          - generic [ref=e124]:
+            - generic [ref=e125]: salesProcess
+            - generic [ref=e128]: 13/13
+          - generic [ref=e129]:
+            - generic [ref=e130]: content
+            - generic [ref=e133]: 9/9
+          - generic [ref=e134]:
+            - generic [ref=e135]: competitors
+            - generic [ref=e138]: 3/3
+          - generic [ref=e139]:
+            - generic [ref=e140]: seo
+            - generic [ref=e143]: 5/5
+          - generic [ref=e144]:
+            - generic [ref=e145]: toolsAndAccess
+            - generic [ref=e148]: 13/13
+          - generic [ref=e149]:
+            - generic [ref=e150]: operationsAutomation
+            - generic [ref=e153]: 6/6
+          - generic [ref=e154]:
+            - generic [ref=e155]: governance
+            - generic [ref=e158]: 6/6
+          - generic [ref=e159]:
+            - generic [ref=e160]: goals
+            - generic [ref=e163]: 5/5
+          - generic [ref=e164]:
+            - generic [ref=e165]: modules
+            - generic [ref=e168]: 4/4
+      - generic [ref=e169]:
+        - heading "Ready (25)" [level=3] [ref=e170]
+        - generic [ref=e171]:
+          - link "doc-01" [ref=e172] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-01
+          - link "doc-02" [ref=e173] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-02
+          - link "doc-03" [ref=e174] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-03
+          - link "doc-04" [ref=e175] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-04
+          - link "doc-05" [ref=e176] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-05
+          - link "doc-06" [ref=e177] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-06
+          - link "doc-07" [ref=e178] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-07
+          - link "doc-08" [ref=e179] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-08
+          - link "doc-09" [ref=e180] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-09
+          - link "doc-10" [ref=e181] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-10
+          - link "doc-11" [ref=e182] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-11
+          - link "doc-12" [ref=e183] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-12
+          - link "doc-13" [ref=e184] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-13
+          - link "doc-14" [ref=e185] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-14
+          - link "doc-15" [ref=e186] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-15
+          - link "doc-16" [ref=e187] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-16
+          - link "doc-17" [ref=e188] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-17
+          - link "doc-18" [ref=e189] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#doc-18
+          - link "i07" [ref=e190] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#i07
+          - link "i01" [ref=e191] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#i01
+          - link "i02" [ref=e192] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#i02
+          - link "i05" [ref=e193] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#i05
+          - link "i06" [ref=e194] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#i06
+          - link "i08" [ref=e195] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#i08
+          - link "i09" [ref=e196] [cursor=pointer]:
+            - /url: /clients/littlefriends/coverage#i09
+      - generic [ref=e197]:
+        - heading "Blocked (2)" [level=3] [ref=e198]
+        - paragraph [ref=e199]:
+          - generic [ref=e200]: missing fields (0)
+        - paragraph [ref=e201]:
+          - generic [ref=e202]: unverified HV (0)
+        - paragraph [ref=e203]:
+          - generic [ref=e204]: upstream docs (2)
+          - generic [ref=e205]: i04
+          - generic [ref=e206]: i03
+        - group [ref=e207]:
+          - generic "Per-deliverable blockers" [ref=e208] [cursor=pointer]
+      - generic [ref=e209]:
+        - heading "Generated but unapproved — approve at the gate to unblock downstream" [level=3] [ref=e210]
+        - paragraph [ref=e211]:
+          - generic [ref=e212]: i02
+          - generic [ref=e213]: docs/i02-client-skills-deployment.md
+          - text: → i04, i03
+      - generic [ref=e214]:
+        - heading "Conflict queue (0)" [level=3] [ref=e215]
+        - paragraph [ref=e216]: none
+  - generic [ref=e219]:
+    - button "Menu" [ref=e220]:
+      - img [ref=e222]
+      - generic: Menu
+    - button "Inspect" [ref=e226]:
+      - img [ref=e228]
+      - generic: Inspect
+    - button "Audit" [ref=e230]:
+      - img [ref=e232]
+      - generic: Audit
+    - button "Settings" [ref=e235]:
+      - img [ref=e237]
+      - generic: Settings

@@ -7,26 +7,65 @@ import {
   summarizeProgress,
 } from '@/lib/interview';
 
+// A friendly, on-brand notice page for the gate/empty cases. Keeps the non-200
+// status (so the gate semantics are unchanged) but renders branded HTML in the
+// light client-portal palette instead of a bare text/plain string.
+function brandedNotice(opts: { status: number; title: string; body: string }): Response {
+  const { status, title, body } = opts;
+  return new Response(
+    `<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>${title} — Upriver</title>
+<style>
+  :root { --ink:#1a1a1a; --muted:#5b5b54; --bg:#fafaf7; --card:#fff; --border:#e6e6df; --brand:#2b7a5b; }
+  html,body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font:16px/1.6 ui-sans-serif,system-ui,sans-serif;}
+  .wrap{min-height:100vh;display:grid;place-items:center;padding:2rem 1.25rem;}
+  .card{max-width:30rem;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:2.4rem 2.1rem;box-shadow:0 14px 36px rgba(20,40,30,0.07);}
+  .eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);font-weight:600;margin-bottom:.9rem;}
+  .eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--brand);}
+  h1{font-size:1.55rem;letter-spacing:-0.01em;margin:0 0 .6rem;}
+  p{margin:0;color:var(--muted);}
+</style>
+</head><body>
+<div class="wrap"><div class="card">
+  <span class="eyebrow"><span class="dot"></span>Upriver</span>
+  <h1>${title}</h1>
+  <p>${body}</p>
+</div></div>
+</body></html>`,
+    { status, headers: { 'content-type': 'text/html; charset=utf-8' } },
+  );
+}
+
 const { slug } = Astro.params;
 if (!slug || !(await clientExists(slug))) {
-  return new Response('Not found', { status: 404 });
+  return brandedNotice({
+    status: 404,
+    title: 'We couldn’t find that.',
+    body: 'This link doesn’t match an active project. Double-check the link Upriver sent you, or reply to that email.',
+  });
 }
 
 const token = Astro.url.searchParams.get('token');
 if (!(await validateInterviewToken(slug, token))) {
-  return new Response(
-    'Invalid or missing magic-link token. Ask Upriver for a fresh link.',
-    { status: 401, headers: { 'content-type': 'text/plain' } },
-  );
+  return brandedNotice({
+    status: 401,
+    title: 'This link needs a fresh token.',
+    body: 'Your magic link is missing or has expired. Reply to the email Upriver sent you and we’ll send a new one over.',
+  });
 }
 
 const config = (await readClientConfig(slug))!;
 const spec = await readInterviewSpec(slug);
 if (!spec) {
-  return new Response(
-    'Interview guide is not yet available for this client.',
-    { status: 503, headers: { 'content-type': 'text/plain' } },
-  );
+  return brandedNotice({
+    status: 503,
+    title: 'Your questionnaire isn’t ready yet.',
+    body: 'We’re still preparing your interview. You’ll get an email from Upriver the moment it’s ready — there’s nothing you need to do right now.',
+  });
 }
 
 const responsesFile = await readResponses(slug);

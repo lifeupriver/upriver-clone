@@ -11,83 +11,102 @@ export interface Props {
 
 const { title, status, href, summary, ctaLabel } = Astro.props;
 
-const statusPillClass: Record<ArtifactStatus, string> = {
-  ready: 'pill-success',
-  empty: 'pill-muted',
-  stale: 'pill-accent',
-};
-
-const statusLabel: Record<ArtifactStatus, string> = {
-  ready: 'Ready',
-  empty: 'Empty',
-  stale: 'Stale',
-};
-
 const isEmpty = status === 'empty';
+
+const statusText: Record<ArtifactStatus, string> = {
+  ready: 'Ready',
+  empty: 'Not generated yet',
+  stale: 'Awaiting client',
+};
 ---
 
 <a
   href={href}
-  class:list={['artifact-card', 'card', { 'artifact-empty': isEmpty }]}
-  aria-label={`${title} — ${statusLabel[status]}`}
+  class:list={['artifact-row', { 'is-empty': isEmpty }]}
+  data-status={status}
+  aria-label={`${title} — ${statusText[status]}`}
 >
-  <div class="artifact-head">
-    <h4 class="artifact-title">{title}</h4>
-    <span class:list={['pill', statusPillClass[status]]}>{statusLabel[status]}</span>
-  </div>
-  <p class="artifact-summary">
-    {summary ?? (isEmpty ? 'Not generated yet.' : 'Open')}
-  </p>
-  <span class="artifact-cta">
-    {ctaLabel ?? (isEmpty ? 'Set up →' : 'Open →')}
+  <span class="ar-dot" aria-hidden="true"></span>
+  <span class="ar-body">
+    <span class="ar-title">{title}</span>
+    <span class="ar-summary">{summary ?? statusText[status]}</span>
   </span>
+  <span class="ar-cta">{ctaLabel ?? (isEmpty ? 'Set up' : 'Open')} →</span>
 </a>
 
 <style>
-  .artifact-card {
-    padding: 1rem 1.125rem;
+  .artifact-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0.85rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-body);
+    transition: background var(--dur-fast) var(--ease-out);
+  }
+
+  .artifact-row:hover { background: var(--bg-surface-hover); }
+  .artifact-row:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  /* Status dot — meaning carried by color AND the aria-label text. */
+  .ar-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--success);
+  }
+  .artifact-row[data-status='empty'] .ar-dot {
+    background: transparent;
+    border: 1px solid var(--text-muted);
+  }
+  .artifact-row[data-status='stale'] .ar-dot { background: var(--accent); }
+
+  .ar-body {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    color: var(--text-body);
-    min-height: 8rem;
+    gap: 0.1rem;
+    min-width: 0;
   }
 
-  .artifact-empty { opacity: 0.7; }
-  .artifact-empty:hover { opacity: 1; }
-
-  .artifact-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
-
-  .artifact-title {
+  .ar-title {
     font-family: var(--font-heading);
     font-weight: 500;
     font-size: 0.95rem;
+    /* Titles stay bright + scannable even for empty artifacts — no opacity dimming. */
     color: var(--text-heading);
-    margin: 0;
-    line-height: 1.2;
+    line-height: 1.25;
     letter-spacing: -0.005em;
   }
 
-  .artifact-summary {
+  .ar-summary {
+    /* --text-muted clears AA on --bg-surface; the old opacity:0.7 trick is gone. */
     color: var(--text-muted);
     font-size: var(--fs-sm);
-    line-height: 1.45;
-    margin: 0;
-    flex: 1;
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .artifact-cta {
-    margin-top: auto;
+  /* Ready rows get a slightly brighter summary so "live" content reads first. */
+  .artifact-row:not(.is-empty) .ar-summary { color: var(--text-body); }
+
+  .ar-cta {
     font-family: var(--font-heading);
     font-weight: 500;
     font-size: var(--fs-xs);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--accent);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-out);
   }
+
+  /* CTA appears on hover/focus to keep idle rows calm; always shown on touch. */
+  .artifact-row:hover .ar-cta,
+  .artifact-row:focus-visible .ar-cta { opacity: 1; }
+  @media (hover: none) { .ar-cta { opacity: 1; } }
 </style>

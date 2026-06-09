@@ -1,0 +1,96 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - link "Clients" [ref=e10] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e11] [cursor=pointer]:
+          - /url: /deliverables
+    - main [ref=e12]:
+      - generic [ref=e13]:
+        - text: Upriver Dashboard
+        - heading "Clients" [level=1] [ref=e14]
+        - paragraph [ref=e15]: 3 of 3 clients in the pipeline
+      - generic [ref=e16]:
+        - searchbox "Search clients" [ref=e17]
+        - tablist "Pipeline phase" [ref=e18]:
+          - button "All" [ref=e19] [cursor=pointer]
+          - button "Discover" [ref=e20] [cursor=pointer]
+          - button "Audit" [ref=e21] [cursor=pointer]
+          - button "Design" [ref=e22] [cursor=pointer]
+          - button "Build" [ref=e23] [cursor=pointer]
+          - button "QA" [ref=e24] [cursor=pointer]
+          - button "Launch" [ref=e25] [cursor=pointer]
+      - table [ref=e27]:
+        - rowgroup [ref=e28]:
+          - row "Client Platform Stage Score P0 P1 P2 Created" [ref=e29]:
+            - columnheader "Client" [ref=e30]
+            - columnheader "Platform" [ref=e31]
+            - columnheader "Stage" [ref=e32]
+            - columnheader "Score" [ref=e33]
+            - columnheader "P0" [ref=e34]
+            - columnheader "P1" [ref=e35]
+            - columnheader "P2" [ref=e36]
+            - columnheader "Created" [ref=e37]
+        - rowgroup [ref=e38]:
+          - row "Little Friends Learning Loft https://littlefriendslearningloft.com — init — 0 0 0 Jun 3, 2026" [ref=e39]:
+            - cell "Little Friends Learning Loft https://littlefriendslearningloft.com" [ref=e40]:
+              - generic [ref=e41]:
+                - link "Little Friends Learning Loft" [ref=e42] [cursor=pointer]:
+                  - /url: /clients/littlefriends
+                - generic [ref=e43]: https://littlefriendslearningloft.com
+            - cell "—" [ref=e44]
+            - cell "init" [ref=e45]:
+              - generic [ref=e46]: init
+            - cell "—" [ref=e47]
+            - cell "0" [ref=e48]
+            - cell "0" [ref=e49]
+            - cell "0" [ref=e50]
+            - cell "Jun 3, 2026" [ref=e51]
+          - row "Audrey's Farmhouse https://audreysfarmhouse.com squarespace launch — 0 0 0 Apr 24, 2026" [ref=e52]:
+            - cell "Audrey's Farmhouse https://audreysfarmhouse.com" [ref=e53]:
+              - generic [ref=e54]:
+                - link "Audrey's Farmhouse" [ref=e55] [cursor=pointer]:
+                  - /url: /clients/audreys
+                - generic [ref=e56]: https://audreysfarmhouse.com
+            - cell "squarespace" [ref=e57]:
+              - generic [ref=e58]: squarespace
+            - cell "launch" [ref=e59]:
+              - generic [ref=e60]: launch
+            - cell "—" [ref=e61]
+            - cell "0" [ref=e62]
+            - cell "0" [ref=e63]
+            - cell "0" [ref=e64]
+            - cell "Apr 24, 2026" [ref=e65]
+          - row "Audrey's Farmhouse https://audreysfarmhouse.com squarespace clone — 0 0 0 Apr 24, 2026" [ref=e66]:
+            - cell "Audrey's Farmhouse https://audreysfarmhouse.com" [ref=e67]:
+              - generic [ref=e68]:
+                - link "Audrey's Farmhouse" [ref=e69] [cursor=pointer]:
+                  - /url: /clients/audreys
+                - generic [ref=e70]: https://audreysfarmhouse.com
+            - cell "squarespace" [ref=e71]:
+              - generic [ref=e72]: squarespace
+            - cell "clone" [ref=e73]:
+              - generic [ref=e74]: clone
+            - cell "—" [ref=e75]
+            - cell "0" [ref=e76]
+            - cell "0" [ref=e77]
+            - cell "0" [ref=e78]
+            - cell "Apr 24, 2026" [ref=e79]
+  - generic [ref=e82]:
+    - button "Menu" [ref=e83]:
+      - img [ref=e85]
+      - generic: Menu
+    - button "Inspect" [ref=e89]:
+      - img [ref=e91]
+      - generic: Inspect
+    - button "Audit" [ref=e93]:
+      - img [ref=e95]
+      - generic: Audit
+    - button "Settings" [ref=e98]:
+      - img [ref=e100]
+      - generic: Settings

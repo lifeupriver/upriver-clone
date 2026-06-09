@@ -3,6 +3,9 @@ import { useRef, useState } from 'react';
 // Subpath import — pulls only the pure stage list, no node-only modules from
 // the @upriver/core root (which would break the client bundle).
 import { PIPELINE_STAGES, type PipelineStage } from '@upriver/core/pipeline';
+// Phase grouping (pure module) so the runner reads as Audit → Build → Launch
+// instead of one flat 25-row list.
+import { PHASES, phaseOfStage } from '../../lib/phases';
 
 /**
  * F.2 / G.7 — Live pipeline view. One row per stage with a Run button that
@@ -126,28 +129,38 @@ export default function PipelineStages({ slug, currentStage, dataSource }: Props
   return (
     <div className="pipeline-stages">
       <ol className="stage-list">
-        {STAGES.map((stage, idx) => {
-          const isComplete = idx < currentIdx;
-          const isCurrent = idx === currentIdx;
-          const isActive = activeStage === stage.id && phase === 'running';
+        {PHASES.map((phaseDef) => {
+          const phaseStages = STAGES.filter((s) => phaseOfStage(s.id) === phaseDef.key);
+          if (phaseStages.length === 0) return null;
           return (
-            <li key={stage.id} className={`stage-row${isActive ? ' active' : ''}`}>
-              <span className={`dot ${isComplete ? 'complete' : isCurrent ? 'current' : 'pending'}`} aria-hidden="true" />
-              <span className="label">{stage.label}</span>
-              <span className="run-cell">
-                {stage.command ? (
-                  <button
-                    type="button"
-                    className="run-btn"
-                    disabled={phase === 'running' && activeStage !== stage.id}
-                    onClick={() => runStage(stage)}
-                  >
-                    {isActive ? 'Running…' : 'Run'}
-                  </button>
-                ) : (
-                  <span className="muted">—</span>
-                )}
-              </span>
+            <li key={phaseDef.key} className="phase-block">
+              <span className="phase-group-label">{phaseDef.label}</span>
+              {phaseStages.map((stage) => {
+                const idx = STAGES.indexOf(stage);
+                const isComplete = idx < currentIdx;
+                const isCurrent = idx === currentIdx;
+                const isActive = activeStage === stage.id && phase === 'running';
+                return (
+                  <div key={stage.id} className={`stage-row${isActive ? ' active' : ''}`}>
+                    <span className={`dot ${isComplete ? 'complete' : isCurrent ? 'current' : 'pending'}`} aria-hidden="true" />
+                    <span className="label">{stage.label}</span>
+                    <span className="run-cell">
+                      {stage.command ? (
+                        <button
+                          type="button"
+                          className="run-btn"
+                          disabled={phase === 'running' && activeStage !== stage.id}
+                          onClick={() => runStage(stage)}
+                        >
+                          {isActive ? 'Running…' : 'Run'}
+                        </button>
+                      ) : (
+                        <span className="muted">—</span>
+                      )}
+                    </span>
+                  </div>
+                );
+              })}
             </li>
           );
         })}
@@ -168,6 +181,9 @@ export default function PipelineStages({ slug, currentStage, dataSource }: Props
       <style>{`
         .pipeline-stages { display: flex; flex-direction: column; gap: 1rem; }
         .stage-list { list-style: none; padding: 0; margin: 0; }
+        .phase-block { display: block; }
+        .phase-block + .phase-block { margin-top: 0.75rem; }
+        .phase-group-label { display: block; font-family: var(--font-heading, system-ui); font-size: 0.62rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted, #9ca3af); padding: 0 0 0.3rem; margin-bottom: 0.25rem; border-bottom: 1px solid var(--border, #e5e7eb); }
         .stage-row { display: grid; grid-template-columns: 1.25rem 1fr auto; gap: 0.625rem; align-items: center; padding: 0.45rem 0; }
         .stage-row.active { background: var(--accent-10, rgba(99, 102, 241, 0.08)); border-radius: 0.25rem; padding-inline: 0.5rem; }
         .dot { width: 12px; height: 12px; border-radius: 50%; }

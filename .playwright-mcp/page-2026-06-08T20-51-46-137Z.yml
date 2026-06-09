@@ -1,0 +1,482 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - navigation [ref=e13]:
+        - generic [ref=e14]: This client
+        - generic "Audrey's Farmhouse" [ref=e15]
+        - link "Overview" [ref=e16] [cursor=pointer]:
+          - /url: /clients/audreys
+          - generic [ref=e18]: Overview
+        - link "Intake" [ref=e19] [cursor=pointer]:
+          - /url: /clients/audreys/intake
+          - generic [ref=e21]: Intake
+        - link "Audit" [ref=e22] [cursor=pointer]:
+          - /url: /clients/audreys/audit
+          - generic [ref=e24]: Audit
+        - link "Clone Fidelity" [ref=e25] [cursor=pointer]:
+          - /url: /clients/audreys/clone-fidelity
+          - generic [ref=e27]: Clone Fidelity
+        - link "Brand Voice" [ref=e28] [cursor=pointer]:
+          - /url: /clients/audreys/voice
+          - generic [ref=e30]: Brand Voice
+        - link "Design Brief" [ref=e31] [cursor=pointer]:
+          - /url: /clients/audreys/design-brief
+          - generic [ref=e33]: Design Brief
+        - link "Site Preview" [ref=e34] [cursor=pointer]:
+          - /url: /clients/audreys/site
+          - generic [ref=e36]: Site Preview
+        - link "Fixes Plan" [ref=e37] [cursor=pointer]:
+          - /url: /clients/audreys/fixes
+          - generic [ref=e39]: Fixes Plan
+        - link "QA Report" [ref=e40] [cursor=pointer]:
+          - /url: /clients/audreys/qa
+          - generic [ref=e42]: QA Report
+        - link "Launch Checklist" [ref=e43] [cursor=pointer]:
+          - /url: /clients/audreys/launch-checklist
+          - generic [ref=e45]: Launch Checklist
+        - link "Export Audit" [ref=e46] [cursor=pointer]:
+          - /url: /deliverables/audreys
+          - generic [ref=e48]: Export Audit
+        - link "Export Brief" [ref=e49] [cursor=pointer]:
+          - /url: /deliverables/audreys/design-brief
+          - generic [ref=e51]: Export Brief
+        - link "Share Links" [ref=e52] [cursor=pointer]:
+          - /url: /clients/audreys/share
+          - generic [ref=e54]: Share Links
+      - generic [ref=e56]: v0.1.0
+    - main [ref=e57]:
+      - generic [ref=e58]:
+        - link "Clients" [ref=e59] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e60]: /
+        - link "Audrey's Farmhouse" [ref=e61] [cursor=pointer]:
+          - /url: /clients/audreys
+        - generic [ref=e62]: /
+        - generic [ref=e63]: Audit
+      - generic [ref=e64]:
+        - generic [ref=e65]:
+          - text: Audit Report
+          - heading "Audrey's Farmhouse" [level=1] [ref=e66]
+        - generic [ref=e68]: Overall
+      - generic [ref=e69]:
+        - generic [ref=e70]:
+          - heading "Top issues" [level=3] [ref=e71]
+          - generic [ref=e72]: three weakest dimensions
+        - generic [ref=e73]:
+          - link "seo 27 7 findings 3 P0 View →" [ref=e74] [cursor=pointer]:
+            - /url: "#findings?dim=seo"
+            - generic [ref=e75]:
+              - generic [ref=e76]: seo
+              - generic [ref=e77]: "27"
+            - generic [ref=e78]:
+              - generic [ref=e79]: 7 findings
+              - generic [ref=e80]: 3 P0
+            - generic [ref=e81]: View →
+          - link "sales 36 8 findings 2 P0 View →" [ref=e82] [cursor=pointer]:
+            - /url: "#findings?dim=sales"
+            - generic [ref=e83]:
+              - generic [ref=e84]: sales
+              - generic [ref=e85]: "36"
+            - generic [ref=e86]:
+              - generic [ref=e87]: 8 findings
+              - generic [ref=e88]: 2 P0
+            - generic [ref=e89]: View →
+          - link "local 72 4 findings View →" [ref=e90] [cursor=pointer]:
+            - /url: "#findings?dim=local"
+            - generic [ref=e91]:
+              - generic [ref=e92]: local
+              - generic [ref=e93]: "72"
+            - generic [ref=e95]: 4 findings
+            - generic [ref=e96]: View →
+      - generic [ref=e97]:
+        - generic [ref=e98]:
+          - heading "All dimensions" [level=3] [ref=e99]
+          - generic [ref=e100]: click a tile to filter findings
+        - generic [ref=e101]:
+          - link "93 A aeo 1 finding" [ref=e102] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=aeo
+            - generic [ref=e103]: "93"
+            - generic [ref=e104]: A
+            - generic [ref=e105]: aeo
+            - generic [ref=e106]: 1 finding
+          - link "90 A backlinks 2 findings" [ref=e107] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=backlinks
+            - generic [ref=e108]: "90"
+            - generic [ref=e109]: A
+            - generic [ref=e110]: backlinks
+            - generic [ref=e111]: 2 findings
+          - link "76 C competitors 4 findings" [ref=e112] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=competitors
+            - generic [ref=e113]: "76"
+            - generic [ref=e114]: C
+            - generic [ref=e115]: competitors
+            - generic [ref=e116]: 4 findings
+          - link "76 C content 4 findings" [ref=e117] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=content
+            - generic [ref=e118]: "76"
+            - generic [ref=e119]: C
+            - generic [ref=e120]: content
+            - generic [ref=e121]: 4 findings
+          - link "93 A design 1 finding" [ref=e122] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=design
+            - generic [ref=e123]: "93"
+            - generic [ref=e124]: A
+            - generic [ref=e125]: design
+            - generic [ref=e126]: 1 finding
+          - link "83 B links 3 findings" [ref=e127] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=links
+            - generic [ref=e128]: "83"
+            - generic [ref=e129]: B
+            - generic [ref=e130]: links
+            - generic [ref=e131]: 3 findings
+          - link "72 C local 4 findings" [ref=e132] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=local
+            - generic [ref=e133]: "72"
+            - generic [ref=e134]: C
+            - generic [ref=e135]: local
+            - generic [ref=e136]: 4 findings
+          - link "36 F sales 8 findings" [ref=e137] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=sales
+            - generic [ref=e138]: "36"
+            - generic [ref=e139]: F
+            - generic [ref=e140]: sales
+            - generic [ref=e141]: 8 findings
+          - link "76 C schema 4 findings" [ref=e142] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=schema
+            - generic [ref=e143]: "76"
+            - generic [ref=e144]: C
+            - generic [ref=e145]: schema
+            - generic [ref=e146]: 4 findings
+          - link "27 F seo 7 findings" [ref=e147] [cursor=pointer]:
+            - /url: /clients/audreys/audit#findings?dim=seo
+            - generic [ref=e148]: "27"
+            - generic [ref=e149]: F
+            - generic [ref=e150]: seo
+            - generic [ref=e151]: 7 findings
+      - group [ref=e152]:
+        - generic "Score detail Open the radar chart ▾" [ref=e153] [cursor=pointer]:
+          - generic [ref=e154]: Score detail
+          - generic [ref=e155]: Open the radar chart
+          - text: ▾
+      - generic [ref=e156]:
+        - heading "Findings (38)" [level=3] [ref=e158]
+        - generic [ref=e160]:
+          - generic [ref=e161]:
+            - generic [ref=e162]:
+              - button "All" [ref=e163] [cursor=pointer]
+              - button "P05" [ref=e164] [cursor=pointer]
+              - button "P126" [ref=e165] [cursor=pointer]
+              - button "P27" [ref=e166] [cursor=pointer]
+            - generic [ref=e167]:
+              - button "All Effort" [ref=e168] [cursor=pointer]
+              - button "Light" [ref=e169] [cursor=pointer]
+              - button "Medium" [ref=e170] [cursor=pointer]
+              - button "Heavy" [ref=e171] [cursor=pointer]
+            - generic [ref=e172]:
+              - button "All Dims" [ref=e173] [cursor=pointer]
+              - button "aeo" [ref=e174] [cursor=pointer]
+              - button "backlinks" [ref=e175] [cursor=pointer]
+              - button "competitors" [ref=e176] [cursor=pointer]
+              - button "content" [ref=e177] [cursor=pointer]
+              - button "design" [ref=e178] [cursor=pointer]
+              - button "links" [ref=e179] [cursor=pointer]
+              - button "local" [ref=e180] [cursor=pointer]
+              - button "sales" [ref=e181] [cursor=pointer]
+              - button "schema" [ref=e182] [cursor=pointer]
+              - button "seo" [ref=e183] [cursor=pointer]
+          - generic [ref=e184]:
+            - paragraph [ref=e185]: 38 findings
+            - generic [ref=e186]:
+              - button "Expand all" [ref=e187] [cursor=pointer]
+              - generic [ref=e188]: ·
+              - button "Collapse all" [ref=e189] [cursor=pointer]
+          - generic [ref=e190]:
+            - button "P1 medium aeo Low conversational language density — poor voice search and AI search readiness" [ref=e192] [cursor=pointer]:
+              - generic [ref=e193]:
+                - generic [ref=e194]: P1
+                - generic [ref=e195]: medium
+                - generic [ref=e196]: aeo
+              - heading "Low conversational language density — poor voice search and AI search readiness" [level=3] [ref=e197]
+              - generic [ref=e198]: +
+            - button "P1 light backlinks Backlink profile not analyzed — Ahrefs API key not configured" [ref=e200] [cursor=pointer]:
+              - generic [ref=e201]:
+                - generic [ref=e202]: P1
+                - generic [ref=e203]: light
+                - generic [ref=e204]: backlinks
+              - heading "Backlink profile not analyzed — Ahrefs API key not configured" [level=3] [ref=e205]
+              - generic [ref=e206]: +
+            - button "P2 light backlinks No wedding directory profiles linked — missing easy citation backlinks" [ref=e208] [cursor=pointer]:
+              - generic [ref=e209]:
+                - generic [ref=e210]: P2
+                - generic [ref=e211]: light
+                - generic [ref=e212]: backlinks
+              - heading "No wedding directory profiles linked — missing easy citation backlinks" [level=3] [ref=e213]
+              - generic [ref=e214]: +
+            - button "P1 light competitors No competitors defined in client configuration" [ref=e216] [cursor=pointer]:
+              - generic [ref=e217]:
+                - generic [ref=e218]: P1
+                - generic [ref=e219]: light
+                - generic [ref=e220]: competitors
+              - heading "No competitors defined in client configuration" [level=3] [ref=e221]
+              - generic [ref=e222]: +
+            - button "P1 medium competitors No virtual tour — increasingly standard among competing venues" [ref=e224] [cursor=pointer]:
+              - generic [ref=e225]:
+                - generic [ref=e226]: P1
+                - generic [ref=e227]: medium
+                - generic [ref=e228]: competitors
+              - heading "No virtual tour — increasingly standard among competing venues" [level=3] [ref=e229]
+              - generic [ref=e230]: +
+            - button "P2 medium competitors No real weddings portfolio — common competitive differentiator" [ref=e232] [cursor=pointer]:
+              - generic [ref=e233]:
+                - generic [ref=e234]: P2
+                - generic [ref=e235]: medium
+                - generic [ref=e236]: competitors
+              - heading "No real weddings portfolio — common competitive differentiator" [level=3] [ref=e237]
+              - generic [ref=e238]: +
+            - button "P1 medium competitors Only 4 testimonials — competing venues typically show 20+" [ref=e240] [cursor=pointer]:
+              - generic [ref=e241]:
+                - generic [ref=e242]: P1
+                - generic [ref=e243]: medium
+                - generic [ref=e244]: competitors
+              - heading "Only 4 testimonials — competing venues typically show 20+" [level=3] [ref=e245]
+              - generic [ref=e246]: +
+            - button "P1 medium content Banned marketing language detected" [ref=e248] [cursor=pointer]:
+              - generic [ref=e249]:
+                - generic [ref=e250]: P1
+                - generic [ref=e251]: medium
+                - generic [ref=e252]: content
+              - heading "Banned marketing language detected" [level=3] [ref=e253]
+              - generic [ref=e254]: +
+            - button "P2 medium content Unsubstantiated superlative claims" [ref=e256] [cursor=pointer]:
+              - generic [ref=e257]:
+                - generic [ref=e258]: P2
+                - generic [ref=e259]: medium
+                - generic [ref=e260]: content
+              - heading "Unsubstantiated superlative claims" [level=3] [ref=e261]
+              - generic [ref=e262]: +
+            - button "P1 heavy content Thin content pages" [ref=e264] [cursor=pointer]:
+              - generic [ref=e265]:
+                - generic [ref=e266]: P1
+                - generic [ref=e267]: heavy
+                - generic [ref=e268]: content
+              - heading "Thin content pages" [level=3] [ref=e269]
+              - generic [ref=e270]: +
+            - button "P1 medium content Images missing alt text" [ref=e272] [cursor=pointer]:
+              - generic [ref=e273]:
+                - generic [ref=e274]: P1
+                - generic [ref=e275]: medium
+                - generic [ref=e276]: content
+              - heading "Images missing alt text" [level=3] [ref=e277]
+              - generic [ref=e278]: +
+            - button "P1 medium design Inconsistent CTA copy (32 variations)" [ref=e280] [cursor=pointer]:
+              - generic [ref=e281]:
+                - generic [ref=e282]: P1
+                - generic [ref=e283]: medium
+                - generic [ref=e284]: design
+              - heading "Inconsistent CTA copy (32 variations)" [level=3] [ref=e285]
+              - generic [ref=e286]: +
+            - button "P1 medium links 32 orphaned pages with no internal links pointing to them" [ref=e288] [cursor=pointer]:
+              - generic [ref=e289]:
+                - generic [ref=e290]: P1
+                - generic [ref=e291]: medium
+                - generic [ref=e292]: links
+              - heading "32 orphaned pages with no internal links pointing to them" [level=3] [ref=e293]
+              - generic [ref=e294]: +
+            - button "P2 medium links Most pages have very few internal links" [ref=e296] [cursor=pointer]:
+              - generic [ref=e297]:
+                - generic [ref=e298]: P2
+                - generic [ref=e299]: medium
+                - generic [ref=e300]: links
+              - heading "Most pages have very few internal links" [level=3] [ref=e301]
+              - generic [ref=e302]: +
+            - button "P1 light links Homepage has very few internal links" [ref=e304] [cursor=pointer]:
+              - generic [ref=e305]:
+                - generic [ref=e306]: P1
+                - generic [ref=e307]: light
+                - generic [ref=e308]: links
+              - heading "Homepage has very few internal links" [level=3] [ref=e309]
+              - generic [ref=e310]: +
+            - button "P1 light local Inconsistent phone numbers across pages" [ref=e312] [cursor=pointer]:
+              - generic [ref=e313]:
+                - generic [ref=e314]: P1
+                - generic [ref=e315]: light
+                - generic [ref=e316]: local
+              - heading "Inconsistent phone numbers across pages" [level=3] [ref=e317]
+              - generic [ref=e318]: +
+            - button "P1 light local Inconsistent address formats across pages" [ref=e320] [cursor=pointer]:
+              - generic [ref=e321]:
+                - generic [ref=e322]: P1
+                - generic [ref=e323]: light
+                - generic [ref=e324]: local
+              - heading "Inconsistent address formats across pages" [level=3] [ref=e325]
+              - generic [ref=e326]: +
+            - button "P1 light local No Google Business Profile link or embed detected" [ref=e328] [cursor=pointer]:
+              - generic [ref=e329]:
+                - generic [ref=e330]: P1
+                - generic [ref=e331]: light
+                - generic [ref=e332]: local
+              - heading "No Google Business Profile link or embed detected" [level=3] [ref=e333]
+              - generic [ref=e334]: +
+            - button "P1 medium local Missing links to 6 major wedding/local directories" [ref=e336] [cursor=pointer]:
+              - generic [ref=e337]:
+                - generic [ref=e338]: P1
+                - generic [ref=e339]: medium
+                - generic [ref=e340]: local
+              - heading "Missing links to 6 major wedding/local directories" [level=3] [ref=e341]
+              - generic [ref=e342]: +
+            - 'button "P1 heavy sales Missing: Dedicated venue space pages" [ref=e344] [cursor=pointer]':
+              - generic [ref=e345]:
+                - generic [ref=e346]: P1
+                - generic [ref=e347]: heavy
+                - generic [ref=e348]: sales
+              - 'heading "Missing: Dedicated venue space pages" [level=3] [ref=e349]'
+              - generic [ref=e350]: +
+            - 'button "P0 heavy sales Missing: Pricing or packages page" [ref=e352] [cursor=pointer]':
+              - generic [ref=e353]:
+                - generic [ref=e354]: P0
+                - generic [ref=e355]: heavy
+                - generic [ref=e356]: sales
+              - 'heading "Missing: Pricing or packages page" [level=3] [ref=e357]'
+              - generic [ref=e358]: +
+            - 'button "P1 heavy sales Missing: FAQ page" [ref=e360] [cursor=pointer]':
+              - generic [ref=e361]:
+                - generic [ref=e362]: P1
+                - generic [ref=e363]: heavy
+                - generic [ref=e364]: sales
+              - 'heading "Missing: FAQ page" [level=3] [ref=e365]'
+              - generic [ref=e366]: +
+            - 'button "P0 heavy sales Missing: Contact or inquiry page" [ref=e368] [cursor=pointer]':
+              - generic [ref=e369]:
+                - generic [ref=e370]: P0
+                - generic [ref=e371]: heavy
+                - generic [ref=e372]: sales
+              - 'heading "Missing: Contact or inquiry page" [level=3] [ref=e373]'
+              - generic [ref=e374]: +
+            - 'button "P1 heavy sales Missing: About page" [ref=e376] [cursor=pointer]':
+              - generic [ref=e377]:
+                - generic [ref=e378]: P1
+                - generic [ref=e379]: heavy
+                - generic [ref=e380]: sales
+              - 'heading "Missing: About page" [level=3] [ref=e381]'
+              - generic [ref=e382]: +
+            - 'button "P2 heavy sales Missing: Preferred vendors list" [ref=e384] [cursor=pointer]':
+              - generic [ref=e385]:
+                - generic [ref=e386]: P2
+                - generic [ref=e387]: heavy
+                - generic [ref=e388]: sales
+              - 'heading "Missing: Preferred vendors list" [level=3] [ref=e389]'
+              - generic [ref=e390]: +
+            - 'button "P2 heavy sales Missing: Local area or directions page" [ref=e392] [cursor=pointer]':
+              - generic [ref=e393]:
+                - generic [ref=e394]: P2
+                - generic [ref=e395]: heavy
+                - generic [ref=e396]: sales
+              - 'heading "Missing: Local area or directions page" [level=3] [ref=e397]'
+              - generic [ref=e398]: +
+            - button "P1 light sales No review platform badges visible" [ref=e400] [cursor=pointer]:
+              - generic [ref=e401]:
+                - generic [ref=e402]: P1
+                - generic [ref=e403]: light
+                - generic [ref=e404]: sales
+              - heading "No review platform badges visible" [level=3] [ref=e405]
+              - generic [ref=e406]: +
+            - button "P1 light schema LocalBusiness schema missing required properties" [ref=e408] [cursor=pointer]:
+              - generic [ref=e409]:
+                - generic [ref=e410]: P1
+                - generic [ref=e411]: light
+                - generic [ref=e412]: schema
+              - heading "LocalBusiness schema missing required properties" [level=3] [ref=e413]
+              - generic [ref=e414]: +
+            - button "P1 medium schema FAQ content present but no FAQPage schema markup" [ref=e416] [cursor=pointer]:
+              - generic [ref=e417]:
+                - generic [ref=e418]: P1
+                - generic [ref=e419]: medium
+                - generic [ref=e420]: schema
+              - heading "FAQ content present but no FAQPage schema markup" [level=3] [ref=e421]
+              - generic [ref=e422]: +
+            - button "P2 light schema No Event schema for venue event spaces" [ref=e424] [cursor=pointer]:
+              - generic [ref=e425]:
+                - generic [ref=e426]: P2
+                - generic [ref=e427]: light
+                - generic [ref=e428]: schema
+              - heading "No Event schema for venue event spaces" [level=3] [ref=e429]
+              - generic [ref=e430]: +
+            - button "P1 medium schema Testimonials present but no Review/AggregateRating schema" [ref=e432] [cursor=pointer]:
+              - generic [ref=e433]:
+                - generic [ref=e434]: P1
+                - generic [ref=e435]: medium
+                - generic [ref=e436]: schema
+              - heading "Testimonials present but no Review/AggregateRating schema" [level=3] [ref=e437]
+              - generic [ref=e438]: +
+            - button "P1 medium seo Missing canonical tags" [ref=e440] [cursor=pointer]:
+              - generic [ref=e441]:
+                - generic [ref=e442]: P1
+                - generic [ref=e443]: medium
+                - generic [ref=e444]: seo
+              - heading "Missing canonical tags" [level=3] [ref=e445]
+              - generic [ref=e446]: +
+            - button "P0 light seo Pages missing title tags" [ref=e448] [cursor=pointer]:
+              - generic [ref=e449]:
+                - generic [ref=e450]: P0
+                - generic [ref=e451]: light
+                - generic [ref=e452]: seo
+              - heading "Pages missing title tags" [level=3] [ref=e453]
+              - generic [ref=e454]: +
+            - button "P1 medium seo Pages missing H1 tags" [ref=e456] [cursor=pointer]:
+              - generic [ref=e457]:
+                - generic [ref=e458]: P1
+                - generic [ref=e459]: medium
+                - generic [ref=e460]: seo
+              - heading "Pages missing H1 tags" [level=3] [ref=e461]
+              - generic [ref=e462]: +
+            - button "P1 heavy seo Thin content pages (under 200 words)" [ref=e464] [cursor=pointer]:
+              - generic [ref=e465]:
+                - generic [ref=e466]: P1
+                - generic [ref=e467]: heavy
+                - generic [ref=e468]: seo
+              - heading "Thin content pages (under 200 words)" [level=3] [ref=e469]
+              - generic [ref=e470]: +
+            - button "P0 light seo No analytics tool detected" [ref=e472] [cursor=pointer]:
+              - generic [ref=e473]:
+                - generic [ref=e474]: P0
+                - generic [ref=e475]: light
+                - generic [ref=e476]: seo
+              - heading "No analytics tool detected" [level=3] [ref=e477]
+              - generic [ref=e478]: +
+            - 'button "P0 light seo Indexation blocked: noindex meta tag" [ref=e480] [cursor=pointer]':
+              - generic [ref=e481]:
+                - generic [ref=e482]: P0
+                - generic [ref=e483]: light
+                - generic [ref=e484]: seo
+              - 'heading "Indexation blocked: noindex meta tag" [level=3] [ref=e485]'
+              - generic [ref=e486]: +
+            - button "P1 medium seo Duplicate title tags across pages" [ref=e488] [cursor=pointer]:
+              - generic [ref=e489]:
+                - generic [ref=e490]: P1
+                - generic [ref=e491]: medium
+                - generic [ref=e492]: seo
+              - heading "Duplicate title tags across pages" [level=3] [ref=e493]
+              - generic [ref=e494]: +
+  - generic [ref=e497]:
+    - button "Menu" [ref=e498]:
+      - img [ref=e500]
+      - generic: Menu
+    - button "Inspect" [ref=e504]:
+      - img [ref=e506]
+      - generic: Inspect
+    - button "Audit" [ref=e508]:
+      - img [ref=e510]
+      - generic: Audit
+    - button "Settings" [ref=e513]:
+      - img [ref=e515]
+      - generic: Settings

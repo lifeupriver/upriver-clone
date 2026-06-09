@@ -1,0 +1,294 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Upriver" [ref=e4] [cursor=pointer]:
+        - /url: /clients
+        - img [ref=e5]
+        - generic [ref=e8]: Upriver
+      - navigation [ref=e9]:
+        - generic [ref=e10]: Navigation
+        - link "Clients" [ref=e11] [cursor=pointer]:
+          - /url: /clients
+        - link "Deliverables" [ref=e12] [cursor=pointer]:
+          - /url: /deliverables
+      - navigation [ref=e13]:
+        - generic [ref=e14]: This client
+        - generic "Little Friends Learning Loft" [ref=e15]
+        - link "Overview" [ref=e16] [cursor=pointer]:
+          - /url: /clients/littlefriends
+          - generic [ref=e18]: Overview
+        - link "Intake" [ref=e19] [cursor=pointer]:
+          - /url: /clients/littlefriends/intake
+          - generic [ref=e21]: Intake
+        - link "Audit" [ref=e22] [cursor=pointer]:
+          - /url: /clients/littlefriends/audit
+          - generic [ref=e24]: Audit
+        - link "Clone Fidelity" [ref=e25] [cursor=pointer]:
+          - /url: /clients/littlefriends/clone-fidelity
+          - generic [ref=e27]: Clone Fidelity
+        - link "Brand Voice" [ref=e28] [cursor=pointer]:
+          - /url: /clients/littlefriends/voice
+          - generic [ref=e30]: Brand Voice
+        - link "Design Brief" [ref=e31] [cursor=pointer]:
+          - /url: /clients/littlefriends/design-brief
+          - generic [ref=e33]: Design Brief
+        - link "Site Preview" [ref=e34] [cursor=pointer]:
+          - /url: /clients/littlefriends/site
+          - generic [ref=e36]: Site Preview
+        - link "Fixes Plan" [ref=e37] [cursor=pointer]:
+          - /url: /clients/littlefriends/fixes
+          - generic [ref=e39]: Fixes Plan
+        - link "QA Report" [ref=e40] [cursor=pointer]:
+          - /url: /clients/littlefriends/qa
+          - generic [ref=e42]: QA Report
+        - link "Launch Checklist" [ref=e43] [cursor=pointer]:
+          - /url: /clients/littlefriends/launch-checklist
+          - generic [ref=e45]: Launch Checklist
+        - link "Export Audit" [ref=e46] [cursor=pointer]:
+          - /url: /deliverables/littlefriends
+          - generic [ref=e48]: Export Audit
+        - link "Export Brief" [ref=e49] [cursor=pointer]:
+          - /url: /deliverables/littlefriends/design-brief
+          - generic [ref=e51]: Export Brief
+        - link "Share Links" [ref=e52] [cursor=pointer]:
+          - /url: /clients/littlefriends/share
+          - generic [ref=e54]: Share Links
+      - generic [ref=e56]: v0.1.0
+    - main [ref=e57]:
+      - generic [ref=e58]:
+        - link "Clients" [ref=e59] [cursor=pointer]:
+          - /url: /clients
+        - generic [ref=e60]: /
+        - generic [ref=e61]: Little Friends Learning Loft
+      - generic [ref=e63]:
+        - text: Client
+        - heading "Little Friends Learning Loft" [level=1] [ref=e64]
+        - link "https://littlefriendslearningloft.com" [ref=e65] [cursor=pointer]:
+          - /url: https://littlefriendslearningloft.com
+          - text: https://littlefriendslearningloft.com
+          - img [ref=e66]
+      - generic [ref=e70]:
+        - generic [ref=e71]:
+          - generic [ref=e72]: Next step
+          - heading "Discover the site" [level=3] [ref=e73]
+          - paragraph [ref=e74]: Crawl pages and competitors to seed the audit.
+        - link "Run discover →" [ref=e75] [cursor=pointer]:
+          - /url: /clients/littlefriends#pipeline
+      - generic [ref=e76]:
+        - complementary [ref=e77]:
+          - generic [ref=e78]:
+            - generic [ref=e79]: Details
+            - generic [ref=e80]:
+              - term [ref=e81]: Slug
+              - definition [ref=e82]: littlefriends
+              - term [ref=e83]: Created
+              - definition [ref=e84]: June 3, 2026
+          - generic [ref=e85]:
+            - generic [ref=e86]:
+              - generic [ref=e87]: Pipeline
+              - generic [ref=e88]: click Run to invoke
+            - generic [ref=e90]:
+              - list [ref=e91]:
+                - listitem [ref=e92]:
+                  - generic [ref=e94]: Init
+                  - generic [ref=e95]: —
+                - listitem [ref=e96]:
+                  - generic [ref=e98]: Discover
+                  - generic [ref=e99]: —
+                - listitem [ref=e100]:
+                  - generic [ref=e102]: Scrape
+                  - button "Run" [ref=e104] [cursor=pointer]
+                - listitem [ref=e105]:
+                  - generic [ref=e107]: Audit
+                  - button "Run" [ref=e109] [cursor=pointer]
+                - listitem [ref=e110]:
+                  - generic [ref=e112]: Media audit
+                  - button "Run" [ref=e114] [cursor=pointer]
+                - listitem [ref=e115]:
+                  - generic [ref=e117]: Gap analysis
+                  - button "Run" [ref=e119] [cursor=pointer]
+                - listitem [ref=e120]:
+                  - generic [ref=e122]: Video audit
+                  - button "Run" [ref=e124] [cursor=pointer]
+                - listitem [ref=e125]:
+                  - generic [ref=e127]: Synthesize
+                  - button "Run" [ref=e129] [cursor=pointer]
+                - listitem [ref=e130]:
+                  - generic [ref=e132]: Voice Extract
+                  - button "Run" [ref=e134] [cursor=pointer]
+                - listitem [ref=e135]:
+                  - generic [ref=e137]: Blog Topics
+                  - button "Run" [ref=e139] [cursor=pointer]
+                - listitem [ref=e140]:
+                  - generic [ref=e142]: Schema Build
+                  - button "Run" [ref=e144] [cursor=pointer]
+                - listitem [ref=e145]:
+                  - generic [ref=e147]: Design Brief
+                  - button "Run" [ref=e149] [cursor=pointer]
+                - listitem [ref=e150]:
+                  - generic [ref=e152]: Scaffold
+                  - button "Run" [ref=e154] [cursor=pointer]
+                - listitem [ref=e155]:
+                  - generic [ref=e157]: Clone
+                  - button "Run" [ref=e159] [cursor=pointer]
+                - listitem [ref=e160]:
+                  - generic [ref=e162]: Finalize
+                  - button "Run" [ref=e164] [cursor=pointer]
+                - listitem [ref=e165]:
+                  - generic [ref=e167]: Clone fidelity
+                  - button "Run" [ref=e169] [cursor=pointer]
+                - listitem [ref=e170]:
+                  - generic [ref=e172]: Fixes plan
+                  - button "Run" [ref=e174] [cursor=pointer]
+                - listitem [ref=e175]:
+                  - generic [ref=e177]: QA
+                  - button "Run" [ref=e179] [cursor=pointer]
+                - listitem [ref=e180]:
+                  - generic [ref=e182]: Improve
+                  - button "Run" [ref=e184] [cursor=pointer]
+                - listitem [ref=e185]:
+                  - generic [ref=e187]: Launch
+                  - generic [ref=e188]: —
+                - listitem [ref=e189]:
+                  - generic [ref=e191]: iOS prototype
+                  - button "Run" [ref=e193] [cursor=pointer]
+                - listitem [ref=e194]:
+                  - generic [ref=e196]: Custom tools
+                  - button "Run" [ref=e198] [cursor=pointer]
+                - listitem [ref=e199]:
+                  - generic [ref=e201]: Monitor
+                  - button "Run" [ref=e203] [cursor=pointer]
+                - listitem [ref=e204]:
+                  - generic [ref=e206]: Followup
+                  - button "Run" [ref=e208] [cursor=pointer]
+                - listitem [ref=e209]:
+                  - generic [ref=e211]: Admin deploy
+                  - button "Run" [ref=e213] [cursor=pointer]
+              - generic [ref=e214]:
+                - generic [ref=e216]: Output
+                - generic [ref=e217]: (no output yet — click a Run button)
+        - generic [ref=e218]:
+          - generic [ref=e219]:
+            - generic [ref=e220]:
+              - heading "Workspace" [level=3] [ref=e221]
+              - generic [ref=e222]: artifacts for this client
+            - generic [ref=e223]:
+              - generic [ref=e224]: Inputs
+              - generic [ref=e225]:
+                - link "Intake — Empty" [ref=e226] [cursor=pointer]:
+                  - /url: /clients/littlefriends/intake
+                  - generic [ref=e227]:
+                    - heading "Intake" [level=4] [ref=e228]
+                    - generic [ref=e229]: Empty
+                  - paragraph [ref=e230]: Not generated yet.
+                  - generic [ref=e231]: Set up →
+                - link "Interview — Empty" [ref=e232] [cursor=pointer]:
+                  - /url: /clients/littlefriends/interview
+                  - generic [ref=e233]:
+                    - heading "Interview" [level=4] [ref=e234]
+                    - generic [ref=e235]: Empty
+                  - paragraph [ref=e236]: Not generated yet.
+                  - generic [ref=e237]: Set up →
+            - generic [ref=e238]:
+              - generic [ref=e239]: Audit
+              - generic [ref=e240]:
+                - link "Audit Report — Empty" [ref=e241] [cursor=pointer]:
+                  - /url: /clients/littlefriends/audit
+                  - generic [ref=e242]:
+                    - heading "Audit Report" [level=4] [ref=e243]
+                    - generic [ref=e244]: Empty
+                  - paragraph [ref=e245]: Not generated yet.
+                  - generic [ref=e246]: Set up →
+                - link "Clone Fidelity — Empty" [ref=e247] [cursor=pointer]:
+                  - /url: /clients/littlefriends/clone-fidelity
+                  - generic [ref=e248]:
+                    - heading "Clone Fidelity" [level=4] [ref=e249]
+                    - generic [ref=e250]: Empty
+                  - paragraph [ref=e251]: Not generated yet.
+                  - generic [ref=e252]: Set up →
+            - generic [ref=e253]:
+              - generic [ref=e254]: Outputs
+              - generic [ref=e255]:
+                - link "Brand Voice — Empty" [ref=e256] [cursor=pointer]:
+                  - /url: /clients/littlefriends/voice
+                  - generic [ref=e257]:
+                    - heading "Brand Voice" [level=4] [ref=e258]
+                    - generic [ref=e259]: Empty
+                  - paragraph [ref=e260]: Not generated yet.
+                  - generic [ref=e261]: Set up →
+                - link "Design Brief — Empty" [ref=e262] [cursor=pointer]:
+                  - /url: /clients/littlefriends/design-brief
+                  - generic [ref=e263]:
+                    - heading "Design Brief" [level=4] [ref=e264]
+                    - generic [ref=e265]: Empty
+                  - paragraph [ref=e266]: Not generated yet.
+                  - generic [ref=e267]: Set up →
+                - link "Site Preview — Empty" [ref=e268] [cursor=pointer]:
+                  - /url: /clients/littlefriends/site
+                  - generic [ref=e269]:
+                    - heading "Site Preview" [level=4] [ref=e270]
+                    - generic [ref=e271]: Empty
+                  - paragraph [ref=e272]: Not generated yet.
+                  - generic [ref=e273]: Set up →
+                - link "Fixes Plan — Empty" [ref=e274] [cursor=pointer]:
+                  - /url: /clients/littlefriends/fixes
+                  - generic [ref=e275]:
+                    - heading "Fixes Plan" [level=4] [ref=e276]
+                    - generic [ref=e277]: Empty
+                  - paragraph [ref=e278]: Not generated yet.
+                  - generic [ref=e279]: Set up →
+                - link "QA Report — Empty" [ref=e280] [cursor=pointer]:
+                  - /url: /clients/littlefriends/qa
+                  - generic [ref=e281]:
+                    - heading "QA Report" [level=4] [ref=e282]
+                    - generic [ref=e283]: Empty
+                  - paragraph [ref=e284]: Not generated yet.
+                  - generic [ref=e285]: Set up →
+                - link "Launch Checklist — Empty" [ref=e286] [cursor=pointer]:
+                  - /url: /clients/littlefriends/launch-checklist
+                  - generic [ref=e287]:
+                    - heading "Launch Checklist" [level=4] [ref=e288]
+                    - generic [ref=e289]: Empty
+                  - paragraph [ref=e290]: Not generated yet.
+                  - generic [ref=e291]: Set up →
+            - generic [ref=e292]:
+              - generic [ref=e293]: Share
+              - generic [ref=e294]:
+                - link "Export Audit — Empty" [ref=e295] [cursor=pointer]:
+                  - /url: /deliverables/littlefriends
+                  - generic [ref=e296]:
+                    - heading "Export Audit" [level=4] [ref=e297]
+                    - generic [ref=e298]: Empty
+                  - paragraph [ref=e299]: Client-facing audit report
+                  - generic [ref=e300]: Open export →
+                - link "Export Brief — Empty" [ref=e301] [cursor=pointer]:
+                  - /url: /deliverables/littlefriends/design-brief
+                  - generic [ref=e302]:
+                    - heading "Export Brief" [level=4] [ref=e303]
+                    - generic [ref=e304]: Empty
+                  - paragraph [ref=e305]: Client-facing design brief
+                  - generic [ref=e306]: Open export →
+                - link "Share Links — Ready" [ref=e307] [cursor=pointer]:
+                  - /url: /clients/littlefriends/share
+                  - generic [ref=e308]:
+                    - heading "Share Links" [level=4] [ref=e309]
+                    - generic [ref=e310]: Ready
+                  - paragraph [ref=e311]: Generate read-only share tokens
+                  - generic [ref=e312]: Manage →
+          - paragraph [ref=e314]:
+            - text: No audit data yet. Run
+            - code [ref=e315]: upriver audit littlefriends
+            - text: to generate scores.
+  - generic [ref=e318]:
+    - button "Menu" [ref=e319]:
+      - img [ref=e321]
+      - generic: Menu
+    - button "Inspect" [ref=e325]:
+      - img [ref=e327]
+      - generic: Inspect
+    - button "Audit" [ref=e329]:
+      - img [ref=e331]
+      - generic: Audit
+    - button "Settings" [ref=e334]:
+      - img [ref=e336]
+      - generic: Settings
