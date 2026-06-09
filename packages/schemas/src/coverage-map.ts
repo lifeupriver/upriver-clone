@@ -5,6 +5,9 @@ export type DeliverableId =
   | 'doc-01' | 'doc-02' | 'doc-03' | 'doc-04' | 'doc-05' | 'doc-06'
   | 'doc-07' | 'doc-08' | 'doc-09' | 'doc-10' | 'doc-11' | 'doc-12'
   | 'doc-13' | 'doc-14' | 'doc-15' | 'doc-16' | 'doc-17' | 'doc-18'
+  // Website tier (Build Spec 10, gap G6) — post-fork web deliverables, generated
+  // under the explicit `--web` scope, excluded from `--all`'s default 01–18 set.
+  | 'doc-web-prd' | 'design-system'
   | 'i01' | 'i02' | 'i03' | 'i04' | 'i05' | 'i06' | 'i07' | 'i08' | 'i09';
 
 export interface DeliverableCoverage {
@@ -155,6 +158,16 @@ export const COVERAGE_MAP: readonly DeliverableCoverage[] = [
     requiresHvVerified: [],
     requiresDocs: [],
     specPath: `${AOS}/18-ai-operating-system-sales-document.md`,
+  },
+  // ── Website tier (Build Spec 10, gap G6). Post-fork — HV-gated on the doc-10 §9
+  //    scope fork (`goals.engagementScope.websiteScope`): no website deliverable
+  //    generates until that money decision is verified. Generated under `--web`.
+  {
+    id: 'doc-web-prd', title: 'Website Requirements PRD',
+    requiresFields: ['identity.publicName', 'offerings.core', 'positioning.keyDifferentiator', 'customers.primaryCustomer', 'seo.primaryKeywordTargets', 'seo.local', 'salesProcess.conversionEvent', 'content.written', 'goals.engagementScope.websiteScope'],
+    requiresHvVerified: ['goals.engagementScope.websiteScope'],
+    requiresDocs: ['doc-01', 'doc-02', 'doc-06', 'doc-10'],
+    specPath: `${AOS}/19-website-prd-spec.md`,
   },
   {
     id: 'i07', title: 'Account Access & Governance',

@@ -20,7 +20,7 @@ import {
   type Tier,
 } from '../generate/batch.js';
 import { resolveClientDataSourceOrFail } from '../generate/data-source.js';
-import { runGenerate, type GenerateDeps } from '../generate/engine.js';
+import { runGenerate, WEB_DOCS, type GenerateDeps } from '../generate/engine.js';
 import { resolveGateDecision } from '../generate/gate.js';
 import { generatedIds, readManifest, setApproved, writeManifest } from '../generate/manifest.js';
 import { readProfile } from '../generate/profile-io.js';
@@ -36,6 +36,7 @@ interface AllFlags {
   docs: string | undefined;
   from: string | undefined;
   provisioning: boolean;
+  web: boolean;
   'dry-run': boolean;
   yes: boolean;
   model: string;
@@ -45,7 +46,7 @@ interface AllFlags {
 
 export default class Generate extends BaseCommand {
   static override description =
-    'Generate AI Operating System documents and provisioning artifacts from a client profile via write-capable headless Claude Code sessions, gated on coverage and human-verify-required fields. `--doc <id>` for one deliverable (doc-01…12 or i01…09); `--all` for DAG-batch generation over docs 01–12 (M2); `--all --provisioning` for the I01–I09 provisioning artifacts (M5), each with per-tier Continue gates.';
+    'Generate AI Operating System documents and provisioning artifacts from a client profile via write-capable headless Claude Code sessions, gated on coverage and human-verify-required fields. `--doc <id>` for one deliverable (doc-01…18, doc-web-prd/design-system, or i01…09); `--all` for DAG-batch generation over docs 01–18 (M2); `--all --provisioning` for the I01–I09 provisioning artifacts (M5); `--web` for the post-fork website tier (doc-web-prd, design-system); each with per-tier Continue gates.';
 
   static override examples = [
     '<%= config.bin %> generate littlefriends --doc doc-01',
@@ -55,6 +56,8 @@ export default class Generate extends BaseCommand {
     '<%= config.bin %> generate littlefriends --all --from doc-04   # resume a partially-approved run',
     '<%= config.bin %> generate littlefriends --all --provisioning --dry-run   # I01–I09 tier plan (I07 first)',
     '<%= config.bin %> generate littlefriends --doc i07         # a single provisioning artifact',
+    '<%= config.bin %> generate littlefriends --web --dry-run   # website tier plan (doc-web-prd, design-system)',
+    '<%= config.bin %> generate littlefriends --web            # generate the website tier, gated on websiteScope',
   ];
 
   static override args = {
@@ -63,8 +66,8 @@ export default class Generate extends BaseCommand {
 
   static override flags = {
     doc: Flags.string({
-      description: 'Single deliverable id to generate (doc-01 … doc-12, or i01 … i09). Mutually exclusive with --all.',
-      exclusive: ['all'],
+      description: 'Single deliverable id to generate (doc-01 … doc-18, doc-web-prd/design-system, or i01 … i09). Mutually exclusive with --all/--web.',
+      exclusive: ['all', 'web'],
     }),
     all: Flags.boolean({
       description: 'DAG-batch generation over docs 01–12 (or the --docs subset), gated per tier.',
@@ -74,6 +77,12 @@ export default class Generate extends BaseCommand {
       description: 'Scope --all to the I01–I09 provisioning artifacts (M5) instead of docs 01–12. Consumes the generated, approved docs.',
       default: false,
       dependsOn: ['all'],
+    }),
+    web: Flags.boolean({
+      description:
+        'Generate the website tier (doc-web-prd, design-system) — the post-fork web deliverables, gated on the doc-10 §9 websiteScope. Its own batch scope; excluded from --all. Use standalone (`generate <slug> --web`).',
+      default: false,
+      exclusive: ['provisioning', 'doc'],
     }),
     docs: Flags.string({
       description: 'Comma-separated subset for --all (e.g. doc-01,doc-02 or, with --provisioning, i07,i01). Defaults to the full scope.',
@@ -112,12 +121,12 @@ export default class Generate extends BaseCommand {
     const { args, flags } = await this.parse(Generate);
     const ds = resolveClientDataSourceOrFail((m) => this.error(m));
 
-    if (flags.all) {
+    if (flags.all || flags.web) {
       await this.runAll(args.slug, flags, ds);
       return;
     }
 
-    if (!flags.doc) this.error('Specify --doc <id> for a single document, or --all for batch generation.');
+    if (!flags.doc) this.error('Specify --doc <id> for a single document, --all for batch generation, or --web for the website tier.');
 
     const outcome = await runGenerate(
       {
@@ -139,7 +148,7 @@ export default class Generate extends BaseCommand {
     if (!profile) this.error(`No profile for "${slug}". Run: upriver profile import ${slug} <file>`);
 
     const manifest = await readManifest(ds, slug);
-    const scopeSet = flags.provisioning ? I_SERIES : ALL_DOCS;
+    const scopeSet = flags.web ? WEB_DOCS : flags.provisioning ? I_SERIES : ALL_DOCS;
     const scope = flags.docs ? this.parseDocs(flags.docs, scopeSet) : [...scopeSet];
 
     const plan = planBatch(profile, manifest, scope);
