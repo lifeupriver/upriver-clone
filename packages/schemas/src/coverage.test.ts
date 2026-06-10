@@ -167,3 +167,12 @@ test('questionQueue returns unfilled in-scope must-ask fields, ranked by unblock
     assert.ok(q[i - 1]!.unblocksCount >= q[i]!.unblocksCount, 'queue sorted by unblocksCount desc');
   }
 });
+
+test('P2 (Build Spec 14): every deliverable requires identity.publicName — a doc that does not know the client name cannot be client-grade', () => {
+  for (const d of COVERAGE_MAP) {
+    assert.ok(
+      d.requiresFields.includes('identity.publicName'),
+      `${d.id} is missing identity.publicName in requiresFields`,
+    );
+  }
+});

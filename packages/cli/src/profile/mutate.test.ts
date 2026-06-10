@@ -44,8 +44,9 @@ const envAt = (p: ClientProfile, path: string): ProfileField<unknown> | undefine
   nearestEnvelope(p as unknown as Record<string, unknown>, path);
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-/** doc-02's 14 required fields, all filled (offerings.core covers the .*.priceRange gate). */
+/** doc-02's 15 required fields, all filled (offerings.core covers the .*.priceRange gate). */
 const DOC02_FILLED: Record<string, unknown> = {
+  'identity.publicName': env('LF'),
   'identity.legalName': env('LF LLC'),
   'people.owners': env([{ name: 'Owner' }]),
   'offerings.core': env([{ name: 'Full-day program' }]),
