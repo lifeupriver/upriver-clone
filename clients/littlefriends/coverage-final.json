@@ -1,0 +1,415 @@
+{
+  "slug": "littlefriends",
+  "revision": 58,
+  "ready": [
+    {
+      "id": "doc-01",
+      "title": "Brand Voice Guide",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-02",
+      "title": "Business Facts Reference",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-03",
+      "title": "Sales Process Map",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-04",
+      "title": "Content Library",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-05",
+      "title": "Competitor Landscape",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-06",
+      "title": "SEO & Keyword Strategy",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-07",
+      "title": "FAQ Bank",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-08",
+      "title": "Email Templates",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-09",
+      "title": "Social Media Playbook",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-10",
+      "title": "Website Audit",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-11",
+      "title": "Automation Spec Package",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-12",
+      "title": "Measurement & KPI Framework",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-13",
+      "title": "Master Build Sequence",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-14",
+      "title": "Client Onboarding Kit",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-15",
+      "title": "Retainer Engagement Playbook",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-16",
+      "title": "Sales Collateral",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-17",
+      "title": "Handoff & Offboarding",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-18",
+      "title": "AI Operating System Sales Document",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-web-prd",
+      "title": "Website Requirements PRD",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "design-system",
+      "title": "Design System",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "i07",
+      "title": "Account Access & Governance",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "i01",
+      "title": "Client Claude Project",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "i02",
+      "title": "Client Skills Deployment",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "i04",
+      "title": "Client MCP Server Configuration",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "i03",
+      "title": "Client Routines / Cowork",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "i05",
+      "title": "Client Claude in Chrome",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "i06",
+      "title": "Client Claude Code Setup",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "i08",
+      "title": "Client Custom Styles / Memory / Preferences",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "i09",
+      "title": "Client Artifacts & Deliverable Templates",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    }
+  ],
+  "blocked": [],
+  "unapprovedBlocking": [],
+  "conflicts": [],
+  "fill": [
+    {
+      "section": "identity",
+      "filled": 8,
+      "total": 8
+    },
+    {
+      "section": "people",
+      "filled": 6,
+      "total": 6
+    },
+    {
+      "section": "offerings",
+      "filled": 3,
+      "total": 3
+    },
+    {
+      "section": "pricing",
+      "filled": 4,
+      "total": 4
+    },
+    {
+      "section": "capacity",
+      "filled": 2,
+      "total": 2
+    },
+    {
+      "section": "customers",
+      "filled": 2,
+      "total": 2
+    },
+    {
+      "section": "positioning",
+      "filled": 5,
+      "total": 5
+    },
+    {
+      "section": "voice",
+      "filled": 4,
+      "total": 4
+    },
+    {
+      "section": "salesProcess",
+      "filled": 12,
+      "total": 12
+    },
+    {
+      "section": "content",
+      "filled": 11,
+      "total": 11
+    },
+    {
+      "section": "competitors",
+      "filled": 2,
+      "total": 2
+    },
+    {
+      "section": "seo",
+      "filled": 5,
+      "total": 5
+    },
+    {
+      "section": "toolsAndAccess",
+      "filled": 14,
+      "total": 14
+    },
+    {
+      "section": "operationsAutomation",
+      "filled": 6,
+      "total": 6
+    },
+    {
+      "section": "governance",
+      "filled": 6,
+      "total": 6
+    },
+    {
+      "section": "goals",
+      "filled": 5,
+      "total": 5
+    },
+    {
+      "section": "modules",
+      "filled": 4,
+      "total": 4
+    }
+  ],
+  "generated": [
+    "doc-01",
+    "doc-02",
+    "doc-03",
+    "doc-13",
+    "doc-14",
+    "doc-15",
+    "doc-17",
+    "doc-18",
+    "doc-04",
+    "doc-05",
+    "doc-07",
+    "doc-06",
+    "doc-08",
+    "doc-09",
+    "doc-11",
+    "doc-10",
+    "doc-16",
+    "doc-12",
+    "i07",
+    "i01",
+    "i02",
+    "i05",
+    "i08",
+    "i09",
+    "i04",
+    "i03",
+    "i06"
+  ]
+}

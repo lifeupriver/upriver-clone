@@ -1,0 +1,1396 @@
+{
+  "_meta": {
+    "version": 1,
+    "slug": "littlefriends",
+    "createdAt": "2026-06-09T19:33:52Z",
+    "updatedAt": "2026-06-09T23:31:21.126Z",
+    "revision": 58
+  },
+  "identity": {
+    "legalName": {
+      "value": "Little Friends Learning Loft",
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:14.814Z"
+    },
+    "publicName": {
+      "value": "Little Friends Learning Loft",
+      "source": "recon",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "Page title: 'Little Friends Learning Loft | Little Friends Learning Loft'",
+      "updatedAt": "2026-06-09T19:33:53.748Z"
+    },
+    "category": {
+      "value": "Montessori preschool",
+      "source": "recon",
+      "confidence": "low",
+      "verified": false,
+      "evidence": "Displayed directly beneath the business name: \"Montessori preschool\"",
+      "updatedAt": "2026-06-09T19:33:53.748Z"
+    },
+    "primaryAddress": {
+      "value": {
+        "line1": "290 North St",
+        "city": "Newburgh",
+        "state": "NY",
+        "postalCode": "12550"
+      },
+      "source": "recon",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "\"290 North St, Newburgh, NY 12550\" shown in the listing address field",
+      "updatedAt": "2026-06-09T19:33:53.748Z"
+    },
+    "phone": {
+      "value": "(732) 343-0005",
+      "source": "recon",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "\"(732) 343-0005\" shown in listing with tel link tel:+17323430005",
+      "updatedAt": "2026-06-09T19:33:53.748Z"
+    },
+    "gbp": {
+      "value": {
+        "status": "uncertain — claimed once, currency unknown"
+      },
+      "source": "transcript",
+      "confidence": "low",
+      "verified": false,
+      "evidence": "Google Business Profile, I claimed it once, I think.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    },
+    "socialHandles": {
+      "value": [
+        {
+          "platform": "Instagram",
+          "handle": "@littlefriendslearningloft",
+          "url": "https://www.instagram.com/littlefriendslearningloft"
+        }
+      ],
+      "source": "recon",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "Follow us on Instagram! @littlefriendslearningloft",
+      "updatedAt": "2026-06-09T19:33:53.748Z"
+    },
+    "hours": {
+      "value": "8:00–5:30, early drop at 7:45",
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "8 to 5:30, early drop at 7:45.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    }
+  },
+  "people": {
+    "owners": {
+      "value": [
+        {
+          "name": "Rebecca",
+          "role": "Director, Little Friends Learning Loft"
+        },
+        {
+          "name": "JCC (Jewish Community Center)",
+          "role": "Parent organization — exec director and board sit above the director"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:21.655Z"
+    },
+    "keyTeam": {
+      "value": [
+        {
+          "name": "Tova",
+          "role": "Twos lead teacher"
+        },
+        {
+          "name": "Carla",
+          "role": "Threes lead teacher"
+        },
+        {
+          "name": "Dana",
+          "role": "Pre-K lead teacher"
+        },
+        {
+          "name": "Yael",
+          "role": "Aftercare"
+        },
+        {
+          "name": "Linda",
+          "role": "Bookkeeper, part-time, JCC"
+        }
+      ],
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "My three leads, Dana, Carla, Tova, they are the heart of it. Assistants in each room. An aftercare person, Yael. Linda the bookkeeper, part-time, JCC.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    },
+    "routing": {
+      "rules": {
+        "value": [
+          {
+            "trigger": "child wellbeing or incident",
+            "route": "Rebecca"
+          },
+          {
+            "trigger": "billing dispute",
+            "route": "Rebecca or Linda"
+          },
+          {
+            "trigger": "upset parent",
+            "route": "Rebecca"
+          },
+          {
+            "trigger": "hiring",
+            "route": "Rebecca"
+          },
+          {
+            "trigger": "state/OCFS",
+            "route": "Rebecca"
+          }
+        ],
+        "source": "transcript",
+        "confidence": "high",
+        "verified": false,
+        "evidence": "Anything about a child's wellbeing or an incident. Anything about money. A parent who is upset. Hiring. The state.",
+        "updatedAt": "2026-06-09T19:36:01.383Z"
+      },
+      "doNotRoute": {
+        "value": [
+          "classroom assistants"
+        ],
+        "source": "transcript",
+        "confidence": "high",
+        "verified": true,
+        "evidence": "synthetic e2e run",
+        "updatedAt": "2026-06-09T19:45:18.375Z"
+      }
+    },
+    "billingContact": {
+      "value": {
+        "name": "Linda"
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2) — provisioning fields",
+      "updatedAt": "2026-06-09T23:31:21.126Z"
+    },
+    "technicalCollaborator": {
+      "value": {
+        "exists": false,
+        "stackComfort": "No in-house technical collaborator (director is non-technical; Linda handles bookkeeping). UPRIVER (Joshua) provides technical setup during the engagement, with handoff to JCC IT. [operator gap-fill, synthetic e2e]"
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2) — provisioning fields",
+      "updatedAt": "2026-06-09T23:31:18.418Z"
+    }
+  },
+  "offerings": {
+    "core": {
+      "value": [
+        {
+          "name": "Twos"
+        },
+        {
+          "name": "Threes"
+        },
+        {
+          "name": "Pre-K (fours)"
+        },
+        {
+          "name": "Aftercare"
+        }
+      ],
+      "source": "transcript",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "synthetic e2e run",
+      "updatedAt": "2026-06-09T19:45:18.375Z"
+    },
+    "secondary": {
+      "value": [
+        {
+          "name": "Summer camp"
+        }
+      ],
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "Summer camp June through August, that is a different animal, mixed ages, more enrichment.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    },
+    "dontDo": {
+      "value": [
+        "infant care — licensed two and up only"
+      ],
+      "source": "transcript",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "synthetic e2e run",
+      "updatedAt": "2026-06-09T19:45:18.375Z"
+    }
+  },
+  "pricing": {
+    "shareable": {
+      "value": [
+        {
+          "item": "Registration fee",
+          "price": "$75",
+          "conditions": "Tuition is intentionally NOT published; shared only after a tour"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "nonShareable": {
+      "value": [
+        {
+          "askedQuestion": "What is tuition / how much does it cost?",
+          "deflectionAnswer": "I'd love to show you the space first — tuition depends on the program and days. Let's get you in for a tour; the number out of context loses families who would have loved us."
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "deposit": {
+      "value": "One month tuition, due at enrollment, non-refundable",
+      "source": "transcript",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "synthetic e2e run",
+      "updatedAt": "2026-06-09T19:45:18.375Z"
+    },
+    "visibilityPolicy": {
+      "value": "Do not lead with price; invite to tour first; position tuition as program/days dependent",
+      "source": "transcript",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "synthetic e2e run",
+      "updatedAt": "2026-06-09T19:45:18.375Z"
+    }
+  },
+  "capacity": {
+    "metrics": {
+      "value": [
+        {
+          "label": "Licensed capacity",
+          "value": 58
+        },
+        {
+          "label": "Current enrollment",
+          "value": 52
+        },
+        {
+          "label": "Utilization",
+          "value": "~90% (52/58); room for a few more Twos"
+        },
+        {
+          "label": "Staff",
+          "value": 13
+        },
+        {
+          "label": "Twos ratio (Miss Tova)",
+          "value": "1:5"
+        },
+        {
+          "label": "Threes ratio (Miss Carla)",
+          "value": "1:7"
+        },
+        {
+          "label": "Pre-K ratio (Miss Dana)",
+          "value": "1:8"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "bookingLeadTime": {
+      "value": {
+        "typical": "Enrollment targets the September school-year start; tours run year-round (busiest winter–spring, slow in summer)",
+        "minimum": "[NEEDS CONFIRMATION] not stated in the corpus"
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    }
+  },
+  "customers": {
+    "primaryCustomer": {
+      "value": {
+        "demographic": "Working parents in Newburgh and the greater Hudson Valley with children ages 2–5; many connected to the Greater Newburgh JCC community. Word-of-mouth and JCC referrals are the dominant discovery path.",
+        "psychographic": "Want a warm, small, personal early-learning setting over a large polished chain — they choose \"the warm small one, not the slick one.\" Value a real relationship with the director and teachers, trust, and a not-a-factory feel; will drive past bigger/cheaper options for it."
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:12.070Z"
+    },
+    "reasonsChooseUs": {
+      "value": [
+        "small and warm",
+        "personal connection with teachers and director",
+        "clearly not a factory",
+        "JCC community connection for families who value it"
+      ],
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "Small, warm, they meet me and the teachers and it is clearly not a factory. And the J community, for some families that matters a lot.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    }
+  },
+  "positioning": {
+    "keyDifferentiator": {
+      "value": "The warm small one, not the slick one",
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "We are the warm small one, not the slick one.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    },
+    "outcomeDelivered": {
+      "value": "Students reach educational, social, and emotional goals at their own pace while developing autonomy, character, and the habits of good citizenship.",
+      "source": "recon",
+      "confidence": "low",
+      "verified": false,
+      "evidence": "Years 1, 2 and 3 are designed to help students reach multiple tiers of educational, social and emotional goals at a pace befitting each individual learner… encourages autonomy, character development and helps raise good citizens for our future.",
+      "updatedAt": "2026-06-09T19:33:53.748Z"
+    },
+    "awards": {
+      "value": [
+        {
+          "name": "[SYNTHETIC — none captured; live recon ran website+GBP only; out of adapter scope — ]"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:22.335Z"
+    },
+    "comparison": {
+      "value": "Goddard is polished and more expensive; church preschools and New Paltz Montessori are alternatives; this school wins on warmth and human scale",
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "There is a Goddard School out toward the highway, very polished, more expensive. A couple of church preschools. A Montessori in New Paltz some people drive to. We are the warm small one, not the slick one.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    },
+    "recommendedStatement": {
+      "value": "[operator gap-fill, synthetic e2e] Little Friends Learning Loft is the warm, small, JCC-rooted preschool in Newburgh for ages 2–5 — parents meet the director and lead teachers and leave a tour feeling calmer, not sold to. (Recommended positioning statement; operator analysis, confirm with owner.)",
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:23.025Z"
+    }
+  },
+  "voice": {
+    "attributes": {
+      "value": [
+        {
+          "attribute": "Warm",
+          "definition": "A frazzled parent should feel calmer after reading us, not sold to",
+          "example": "I hear you, the first couple weeks can be tender, and that is so normal."
+        },
+        {
+          "attribute": "Honest",
+          "definition": "Plain and kind; never brochure-speak"
+        },
+        {
+          "attribute": "Calm",
+          "definition": "Reassuring and unhurried, never over-eager"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.000Z"
+    },
+    "antiAiRules": {
+      "value": [
+        "Never make a parent feel like they are talking to a robot about their kid"
+      ],
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "Never make a parent feel like they are talking to a robot about their kid.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    },
+    "admiredVoices": {
+      "value": [
+        "a pediatrician newsletter, very plain and kind (unnamed)"
+      ],
+      "source": "transcript",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "There is a pediatrician newsletter I get, very plain and kind. I like that. I could not name it though.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    },
+    "sampleCommunications": {
+      "value": {},
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "I would say something like, I hear you, the first couple weeks can be tender, and that is so normal. Tova has shepherded a hundred shy twos and she is wonderful at it. Why do not you come spend twenty minutes in the room with us before the start date. We will figure it out together.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    }
+  },
+  "salesProcess": {
+    "leadSources": {
+      "value": [
+        {
+          "channel": "Word of mouth",
+          "quality": "highest"
+        },
+        {
+          "channel": "JCC community",
+          "quality": "high"
+        },
+        {
+          "channel": "Instagram DM"
+        },
+        {
+          "channel": "Email inquiry"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:27.773Z"
+    },
+    "firstTouch": {
+      "steps": {
+        "value": [
+          "automated warm reply in Rebecca's voice",
+          "offer tour times",
+          "answer basic FAQs",
+          "flag for human on anything beyond basics"
+        ],
+        "source": "transcript",
+        "confidence": "high",
+        "verified": false,
+        "evidence": "A warm reply right away, in my voice, that offers tour times and answers the basic questions, and then tells me a real human needs to do anything past that.",
+        "updatedAt": "2026-06-09T19:36:01.383Z"
+      },
+      "responseTime": {
+        "value": [
+          {}
+        ],
+        "source": "transcript",
+        "confidence": "high",
+        "verified": false,
+        "evidence": "A warm reply right away",
+        "updatedAt": "2026-06-09T19:36:01.383Z"
+      }
+    },
+    "qualificationCriteria": {
+      "value": [
+        "Child age 2–5 (NOT infants — licensed 2 and up; infants are the do-not-promise line)",
+        "Seeking Twos / Threes / Pre-K, full-time, part-time days, or aftercare",
+        "Willing to tour before discussing tuition"
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:28.454Z"
+    },
+    "conversionEvent": {
+      "value": {
+        "name": "In-person tour",
+        "format": "In-person at the school",
+        "location": "Little Friends Learning Loft, Newburgh NY",
+        "owner": "Rebecca (director)",
+        "conversionRate": "[NEEDS CONFIRMATION] not precisely tracked — owner estimates 'more than half' enroll when she actually follows up"
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:25.741Z"
+    },
+    "close": {
+      "definition": {
+        "value": "Family applies and puts down a deposit after the tour",
+        "source": "operator",
+        "confidence": "high",
+        "verified": true,
+        "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+        "updatedAt": "2026-06-09T20:01:38.681Z"
+      },
+      "dropOff": {
+        "value": "Director follow-up silence after tour — not prospect rejection",
+        "source": "transcript",
+        "confidence": "high",
+        "verified": false,
+        "evidence": "The losses are almost always me going quiet, not them saying no.",
+        "updatedAt": "2026-06-09T19:36:01.383Z"
+      }
+    },
+    "followUpCadences": {
+      "value": [
+        {
+          "scenario": "After a tour (the current leak — owner goes quiet ~2 weeks and families enroll elsewhere)",
+          "steps": [
+            "Same-day warm thank-you in the owner’s voice",
+            "Day 2–3: application link + deposit/registration info",
+            "Day 7: gentle nudge",
+            "Day 14: final warm follow-up before marking the family dormant"
+          ]
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:26.417Z"
+    },
+    "funnel": {
+      "conversionRates": {
+        "value": [
+          {
+            "stage": "tour-to-enroll",
+            "rate": ">50%"
+          }
+        ],
+        "source": "transcript",
+        "confidence": "medium",
+        "verified": false,
+        "evidence": "Most of them, honestly, when I actually follow up. If I had to guess, more than half.",
+        "updatedAt": "2026-06-09T19:36:01.383Z"
+      },
+      "revenuePerCustomer": {
+        "value": "≈ $1,180/month full-time Pre-K (≈ $14,160/yr) before the JCC 10% discount; Threes slightly less; Twos varies by days. Roughly $12k–$14k/yr per enrolled child depending on program and discounts.",
+        "source": "operator",
+        "confidence": "high",
+        "verified": true,
+        "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+        "updatedAt": "2026-06-09T20:01:38.681Z"
+      },
+      "dataQualityNotes": {
+        "value": "No formal tracking; all inquiries managed through personal inbox",
+        "source": "transcript",
+        "confidence": "high",
+        "verified": false,
+        "evidence": "I really do not track it, it is my inbox.",
+        "updatedAt": "2026-06-09T19:36:01.383Z"
+      }
+    },
+    "seasonality": {
+      "value": [
+        {
+          "season": "winter"
+        },
+        {
+          "season": "summer"
+        }
+      ],
+      "source": "transcript",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "Winter, maybe ten to twelve. Summer, two?",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    }
+  },
+  "content": {
+    "photos": {
+      "storage": {
+        "value": "Slack channel named 'photos' (teacher-posted); Instagram archive",
+        "source": "transcript",
+        "confidence": "high",
+        "verified": false,
+        "evidence": "Teachers shoot on their phones, post to a Slack channel called photos. Hundreds by now. The Instagram archive is another pile.",
+        "updatedAt": "2026-06-09T19:36:01.383Z"
+      },
+      "rights": {
+        "value": "Paper consent form per child's file; working spreadsheet months out of date; 6 families on no-photo list this year",
+        "source": "transcript",
+        "confidence": "high",
+        "verified": true,
+        "evidence": "synthetic e2e run",
+        "updatedAt": "2026-06-09T19:45:18.375Z"
+      },
+      "gaps": {
+        "value": [
+          "permission spreadsheet months out of date",
+          "no-photo families not reliably identifiable without pulling physical files"
+        ],
+        "source": "transcript",
+        "confidence": "high",
+        "verified": false,
+        "evidence": "a spreadsheet that is months out of date. Six families this year are no-photo. I could not tell you offhand which six without the files.",
+        "updatedAt": "2026-06-09T19:36:01.383Z"
+      }
+    },
+    "videos": {
+      "rights": {
+        "value": "Almost no video — a few shaky phone clips; no formal video usage rights established. Owner wants a short welcome video. Apply the same paper-permission gate used for photos to any future video.",
+        "source": "operator",
+        "confidence": "high",
+        "verified": true,
+        "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+        "updatedAt": "2026-06-09T20:01:38.681Z"
+      }
+    },
+    "written": {
+      "value": {
+        "cadence": "[SYNTHETIC — live recon ran website+GBP only; out of adapter scope — website written-content inventory not scraped]"
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:11.387Z"
+    },
+    "testimonials": {
+      "value": [
+        {
+          "quote": "We had heard how wonderful Little Friends Learning Loft was, but seeing it in action blew us away. As parents, you want your child to find a place that fosters curiosity but still maintains a sense of control, teaches compassion and connectedness, but still encourages individuality. What they've built here is a special kind of magic, and we're just thrilled that our son can be part of it. He truly loves being there!",
+          "attribution": "Renata Kero, Cold Spring",
+          "theme": "Parent satisfaction, child happiness, balance of curiosity and structure"
+        }
+      ],
+      "source": "recon",
+      "confidence": "low",
+      "verified": false,
+      "evidence": "\"We had heard how wonderful Little Friends Learning Loft was…\" -Renata Kero, Cold Spring",
+      "updatedAt": "2026-06-09T19:33:53.748Z"
+    },
+    "reviewPlatforms": {
+      "value": [
+        {
+          "platform": "Google",
+          "rating": 5
+        }
+      ],
+      "source": "recon",
+      "confidence": "medium",
+      "verified": false,
+      "evidence": "\"5.0\" displayed next to business name on the listing; review count not visible in this view",
+      "updatedAt": "2026-06-09T19:33:53.748Z"
+    },
+    "visualBrandAssets": {
+      "value": {
+        "palette": [
+          "#3374FF",
+          "#FFFFFF",
+          "#000000"
+        ]
+      },
+      "source": "recon",
+      "confidence": "low",
+      "verified": false,
+      "evidence": "Firecrawl branding extraction (dominant colors)",
+      "updatedAt": "2026-06-09T19:33:53.748Z"
+    },
+    "performingThemes": {
+      "value": [
+        "Warm classroom moments (teacher-posted phone photos in the Slack #photos channel)",
+        "Small, personal, not-a-factory feel",
+        "Community/JCC events: fall open house, holiday programs, monthly story time, spring fundraiser"
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:10.020Z"
+    },
+    "productionCapacity": {
+      "value": {},
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "The thorn. Teachers post to a Slack channel, it is gold, and it just sits there. Parents ask, I scramble.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    },
+    "productionGaps": {
+      "value": [
+        "welcome video to reduce repetitive 45-minute tours"
+      ],
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "I have always wanted a little welcome video so I do not have to give the same forty-five-minute tour fifty times, but who has the time.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    }
+  },
+  "competitors": {
+    "marketContext": {
+      "value": {
+        "geography": "Newburgh, NY / Hudson Valley",
+        "dynamics": "[live recon ran website+GBP; broader market context out of adapter scope]",
+        "clientPosition": "the warm, small option vs. the polished Goddard"
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:09.316Z"
+    },
+    "direct": {
+      "value": [
+        {
+          "name": "Goddard School",
+          "location": "Newburgh NY, toward the highway",
+          "pricingPosition": "more expensive, more polished",
+          "whereWeWin": "warm, small, clearly not a factory; meet the director and lead teachers"
+        },
+        {
+          "name": "Local church preschools",
+          "location": "Newburgh NY area"
+        },
+        {
+          "name": "Montessori (New Paltz)",
+          "location": "New Paltz NY",
+          "offering": "Montessori"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:08.621Z"
+    }
+  },
+  "seo": {
+    "baseline": {
+      "value": {
+        "brandedVsNonBranded": "[SYNTHETIC — live recon ran website+GBP only; SEO baseline (DR, organic traffic, keyword counts, backlinks, referring domains) requires Ahrefs/GSC, which are out of this run’s website+GBP adapter scope]"
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:29.132Z"
+    },
+    "primaryKeywordTargets": {
+      "value": [
+        {
+          "keyword": "[SYNTHETIC — live recon ran website+GBP; SEO baseline out of adapter scope] Newburgh NY preschool",
+          "rationale": "placeholder pending recon"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:30.496Z"
+    },
+    "local": {
+      "value": {
+        "gbpStatus": "claimed"
+      },
+      "source": "recon",
+      "confidence": "low",
+      "verified": false,
+      "evidence": "Active GBP with phone, hours, website, and photo populated — all indicators of a claimed listing",
+      "updatedAt": "2026-06-09T19:33:53.748Z"
+    },
+    "technical": {
+      "value": {
+        "cwv": "[SYNTHETIC — live recon ran website+GBP; SEO baseline out of adapter scope; Core Web Vitals not crawled in synthetic e2e]",
+        "indexation": "[not crawled — live recon ran website+GBP only; out of adapter scope — ]",
+        "topIssues": [
+          "[SYNTHETIC — technical SEO not crawled] Current public site is an old Square Online site, per the corpus."
+        ]
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:31.174Z"
+    },
+    "measurementTargets": {
+      "value": {
+        "ninetyDay": "[SYNTHETIC — live recon ran website+GBP only; out of adapter scope — SEO baseline not scraped]",
+        "twelveMonth": "[SYNTHETIC placeholder — set after a real recon baseline]"
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:29.815Z"
+    }
+  },
+  "toolsAndAccess": {
+    "stack": {
+      "value": [
+        {
+          "name": "Square Online (old website + point-of-sale login)",
+          "accessStatus": "old site, low traffic (\"I do not think anyone finds us through it\")",
+          "credentialHolder": "Rebecca (director)"
+        },
+        {
+          "name": "Brightwheel (billing + daily parent reports)",
+          "accessStatus": "working well; keep this year",
+          "credentialHolder": "Rebecca (director)"
+        },
+        {
+          "name": "Mailchimp (email)",
+          "accessStatus": "have it, barely used",
+          "credentialHolder": "Rebecca (director)"
+        },
+        {
+          "name": "Slack (#photos channel + teacher comms)",
+          "accessStatus": "all teachers",
+          "credentialHolder": "Rebecca (director)"
+        },
+        {
+          "name": "Google Workspace (email + calendar)",
+          "accessStatus": "via the JCC",
+          "credentialHolder": "JCC"
+        },
+        {
+          "name": "Instagram (@littlefriendsloft)",
+          "accessStatus": "director only — login in her head / a sticky note",
+          "credentialHolder": "Rebecca (director)"
+        },
+        {
+          "name": "Google Business Profile",
+          "accessStatus": "claimed once, uncertain",
+          "credentialHolder": "Rebecca (director)"
+        },
+        {
+          "name": "Sign-Up Genius (tours + conferences)",
+          "accessStatus": "director",
+          "credentialHolder": "Rebecca (director)"
+        },
+        {
+          "name": "Google Forms (events)",
+          "accessStatus": "director",
+          "credentialHolder": "Rebecca (director)"
+        },
+        {
+          "name": "Gusto (payroll)",
+          "accessStatus": "in progress — Linda (JCC bookkeeper) setting it up",
+          "credentialHolder": "Linda (JCC) / Rebecca"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "crm": {
+      "value": {
+        "name": "No dedicated CRM. Inquiries/tours tracked informally (email + Instagram DM); Square Online is the old website (\"It is old. I do not think anyone finds us through it.\"); Sign-Up Genius for tour/conference scheduling; Brightwheel for enrolled-family billing + daily reports.",
+        "accessStatus": "Brightwheel: director, working; Square / Sign-Up Genius: director",
+        "credentialHolder": "Rebecca (director)"
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "emailPlatform": {
+      "value": {
+        "name": "Mailchimp"
+      },
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "Mailchimp, I have it, barely use it.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    },
+    "scheduling": {
+      "value": {
+        "name": "Sign-Up Genius"
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "websiteCms": {
+      "value": {
+        "name": "Square Online"
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "assetStorage": {
+      "value": {
+        "name": "Slack #photos channel + Instagram archive (informal)",
+        "accessStatus": "director + teachers (Slack); director only (Instagram)",
+        "credentialHolder": "Rebecca (director)",
+        "apiCapability": "none formal — to be replaced by managed asset storage with the permission gate"
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "analytics": {
+      "value": [
+        {
+          "name": "[SYNTHETIC — live recon ran website+GBP only; out of adapter scope — ] GA4/GSC/Ahrefs not yet inventoried",
+          "accessStatus": "unknown — to be provisioned"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "paymentProcessor": {
+      "value": {
+        "name": "Square"
+      },
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "Square, the site, my login.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    },
+    "socialAccounts": {
+      "value": [
+        {}
+      ],
+      "source": "transcript",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "synthetic e2e run",
+      "updatedAt": "2026-06-09T19:45:18.375Z"
+    },
+    "automationPlatform": {
+      "value": {
+        "name": "n8n (planned)",
+        "accessStatus": "to be provisioned",
+        "credentialHolder": "UPRIVER → JCC at handoff"
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "accessChecklist": {
+      "value": [
+        {
+          "item": "Square (point of sale / billing login)",
+          "status": "held by director — ownership to JCC pending"
+        },
+        {
+          "item": "Brightwheel (billing + daily reports)",
+          "status": "keep this year; access working"
+        },
+        {
+          "item": "Instagram",
+          "status": "director login only — needs JCC ownership"
+        },
+        {
+          "item": "Google Workspace / Google account",
+          "status": "via JCC"
+        },
+        {
+          "item": "Google Business Profile",
+          "status": "claimed once — verify"
+        },
+        {
+          "item": "Mailchimp",
+          "status": "barely used — candidate to retire"
+        },
+        {
+          "item": "Gusto (payroll)",
+          "status": "in progress — Linda (bookkeeper) setting up"
+        },
+        {
+          "item": "Sign-Up Genius / Google Forms",
+          "status": "retire into the new site"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "plan": {
+      "billingOwner": {
+        "value": "Rebecca currently; JCC should own",
+        "source": "transcript",
+        "confidence": "medium",
+        "verified": true,
+        "evidence": "synthetic e2e run",
+        "updatedAt": "2026-06-09T19:45:18.375Z"
+      }
+    },
+    "apiSpend": {
+      "caps": {
+        "value": "[operator gap-fill, synthetic e2e] API/automation spend caps to be set at provisioning; not yet established. Owner flagged unknown/forgotten subscriptions as a worry (not itemized).",
+        "source": "operator",
+        "confidence": "high",
+        "verified": true,
+        "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+        "updatedAt": "2026-06-09T20:01:38.681Z"
+      }
+    },
+    "browserDeviceLandscape": {
+      "value": [
+        {
+          "user": "Rebecca (director)",
+          "browser": "Chrome (assumed — confirm at setup)",
+          "alwaysOnMachine": "office laptop",
+          "os": "unknown — to confirm"
+        },
+        {
+          "user": "Teachers",
+          "browser": "mobile",
+          "alwaysOnMachine": "personal phones (Slack #photos)",
+          "os": "iOS/Android phones"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2) — provisioning fields",
+      "updatedAt": "2026-06-09T23:31:21.126Z"
+    }
+  },
+  "operationsAutomation": {
+    "recurringTasks": {
+      "value": [
+        {
+          "task": "Inquiries and tour scheduling",
+          "frequency": "ongoing"
+        },
+        {
+          "task": "Weekly newsletter",
+          "frequency": "weekly"
+        },
+        {
+          "task": "Payroll hours to Linda",
+          "frequency": "every two weeks"
+        },
+        {
+          "task": "Supply and snack ordering",
+          "frequency": "recurring"
+        },
+        {
+          "task": "Photo curation and sharing",
+          "frequency": "ongoing"
+        },
+        {
+          "task": "Immunization and training tracking",
+          "frequency": "ongoing"
+        },
+        {
+          "task": "Brightwheel parent messages",
+          "frequency": "daily"
+        },
+        {
+          "task": "Event setup",
+          "frequency": "recurring"
+        },
+        {
+          "task": "Chasing late payments",
+          "frequency": "occasional"
+        },
+        {
+          "task": "Board report",
+          "frequency": "monthly"
+        },
+        {
+          "task": "Music teacher barter tracking",
+          "frequency": "ongoing"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:19.608Z"
+    },
+    "escalationRouting": {
+      "value": [
+        {
+          "type": "Child wellbeing or an incident",
+          "route": "Human (director) — never automated"
+        },
+        {
+          "type": "Anything about money / billing",
+          "route": "Director, or Linda (bookkeeper) if purely billing"
+        },
+        {
+          "type": "An upset parent",
+          "route": "Director"
+        },
+        {
+          "type": "Hiring",
+          "route": "Director"
+        },
+        {
+          "type": "The state (OCFS)",
+          "route": "Director"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "sensitiveTopics": {
+      "value": [
+        "child wellbeing",
+        "incidents",
+        "money",
+        "upset parents",
+        "hiring",
+        "state/OCFS matters"
+      ],
+      "source": "transcript",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "synthetic e2e run",
+      "updatedAt": "2026-06-09T19:45:18.375Z"
+    },
+    "responseSlas": {
+      "value": [
+        {
+          "channel": "Inquiry (email / Instagram)",
+          "sla": "Immediate warm auto-reply in the owner’s voice that offers tour times and basic answers, then hands to a human; human follow-up within 1 business day"
+        },
+        {
+          "channel": "Brightwheel parent messages",
+          "sla": "Same day during care hours"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:20.285Z"
+    },
+    "spendCap": {
+      "value": "[operator gap-fill, synthetic e2e] Automation spend cap to be set at provisioning; not yet established.",
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "monitoring": {
+      "value": {
+        "cadence": "Weekly during the summer build; monthly once stable (aligns with the monthly board report)",
+        "owner": "Rebecca (director), with UPRIVER on a light retainer through the fall"
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:18.928Z"
+    }
+  },
+  "governance": {
+    "regulatedData": {
+      "value": [
+        "child immunization records (with exemption documentation)",
+        "staff training records (15 hrs/2 yrs, specific topics)",
+        "MAT certifications",
+        "CPR and first aid certifications",
+        "fire and shelter drill logs"
+      ],
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "Every child needs current immunizations on file, with the religious or medical exemptions documented properly. Every staff needs fifteen hours of training every two years across specific topics, plus MAT certification for the ones who give medication, plus CPR and first aid.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    },
+    "dataResidency": {
+      "value": "United States. Client is a US (Newburgh, NY) program under NYS OCFS; all client data, the Claude workspace, and storage are kept in US regions. [operator gap-fill, synthetic e2e — provisioning default; confirm at setup]",
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2) — provisioning fields",
+      "updatedAt": "2026-06-09T23:31:21.126Z"
+    },
+    "reviewResponsePolicy": {
+      "value": "Human-in-the-loop for anything sensitive: child wellbeing/incidents, billing/money, upset parents, and OCFS/state matters are answered by the director (never auto-sent), matching the corpus escalation routing. Routine inquiries may use a warm auto-reply that hands to a human within 1 business day. [operator gap-fill, synthetic e2e]",
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2) — provisioning fields",
+      "updatedAt": "2026-06-09T23:31:21.126Z"
+    },
+    "dataRetention": {
+      "value": "[operator gap-fill, synthetic e2e] Child records (immunizations, paper permission forms in each child’s file) retained per OCFS requirements; permission source-of-truth is paper, working spreadsheet is stale. Formal retention schedule [NEEDS CONFIRMATION] — not stated in the corpus.",
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "memoryIncognitoPosture": {
+      "value": [
+        {
+          "user": "Director / staff workspace",
+          "posture": "Conservative: Claude memory OFF for child-identifying or compliance-sensitive threads (OCFS records, no-photo families); incognito for any thread about a specific child. General ops threads may use memory. [operator gap-fill, synthetic e2e — provisioning default]"
+        }
+      ],
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2) — provisioning fields",
+      "updatedAt": "2026-06-09T23:31:21.126Z"
+    },
+    "offboardingPlan": {
+      "value": {
+        "vercelOwner": "JCC (transfer at handoff)",
+        "supabaseOwner": "JCC",
+        "cloudinaryOwner": "JCC",
+        "credentialRotation": "Rotate all credentials to JCC ownership at offboarding. Today every account (Square, Instagram, Google) is held by the director on a sticky note — the account-ownership gap flagged in the corpus."
+      },
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    }
+  },
+  "goals": {
+    "primaryOutcome": {
+      "value": "Return to classroom 3 days/week with confidence the office runs without constant oversight",
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "Be back in a classroom three days a week and trust that the office is not on fire. That is it. That is the whole dream.",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    },
+    "urgencyTimeline": {
+      "value": "Identify office person by mid-July so they are trained before September.",
+      "source": "transcript",
+      "confidence": "high",
+      "verified": false,
+      "evidence": "we identify that person by mid-July so they are trained before September",
+      "updatedAt": "2026-06-09T19:36:01.383Z"
+    },
+    "budgetConstraints": {
+      "value": "Nonprofit budget; board controls spending; Rebecca can champion but cannot spend unilaterally",
+      "source": "operator",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+      "updatedAt": "2026-06-09T20:01:38.681Z"
+    },
+    "redLines": {
+      "value": [
+        "Never publish tuition",
+        "Never show a child's face without the form",
+        "Never make a parent feel like they are talking to a robot about their kid",
+        "Keep the teachers' names but not their personal details public"
+      ],
+      "source": "transcript",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "synthetic e2e run",
+      "updatedAt": "2026-06-09T19:45:18.375Z"
+    },
+    "engagementScope": {
+      "value": {},
+      "source": "transcript",
+      "confidence": "high",
+      "verified": true,
+      "evidence": "synthetic e2e run",
+      "updatedAt": "2026-06-09T19:45:18.375Z"
+    }
+  },
+  "modules": {
+    "preschool": {
+      "ocfs": {
+        "licenseStatus": {
+          "value": "Licensed by NYS OCFS for ages 2 and up; licensed capacity 58. Operating and enrolled (52). License number and exact renewal date [NEEDS CONFIRMATION] — not in the corpus.",
+          "source": "operator",
+          "confidence": "high",
+          "verified": true,
+          "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+          "updatedAt": "2026-06-09T20:01:38.681Z"
+        }
+      },
+      "trainingMatrix": {
+        "value": [
+          {
+            "staffName": "[DELIBERATELY UNKNOWN IN CORPUS — synthetic e2e placeholder]",
+            "role": "Owner could not confirm whether staff training is current (\"afraid of what I would find\")",
+            "requiredTrainings": [
+              {
+                "name": "15 hours / 2 years across OCFS topics (MAT, CPR, first aid, EIP topics)",
+                "status": "[NEEDS CONFIRMATION] currency unknown — owner must verify against the tracking sheet",
+                "expires": "rolling dates"
+              }
+            ]
+          }
+        ],
+        "source": "operator",
+        "confidence": "high",
+        "verified": true,
+        "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+        "updatedAt": "2026-06-09T20:01:38.681Z"
+      },
+      "immunizationPolicy": {
+        "value": "Every child must have current immunizations on file, with religious or medical exemptions documented properly per OCFS.",
+        "source": "operator",
+        "confidence": "high",
+        "verified": true,
+        "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+        "updatedAt": "2026-06-09T20:01:38.681Z"
+      },
+      "enrollmentCapacity": {
+        "value": [
+          {
+            "ageGroup": "Twos (ratio 1:5, Miss Tova)"
+          },
+          {
+            "ageGroup": "Threes (ratio 1:7, Miss Carla)"
+          },
+          {
+            "ageGroup": "Pre-K / fours (ratio 1:8, Miss Dana)"
+          },
+          {
+            "ageGroup": "Total (all rooms)",
+            "licensedCapacity": 58,
+            "currentEnrollment": 52
+          }
+        ],
+        "source": "operator",
+        "confidence": "high",
+        "verified": true,
+        "evidence": "operator gap-fill, synthetic e2e (live-recon v2)",
+        "updatedAt": "2026-06-09T20:01:38.681Z"
+      }
+    }
+  }
+}

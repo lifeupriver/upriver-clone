@@ -1,0 +1,248 @@
+{
+  "version": 1,
+  "docs": {
+    "doc-01": {
+      "id": "doc-01",
+      "path": "docs/doc-01-brand-voice-guide.md",
+      "generatedAt": "2026-06-09T23:31:43.125Z",
+      "specHash": "d515924811106c96",
+      "profileSliceHash": "4f75a3af99524246",
+      "markers": 18,
+      "approved": true
+    },
+    "doc-02": {
+      "id": "doc-02",
+      "path": "docs/doc-02-business-facts-reference.md",
+      "generatedAt": "2026-06-09T23:31:43.129Z",
+      "specHash": "5568da8f3e4032ce",
+      "profileSliceHash": "116f8de9ad339fed",
+      "markers": 77,
+      "approved": true
+    },
+    "doc-03": {
+      "id": "doc-03",
+      "path": "docs/doc-03-sales-process-map.md",
+      "generatedAt": "2026-06-09T23:31:43.131Z",
+      "specHash": "ea2f1a9ee003146d",
+      "profileSliceHash": "2b5f493a504b6712",
+      "markers": 38,
+      "approved": true
+    },
+    "doc-13": {
+      "id": "doc-13",
+      "path": "docs/doc-13-master-build-sequence.md",
+      "generatedAt": "2026-06-09T23:31:43.133Z",
+      "specHash": "ea2f17b42a423d3e",
+      "profileSliceHash": "59d75163d55c7f52",
+      "markers": 0,
+      "approved": true
+    },
+    "doc-14": {
+      "id": "doc-14",
+      "path": "docs/doc-14-client-onboarding-kit.md",
+      "generatedAt": "2026-06-09T23:31:43.135Z",
+      "specHash": "7013ca31c8fc5ff4",
+      "profileSliceHash": "219e703d2fbd9b16",
+      "markers": 10,
+      "approved": true
+    },
+    "doc-15": {
+      "id": "doc-15",
+      "path": "docs/doc-15-retainer-engagement-playbook.md",
+      "generatedAt": "2026-06-09T23:31:43.137Z",
+      "specHash": "34e23ad9ba61f1c4",
+      "profileSliceHash": "cbc4feb907def861",
+      "markers": 3,
+      "approved": true
+    },
+    "doc-17": {
+      "id": "doc-17",
+      "path": "docs/doc-17-handoff-offboarding.md",
+      "generatedAt": "2026-06-09T23:31:43.138Z",
+      "specHash": "258675876c8bd662",
+      "profileSliceHash": "a6c1d68324183e45",
+      "markers": 4,
+      "approved": true
+    },
+    "doc-18": {
+      "id": "doc-18",
+      "path": "docs/doc-18-ai-operating-system-sales-document.md",
+      "generatedAt": "2026-06-09T23:31:43.140Z",
+      "specHash": "8014686dab79a542",
+      "profileSliceHash": "bd7a539d82dad486",
+      "markers": 6,
+      "approved": true
+    },
+    "doc-04": {
+      "id": "doc-04",
+      "path": "docs/doc-04-content-library.md",
+      "generatedAt": "2026-06-09T23:31:43.142Z",
+      "specHash": "547180afefb1733c",
+      "profileSliceHash": "4ec7108c4121c274",
+      "markers": 42,
+      "approved": true
+    },
+    "doc-05": {
+      "id": "doc-05",
+      "path": "docs/doc-05-competitor-landscape.md",
+      "generatedAt": "2026-06-09T23:31:43.145Z",
+      "specHash": "2592d4973fb7c31d",
+      "profileSliceHash": "3e817ce4072de735",
+      "markers": 52,
+      "approved": true
+    },
+    "doc-07": {
+      "id": "doc-07",
+      "path": "docs/doc-07-faq-bank.md",
+      "generatedAt": "2026-06-09T23:31:43.147Z",
+      "specHash": "1fc4d71cf7d30579",
+      "profileSliceHash": "fe6ccace93f0bbf3",
+      "markers": 41,
+      "approved": true
+    },
+    "doc-06": {
+      "id": "doc-06",
+      "path": "docs/doc-06-seo-keyword-strategy.md",
+      "generatedAt": "2026-06-09T23:31:43.149Z",
+      "specHash": "f3d8d883c437799f",
+      "profileSliceHash": "8d955f4f71b51841",
+      "markers": 46,
+      "approved": true
+    },
+    "doc-08": {
+      "id": "doc-08",
+      "path": "docs/doc-08-email-templates.md",
+      "generatedAt": "2026-06-09T23:31:43.151Z",
+      "specHash": "2385b80694abe820",
+      "profileSliceHash": "9fc0aca3a4b18e0c",
+      "markers": 37,
+      "approved": true
+    },
+    "doc-09": {
+      "id": "doc-09",
+      "path": "docs/doc-09-social-media-playbook.md",
+      "generatedAt": "2026-06-09T23:31:43.153Z",
+      "specHash": "feb9a82da872f6c6",
+      "profileSliceHash": "30b40f6018d1c0f8",
+      "markers": 17,
+      "approved": true
+    },
+    "doc-11": {
+      "id": "doc-11",
+      "path": "docs/doc-11-automation-spec-package.md",
+      "generatedAt": "2026-06-09T23:31:43.156Z",
+      "specHash": "99097ef9b0e59f67",
+      "profileSliceHash": "7cc8bd98683dbb1a",
+      "markers": 12,
+      "approved": true
+    },
+    "doc-10": {
+      "id": "doc-10",
+      "path": "docs/doc-10-website-audit.md",
+      "generatedAt": "2026-06-09T23:43:45.479Z",
+      "specHash": "71c1ddc6013bb91f",
+      "profileSliceHash": "dffb69be6d3be8d9",
+      "markers": 57,
+      "approved": true
+    },
+    "doc-16": {
+      "id": "doc-16",
+      "path": "docs/doc-16-sales-collateral.md",
+      "generatedAt": "2026-06-09T23:43:45.471Z",
+      "specHash": "b88494d55daa5b96",
+      "profileSliceHash": "d38570cc21ca1975",
+      "markers": 11,
+      "approved": true
+    },
+    "doc-12": {
+      "id": "doc-12",
+      "path": "docs/doc-12-measurement-kpi-framework.md",
+      "generatedAt": "2026-06-09T23:54:57.834Z",
+      "specHash": "bc1602133782fd3c",
+      "profileSliceHash": "c60b1f77d6f5475a",
+      "markers": 20,
+      "approved": true
+    },
+    "i07": {
+      "id": "i07",
+      "path": "docs/i07-account-access-governance.md",
+      "generatedAt": "2026-06-10T01:24:45.210Z",
+      "specHash": "cdec3331f944a28b",
+      "profileSliceHash": "51517a7420c16f47",
+      "markers": 15,
+      "approved": true
+    },
+    "i01": {
+      "id": "i01",
+      "path": "docs/i01-client-claude-project.md",
+      "generatedAt": "2026-06-10T01:24:45.213Z",
+      "specHash": "b96a008433b022cb",
+      "profileSliceHash": "e2325bdc2dafa232",
+      "markers": 12,
+      "approved": true
+    },
+    "i02": {
+      "id": "i02",
+      "path": "docs/i02-client-skills-deployment.md",
+      "generatedAt": "2026-06-10T01:24:45.216Z",
+      "specHash": "095fbdb8e6c6fcf8",
+      "profileSliceHash": "f72eb2bfa1b09268",
+      "markers": 4,
+      "approved": true
+    },
+    "i05": {
+      "id": "i05",
+      "path": "docs/i05-client-claude-in-chrome.md",
+      "generatedAt": "2026-06-10T01:24:45.218Z",
+      "specHash": "55fd715485f37b75",
+      "profileSliceHash": "2c6fc641ae354164",
+      "markers": 19,
+      "approved": true
+    },
+    "i08": {
+      "id": "i08",
+      "path": "docs/i08-client-custom-styles-memory-preferences.md",
+      "generatedAt": "2026-06-10T01:31:06.966Z",
+      "specHash": "b830da06e657baf0",
+      "profileSliceHash": "78262840a43c71c3",
+      "markers": 32,
+      "approved": true
+    },
+    "i09": {
+      "id": "i09",
+      "path": "docs/i09-client-artifacts-deliverable-templates.md",
+      "generatedAt": "2026-06-10T01:31:06.969Z",
+      "specHash": "87a7347770650a40",
+      "profileSliceHash": "082e604df380bf02",
+      "markers": 22,
+      "approved": true
+    },
+    "i04": {
+      "id": "i04",
+      "path": "docs/i04-client-mcp-server-configuration.md",
+      "generatedAt": "2026-06-10T01:31:06.973Z",
+      "specHash": "2580d463bc7cc60e",
+      "profileSliceHash": "7ddb380fc48989b1",
+      "markers": 11,
+      "approved": true
+    },
+    "i03": {
+      "id": "i03",
+      "path": "docs/i03-client-routines-cowork.md",
+      "generatedAt": "2026-06-10T01:31:06.976Z",
+      "specHash": "a2a59fa04df6348e",
+      "profileSliceHash": "0311130b5179d0ad",
+      "markers": 26,
+      "approved": true
+    },
+    "i06": {
+      "id": "i06",
+      "path": "docs/i06-client-claude-code-setup.md",
+      "generatedAt": "2026-06-10T01:31:06.960Z",
+      "specHash": "9dbb2b00c12e5948",
+      "profileSliceHash": "90c6f791ca7fb5fb",
+      "markers": 2,
+      "approved": true
+    }
+  }
+}
