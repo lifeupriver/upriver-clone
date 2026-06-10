@@ -129,8 +129,11 @@ if phase_ge preflight; then
     || fail "FIRECRAWL_API_KEY is not set (required: discover/scrape bill Firecrawl credits)" 2
   command -v "$CLAUDE_BIN" >/dev/null \
     || fail "claude CLI not found ('$CLAUDE_BIN' not on PATH); npm i -g @anthropic-ai/claude-code or set CLAUDE_BIN" 2
-  ( cd packages/cli && node -e "import('playwright').then(()=>process.exit(0),()=>process.exit(1))" ) \
-    || fail "playwright not importable from packages/cli — run: pnpm --filter @upriver/cli exec playwright install chromium" 2
+  # Importable alone is not enough: playwright is a CLI dependency so the
+  # package always resolves — assert the chromium BINARY exists, or the run
+  # would burn Firecrawl credits before failing at capture.
+  ( cd packages/cli && node -e "import('playwright').then(p=>{require('node:fs').accessSync(p.chromium.executablePath());process.exit(0)}).catch(()=>process.exit(1))" ) \
+    || fail "playwright chromium browser not installed — run: pnpm --filter @upriver/cli exec playwright install chromium" 2
   command -v curl >/dev/null || fail "curl not found on PATH (preflight URL check needs it)" 2
   HEADERS=$(curl -fsSIL "$WB_LIVE_URL") \
     || fail "WB_LIVE_URL not reachable: $WB_LIVE_URL" 2
@@ -322,7 +325,7 @@ if phase_ge fidelity; then
       log "fidelity gate failed — full per-page score table:"
       node -e '
         const d=JSON.parse(require("node:fs").readFileSync(process.argv[1],"utf8"));
-        for(const pg of d.pages||[])console.log(`  ${String(pg.pageSlug).padEnd(24)} pixel=${pg.pixel.score} copy=${pg.copy.score} overall=${pg.overall} status=${pg.status}`);
+        for(const pg of d.pages||[])console.log(`  ${String(pg.pageSlug).padEnd(24)} pixel=${pg.pixel?.score} copy=${pg.copy?.score} overall=${pg.overall} status=${pg.status}`);
       ' "$SUMMARY" | tee -a "$LOG"
       fail "page $p (slug $PAGE_SLUG) not scored or overall < $WB_FIDELITY_BAR" 30
     fi
@@ -349,7 +352,7 @@ if phase_ge report; then
     echo "=== TIER B SUMMARY ==="
     node -e '
       const d=JSON.parse(require("node:fs").readFileSync(process.argv[1],"utf8"));
-      for(const pg of d.pages||[])console.log(`page ${pg.pageSlug}: pixel=${pg.pixel.score} copy=${pg.copy.score} overall=${pg.overall} status=${pg.status}`);
+      for(const pg of d.pages||[])console.log(`page ${pg.pageSlug}: pixel=${pg.pixel?.score} copy=${pg.copy?.score} overall=${pg.overall} status=${pg.status}`);
       console.log(`overall fidelity: ${d.overall} (bar: ${process.argv[2]})`);
     ' "$SUMMARY" "$WB_FIDELITY_BAR"
     grep -E 'Internal links rewritten:|CDN images rewritten:' "$LOG" || echo "(no finalize counter lines in this run.log — resumed run)"
