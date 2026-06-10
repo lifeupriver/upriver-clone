@@ -29,3 +29,12 @@ test('catalog includes only active modules and stays compact (<8k)', () => {
   assert.ok(!withPreschool.includes('modules.venue'), 'unrelated modules excluded');
   assert.ok(withPreschool.length < 8000, `catalog too large: ${withPreschool.length}`);
 });
+
+test('P3 (Build Spec 14): the dual-source leak fields are ★-flagged transcript priorities', () => {
+  const cat = buildPathCatalog();
+  for (const path of ['identity.category', 'identity.socialHandles', 'voice.bannedVocabulary']) {
+    const line = cat.split('\n').find((l) => l.includes(`- ${path} [`));
+    assert.ok(line, `${path} missing from the catalog`);
+    assert.ok(line?.includes(PRIORITY_MARK), `${path} should be ★-flagged`);
+  }
+});

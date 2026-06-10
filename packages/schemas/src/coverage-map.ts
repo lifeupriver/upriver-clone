@@ -277,6 +277,6 @@ export const MUST_ASK: readonly MustAskEntry[] = [
 export const SOURCE_EXPECTATIONS: Readonly<Record<Source, readonly string[]>> = {
   recon: ['identity.legalName', 'identity.publicName', 'identity.gbp', 'identity.socialHandles', 'identity.hours', 'pricing.shareable', 'content.reviewPlatforms', 'content.testimonials', 'competitors.direct', 'seo.baseline', 'toolsAndAccess.websiteCms', 'salesProcess.firstTouch'],
   interview: ['voice.attributes', 'voice.vocabularyToUse', 'toolsAndAccess.stack', 'operationsAutomation.recurringTasks', 'content.productionCapacity', 'people.keyTeam', 'governance.dataResidency'],
-  transcript: ['voice.attributes', 'people.foundingStory', 'offerings.dontDo', 'pricing.nonShareable', 'capacity.metrics', 'salesProcess.close.definition', 'goals.redLines', 'positioning.keyDifferentiator'],
+  transcript: ['voice.attributes', 'voice.bannedVocabulary', 'identity.category', 'identity.socialHandles', 'people.foundingStory', 'offerings.dontDo', 'pricing.nonShareable', 'capacity.metrics', 'salesProcess.close.definition', 'goals.redLines', 'positioning.keyDifferentiator'],
   operator: ['positioning.recommendedStatement', 'seo.primaryKeywordTargets', 'competitors.direct', 'salesProcess.bottlenecks'],
 };
