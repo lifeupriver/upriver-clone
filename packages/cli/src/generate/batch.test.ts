@@ -6,13 +6,14 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { LocalFsClientDataSource } from '@upriver/core/data';
-import { COVERAGE_MAP, type ClientProfile, type DeliverableId } from '@upriver/schemas';
+import { COVERAGE_MAP, createEmptyProfile, type ClientProfile, type DeliverableId } from '@upriver/schemas';
 
 import {
   aggregateMarkers,
   aggregateOperatorActions,
   commitCommand,
   planBatch,
+  projectProvisioningReadiness,
   runTier,
   runTierParallel,
   seedClientTree,
@@ -436,4 +437,23 @@ test('runTierParallel: a doc whose upstream failed this run is skipped without a
   assert.deepEqual(tr.skipped, ['doc-04']);
   assert.match(tr.docs[0]?.reason ?? '', /doc-02/);
   assert.deepEqual(stats(), { acquired: 0, released: 0, leaked: 0 });
+});
+
+test('P5 (Build Spec 14, Finding G): the provisioning projection surfaces i01–i09 field gaps, never missingDocs', () => {
+  const p = createEmptyProfile('lf', '2026-06-10T00:00:00.000Z');
+  const rows = projectProvisioningReadiness(p);
+  assert.equal(rows.length, 9);
+  const union = new Set(rows.flatMap((r) => [...r.missingFields, ...r.unverifiedHv]));
+  // The six fields the live run gap-filled AFTER burning the docs phase:
+  for (const path of [
+    'toolsAndAccess.browserDeviceLandscape',
+    'governance.dataResidency',
+    'people.billingContact',
+    'governance.memoryIncognitoPosture',
+    'governance.reviewResponsePolicy',
+    'people.technicalCollaborator',
+  ]) {
+    assert.ok(union.has(path), `${path} should surface in the projection`);
+  }
+  for (const r of rows) assert.ok(!('missingDocs' in r), 'missingDocs must not leak into the projection');
 });
