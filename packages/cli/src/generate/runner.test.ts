@@ -90,6 +90,36 @@ test('F4: runDoc fails precisely naming an absolute path the session claims but 
   await assert.rejects(() => runDoc(base, call), /\/nonexistent\/abs\/doc-01-brand-voice-guide\.md/);
 });
 
+test('F4 safety: reply mentioning an unrelated absolute .md path must not delete that file or return its content', async () => {
+  // Create an unrelated file whose basename does NOT match base.outputFileName.
+  const unrelatedDir = mkdtempSync(join(tmpdir(), 'upriver-unrelated-'));
+  const unrelatedFile = join(unrelatedDir, 'strategy.md');
+  writeFileSync(unrelatedFile, '# Secret Strategy\ndo not delete or read this');
+
+  // Both calls (initial + P6 retry) return a reply that only mentions the
+  // unrelated file — no file matching outputFileName is ever written.
+  const claimingText = `I consulted ${unrelatedFile} but could not complete the task.`;
+  let calls = 0;
+  const call: ClaudeCall = async () => {
+    calls++;
+    return ok({ text: claimingText });
+  };
+
+  await assert.rejects(
+    () => runDoc(base, call),
+    /outside the staging dir|did not write/,
+    'should reject because no file matching outputFileName was produced',
+  );
+
+  // The unrelated file must survive — relocation must not have touched it.
+  assert.ok(existsSync(unrelatedFile), 'unrelated file must not be deleted');
+  const surviving = (await import('node:fs')).readFileSync(unrelatedFile, 'utf8');
+  assert.match(surviving, /Secret Strategy/, 'unrelated file content must be intact');
+
+  // Both calls are expected: initial + P6 retry.
+  assert.equal(calls, 2, 'P6 retry fires once before the final error');
+});
+
 test('runDoc passes acceptEdits, write tools, a cwd, and the spec/slice cache key', async () => {
   let captured: Parameters<ClaudeCall>[0] | undefined;
   const call: ClaudeCall = async (opts) => {
@@ -102,4 +132,40 @@ test('runDoc passes acceptEdits, write tools, a cwd, and the spec/slice cache ke
   assert.deepEqual(captured?.allowedTools, ['Read', 'Write', 'Edit', 'Glob', 'Grep']);
   assert.ok(captured?.cwd);
   assert.equal(captured?.cacheKey, 's.p');
+});
+
+test('P6: a no-file no-claim first attempt self-heals with exactly one fresh no-cache retry', async () => {
+  let calls = 0;
+  const sawNoCache: boolean[] = [];
+  const call: ClaudeCall = async (opts) => {
+    calls++;
+    sawNoCache.push(Boolean(opts.noCache));
+    if (calls === 1) return ok({ text: 'did some thinking, wrote nothing' });
+    writeFileSync(join(opts.cwd as string, base.outputFileName), '# Recovered\nbody');
+    return ok();
+  };
+  const r = await runDoc(base, call);
+  assert.match(r.content, /# Recovered/);
+  assert.equal(calls, 2);
+  assert.deepEqual(sawNoCache, [false, true]);
+});
+
+test('P6: a claimed-but-absent absolute path (D1, doc-12) retries once, then throws the precise F4 error', async () => {
+  let calls = 0;
+  const call: ClaudeCall = async () => {
+    calls++;
+    return ok({ text: `I wrote /nonexistent-upriver-p6/${base.outputFileName}` });
+  };
+  await assert.rejects(() => runDoc(base, call), /outside the staging dir/);
+  assert.equal(calls, 2);
+});
+
+test('P6: a cache replay followed by a fruitless fresh call does NOT retry a third time', async () => {
+  let calls = 0;
+  const call: ClaudeCall = async () => {
+    calls++;
+    return calls === 1 ? ok({ fromCache: true, text: 'cached, no file' }) : ok({ text: 'fresh, still no file' });
+  };
+  await assert.rejects(() => runDoc(base, call), /did not write/);
+  assert.equal(calls, 2);
 });

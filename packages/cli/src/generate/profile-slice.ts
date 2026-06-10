@@ -4,7 +4,17 @@ export interface SliceField {
   path: string;
   value: unknown;
   evidence?: string;
+  /**
+   * False when the value is an unverified, non-high-confidence recon finding
+   * (P1, Build Spec 14): the client never confirmed it, so generators must
+   * hedge it rather than assert it. Everything else — operator, transcript,
+   * interview, verified or high-confidence recon — is confirmed.
+   */
+  confirmed: boolean;
 }
+
+/** The render tag generators are taught to hedge (mirrored in prompt-builder's UNCONFIRMED_INSTRUCTION). */
+export const UNCONFIRMED_TAG = '[UNCONFIRMED — found by automated recon, not confirmed by the client]';
 
 /**
  * Extract only a deliverable's `requiresFields` from the profile (spec §4):
@@ -23,7 +33,8 @@ export function profileSlice(profile: ClientProfile, id: DeliverableId): SliceFi
     if (out.some((f) => path === f.path || path.startsWith(`${f.path}.`))) continue;
     const env = nearestEnvelope(data, path);
     if (!env || env.value === null || env.value === undefined) continue;
-    const field: SliceField = { path, value: env.value };
+    const confirmed = !(env.source === 'recon' && env.verified !== true && env.confidence !== 'high');
+    const field: SliceField = { path, value: env.value, confirmed };
     if (env.evidence !== undefined) field.evidence = env.evidence;
     out.push(field);
   }
@@ -36,8 +47,9 @@ export function renderSlice(fields: SliceField[]): string {
   return fields
     .map((f) => {
       const value = typeof f.value === 'string' ? f.value : JSON.stringify(f.value, null, 2);
+      const tag = f.confirmed ? '' : ` ${UNCONFIRMED_TAG}`;
       const evidence = f.evidence ? `\n  (evidence: ${f.evidence})` : '';
-      return `- ${f.path}: ${value}${evidence}`;
+      return `- ${f.path}: ${value}${tag}${evidence}`;
     })
     .join('\n');
 }

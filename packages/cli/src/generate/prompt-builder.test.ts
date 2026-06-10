@@ -105,3 +105,13 @@ test('user prompt includes upstream doc digests when provided', () => {
   assert.match(user, /Upstream document digest: doc-01/);
   assert.match(user, /BRAND VOICE DIGEST/);
 });
+
+test('P1: every deliverable system prompt carries the [UNCONFIRMED] hedge rule (doc + provisioning branches)', () => {
+  process.env['UPRIVER_SPECS_DIR'] = specsDir();
+  const p = profileWith({ 'identity.publicName': env('LF') });
+  for (const id of ['doc-01', 'i07'] as const) {
+    const { system } = buildPrompt({ id, profile: p, outputPath: 'out.md', upstreamDocs: [] });
+    assert.ok(system.includes('fields tagged [UNCONFIRMED]'), `${id} missing hedge rule`);
+    assert.ok(system.includes('must NEVER be asserted as fact, identity, or positioning'), `${id} missing assertion ban`);
+  }
+});

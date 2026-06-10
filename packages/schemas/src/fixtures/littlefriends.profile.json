@@ -14,7 +14,9 @@
     "yearEstablished": { "value": 2018, "source": "transcript", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "owner: 'we opened about six years ago' [NEEDS CONFIRMATION: exact year]" },
     "phone": { "value": "(518) 555-0142", "source": "recon", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "Google Business Profile [NEEDS CONFIRMATION]" },
     "website": { "value": "https://littlefriendslearningloft.com", "source": "recon", "confidence": "high", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "proposal" },
-    "hours": { "value": "Mon–Fri 7:30am–5:30pm", "source": "recon", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "[NEEDS CONFIRMATION: summer/holiday hours]" }
+    "hours": { "value": "Mon–Fri 7:30am–5:30pm", "source": "recon", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "[NEEDS CONFIRMATION: summer/holiday hours]" },
+    "primaryAddress": { "value": { "line1": "123 Loft Lane", "city": "Albany", "state": "NY", "postalCode": "12207" }, "source": "recon", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "Google Business Profile" },
+    "socialHandles": { "value": [{ "platform": "Facebook", "url": "https://facebook.com/littlefriendslearningloft" }], "source": "recon", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "Google Business Profile links" }
   },
   "people": {
     "owners": { "value": [{ "name": "[NEEDS CONFIRMATION]", "role": "Owner / Director" }], "source": "transcript", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "recorded session [NEEDS CONFIRMATION: owner full name]" },
@@ -49,6 +51,10 @@
     "primaryOutcome": { "value": "Fill open spots and cut enrollment admin time", "source": "transcript", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "recorded session" },
     "budgetConstraints": { "value": "[NEEDS CONFIRMATION]", "source": "operator", "confidence": "low", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "[NEEDS CONFIRMATION]" },
     "redLines": { "value": ["No images of children without signed media releases"], "source": "transcript", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "recorded session" }
+  },
+  "content": {
+    "reviewPlatforms": { "value": [{ "platform": "Google", "count": 14, "rating": 4.9 }], "source": "recon", "confidence": "high", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "Google Business Profile" },
+    "testimonials": { "value": [{ "quote": "The best preschool in the area!", "attribution": "A parent" }], "source": "recon", "confidence": "medium", "verified": false, "updatedAt": "2026-06-04T00:00:00.000Z", "evidence": "Google reviews" }
   },
   "modules": {
     "preschool": {

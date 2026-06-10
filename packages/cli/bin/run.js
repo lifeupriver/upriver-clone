@@ -10,5 +10,5 @@ try {
   // dotenv not available — env vars must be set manually
 }
 
-import { run } from '@oclif/core';
-await run(process.argv.slice(2), import.meta.url);
+import { run, flush, handle } from '@oclif/core';
+await run(process.argv.slice(2), import.meta.url).then(() => flush()).catch(handle);

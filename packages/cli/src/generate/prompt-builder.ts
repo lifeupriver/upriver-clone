@@ -8,6 +8,20 @@ import { loadBrandVoiceRules, loadDeliverableSpec } from './spec-loader.js';
 export const MARKER_INSTRUCTION =
   'Where the profile is ambiguous, thin, or silent on something the spec requires, write [NEEDS CONFIRMATION: <specific question>] inline rather than inventing facts.';
 
+/**
+ * P1 (Build Spec 14): the recon trust boundary at generation time. The slice
+ * tags unverified low/medium-confidence recon values with [UNCONFIRMED]
+ * (profile-slice.ts UNCONFIRMED_TAG); this rule teaches every generator —
+ * doc-01, the DAG root, most of all — to hedge them instead of adopting them
+ * as identity (the Montessori metastasis, 13-e2e-live-evaluation.md).
+ */
+export const UNCONFIRMED_INSTRUCTION =
+  'Profile fields tagged [UNCONFIRMED] are automated web-recon findings the client has not confirmed. ' +
+  'They may inform your work but must NEVER be asserted as fact, identity, or positioning. Either hedge ' +
+  'them explicitly ("appears to be", "according to its online listing") or restate them inside a ' +
+  '[NEEDS CONFIRMATION: <specific question>] marker. Never build structure (keyword sets, competitive ' +
+  'positioning, vocabulary rules) on an [UNCONFIRMED] field without flagging that dependency.';
+
 export interface UpstreamDoc {
   id: DeliverableId;
   /**
@@ -51,7 +65,7 @@ export function buildPrompt(input: BuildPromptInput): BuiltPrompt {
     ? `You are producing the "${title}" client provisioning artifact for an Upriver Consulting engagement, following the infrastructure spec below exactly. This artifact configures part of the client's Claude environment; many steps happen inside the client's Anthropic account and cannot be done from a file.`
     : `You are producing the "${title}" deliverable for an Upriver Consulting client, following the production spec below exactly.`;
   const outputContract = isProvisioning(input.id)
-    ? provisioningOutputContract(input.outputPath, MARKER_INSTRUCTION)
+    ? provisioningOutputContract(input.outputPath, `${MARKER_INSTRUCTION}\n${UNCONFIRMED_INSTRUCTION}`)
     : [
         '## Output contract',
         `Write the deliverable to a single new Markdown file in your current working directory. Name it per the spec's file-naming convention (a reasonable default is ${input.outputPath}).`,
@@ -61,6 +75,7 @@ export function buildPrompt(input: BuildPromptInput): BuiltPrompt {
         "The file must follow the spec's section template and structure.",
         'Write only the document into that file. Do not print the document to the conversation; your reply should be a short summary only.',
         MARKER_INSTRUCTION,
+        UNCONFIRMED_INSTRUCTION,
       ].join('\n');
 
   const system = [
