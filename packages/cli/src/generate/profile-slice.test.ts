@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createEmptyProfile, type ClientProfile, type ProfileField, type Source } from '@upriver/schemas';
-import { profileSlice, renderSlice } from './profile-slice.js';
+import { profileSlice, renderSlice, type SliceField } from './profile-slice.js';
 
 const NOW = '2026-06-04T00:00:00.000Z';
 function env<T>(value: T, evidence?: string): ProfileField<T> {
@@ -60,6 +60,39 @@ test('profileSlice dedupes a wildcard path nested under an included parent', () 
 });
 
 test('renderSlice formats values with evidence; an empty slice has a placeholder', () => {
-  assert.match(renderSlice([{ path: 'a.b', value: 'x', evidence: 'e' }]), /a\.b: x[\s\S]*evidence: e/);
+  assert.match(renderSlice([{ path: 'a.b', value: 'x', evidence: 'e', confirmed: true }]), /a\.b: x[\s\S]*evidence: e/);
   assert.match(renderSlice([]), /no profile fields/);
+});
+
+function reconEnv<T>(value: T, over: Partial<ProfileField<T>> = {}): ProfileField<T> {
+  return { value, source: 'recon' as Source, confidence: 'low', verified: false, updatedAt: NOW, ...over };
+}
+
+test('P1: an unverified non-high recon field is unconfirmed and renders the [UNCONFIRMED] tag', () => {
+  const p = profileWith({ 'identity.category': reconEnv('Montessori preschool') });
+  const field = profileSlice(p, 'doc-01').find((f) => f.path === 'identity.category');
+  assert.equal(field?.confirmed, false);
+  assert.match(
+    renderSlice([field as SliceField]),
+    /Montessori preschool \[UNCONFIRMED — found by automated recon, not confirmed by the client\]/,
+  );
+});
+
+test('P1: verified recon, high-confidence recon, and non-recon sources are all confirmed (no tag)', () => {
+  const cases: Array<[string, ProfileField<string>]> = [
+    ['recon + verified', reconEnv('x', { verified: true })],
+    ['recon + high confidence', reconEnv('x', { confidence: 'high' })],
+    ['operator', env('x')],
+  ];
+  for (const [label, envelope] of cases) {
+    const p = profileWith({ 'identity.category': envelope });
+    const field = profileSlice(p, 'doc-01').find((f) => f.path === 'identity.category');
+    assert.equal(field?.confirmed, true, label);
+    assert.ok(!renderSlice([field as SliceField]).includes('[UNCONFIRMED'), label);
+  }
+});
+
+test('P1: the tag sits between the value and the evidence line', () => {
+  const text = renderSlice([{ path: 'a.b', value: 'v', evidence: 'url', confirmed: false }]);
+  assert.match(text, /a\.b: v \[UNCONFIRMED[^\n]*\]\n {2}\(evidence: url\)/);
 });
