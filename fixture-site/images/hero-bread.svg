@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" role="img" aria-label="A round loaf of crusty bread with scored top">
+  <ellipse cx="100" cy="95" rx="80" ry="16" fill="#e3cfa3"/>
+  <path d="M30 90 C30 50 60 30 100 30 C140 30 170 50 170 90 C170 98 155 102 100 102 C45 102 30 98 30 90Z" fill="#b97b3c"/>
+  <path d="M40 84 C42 56 66 38 100 38 C134 38 158 56 160 84" fill="none" stroke="#8a5a2b" stroke-width="3" stroke-linecap="round"/>
+  <g stroke="#f0dcb4" stroke-width="4" stroke-linecap="round" fill="none">
+    <path d="M70 55 L92 48"/>
+    <path d="M88 68 L112 60"/>
+    <path d="M108 52 L130 58"/>
+  </g>
+</svg>
