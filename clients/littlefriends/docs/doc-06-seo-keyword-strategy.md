@@ -3,311 +3,247 @@
 **Prepared by:** Joshua Brown / Upriver Consulting
 **Date:** June 2026
 **Version:** 1.0
-**Last SEO audit:** None completed. This document establishes the strategic framework pending GSC and Ahrefs access.
-**Next scheduled refresh:** September 2026 (quarterly keyword performance review, once baseline data is in); June 2027 (annual strategy refresh)
+**Last SEO audit:** Not yet completed. The quantitative baseline in Section 1 is pending Ahrefs, Google Search Console, and GA4 provisioning. Those tools are not yet connected as of this draft. Every metric cell marked [NEEDS CONFIRMATION] in Section 1 should be filled in during the Step 2 baseline pull once access is established.
+**Next scheduled refresh:** September 2026 (quarterly keyword performance review); June 2027 (annual strategy refresh)
 
-**For:** Content production, landing page builds, website optimization, local SEO work, and AI-generated content that needs to target specific search demand.
+**For:** Content production, website optimization, Google Business Profile maintenance, local SEO work, and any AI-assisted content that needs to target specific search demand.
 
 **Companion documents:**
-- Document 02: Business Facts Reference (local SEO NAP data, once address and contact details are confirmed)
-- Document 04: Content Library (existing content that may already rank, once a website inventory is complete)
-- Document 05: Competitor Landscape Brief (keyword gaps and competitive SEO position, particularly Section 7)
+- Document 02: Business Facts Reference (NAP data, licensed capacity, program details)
+- Document 04: Content Library (existing content that may already rank, once inventoried)
+- Document 05: Competitor Landscape Brief (Goddard, church programs, and the New Paltz Montessori gap analysis)
 - Document 11: Website Audit (where keyword targets get operationalized on the site)
 
-**Critical principle:** This strategy is realistic, not aspirational. It targets keywords Little Friends can actually win given domain authority, content capacity, and competitive intensity. Aspiration is cheap; strategy is about what is winnable in the next 12 months.
-
----
-
-**A note on this version.** The SEO baseline in this document could not be completed before drafting. Google Search Console access has not been provisioned, no Ahrefs pull has been performed, and the client website URL and analytics tools are unconfirmed. This means all quantitative measurements in Section 1, Section 2 (volumes and difficulty scores), and Section 8 are scaffolded with [NEEDS CONFIRMATION] tags rather than real data. The strategic sections, including keyword candidates, content clusters, local SEO priorities, AEO targets, and the 90-day calendar, are substantive and ready to use. They are drawn from the business's confirmed differentiators and the competitive gap analysis in Document 05. The correct order of operations: provision GSC and Ahrefs access, pull the baseline numbers, and fill in every [NEEDS CONFIRMATION] in Sections 1 and 8 before loading this document into the client's Claude Project or using it to drive a content budget. This document is production-ready as a strategic framework and a content calendar. It is not production-ready as a performance-measurement baseline.
+**Critical principle:** This strategy is realistic, not aspirational. It targets keywords Little Friends can actually win given domain authority, content capacity, and competitive intensity. Winnability assessments in Section 2 are provisional until the domain rating is confirmed from Ahrefs. I have flagged every place where that assessment depends on a number I do not yet have.
 
 ---
 
 ## 1. Current performance baseline
 
+**Important framing:** Google Search Console, Ahrefs, and GA4 access are not yet established. Every metric below marked [NEEDS CONFIRMATION] requires those tools before this section can be completed. The spec is explicit on this point: building keyword targets against a speculative baseline produces a speculative strategy. Do not finalize the 90-day content calendar in Section 6 until the baseline pull is done.
+
 ### Domain-level metrics
 
-- **Domain Rating (Ahrefs):** [NEEDS CONFIRMATION: Pull from Ahrefs once the site URL is confirmed. Given the school's profile, a DR in the low single digits or unranked is the most likely starting point.]
-- **Estimated organic traffic:** [NEEDS CONFIRMATION: Pull from Ahrefs and cross-reference with GSC once connected. Rebecca's description of the school as "basically invisible" on Google suggests near-zero non-branded organic traffic.]
-- **Number of organic keywords:** [NEEDS CONFIRMATION]
+- **Domain Rating (Ahrefs):** [NEEDS CONFIRMATION: pull from Ahrefs Site Explorer once the school's website URL is confirmed and access is established]
+- **Domain Authority (Moz, if tracked):** [NEEDS CONFIRMATION]
+- **Estimated organic traffic:** [NEEDS CONFIRMATION: Ahrefs Site Explorer or GSC]
+- **Number of organic keywords ranking:** [NEEDS CONFIRMATION]
 - **Total backlinks:** [NEEDS CONFIRMATION]
 - **Referring domains:** [NEEDS CONFIRMATION]
-- **Indexed pages (Google Search Console):** [NEEDS CONFIRMATION: Requires GSC access. For a small school site, 10-30 indexed pages would be typical. Provisioning GSC is the first technical action before any content work begins.]
+- **Indexed pages (Google Search Console):** [NEEDS CONFIRMATION: also check for crawl errors and excluded pages while in GSC]
 
 ### Top-performing pages
 
-[NEEDS CONFIRMATION: Requires GSC access (top pages by clicks, last 90 days) and Ahrefs site explorer. Once pulled, populate the table below with the pages currently driving the most organic traffic.]
+[NEEDS CONFIRMATION: pull from GSC "Pages" tab filtered by organic clicks, last 90 days. The Content Library (Document 04) does not yet exist, so there is no current inventory of what pages are on the site or what any of them rank for.]
 
 | Page URL | Target keyword | Current position | Monthly traffic | Status |
 |---|---|---|---|---|
-| [URL] | [Keyword] | [#] | [#/mo] | [Performing / Plateaued / Declining] |
+| [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] |
 
 ### Top keywords ranking in positions 1-10
 
-[NEEDS CONFIRMATION: Pull from GSC "Search results" filtered to positions 1-10, last 90 days. For a school with minimal content history, I expect this list to be short and anchored almost entirely on brand-name searches and possibly the JCC-name-plus-preschool term.]
+[NEEDS CONFIRMATION: GSC "Queries" tab, filtered for average position 1-10, last 90 days.]
 
-### Keywords ranking in positions 11-30 (high-ROI opportunities)
+### Keywords ranking in positions 11-30
 
-[NEEDS CONFIRMATION: Pull from GSC filtered to positions 11-30. These are the highest-ROI targets because a modest optimization push can move them onto page one.]
+These are almost always the highest-ROI opportunity: a keyword at position 14 is a content optimization push away from driving real traffic. This pull matters before anything else in Section 2 and 3.
 
-| Keyword | Current position | Monthly volume | Estimated effort to reach top 10 |
+| Keyword | Current position | Monthly volume | Estimated effort to top 10 |
 |---|---|---|---|
-| [Keyword] | [#] | [#] | [Low / Medium / High] |
+| [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] |
 
 ### Branded vs. non-branded search
 
-- **Branded traffic:** [NEEDS CONFIRMATION: Pull from GSC filtered to queries containing "little friends learning loft" and name variations.]
-- **Non-branded traffic:** [NEEDS CONFIRMATION: Everything except brand-name queries.]
-- **Ratio:** [NEEDS CONFIRMATION. Given the school's heavy reliance on word-of-mouth and JCC referrals, I expect the branded share to be high relative to discovery-driven traffic. A ratio that is 70% or more branded tells me the site is doing almost no organic discovery work, which is consistent with Rebecca's own description of the situation.]
+- **Branded traffic:** [NEEDS CONFIRMATION: GSC queries filtered for "little friends learning loft" and close variants]
+- **Non-branded traffic:** [NEEDS CONFIRMATION]
+- **Ratio interpretation:** The competitor brief notes that word of mouth through the JCC community is the dominant first-touch discovery path. If the data reflects that pattern, branded search volume will be stronger than non-branded. That would confirm that the organic content strategy should focus on non-branded terms almost entirely, since those are the families the school is not yet reaching.
 
 ### Data sources
 
-[NEEDS CONFIRMATION: Once GSC, GA4, and Ahrefs are connected, document which tool sourced each metric and the date range pulled. Until then, this section has no confirmed data and no measurement baseline exists.]
+None confirmed yet. Once provisioned: Ahrefs (domain overview, Site Explorer), Google Search Console (queries, pages, Core Web Vitals), GA4 (sessions by channel, conversion events by landing page). Do not build content targets against this section until real data is in place.
 
 ---
 
 ## 2. Primary keyword targets
 
-### Core target keywords (3-5)
+The five keywords below are derived from the business's Montessori identity, its physical location, and the search behavior described in the competitor brief. Volume and difficulty scores require Ahrefs data before winnability can be confirmed. The rationale for each stands regardless of the numbers.
 
-The following keyword candidates are built from the business's confirmed differentiators and the competitive gap analysis in Document 05, particularly the "validate first" terms named in Section 7 of that document. Every volume and difficulty score requires Ahrefs validation before these become firm 12-month targets. The keyword candidates themselves are derivable from the business; the numbers are not.
+### Core target keywords
 
 | Keyword | Monthly volume | Difficulty | Current position | Target position (12 mo) | Rationale |
 |---|---|---|---|---|---|
-| preschool Newburgh NY | [NEEDS CONF] | [NEEDS CONF] | [NEEDS CONF] | Top 3 | Core local term. The phrase a parent searching for a preschool in Newburgh is most likely to type. Document 05 §7 flags this as the primary term to validate first. |
-| play-based preschool Orange County NY | [NEEDS CONF] | [NEEDS CONF] | [NEEDS CONF] | Top 5 | Philosophy-specific and county-level. Aligns with the school's confirmed differentiator (not a franchise, not a structured curriculum) and surfaces to families actively filtering for this approach. Less competition than city-level terms. |
-| preschool for 2 year olds Newburgh | [NEEDS CONF] | [NEEDS CONF] | [NEEDS CONF] | Top 3 | The twos class is a real differentiator. Document 05 notes that most church preschool competitors do not serve twos. Families searching for a Newburgh program that will actually take their two-year-old are searching for exactly what this school offers. |
-| JCC preschool Newburgh | [NEEDS CONF] | [NEEDS CONF] | [NEEDS CONF] | Position 1 | This is an owned term. No meaningful competitor can claim it. If the school has an indexed website, this should already be close to position one. If it is not, something is wrong technically and the fix is fast. |
-| twos program Orange County NY | [NEEDS CONF] | [NEEDS CONF] | [NEEDS CONF] | Top 3 | Age-specific and county-level. Lower competition than city terms; higher intent from families specifically looking for a structured program for a two-year-old. Document 05 §7 identifies this explicitly. |
+| Montessori preschool Newburgh NY | [NEEDS CONFIRMATION: Ahrefs] | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION: GSC] | Top 3 | The school's clearest identity term. Families searching this phrase have already heard of Montessori and are looking for it specifically. High intent, direct match to method and location. |
+| preschool Newburgh NY | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Top 5 | The broadest category term for the geographic market. Competitive, but realistic for a locally-focused site once content and technical work is in place. |
+| Montessori preschool Hudson Valley | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Top 5 | Expands the geographic reach to families in surrounding Orange County towns who use "Hudson Valley" as a region identifier before they use a specific town name. Aligns with the 15-20 minute draw area described in the competitor brief. |
+| pre-K Newburgh NY | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Top 5 | Families with 4-year-olds evaluating the Pre-K year specifically. Families who find the school through this term are already comparing private options to the district. |
+| Montessori preschool Orange County NY | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Top 5 | Orange County as a geographic identifier captures families in Middletown, Cornwall, New Windsor, and surrounding towns before they narrow to Newburgh. Worth confirming volume is sufficient before treating this as a primary target. |
 
 ### Why these and not others
 
-The selection logic is: geographic specificity over broad reach, philosophy-and-age specificity over generic "preschool" terms, and terms the school can plausibly win given that its Domain Rating almost certainly trails the Goddard School's national franchise domain authority. Document 05 makes the structural point clearly: Little Friends should not compete head-on with Goddard on franchise-adjacent or brand-generic search terms. The winning lane is geography plus play-based philosophy plus the age specificity of the twos class.
+The selection logic runs intent first, geography second, volume third. Families searching with the Montessori modifier are further along in their decision process and more likely to become a tour inquiry than families searching a generic category term. The geographic modifiers keep the school competing in a realistic pool rather than against national Montessori content or franchise brands with high domain authority. Volume comes third because search volume for hyper-local preschool terms is always low in absolute numbers. What matters is that the traffic is qualified.
 
-### Keywords explicitly not being targeted (and why)
+### Keywords explicitly NOT being targeted (and why)
 
-- **"daycare Newburgh NY" or "childcare Newburgh":** Document 01 and 02 both flag "childcare" as the wrong category framing. This is a preschool and early learning program. Ranking for daycare terms brings in the wrong families and creates expectation mismatch at the inquiry stage.
-- **"preschool near me" (unqualified):** At any meaningful scale this is dominated by Google Maps results and large directory aggregators. It is not a productive standalone target for a single-location school.
-- **"best preschool in Newburgh":** Superlative terms often have thin search volume and read as promotional. Better to rank on specific, descriptive terms and let reviews make the "best" case.
-- **Head terms tied to Goddard's national domain authority:** Any term where goddardschool.com's domain authority would bury Little Friends regardless of content quality. Document 05 §7 flags this structural disadvantage explicitly.
+- **"free preschool Newburgh" and "NECSD pre-K":** Wrong intent. Families searching these terms are looking for the public universal pre-K option. Little Friends is not free, and pulling this audience into the inquiry pipeline produces inquiries that go nowhere. The competitor brief flags NECSD pre-K as a direct competitive threat to the school's Pre-K class at zero tuition cost. That is exactly why the school should not try to compete on this search surface.
+- **"daycare Newburgh NY":** Little Friends is a licensed nursery school serving ages 2 through 5, not a daycare. Targeting this term attracts families looking for full-day infant and toddler care the school does not offer. The expectation mismatch costs more than the traffic is worth.
+- **"Goddard School Newburgh":** Competitor brand terms. Families searching for Goddard by name have already made a mental shortlist that likely does not include Little Friends. Intercepting this traffic is difficult and the conversion rate would be low.
+- **"best preschool Newburgh":** "Best" modifier searches are dominated by directory sites like Niche.com, Care.com, and GreatSchools.org. These are hard to displace and the traffic is browsing, not deciding.
+- **"affordable preschool Newburgh":** Little Friends' tuition sits in the mid-range for the market. This term anchors families on price as the primary criterion, which is not how the school wants to enter a family's consideration.
 
 ---
 
 ## 3. Long-tail keyword opportunities
 
-Long-tail keywords are where most small-business SEO traffic actually comes from. They are individually low volume and collectively significant. They are also the terms most closely aligned with high-intent, bottom-of-funnel search because the person typing them has usually already decided roughly what they want. All volumes below require Ahrefs validation.
+Long-tail terms are where most of the local preschool search traffic actually lives. Individually small volume, collectively meaningful, and far more realistic to win than the head terms above. These are also the terms best suited to AI answer engine visibility, since they mirror how parents actually phrase questions.
 
-### Cluster: Geographic discovery
+### Cluster: Montessori method explained
 
-**Parent keyword candidate:** preschool Newburgh NY
-
-| Keyword | Monthly volume | Difficulty | Intent | Content angle |
-|---|---|---|---|---|
-| preschool Newburgh NY | [NEEDS CONF] | [NEEDS CONF] | Commercial | Homepage and local SEO optimization |
-| preschool near Newburgh NY | [NEEDS CONF] | [NEEDS CONF] | Commercial | Homepage optimization |
-| preschool Orange County NY | [NEEDS CONF] | [NEEDS CONF] | Commercial | Landing page (county-level) |
-| preschool New Windsor NY | [NEEDS CONF] | [NEEDS CONF] | Commercial | Blog post (geographic draw) |
-| preschool Cornwall NY | [NEEDS CONF] | [NEEDS CONF] | Commercial | Blog post (geographic draw) |
-| preschool Hudson Valley ages 2 | [NEEDS CONF] | [NEEDS CONF] | Commercial | Blog post or landing page |
-
----
-
-### Cluster: Age-specific programs
-
-**Parent keyword candidate:** preschool for 2 year olds Newburgh
-
-The twos class is the clearest program differentiator in the competitor set. Document 05 identifies that most church preschool competitors typically serve three-year-olds and up. This cluster should be treated as a near-term priority, not a long-term one.
+Informational searches from parents who have heard "Montessori" but are still figuring out what it means. The school can own this topic for the Newburgh-area market. Winning here builds the topical authority that supports the commercial terms in Section 2.
 
 | Keyword | Monthly volume | Difficulty | Intent | Content angle |
 |---|---|---|---|---|
-| preschool for 2 year olds Newburgh | [NEEDS CONF] | [NEEDS CONF] | Commercial | Twos program landing page |
-| twos program Orange County NY | [NEEDS CONF] | [NEEDS CONF] | Commercial | Twos program landing page |
-| when can my child start preschool in New York | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post, AEO target |
-| is my 2 year old ready for preschool | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post, AEO target |
-| pre-K program Orange County NY | [NEEDS CONF] | [NEEDS CONF] | Commercial | Pre-K landing page or program page |
-| preschool for 3 year olds Newburgh | [NEEDS CONF] | [NEEDS CONF] | Commercial | Threes program page |
+| what is Montessori preschool | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Informational | Blog post, AEO target |
+| how does Montessori preschool work | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Informational | Blog post |
+| Montessori vs traditional preschool | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Informational | Blog post, conversion angle |
+| is Montessori good for 2 year olds | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Informational / commercial | Blog post |
+| mixed age classroom preschool benefits | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Informational | Blog post |
 
----
+### Cluster: Age-specific and program-specific terms
 
-### Cluster: Play-based philosophy
-
-**Parent keyword candidate:** play-based preschool Orange County NY
+Families often search by their child's current age or the specific program year they are researching. Each of these is a focused blog post or landing page that answers a narrow question a parent is already asking.
 
 | Keyword | Monthly volume | Difficulty | Intent | Content angle |
 |---|---|---|---|---|
-| play-based preschool Orange County NY | [NEEDS CONF] | [NEEDS CONF] | Commercial | About or philosophy page, landing page |
-| play-based preschool Newburgh | [NEEDS CONF] | [NEEDS CONF] | Commercial | About or philosophy page |
-| play-based vs Montessori preschool | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post |
-| what is play-based learning preschool | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post, AEO target |
-| play-based preschool vs structured curriculum | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post |
+| 2 year old preschool Newburgh NY | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Commercial | FAQ section or landing page |
+| toddler preschool Newburgh | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Commercial | Blog post or landing page |
+| preschool for 3 year olds Newburgh NY | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Commercial | Blog post or FAQ |
+| kindergarten prep Newburgh NY | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Commercial | Blog post |
+| pre-kindergarten Orange County NY | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Commercial | Blog post |
 
----
+### Cluster: Montessori philosophy questions (primary AEO targets)
 
-### Cluster: JCC and community context
-
-**Parent keyword candidate:** JCC preschool Newburgh
-
-Every page or post optimizing for terms in this cluster must include a plain statement that the school is open to all families regardless of JCC membership or religious background. Document 01 is explicit: the JCC connection is real for the families it matters to, and it should not signal that other families are secondary.
+Parents increasingly ask these questions directly to AI tools during the research phase. Ranking for them in traditional search and being cited in AI answers are, increasingly, the same work. A parent who asks Perplexity "what age should my child start Montessori" and gets an answer that cites the school's blog is a discovery touchpoint that does not show up in GSC.
 
 | Keyword | Monthly volume | Difficulty | Intent | Content angle |
 |---|---|---|---|---|
-| JCC preschool Newburgh | [NEEDS CONF] | [NEEDS CONF] | Commercial | Homepage, GBP listing |
-| Newburgh JCC preschool enrollment | [NEEDS CONF] | [NEEDS CONF] | Transactional | Enrollment page |
-| Jewish preschool Orange County NY | [NEEDS CONF] | [NEEDS CONF] | Commercial | About page (open-to-all framing prominent) |
-| JCC preschool open to non-members | [NEEDS CONF] | [NEEDS CONF] | Informational/commercial | FAQ entry |
+| what age to start Montessori preschool | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Informational | Blog post, AEO |
+| what is the work cycle in Montessori | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Informational | Blog post |
+| Montessori prepared environment explained | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Informational | Blog post or glossary |
+| what is grace and courtesy in Montessori | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Informational | Blog post, AEO |
+| Montessori independence learning | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Informational | Blog post |
 
----
+### Cluster: Local parent decision-making
 
-### Cluster: Parent anxiety and the first weeks
-
-**Parent keyword candidate:** preschool separation anxiety
-
-This cluster is the highest-value content opportunity in the entire strategy. Document 01 names it explicitly under "Acknowledge real things." Document 05 §8 identifies it as a content gap no competitor in this market is filling. The families searching these terms are exactly the families this school is built for: parents of two- and three-year-olds who need honest, specific information, not reassurance through adjectives.
-
-Content in this cluster should follow the document 01 sample social caption and email tone closely. Rebecca's own voice phrases ("The first couple weeks can be tender." "That is so normal.") belong in these posts. They are not marketing language; they are what makes this content different from every generic preschool blog post about separation anxiety.
+These terms appear when parents are comparing options, often in the final weeks before scheduling a tour. They carry the highest intent of the long-tail clusters and should be the first to get dedicated content.
 
 | Keyword | Monthly volume | Difficulty | Intent | Content angle |
 |---|---|---|---|---|
-| preschool separation anxiety | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post, AEO target (high priority) |
-| what happens if my child cries at preschool drop-off | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post, FAQ entry |
-| how long does preschool separation anxiety last | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post, AEO target |
-| preschool drop-off tips for parents | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post |
-| first week of preschool what to expect | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post |
-| is separation anxiety at preschool normal | [NEEDS CONF] | [NEEDS CONF] | Informational | FAQ entry, AEO target |
-
----
-
-### Cluster: How to choose and what to look for
-
-**Parent keyword candidate:** what to look for in a preschool tour
-
-Document 05 §8 recommends this content direction explicitly: a blog post or guide framed from Rebecca's point of view that applies to any school, not just this one. It positions Little Friends as knowledgeable without being promotional. The families searching these terms have not decided where to enroll; they are doing research. Content that helps them do that research well, written honestly, is both useful SEO and a genuine brand signal.
-
-| Keyword | Monthly volume | Difficulty | Intent | Content angle |
-|---|---|---|---|---|
-| what to look for in a preschool tour | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post (brand signal + SEO) |
-| questions to ask on a preschool tour | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post, FAQ |
-| how to choose a preschool | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post |
-| what to ask a preschool director | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post |
-| preschool class size what is normal | [NEEDS CONF] | [NEEDS CONF] | Informational | Blog post, AEO target |
-
----
+| how to choose a preschool Newburgh | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Informational / commercial | Blog post, conversion angle |
+| small preschool Newburgh NY | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Commercial | Blog post, differentiator angle |
+| low ratio preschool Newburgh | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Commercial | Blog post |
+| preschool aftercare Newburgh NY | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Commercial | FAQ or dedicated page |
+| JCC preschool Newburgh | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Commercial / navigational | GBP content, blog |
 
 ### Total long-tail opportunity
 
-- **Combined monthly search volume across all clusters:** [NEEDS CONFIRMATION: Sum after Ahrefs validation]
-- **Estimated traffic if top-3 positions achieved for half of cluster keywords:** [NEEDS CONFIRMATION: Set after baseline and volume pulls are complete]
-- **Estimated timeframe to meaningful traffic:** 6-9 months for the geographic and age-specific clusters; 9-12 months for the philosophy and "how to choose" clusters; the parent-anxiety cluster may move faster because it is genuinely underserved locally, and even a thin content footprint may be enough to rank against competitors with no content at all.
+- **Combined monthly search volume across all clusters:** [NEEDS CONFIRMATION: sum after Ahrefs pull. Note that many of these Newburgh-specific terms will have single-digit or low double-digit monthly volume. That is expected. The value is the cumulative qualified audience, not any single term's volume.]
+- **Estimated traffic if top-3 positions achieved for half:** [NEEDS CONFIRMATION: calculate after volume pull]
+- **Estimated timeframe to meaningful traffic:** 6-9 months for long-tail terms with a functioning site and basic domain authority; 9-12 months if domain authority is very low (below DR 12) and technical work is starting from scratch.
 
 ---
 
 ## 4. Local SEO strategy
 
-Local SEO is where the bulk of the near-term opportunity sits for Little Friends. The production spec for preschools is explicit: Google Business Profile performance is often more important than website SEO for this category. For a school in a geographically constrained discovery market where most families are searching within a 15-20 minute drive, the GBP listing is frequently the first thing a prospective family sees. This section deserves at least as much attention as the keyword targeting in Section 2.
+For a preschool with a geographically bounded draw area, local SEO is the most direct lever available. A family in Newburgh who finds the school's Google Business Profile listing before they visit any website is more likely to convert than a family who arrives from a blog post. This section should be executed before the content calendar in Section 6 begins.
 
 ### Google Business Profile status
 
-[NEEDS CONFIRMATION on all fields below. GBP audit is a required first action before any other local SEO work begins.]
-
-- **Profile claimed:** [NEEDS CONFIRMATION: Verify by searching "Little Friends Learning Loft Newburgh" in Google Maps. If it is claimed, confirm the account owner email is one Rebecca controls. If it has been auto-generated by Google and never actively claimed, claiming it is the first priority above everything else.]
-- **Primary category:** [NEEDS CONFIRMATION: Should be "Preschool" or "Early childhood education center." Confirm what is currently set and whether it matches how families actually search.]
-- **Secondary categories:** [NEEDS CONFIRMATION: Potential additions may include "Child care agency" if it fits the OCFS license category. Avoid categories that signal the wrong service type or age range.]
-- **Hours accuracy:** [NEEDS CONFIRMATION: Confirm drop-off and pickup windows are accurately listed. Incorrect hours are among the most damaging trust signals a local business listing can carry.]
-- **Photos:** [NEEDS CONFIRMATION: Count and date of most recent upload. Classroom photos, outdoor space if any, and the general building entrance are the most useful categories for a preschool GBP.]
-- **Posts (GBP Posts feature):** [NEEDS CONFIRMATION: Active or inactive. For a school, enrollment-season and open-house posts are the most natural cadence.]
-- **Q&A section:** [NEEDS CONFIRMATION: Check for unanswered questions and for whether any incorrect crowd-sourced answers have accumulated. Unseeded Q&A sections often get filled with wrong information from well-meaning strangers.]
-- **Service listings:** [NEEDS CONFIRMATION: Should include: Twos class, Threes class, Pre-K program, Aftercare. These map to the programs confirmed in Document 02 §3.]
+- **Profile claimed:** [NEEDS CONFIRMATION: the address 290 North St, Newburgh, NY 12550 appears confirmed in a listing, but owner access is not confirmed. This is the single most important thing to verify. If the school does not have owner access, claim it before anything else. Instructions: search "Little Friends Learning Loft" in Google Maps, click the listing, and select "Claim this business."]
+- **Primary category:** [NEEDS CONFIRMATION: likely "Preschool" or "Montessori school." Confirm what is currently set. If it is something generic like "School" or "Child care agency," update it.]
+- **Secondary categories:** [NEEDS CONFIRMATION: add "Educational institution" or "Child care center" as appropriate]
+- **Hours accuracy:** [NEEDS CONFIRMATION: verify current school hours are correct by program]
+- **Photos:** [NEEDS CONFIRMATION: count and recency. For a school, the target is 40 or more recent photos, updated at least once per semester.]
+- **Posts (GBP Posts):** [NEEDS CONFIRMATION: confirm whether this feature is active or has been inactive]
+- **Q&A section:** [NEEDS CONFIRMATION: confirm whether common parent questions have been seeded or the section is blank]
+- **Service listings:** [NEEDS CONFIRMATION: confirm whether individual programs are listed as services]
 
 ### Google Business Profile optimization priorities
 
-1. Claim or verify the profile and confirm the account owner email is one Rebecca controls. If the profile exists but has never been actively managed, this is the first 30 minutes of the entire local SEO engagement.
-2. Set the primary category correctly and add relevant secondary categories. An incorrect primary category is a structural local ranking error.
-3. Populate the service listings with the confirmed programs: Twos, Threes, Pre-K, Aftercare (once aftercare hours are confirmed per Document 02 §3).
-4. Upload a fresh batch of recent classroom and space photos. [NEEDS CONFIRMATION: How old are the most recent GBP photos? If the last upload was more than six months ago, a new batch is a fast, high-impact action.]
-5. Seed the Q&A section with 6-8 common parent questions and answers in Rebecca's voice. The Document 07 FAQ Bank, once built, is the source material for this. Until then, the most important seeds are: what age groups do you serve, is the school open to non-JCC families, how do I schedule a tour, do you serve infants (the answer is no), and how does the twos class work.
-6. Begin a GBP Posts cadence. At minimum: one post at the start of enrollment season (August), one post around any open house or tour event, and one post when a classroom milestone or seasonal transition is worth sharing. Posts signal to Google that the listing is actively maintained.
+1. Confirm owner access to the listing at 290 North St, Newburgh, NY 12550. If access is not established, claim the listing before any other GBP work begins.
+2. Set the primary category to "Montessori school" (if that category is available) or "Preschool." The Montessori identity is the school's clearest differentiator and should be reflected in the primary category choice.
+3. Add each program as a service with a brief description: Twos Program (ages 2-3, ratio 1:5), Threes Program (ages 3-4, ratio 1:7), Pre-K Program (ages 4-5, ratio 1:8), Aftercare. Include the teacher-to-child ratios, since those are specific and searchable.
+4. Seed the Q&A section with 8-10 common parent questions. Pull the question list from the FAQ Bank once Document 07 is built. GBP Q&A is indexed by Google and appears in search results for specific questions about the school.
+5. Begin a monthly GBP Posts cadence. Good starting topics: enrollment opening for fall, open house announcements, waitlist updates, and brief classroom moments. Each post is indexed content attached to the school's local knowledge panel.
+6. Upload a fresh batch of classroom photos. Specific categories that convert well in preschool GBP listings: the prepared classroom environment (shelves and materials visible), children engaged in work (with appropriate consent and privacy protections), the outdoor space if there is one, and the school entrance.
 
 ### NAP consistency
 
 **Primary NAP (must be identical everywhere):**
 - Name: Little Friends Learning Loft
-- Address: [NEEDS CONFIRMATION: Full street address of the Newburgh JCC. Document 02 §1 flags this as pending. This is the most important operational gap to close before any citation work begins. Everything in local SEO depends on a verified, exact address.]
-- Phone: [NEEDS CONFIRMATION: Document 02 §1 flags this as pending.]
+- Address: 290 North St, Newburgh, NY 12550
+- Phone: [NEEDS CONFIRMATION: confirm the main school phone number from Rebecca before any citation work. Do not run a citation audit until this is confirmed, because an incorrect phone number in the audit would be treated as the correct one.]
 
 **Citation audit summary:**
-
-[NEEDS CONFIRMATION: No citation audit has been performed. Once the verified NAP is confirmed, run a scan using BrightLocal or Whitespark to document (1) which directories have a correct listing, (2) which have inconsistent or outdated entries, and (3) which high-value directories are missing a listing entirely.]
-
-- Consistent citations: [NEEDS CONFIRMATION]
-- Inconsistent or outdated citations: [NEEDS CONFIRMATION]
-- Missing high-value citations for a preschool in this market:
-  - GreatSchools.org (a primary discovery source for families actively comparing schools)
-  - Care.com (many families use this alongside Google early in their search)
-  - Yelp (particularly for families without a direct referral)
-  - Local parenting Facebook groups and Nextdoor communities serving Orange County and the Hudson Valley (Document 05 §1 identifies these as a primary discovery channel in this market)
-  - The Newburgh JCC website itself: [NEEDS CONFIRMATION: Does the JCC site link clearly to the school's own page? If not, this is a high-authority local backlink sitting unused.]
+- **Priority citations to verify:** GreatSchools.org, Niche.com, Care.com, Yelp, YellowPages.com, Better Business Bureau, city-data.com, the JCC website (if the school appears as a JCC program, that listing should match the primary NAP exactly and link to the school's website)
+- **Common NAP mismatch risk:** If the school's phone number, address, or name has changed at any point, old data persists in directories for years. A BrightLocal citation audit or manual spot-check of the top 10 directories will surface discrepancies.
+- **Missing high-value citations:** [NEEDS CONFIRMATION: after the manual audit, flag any directory where the school is absent or the NAP differs from the primary]
 
 ### Review strategy
 
-- **Target review volume:** 2-3 new Google reviews per month, with a secondary target of 1-2 per month on GreatSchools if the listing exists there.
-- **Review request process:** [NEEDS CONFIRMATION: What is the current practice? A well-timed, personal request from Rebecca to enrolled families at approximately 4-6 weeks after a child's start date tends to produce the most thoughtful responses. The timing matters: too early and the family does not have enough to say; too late and the moment has passed.] The review request should feel like a personal note, not a template.
-- **Review response policy:** Respond to every Google review within 5-7 days. Documents 01 includes full sample review responses, both positive and critical, in the correct voice. Every response ends with Rebecca's first name, no effusive language, no exclamation points.
-- **Priority platforms:** Google Business Profile primary. GreatSchools secondary. Yelp tertiary.
+- **Target review volume:** 2-3 new reviews per month on Google, which is realistic for a school with 52 enrolled children
+- **Review request process:** [NEEDS CONFIRMATION: there is no confirmed automated process. I recommend Rebecca send a personal review request email to all currently enrolled families once per school year, timed for the end of the spring semester when sentiment is highest. A one-time outreach to the current enrollment would materially accelerate the baseline review count.]
+- **Review response policy:** Respond to every review within 5 business days. For positive reviews, acknowledge the specific detail the family mentioned rather than a generic "thank you." For any critical review, thank the reviewer and move the conversation offline. Never debate a critical review in public.
+- **Priority platforms:** Google Business Profile is primary. GreatSchools.org and Niche.com are secondary and worth monitoring regularly, since parents in the research phase read reviews there before they visit the school's website.
 
 ### Local content strategy
 
-- **Geographic modifiers to weave into content:** Newburgh, Orange County, the Hudson Valley, New Windsor, Marlboro, Cornwall. The school's geographic draw beyond Newburgh proper is unconfirmed (Document 02 §1 flags this), but Orange County is the county-level term with the most SEO relevance across the cluster.
+- **Geographic modifiers to use consistently:** Newburgh, Orange County, Hudson Valley. Secondary: New Windsor, Cornwall, Middletown, New Paltz. These should appear naturally in page titles, H1 headings, and body copy, not as a keyword-stuffed list.
 - **Local partnership opportunities:**
-  - The Newburgh JCC itself. The school's web presence should be clearly linked from the JCC's main navigation, and the JCC's social channels should occasionally amplify enrollment and open-house posts.
-  - Local pediatricians and family medicine practices in Newburgh and surrounding towns. These are a consistent source of word-of-mouth referral. A physical presence in a waiting room (rack card, a community bulletin board posting) is low-cost and reaches families at the right moment.
-  - Orange County Health Department family programs. Being listed as a referral resource for families seeking early childhood education builds local authority gradually.
-  - Local parenting Facebook groups and Nextdoor. Document 05 §1 confirms these are a primary discovery channel in this market. An occasional presence answering questions honestly (not posting promotions) builds the same kind of trust the school's voice is designed to build everywhere else.
+  - The JCC website: if the school is listed as a JCC program but the listing does not link to the school's website, that is a straightforward high-authority local link to request. A link from the JCC's domain (which likely has meaningful local authority) would be one of the highest-impact backlink acquisitions available.
+  - Local parent Facebook groups: the competitor brief identifies these as a secondary discovery channel. The school should have a consistent, low-key presence in these groups, answering questions and sharing enrollment information rather than advertising.
+  - Hudson Valley family publications and neighborhood guides: a feature story on the school (not a paid ad) in Chronogram, Hudson Valley Magazine, or a local parenting newsletter generates a backlink and reaches families outside the JCC community.
 
 ---
 
 ## 5. Answer engine optimization (AEO)
 
-### Why AEO matters for Little Friends now
+AI-powered search, including Google's AI Overviews, Perplexity, and ChatGPT, is handling a growing share of the question-format searches that parents use when researching preschool options. A parent asking "what's the difference between Montessori and traditional preschool" may now get a synthesized answer that cites two or three specific sources, bypassing the traditional results list. Little Friends should be one of those sources.
 
-AI-powered search is already capturing a meaningful share of question-based queries. A parent asking Google "what preschool should I choose in Newburgh" or Perplexity "what should I look for on a preschool tour" may now receive an AI-synthesized answer that names specific schools or cites specific pages. For a school with a minimal web presence, being structured for AI extraction is practical groundwork, not advanced strategy. The parent-anxiety cluster in Section 3 is exactly the question-format territory where AI answer engines are most active, and it is the cluster most aligned with this school's voice.
+### Why AEO matters for this school specifically
+
+The Montessori method invites questions. A parent who has heard the word from a friend at the JCC but does not know what it means is exactly the kind of searcher AI answer engines serve best. That is also the parent the school most needs to reach before they default to a more recognizable name like Goddard. Structuring content to answer Montessori questions plainly and specifically is AEO work and brand-building work at the same time.
 
 ### Question-format keywords to target
 
 | Question | Monthly volume | Current AI answer status | Content asset needed |
 |---|---|---|---|
-| what happens if my child cries at preschool drop-off | [NEEDS CONF] | [NEEDS CONF: Check Google AI Overviews and Perplexity for this exact query] | Blog post + FAQ entry (high priority) |
-| is my 2 year old ready for preschool | [NEEDS CONF] | [NEEDS CONF] | Blog post, AEO target |
-| how long does preschool separation anxiety last | [NEEDS CONF] | [NEEDS CONF] | Blog post, AEO target |
-| what should I look for on a preschool tour | [NEEDS CONF] | [NEEDS CONF] | Blog post + FAQ entry |
-| what is play-based learning in preschool | [NEEDS CONF] | [NEEDS CONF] | About or philosophy page + blog post |
-| how small should a preschool class be | [NEEDS CONF] | [NEEDS CONF] | FAQ entry, AEO target (becomes much stronger once the actual class-size numbers are confirmed per Document 02 §5) |
-| is a JCC preschool only for Jewish families | [NEEDS CONF] | [NEEDS CONF] | FAQ entry (also handles the open-to-all framing the brand requires) |
-| when should I start looking for a preschool | [NEEDS CONF] | [NEEDS CONF] | Blog post, email sequence entry |
+| What is a Montessori preschool? | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION: check Google AI Overview and Perplexity for this query. Note which sources, if any, are cited.] | Blog post structured for AEO |
+| How does Montessori preschool work? | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Blog post |
+| What age should a child start Montessori? | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Blog post, FAQ entry |
+| Is Montessori preschool good for 2 year olds? | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Blog post |
+| What is the difference between Montessori and regular preschool? | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | Blog post |
+| How do I choose a preschool in Newburgh NY? | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION: the hyper-local version of this query likely has no established AI answer, which is an opportunity] | Blog post, local content |
 
 ### Content formatting for AEO
 
-Every piece of content Little Friends produces from this point forward should follow these structural rules:
-
-- Open each post or FAQ answer with a 1-2 sentence direct answer to the question in the heading. AI engines extract the first relevant sentence; if the answer is buried three paragraphs in, it does not get cited.
-- Use H2 and H3 headings that mirror the actual question phrasing, not creative titles. "What happens at drop-off when a child is upset" is a better heading than "Smooth mornings."
-- Include specific numbers and facts rather than adjectives. [NEEDS CONFIRMATION: Once the class-size numbers are confirmed per Document 02 §5, those numbers belong in every post that touches on class size. "Eight children, two teachers" is extractable. "A warm, small environment" is not.]
-- Include a last-updated date on every post. AI answer engines weight freshness.
-- End every post with 3-5 FAQ schema questions and concise answers covering common sub-questions on the topic.
+Every blog post targeting one of the question-format queries above should follow this structure:
+- Answer the question directly in the first one to two sentences, before any context-setting. AI engines extract the direct answer, not the preamble.
+- Use H2 headings that mirror likely sub-questions ("What do children do in a Montessori classroom?" rather than "Our approach to learning").
+- Include specific, concrete details: the names of materials, the actual teacher-to-child ratios (1:5, 1:7, 1:8), the specific ages served (2 through 5), what children do during the uninterrupted work cycle. Vague claims are not quoted by AI engines. Specific facts are.
+- Add a FAQ section at the end of each post, with 3-5 questions answered in 100-200 words each. This section has the highest probability of being cited in AI answers.
+- Show a last-updated date prominently and keep posts fresh. AI engines weight recency heavily.
 
 ### Schema markup priorities
 
-[NEEDS CONFIRMATION: A full schema audit requires access to the website source. The prioritized list below is based on what is most impactful for this type of school and most commonly absent from small program sites.]
-
-- [ ] LocalBusiness schema (NAP, hours, geo-coordinates): **missing, high priority.** This is the foundation of local search and AI answer visibility for any location-based business.
-- [ ] EducationalOrganization schema (a Schema.org type relevant to schools; includes programs offered): **likely missing, high priority.**
-- [ ] Organization schema (legal name, website URL, social profiles): [NEEDS CONF: whether currently implemented]
-- [ ] FAQ schema on every blog post and on the main enrollment and tour page: **missing, required for AEO.**
-- [ ] AggregateRating schema if Google or third-party review counts are displayed on the site: [NEEDS CONF]
-- [ ] Event schema for any open houses, enrollment events, or tour dates posted publicly: **likely missing.**
-- [ ] Article schema on all blog posts: [NEEDS CONF: whether currently implemented via CMS defaults]
+- [ ] Organization schema (basic; likely already implemented by the website theme, but confirm)
+- [ ] LocalBusiness schema, specifically ChildCare or EducationalOrganization subtype (**missing, high priority**): must include the address (290 North St, Newburgh, NY 12550), hours, phone, and geo coordinates
+- [ ] FAQ schema (**missing, required for AEO**): apply to the FAQ page and to any blog post ending with a FAQ section
+- [ ] AggregateRating schema (**missing**): requires a confirmed review count and average rating from GBP; improves click-through in search results
+- [ ] Article schema: confirm whether this is implemented on blog posts; likely not if the site is a basic WordPress or page-builder install
 
 ### Current schema implementation
 
-[NEEDS CONFIRMATION: Run the website URL through Google's Rich Results Test and the Schema.org validator once the URL is confirmed. Most small school websites have minimal schema beyond whatever a theme provides by default. Confirm before assuming anything is in place.]
+[NEEDS CONFIRMATION: run the school's website URL through Google's Rich Results Test at search.google.com/test/rich-results and the schema.org validator. Report what is currently implemented before adding new markup. For most small school websites, the answer is "Organization schema only, via the theme default, and nothing else."]
 
 ---
 
@@ -315,67 +251,56 @@ Every piece of content Little Friends produces from this point forward should fo
 
 ### Content production cadence
 
-- **Recommended frequency:** One post every two weeks to start (6 pieces in the first 90 days), rising to one per week as content production capacity is confirmed. Document 05 §7 assesses that most Newburgh-area competitors have minimal content investment. Even a modest cadence creates a meaningful long-term SEO advantage in this market.
-- **Current cadence:** [NEEDS CONFIRMATION: Requires a website content inventory. Based on the client's own description of being "basically invisible" on Google, I expect the published content is minimal or close to zero.]
-- **Gap to close:** [NEEDS CONFIRMATION once current cadence is known.]
+- **Recommended frequency:** One blog post every two weeks (26 per year). This is a realistic pace for a small school without a dedicated content role, and it is enough to build topical authority over 12-18 months without requiring a full-time writer.
+- **Current cadence:** [NEEDS CONFIRMATION: what is the current publishing frequency? The Content Library (Document 04) will establish this once the website is inventoried. If the site has no blog or the last post is more than a year old, the first 90 days of this calendar close the gap substantially.]
+- **Gap to close:** [NEEDS CONFIRMATION: depends on current cadence. Even moving from quarterly to biweekly publishing is a meaningful shift that requires either Joshua producing content on retainer, a subcontractor, or an AI-assisted workflow with human editing.]
 
 ### First 90-day content calendar
 
-Every piece below ties to a specific keyword candidate from Sections 2-5. Volumes and difficulty scores are placeholders pending Ahrefs validation. No piece should be published until the target keyword is confirmed against actual search data.
+Each piece below is tied to a specific keyword target. The keyword strings are grounded in the business facts and the competitor brief. Volume and difficulty cells require Ahrefs confirmation; the titles, formats, and lengths stand regardless of the final numbers.
 
-| # | Publish week | Title (working) | Target keyword | Volume | Format | Length | Owner |
+| # | Week | Title (working) | Target keyword | Volume | Format | Length | Owner |
 |---|---|---|---|---|---|---|---|
-| 1 | W2 | What a play-based preschool morning actually looks like | play-based preschool Newburgh NY | [NEEDS CONF] | Blog post | 1,400-1,800 | Claude draft / Joshua edit |
-| 2 | W4 | What happens if my child cries at drop-off: a real answer | preschool separation anxiety drop-off | [NEEDS CONF] | Blog post + FAQ schema | 1,400-1,600 | Claude draft / Joshua edit |
-| 3 | W6 | Is my 2-year-old ready for preschool? | is my 2 year old ready for preschool | [NEEDS CONF] | Blog post + AEO FAQ | 1,400-1,600 | Claude draft / Joshua edit |
-| 4 | W8 | What to look for on a preschool tour (before you commit to anything) | what to look for in a preschool tour | [NEEDS CONF] | Blog post + FAQ schema | 1,600-2,000 | Claude draft / Joshua edit |
-| 5 | W10 | Play-based vs. Montessori vs. structured: how to choose a preschool philosophy | play-based vs Montessori preschool | [NEEDS CONF] | Blog post | 1,600-2,000 | Claude draft / Joshua edit |
-| 6 | W12 | The JCC preschool question: is it just for Jewish families? | JCC preschool Newburgh | [NEEDS CONF] | Blog post + FAQ entry | 1,200-1,500 | Joshua (brand-sensitive; open-to-all framing requires careful handling) |
+| 1 | Week 1 | What Is a Montessori Preschool? A Plain Answer for Parents Who Are Just Starting to Look | what is Montessori preschool | [NEEDS CONFIRMATION] | Blog post + AEO | 1,600 | Claude draft / Joshua edit |
+| 2 | Week 3 | Montessori vs. Traditional Preschool: What the Difference Actually Looks Like in the Classroom | Montessori vs traditional preschool | [NEEDS CONFIRMATION] | Blog post | 1,800 | Claude draft / Joshua edit |
+| 3 | Week 5 | Can a 2-Year-Old Start Montessori? What to Expect in the Twos Classroom | is Montessori good for 2 year olds | [NEEDS CONFIRMATION] | Blog post | 1,400 | Joshua |
+| 4 | Week 7 | What Is the Work Cycle in a Montessori Classroom? | what is the work cycle in Montessori | [NEEDS CONFIRMATION] | Blog post + AEO | 1,200 | Claude draft / Joshua edit |
+| 5 | Week 9 | Why Mixed-Age Classrooms Work: How Children Ages 2 to 5 Learn Together at Little Friends | mixed age classroom preschool benefits | [NEEDS CONFIRMATION] | Blog post | 1,600 | Claude draft / Joshua edit |
+| 6 | Week 11 | How to Choose a Preschool in Newburgh, NY: Five Questions to Ask on a Tour | how to choose a preschool Newburgh | [NEEDS CONFIRMATION] | Blog post, conversion angle | 1,400 | Joshua |
+| 7 | Week 13 | What Age Should a Child Start Preschool? | what age to start Montessori preschool | [NEEDS CONFIRMATION] | Blog post + AEO | 1,200 | Claude draft / Joshua edit |
+| 8 | Week 15 | What Is Kindergarten Prep, and Does Montessori Preschool Provide It? | kindergarten prep Newburgh NY | [NEEDS CONFIRMATION] | Blog post | 1,600 | Claude draft / Joshua edit |
+| 9 | Week 17 | Teacher-to-Child Ratios in Preschool: What the Numbers Actually Mean | low ratio preschool Newburgh | [NEEDS CONFIRMATION] | Blog post, differentiator angle | 1,200 | Joshua |
+| 10 | Week 19 | What Is the Prepared Environment? How the Little Friends Classroom Is Arranged | Montessori prepared environment explained | [NEEDS CONFIRMATION] | Blog post | 1,400 | Claude draft / Joshua edit |
+| 11 | Week 21 | What Happens During the First Weeks of Preschool? | first weeks preschool transition | [NEEDS CONFIRMATION] | Blog post, parent reassurance | 1,400 | Joshua |
+| 12 | Week 23 | A Parent's Guide to Preschool in Newburgh, NY | preschool Newburgh NY | [NEEDS CONFIRMATION] | Pillar page / guide | 2,000 | Claude draft / Joshua edit |
 
-Following weeks, through end of month 6:
+### Content pillars
 
-| # | Publish week | Title (working) | Target keyword | Volume | Format | Length | Owner |
-|---|---|---|---|---|---|---|---|
-| 7 | W14 | Preschool class sizes: what the numbers actually mean | preschool class size what is normal | [NEEDS CONF] | Blog post + AEO FAQ | 1,200-1,400 | Claude draft / Joshua edit |
-| 8 | W16 | What to ask a preschool director on a tour | what to ask a preschool director | [NEEDS CONF] | Blog post | 1,400-1,600 | Claude draft / Joshua edit |
-| 9 | W18 | How long does preschool separation anxiety last? | how long does preschool separation anxiety last | [NEEDS CONF] | Blog post + AEO FAQ | 1,200-1,600 | Claude draft / Joshua edit |
-| 10 | W20 | The first week of preschool: what to expect (for your child and for you) | first week of preschool what to expect | [NEEDS CONF] | Blog post | 1,400-1,800 | Claude draft / Joshua edit |
-| 11 | W22 | Pre-K in Newburgh: what the year before kindergarten looks like here | pre-K program Orange County NY | [NEEDS CONF] | Blog post | 1,400-1,600 | Claude draft / Joshua edit |
-| 12 | W24 | Preschool for two-year-olds: what the twos class actually is | preschool for 2 year olds Newburgh | [NEEDS CONF] | Landing page or blog post | 1,200-1,500 | Claude draft / Joshua edit |
+**Pillar 1: Montessori method explained**
+- Pillar page: /montessori-method (build once 4-5 supporting posts exist)
+- Supporting posts: #1, #2, #4, #7, #10 from the calendar above
+- Internal linking: each supporting post links back to the pillar page; the pillar links out to all supporting posts and to the school's classroom pages
 
-### Content pillars (topic territories)
+**Pillar 2: Starting preschool in Newburgh**
+- Pillar page: /preschool-newburgh, or strengthen the homepage to serve this role if the site does not support a separate page
+- Supporting posts: #6, #9, #11, #12 from the calendar above
+- Internal linking: all posts link to the pillar; the pillar links to the tour scheduling page as its primary conversion action
 
-**Pillar 1: Play-based learning**
-- Pillar page: /about or /our-approach (create or rewrite as the definitive explanation of what play-based learning looks like specifically at this school, not in abstract terms)
-- Supporting posts: Post 1 (what a morning looks like), Post 5 (play-based vs. other philosophies), Post 7 (class sizes), and future posts on what play-based learning means for kindergarten preparation
-- Internal linking: all supporting posts link to the pillar page; pillar links to program pages (Twos, Threes, Pre-K)
-
-**Pillar 2: The first weeks and separation anxiety**
-- Pillar page: A dedicated page or prominent post anchoring the "what September looks like here" question. This serves as the SEO target for the separation anxiety cluster and the brand signal for the families Document 05 §8 says no competitor is reaching honestly.
-- Supporting posts: Post 2 (what happens at drop-off), Post 3 (is my two-year-old ready), Post 9 (how long does separation anxiety last), Post 10 (first week)
-- Internal linking: all supporting posts link to the pillar; pillar links to the tour scheduling page
-
-**Pillar 3: How to choose and what to look for**
-- Pillar page: /how-to-choose-a-preschool (a guide framed from Rebecca's point of view that applies to any school; this is the brand-signal content Document 05 §8 recommends explicitly)
-- Supporting posts: Post 4 (what to look for on a tour), Post 8 (what to ask a director), future posts on evaluating teacher training and understanding ratios
-- Internal linking: all supporting posts link to pillar; pillar links to the tour scheduling call to action
-
-**Pillar 4: Little Friends specifically**
-- Pillar page: homepage, supplemented by per-program landing pages (Twos class, Threes class, Pre-K, Aftercare)
-- Supporting posts: Post 6 (JCC question), Post 11 (Pre-K), Post 12 (twos class)
-- Internal linking: supporting posts link to relevant program pages; program pages link to the tour scheduling page
+**Pillar 3: Child development and readiness**
+- Pillar page: /is-my-child-ready-for-preschool (build in month 3 after supporting content accumulates)
+- Supporting posts: #3, #5, #7, #8, #11 from the calendar above
+- Internal linking: posts link to pillar; pillar links to the tour page and to the individual classroom program pages
 
 ### Content repurposing
 
-- **Blog to social:** Each published blog post produces 2-3 Instagram captions in the Document 01 voice (specific, quiet, real moments, no exclamation points). The separation-anxiety and "first weeks" posts produce social content that parents share with other parents, which is both organic reach and a link acquisition path.
-- **Blog to email:** Each post headlines the monthly communication to enrolled families and the inquiry follow-up sequence. Enrolled families receive content that validates their choice. Prospective families receive content that answers their anxiety before they have even scheduled a tour.
-- **Tour conversations to content:** Rebecca's answers to the questions parents actually ask on tours are the best source of future post topics. Every question she has answered 10 or more times belongs on the blog.
+- **Blog to social:** Each published post produces two or three Instagram captions. One excerpt from the post itself, one pull quote from the most quotable passage, one question prompt to spark comments. The captions should sound like Rebecca wrote them, not like a marketing team did.
+- **Blog to email:** The monthly family newsletter can include one new post summary per month and one "from the classroom" note. This supports retention with enrolled families and gives prospective families who subscribed a reason to stay engaged through the decision period.
 
 ### Editorial guidelines
 
-- **Target length by format:** Blog post 1,200-2,000 words; FAQ answers 150-300 words; program landing pages 800-1,400 words.
-- **Optimization requirements per piece:** Title tag includes target keyword; meta description 150-160 characters, written as a sentence not a keyword list; H1 matches the page title; 3-5 internal links; FAQ schema at the bottom of every post with at least 3 questions and answers; image alt text on every image.
-- **Voice and style:** Document 01 Brand Voice Guide governs every piece. Every post should pass the Document 01 anti-AI rules before publishing: no throat-clearing openers, no three-adjective lists, no em dashes, real numbers over adjectives, varied sentence length. Claude produces the first draft; Joshua edits for voice and accuracy; Rebecca reviews for any factual or policy sensitivity. Content published without that sequence will drift from the brand.
+- **Target length by format:** Blog posts 1,200-2,000 words; FAQ answers 150-250 words each; pillar pages 2,000-3,000 words
+- **Per-post optimization checklist:** Target keyword in the page title and H1, meta description 150-160 characters, 3-5 internal links to related content, at least one external citation where facts are sourced, FAQ schema on any post ending with a FAQ section, image alt text on every image describing what is visible in the image
+- **Voice and style:** Per Document 01. First-person singular, warm and plain, no em dashes, no hype language, specific over vague. Content produced with Claude as a first draft should be edited to match Rebecca's actual voice before publishing. Generic AI output without voice calibration produces content that both readers and AI answer engines deprioritize.
 
 ---
 
@@ -383,62 +308,57 @@ Following weeks, through end of month 6:
 
 ### Current technical health
 
-[NEEDS CONFIRMATION: All of the following requires access to the website, Google Search Console, and the Rich Results Test tool. None of this can be assessed without a verified URL and active GSC connection.]
-
 **Core Web Vitals (from Google Search Console):**
-- Largest Contentful Paint (LCP): [NEEDS CONFIRMATION]
+- Largest Contentful Paint (LCP): [NEEDS CONFIRMATION: GSC "Core Web Vitals" report, or run PageSpeed Insights on the homepage]
 - Cumulative Layout Shift (CLS): [NEEDS CONFIRMATION]
 - Interaction to Next Paint (INP): [NEEDS CONFIRMATION]
 
 **Indexation:**
-- Pages indexed: [NEEDS CONFIRMATION]
-- Pages excluded from indexing: [NEEDS CONFIRMATION]
-- Indexing errors to resolve: [NEEDS CONFIRMATION]
+- Pages indexed: [NEEDS CONFIRMATION: GSC "Pages" report]
+- Pages excluded from indexing: [NEEDS CONFIRMATION: note the exclusion reasons]
+- Indexing errors: [NEEDS CONFIRMATION]
 
-**Mobile usability:** [NEEDS CONFIRMATION]
+**Mobile usability:** [NEEDS CONFIRMATION: GSC "Mobile usability" report]
+**HTTPS:** [NEEDS CONFIRMATION: confirm the site loads on HTTPS with no mixed-content warnings. For most modern hosted sites this is handled automatically, but worth confirming.]
 
-**HTTPS and security:** [NEEDS CONFIRMATION: Verify the site is served over HTTPS. An HTTP site in 2026 is a security and ranking issue.]
+### Top technical issues to resolve (provisional, pending audit)
 
-### Top technical issues to resolve
-
-[NEEDS CONFIRMATION: The list below reflects typical gaps for a small school website with minimal ongoing maintenance. Each item should be validated against an actual technical audit before scheduling work.]
+The Website Audit (Document 11) will go deeper. These are the highest-probability issues for a small school website that likely has not had a technical SEO pass.
 
 | Issue | Severity | Effort | Impact |
 |---|---|---|---|
-| GSC not connected or not actively monitored | High | 1 hour | Without this, every other measurement in this document is blind |
-| Missing LocalBusiness and EducationalOrganization schema | High | 3-5 hours | Local rankings and AEO inclusion |
-| Missing or unoptimized GBP listing | High | 2-3 hours | Local discovery (highest-impact lever for this category) |
-| NAP inconsistency across citations (pending audit) | Medium | 2-4 hours | Local trust signals |
-| Blog posts without meta descriptions | Low | 2 hours | Click-through rate from search results |
-| Image alt text missing across site | Low | 2-3 hours | Accessibility and image search |
+| GBP listing ownership not confirmed | High | 1 hour to resolve | Everything in Section 4 depends on this |
+| GA4 and GSC not connected | High | 2 hours to set up | The entire measurement section is dark without these |
+| Missing LocalBusiness / EducationalOrganization schema | High | 3-4 hours | Local rankings and AEO inclusion |
+| Missing FAQ schema | High | 2-3 hours | AEO |
+| Missing or thin meta descriptions on key pages | Medium | 2-3 hours | Click-through rate from search results |
+| [NEEDS CONFIRMATION: additional issues from the full technical audit in Document 11] | | | |
 
 ### Site structure recommendations
 
-[NEEDS CONFIRMATION: Requires reviewing the actual site navigation and URL structure. For a school of this size, the recommended structure is: homepage, per-program pages (Twos, Threes, Pre-K, Aftercare), an About page, a Blog, a Contact or Tour page, and an Enrollment page. Internal linking between blog posts and program pages is where most small school sites have the largest gap and the easiest short-term fix.]
+[NEEDS CONFIRMATION: the current URL structure and navigation hierarchy require the website content inventory (Document 04) and Website Audit (Document 11) before specific recommendations can be made. At minimum, confirm whether the site has a dedicated page for each of the three programs, a blog or news section, and a tour scheduling page.]
 
 ### Sitemap and robots.txt
 
-- Sitemap status: [NEEDS CONFIRMATION: Verify at [domain]/sitemap.xml. If no sitemap exists, generate and submit one to GSC. This is typically 30 minutes with most CMS platforms.]
-- robots.txt status: [NEEDS CONFIRMATION: Verify at [domain]/robots.txt. Check that key pages (homepage, program pages, blog) are not accidentally blocked from crawling.]
+- Sitemap status: [NEEDS CONFIRMATION: check whether a sitemap exists and is submitted to GSC. If not, most website platforms generate one automatically once GSC is connected.]
+- robots.txt status: [NEEDS CONFIRMATION: confirm the file is not accidentally blocking crawling of key pages, which is a common issue on sites that have been through a redesign without an audit.]
 
 ### Analytics and tracking
 
-- **GA4:** [NEEDS CONFIRMATION: Document 02 §1 notes analytics tools as "to be provisioned." GA4 connection is a prerequisite for measuring the targets in Section 8.]
-- **Google Search Console:** [NEEDS CONFIRMATION: Same as above. This is the single most important tool to connect before any SEO work begins.]
-- **Conversion tracking:** [NEEDS CONFIRMATION: The primary conversion events for this school are: tour inquiry form submitted, phone call initiated, and tour scheduled (if an online scheduling tool exists). All three should be tracked as GA4 conversion events before any content campaign begins.]
-- **Recommended addition:** Umami as a privacy-preserving secondary analytics layer, particularly relevant if the school's web presence is nested within the JCC's infrastructure and GA4 data intermingles with other JCC programs.
+- **GA4:** [NEEDS CONFIRMATION: not yet confirmed as installed]
+- **Google Search Console:** [NEEDS CONFIRMATION: not yet confirmed as connected]
+- **Conversion tracking:** [NEEDS CONFIRMATION: the primary conversion is a tour request. Confirm whether form submissions are tracked as conversion events. If not, that is a day-one setup task.]
+- **Recommended additions:** Once GA4 is in place, add Umami as a lightweight secondary analytics tool. It runs without cookie consent overhead and provides cleaner engagement data for a school audience that may include privacy-conscious parents.
 
 ---
 
 ## 8. Measurement and reporting
 
-### Baseline metrics (as of June 2026)
-
-[NEEDS CONFIRMATION: Every row below requires GSC, Ahrefs, and GA4 access. Pull all of these before any other measurement work begins. Without a confirmed baseline, the 90-day and 12-month targets that follow are frameworks, not commitments.]
+### Baseline metrics (as of June 2026, pending tool access)
 
 | Metric | Baseline |
 |---|---|
-| Domain Rating | [NEEDS CONFIRMATION] |
+| Domain Rating (Ahrefs) | [NEEDS CONFIRMATION] |
 | Organic keywords ranking | [NEEDS CONFIRMATION] |
 | Estimated organic traffic | [NEEDS CONFIRMATION] |
 | Keywords in top 10 | [NEEDS CONFIRMATION] |
@@ -446,45 +366,45 @@ Following weeks, through end of month 6:
 | Backlinks | [NEEDS CONFIRMATION] |
 | Referring domains | [NEEDS CONFIRMATION] |
 | Branded search volume | [NEEDS CONFIRMATION] |
-| GBP calls (last 30 days) | [NEEDS CONFIRMATION] |
-| GBP website clicks (last 30 days) | [NEEDS CONFIRMATION] |
+| GBP calls and direction requests (last 30 days) | [NEEDS CONFIRMATION: GBP Insights] |
 
 ### 90-day targets (by September 2026)
 
-These targets are set as frameworks. The specific numbers should be calibrated relative to the actual baseline once it is confirmed. The operational targets (GSC connected, schema implemented, GBP optimized) are commitments regardless of baseline; they are prerequisites, not goals.
+Numeric targets should be set as improvements over the confirmed baselines, not against placeholder numbers. Fill these in once the baseline pull is complete.
 
 | Metric | Target |
 |---|---|
-| GSC connected and active | Yes (prerequisite; not optional) |
-| GA4 conversion tracking live | Yes (tour inquiry and contact form as conversion events) |
-| GBP fully optimized | Yes (claimed, NAP accurate, services populated, photos current, Q&A seeded) |
-| Schema markup implemented | LocalBusiness + EducationalOrganization + FAQ on program pages |
-| Blog posts published | 6 (Posts 1-6 from the 90-day calendar in Section 6) |
-| Organic keywords ranking | [NEEDS CONFIRMATION: set as baseline + 20-30% once baseline is known] |
-| Organic traffic | [NEEDS CONFIRMATION: set as baseline + 25-40% once baseline is known] |
+| Organic keywords ranking | [NEEDS CONFIRMATION: set as baseline + X] |
+| Estimated organic traffic | [NEEDS CONFIRMATION: set as baseline + X%] |
+| Keywords in top 10 | [NEEDS CONFIRMATION: set as baseline + X] |
+| Content pieces published | 12 (per the calendar in Section 6) |
+| LocalBusiness and FAQ schema implemented | Yes |
+| GBP listing confirmed and optimized | Yes |
+| GSC and GA4 connected | Yes |
+| Core Web Vitals | All passing |
 
 ### 12-month targets (by June 2027)
 
 | Metric | Target |
 |---|---|
-| Domain Rating | [NEEDS CONFIRMATION: Set as baseline + 4-6 points. Realistic for a consistent 12-month content and local citation effort.] |
-| Estimated organic traffic | [NEEDS CONFIRMATION: For a local preschool starting from near-zero, a realistic 12-month target with consistent content output is 400-800 organic visits per month. This should be revised up or down once the baseline is confirmed.] |
-| Blog posts published | 24-30 (sustained one-per-two-weeks cadence through year one) |
-| "JCC preschool Newburgh" | Position 1 (this should be achievable within 60-90 days with basic GBP and on-page optimization; it belongs in the 12-month targets as a verification checkpoint, not a stretch goal) |
-| Primary keyword candidates in top 5 | 2-3 of the 5 candidates from Section 2, once volumes are validated |
-| GBP Google reviews (cumulative) | +20-30 new reviews by June 2027 |
-| Schema implemented | All priority schema types from Section 5 |
+| Domain Rating | [NEEDS CONFIRMATION: a realistic 12-month gain for a local site publishing consistent content is 4-6 DR points over baseline. Set once baseline is known.] |
+| Estimated organic traffic | [NEEDS CONFIRMATION: 2-3x baseline is realistic if starting near zero and content work stays on cadence] |
+| Primary keywords in top 5 | At least 2 of the 5 primary keywords in top 5 positions |
+| Long-tail keyword footprint | [NEEDS CONFIRMATION: 2-3x baseline keyword count] |
+| Content pieces published | 24 or more (biweekly cadence for 12 months) |
+| GBP review count increase | [NEEDS CONFIRMATION: baseline count + 24-36 new Google reviews] |
 
 ### Reporting cadence
 
-- **Monthly:** GSC clicks and impressions (primary report); new content published; GBP calls and website clicks from GBP Insights; any new backlinks or citations added.
-- **Quarterly:** Full keyword ranking review against the primary targets in Section 2; top blog posts by organic traffic; GBP review count and average rating; technical audit spot-check against the issues in Section 7; competitor GBP and content quick-check (5 minutes on Goddard's Google listing and a scan of any competitor site with recent blog activity).
-- **Annually:** Full strategy refresh including: reassessing primary keyword targets against actual 12-month performance, updating the content calendar with new clusters, competitor SEO comparison using Ahrefs, and recalibrating 12-month targets.
+- **Monthly:** GSC clicks, impressions, and average position by keyword; Ahrefs organic traffic estimate; content pieces published and indexed; GBP calls and direction requests; new reviews received across platforms
+- **Quarterly:** Keyword ranking review for all primary and long-tail targets; content performance report (top posts by traffic and time on page); technical spot-check; competitor position comparison using Ahrefs Content Gap
+- **Annually:** Full strategy refresh. Reassess primary keyword targets against confirmed DR and competitive position. Update topic clusters based on what has and has not driven traffic. Reset 12-month targets.
 
 ### Tools used for measurement
 
-- Google Search Console (primary, authoritative source for keyword and page performance)
-- Google Analytics 4 (traffic volume and conversion events)
-- Ahrefs (competitive analysis, keyword research, backlink monitoring)
-- Google Business Profile Insights (local discovery metrics: calls, directions, website clicks)
-- BrightLocal or Whitespark (citation audit; run once after NAP is confirmed, then quarterly)
+- Google Search Console (authoritative source for clicks, impressions, average position, and Core Web Vitals)
+- Google Analytics 4 (traffic by channel, top landing pages, conversion events)
+- Ahrefs (domain authority, competitive data, backlink monitoring, content gap analysis)
+- Google Business Profile Insights (calls, direction requests, photo views)
+- Umami (optional privacy-preserving supplement to GA4)
+- BrightLocal or manual spot-check (local citation audit, quarterly)

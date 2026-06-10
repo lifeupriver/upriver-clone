@@ -1,6 +1,6 @@
 {
   "slug": "littlefriends",
-  "revision": 2,
+  "revision": 3,
   "ready": [
     {
       "id": "doc-13",
@@ -30,6 +30,7 @@
       "readiness": {
         "ready": false,
         "missingFields": [
+          "customers.primaryCustomer",
           "voice.attributes"
         ],
         "unverifiedHv": [],
@@ -42,8 +43,10 @@
       "readiness": {
         "ready": false,
         "missingFields": [
+          "identity.legalName",
           "people.owners",
           "pricing.shareable",
+          "capacity.metrics",
           "governance.dataRetention",
           "modules.preschool.ocfs.licenseStatus",
           "modules.preschool.immunizationPolicy",
@@ -73,7 +76,9 @@
         "missingFields": [
           "salesProcess.leadSources",
           "salesProcess.qualificationCriteria",
+          "salesProcess.close.definition",
           "salesProcess.funnel.revenuePerCustomer",
+          "toolsAndAccess.crm",
           "capacity.bookingLeadTime"
         ],
         "unverifiedHv": [
@@ -114,6 +119,7 @@
         "missingFields": [
           "competitors.direct",
           "competitors.marketContext",
+          "customers.primaryCustomer",
           "pricing.shareable"
         ],
         "unverifiedHv": [
@@ -131,8 +137,8 @@
       "readiness": {
         "ready": false,
         "missingFields": [
+          "seo.baseline",
           "seo.primaryKeywordTargets",
-          "identity.primaryAddress",
           "toolsAndAccess.analytics",
           "content.written"
         ],
@@ -153,7 +159,9 @@
         "ready": false,
         "missingFields": [
           "pricing.nonShareable",
-          "operationsAutomation.escalationRouting"
+          "capacity.metrics",
+          "operationsAutomation.escalationRouting",
+          "customers.primaryCustomer"
         ],
         "unverifiedHv": [
           "offerings.dontDo",
@@ -178,6 +186,7 @@
         "missingFields": [
           "salesProcess.conversionEvent",
           "salesProcess.followUpCadences",
+          "toolsAndAccess.scheduling",
           "operationsAutomation.responseSlas"
         ],
         "unverifiedHv": [
@@ -220,7 +229,10 @@
       "readiness": {
         "ready": false,
         "missingFields": [
-          "salesProcess.conversionEvent"
+          "seo.technical",
+          "toolsAndAccess.websiteCms",
+          "salesProcess.conversionEvent",
+          "goals.budgetConstraints"
         ],
         "unverifiedHv": [
           "toolsAndAccess.websiteCms",
@@ -246,6 +258,7 @@
       "readiness": {
         "ready": false,
         "missingFields": [
+          "operationsAutomation.recurringTasks",
           "operationsAutomation.escalationRouting",
           "operationsAutomation.spendCap",
           "toolsAndAccess.automationPlatform",
@@ -276,6 +289,7 @@
           "seo.measurementTargets",
           "salesProcess.funnel.revenuePerCustomer",
           "toolsAndAccess.analytics",
+          "goals.budgetConstraints",
           "operationsAutomation.spendCap",
           "operationsAutomation.monitoring"
         ],
@@ -326,8 +340,7 @@
         "ready": false,
         "missingFields": [
           "positioning.recommendedStatement",
-          "pricing.shareable",
-          "content.testimonials"
+          "pricing.shareable"
         ],
         "unverifiedHv": [
           "pricing.shareable"
@@ -349,7 +362,8 @@
       "readiness": {
         "ready": false,
         "missingFields": [
-          "governance.offboardingPlan"
+          "governance.offboardingPlan",
+          "toolsAndAccess.stack"
         ],
         "unverifiedHv": [
           "governance.offboardingPlan",
@@ -359,13 +373,55 @@
       }
     },
     {
+      "id": "doc-web-prd",
+      "title": "Website Requirements PRD",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "customers.primaryCustomer",
+          "seo.primaryKeywordTargets",
+          "salesProcess.conversionEvent",
+          "content.written"
+        ],
+        "unverifiedHv": [
+          "goals.engagementScope.websiteScope"
+        ],
+        "missingDocs": [
+          "doc-01",
+          "doc-02",
+          "doc-06",
+          "doc-10"
+        ]
+      }
+    },
+    {
+      "id": "design-system",
+      "title": "Design System",
+      "readiness": {
+        "ready": false,
+        "missingFields": [
+          "voice.attributes"
+        ],
+        "unverifiedHv": [
+          "goals.engagementScope.websiteScope"
+        ],
+        "missingDocs": [
+          "doc-01",
+          "doc-05",
+          "doc-10"
+        ]
+      }
+    },
+    {
       "id": "i07",
       "title": "Account Access & Governance",
       "readiness": {
         "ready": false,
         "missingFields": [
+          "people.billingContact",
           "governance.dataResidency",
-          "governance.offboardingPlan"
+          "governance.offboardingPlan",
+          "goals.budgetConstraints"
         ],
         "unverifiedHv": [
           "people.billingContact",
@@ -412,7 +468,10 @@
       "title": "Client Skills Deployment",
       "readiness": {
         "ready": false,
-        "missingFields": [],
+        "missingFields": [
+          "operationsAutomation.recurringTasks",
+          "toolsAndAccess.stack"
+        ],
         "unverifiedHv": [
           "toolsAndAccess.stack"
         ],
@@ -433,6 +492,7 @@
       "readiness": {
         "ready": false,
         "missingFields": [
+          "toolsAndAccess.stack",
           "toolsAndAccess.apiSpend.caps",
           "governance.dataResidency"
         ],
@@ -453,6 +513,7 @@
       "readiness": {
         "ready": false,
         "missingFields": [
+          "operationsAutomation.recurringTasks",
           "operationsAutomation.monitoring",
           "toolsAndAccess.browserDeviceLandscape"
         ],
@@ -530,6 +591,7 @@
       "readiness": {
         "ready": false,
         "missingFields": [
+          "operationsAutomation.recurringTasks",
           "toolsAndAccess.assetStorage",
           "governance.reviewResponsePolicy"
         ],
@@ -553,68 +615,63 @@
   "fill": [
     {
       "section": "identity",
-      "filled": 8,
-      "total": 8
+      "filled": 7,
+      "total": 7
     },
     {
       "section": "people",
-      "filled": 4,
-      "total": 4
-    },
-    {
-      "section": "offerings",
-      "filled": 4,
-      "total": 4
-    },
-    {
-      "section": "pricing",
       "filled": 3,
       "total": 3
     },
     {
-      "section": "capacity",
+      "section": "offerings",
+      "filled": 3,
+      "total": 3
+    },
+    {
+      "section": "pricing",
       "filled": 2,
       "total": 2
     },
     {
       "section": "customers",
+      "filled": 1,
+      "total": 1
+    },
+    {
+      "section": "positioning",
+      "filled": 3,
+      "total": 3
+    },
+    {
+      "section": "voice",
+      "filled": 3,
+      "total": 3
+    },
+    {
+      "section": "salesProcess",
       "filled": 6,
       "total": 6
     },
     {
-      "section": "positioning",
-      "filled": 2,
-      "total": 2
+      "section": "content",
+      "filled": 8,
+      "total": 8
     },
     {
-      "section": "voice",
+      "section": "seo",
+      "filled": 1,
+      "total": 1
+    },
+    {
+      "section": "toolsAndAccess",
       "filled": 4,
       "total": 4
     },
     {
-      "section": "salesProcess",
-      "filled": 7,
-      "total": 7
-    },
-    {
-      "section": "content",
-      "filled": 5,
-      "total": 5
-    },
-    {
-      "section": "seo",
-      "filled": 2,
-      "total": 2
-    },
-    {
-      "section": "toolsAndAccess",
-      "filled": 9,
-      "total": 9
-    },
-    {
       "section": "operationsAutomation",
-      "filled": 2,
-      "total": 2
+      "filled": 1,
+      "total": 1
     },
     {
       "section": "governance",
@@ -623,8 +680,8 @@
     },
     {
       "section": "goals",
-      "filled": 5,
-      "total": 5
+      "filled": 4,
+      "total": 4
     }
   ],
   "generated": []

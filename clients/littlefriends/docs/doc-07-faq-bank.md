@@ -1,4 +1,4 @@
-# Little Friends Learning Loft FAQ and common questions bank
+# Little Friends Learning Loft FAQ and Common Questions Bank
 
 **Prepared by:** Joshua Brown / Upriver Consulting
 **Date:** June 2026
@@ -14,1283 +14,1200 @@
 - Document 08: Email Templates (email-specific application of these answers)
 - Document 10: Automation Spec Package (where these answers get wired into automated systems)
 
-**Critical principle:** Every question here has a single authoritative answer. When the chatbot, the auto-responder, Rebecca, and the lead teachers all answer the same customer question differently, trust erodes. This document establishes the single answer for each common question, then all downstream systems reference it. Variations in phrasing are fine and encouraged; variations in substance are not.
+**Critical principle:** Every question here has a single authoritative answer. When the chatbot, the auto-responder, the coordinator, and the director all answer the same customer question differently, trust erodes. This document establishes the single answer for each common question, then all downstream systems reference it. Variations in phrasing are fine and encouraged; variations in substance are not.
 
 ---
 
-## 1. Categorized question inventory
+## 1. Categorized Question Inventory
 
 Total questions covered: 35
 
 **Category A: Programs and age eligibility**
 - Q1.1: What programs do you offer?
-- Q1.2: What ages do you accept?
-- Q1.3: Do you accept infants or children under two?
-- Q1.4: What is the difference between the Twos, Threes, and Pre-K classes?
-- Q1.5: What does "play-based" mean in practice?
+- Q1.2: What ages do you serve?
+- Q1.3: Do you accept infants or children under 2?
+- Q1.4: What is the Twos program?
+- Q1.5: What is the Threes program?
+- Q1.6: What is the Pre-K program?
+- Q1.7: Do you offer aftercare?
 
-**Category B: Tuition and fees**
-- Q2.1: How much does tuition cost?
-- Q2.2: Is there a registration fee?
-- Q2.3: What is the deposit, and is it refundable?
-- Q2.4: Do you offer discounts for JCC members or siblings?
-- Q2.5: Do you accept child care subsidy programs or state vouchers?
+**Category B: Enrollment and tours**
+- Q2.1: How do I find out if there is space for my child?
+- Q2.2: How do I schedule a tour?
+- Q2.3: What happens at a tour?
+- Q2.4: Is there a waitlist?
+- Q2.5: When does enrollment open for the next school year?
+- Q2.6: What is the enrollment process once we decide to move forward?
 
-**Category C: Availability and enrollment**
-- Q3.1: Do you have openings for the upcoming school year?
-- Q3.2: How do I enroll my child?
-- Q3.3: Do I have to tour before enrolling?
-- Q3.4: How far in advance should I apply?
-- Q3.5: Do you have a waitlist?
-- Q3.6: What paperwork or documents do I need to submit?
+**Category C: Pricing and costs**
+- Q3.1: How much does tuition cost?
+- Q3.2: Is there a registration fee?
+- Q3.3: What is the deposit?
+- Q3.4: Are there sibling discounts or other financial considerations?
 
-**Category D: Daily schedule and operations**
-- Q4.1: What are your hours?
-- Q4.2: What days of the week does school run?
-- Q4.3: Do you follow the school-year calendar?
-- Q4.4: What does a typical morning look like?
-- Q4.5: What is your sick policy?
-- Q4.6: Do you provide snacks, or do children bring food from home?
+**Category D: Schedule and calendar**
+- Q4.1: What are the school hours?
+- Q4.2: Do you offer part-week enrollment (fewer than 5 days)?
+- Q4.3: Do you offer summer school or summer care?
+- Q4.4: Do you offer transportation?
+- Q4.5: Do you offer before-school care?
 
-**Category E: Aftercare**
-- Q5.1: What is aftercare, and who is eligible?
-- Q5.2: What are aftercare hours?
-- Q5.3: How much does aftercare cost?
+**Category E: Curriculum and approach**
+- Q5.1: What approach does Little Friends Learning Loft use?
+- Q5.2: How is Montessori different from a regular preschool?
+- Q5.3: Is there homework or worksheets?
+- Q5.4: How do you handle challenging behavior?
 
-**Category F: The JCC connection**
-- Q6.1: Is this school only for Jewish families?
-- Q6.2: What does being inside the JCC mean for the program?
-- Q6.3: Does JCC membership affect enrollment or tuition?
+**Category F: Meals, health, and safety**
+- Q6.1: Do you provide meals or snacks?
+- Q6.2: Can you accommodate food allergies?
+- Q6.3: What is your sick child policy?
+- Q6.4: What are the drop-off and pickup procedures?
 
-**Category G: Staff and communication**
-- Q7.1: Who is the director?
-- Q7.2: Who are the classroom teachers?
-- Q7.3: How do I contact the school with a question or concern?
-- Q7.4: How do you communicate with families day to day?
-- Q7.5: What is Brightwheel?
+**Category G: Transition and settling in**
+- Q7.1: My child has never been in school before. How do you handle the first days?
+- Q7.2: What if my child cries every morning at drop-off?
 
-**Category H: Health and safety**
-- Q8.1: What immunizations are required?
-- Q8.2: What happens if my child gets sick at school?
-- Q8.3: How do you handle children with allergies?
-- Q8.4: Is the school licensed by the state?
-- Q8.5: How do you handle separation anxiety and the first weeks of school?
+**Category H: Staff, ratios, and the school community**
+- Q8.1: How many children are in each classroom, and how many teachers?
+- Q8.2: Do we need to be JCC members to enroll?
+- Q8.3: How do I reach my child's teacher?
 
 ### How to use this document
 
-- **Chatbot:** Match the customer's question to the closest Q, return the A adapted slightly for context
-- **Auto-responder:** The answer_template in each Q is the default; adapt tone to match the specific inquiry
-- **Email templates:** Pull answers from here as pre-written blocks; customize greeting and close per template
-- **Rebecca (and all staff):** Reference when a family asks something and you want to confirm the single correct answer
+- **Chatbot:** Match the customer's question to the closest Q in this document, return the A adapted slightly for context.
+- **Auto-responder:** The answer_template field in each Q is the default; adapt tone to match the specific inquiry.
+- **Email templates:** Pull answers from here as pre-written blocks; customize greeting and close per template.
+- **Human representatives:** Reference when a family asks something and the "official" answer isn't immediately clear.
 
 ---
 
-## 2. Programs and age eligibility
+## 2. Programs and Age Eligibility
 
 ### Q1.1: What programs do you offer?
 
 **Answer (pre-approved):**
 
-Little Friends has four programs: the Twos class for two-year-olds, the Threes class for three-year-olds, Pre-K for four-year-olds, and aftercare for families who need extended hours beyond the school day. Each classroom has its own lead teacher and stays small enough that the teacher knows your child by name from the first week. [NEEDS CONFIRMATION: days and hours for each program]
+Little Friends Learning Loft offers four programs: the Twos class (for children who are 2 years old), the Threes class (for children who are 3), Pre-K (for children who are 4, sometimes called the fours), and Aftercare after the school day ends. All three classroom programs follow the Montessori approach. The classes are small and each is led by a named, consistent teacher: Miss Tova in the Twos, Miss Carla in the Threes, and Miss Dana in Pre-K.
+
+The school serves children ages 2 through 5. It is not licensed for infant care.
 
 **Facts referenced:**
-- Doc 02, Section 3: core programs (Twos, Threes, Pre-K, aftercare)
-- Doc 02, Section 2: lead teachers named per classroom
+- Doc 02, Section 3: core program offerings (Twos, Threes, Pre-K, Aftercare)
+- Doc 02, Section 2: teacher names by classroom (Tova, Carla, Dana)
+- Client profile, offerings.core
 
 **Voice notes:**
-- This is often a first-contact question; answer it clearly and invite the natural next step
-- "Small enough that the teacher knows your child by name" is the actual proof point from doc-02's differentiators, not a generic warm phrase
-- Don't describe the programs in abstract developmental terms; stick to what they are
+- Conversational and factual. Families asking this are usually early in research and want a clear picture, not a pitch.
+- Name the teachers by name. "Miss Tova, Miss Carla, Miss Dana" is more personal than "our experienced staff."
 
 **When to deflect to a human:**
-- Never; this is a basic orientation question with no risk attached
+- Never, for this question. It is foundational and always safe to answer directly.
 
 **Follow-up prompt:**
-"How old is your child, or will be this September?"
+"Which age is your child? I can tell you more about the specific class that would be the right fit."
 
 **Don't say:**
-- "We offer a variety of programs tailored to your family's needs" (vague marketing language)
-- "Childcare" (this is a preschool; see doc-01 banned vocabulary)
-- "Curriculum" as a selling point without describing what it looks like in practice
+- "We offer a rich array of programs" (vague and corporate)
+- "Our programs are designed to help children thrive" ("thrive" is a banned word per doc-01)
+- "We have something for every child" (not accurate; not every child is the right fit for Montessori)
 
 ---
 
-### Q1.2: What ages do you accept?
+### Q1.2: What ages do you serve?
 
 **Answer (pre-approved):**
 
-The school serves children from age two through four, the year before kindergarten. The Twos class is for two-year-olds, the Threes class for three-year-olds, and Pre-K for four-year-olds. Aftercare is available to enrolled families who need extended care beyond the school day. [NEEDS CONFIRMATION: exact minimum age cutoff, for example, must a child turn two by September 1st?]
+Little Friends Learning Loft is licensed for children ages 2 through 5. The three classroom programs are the Twos, the Threes, and Pre-K (for fours). Children who turn 2 by [NEEDS CONFIRMATION: What is the age-eligibility cutoff date for the Twos program?] are eligible for the Twos program. Pre-K is the final year before kindergarten.
+
+If your child is under 2, the school is not able to help with that. Little Friends is licensed by NYS OCFS for age 2 and up, and there are no exceptions to that line.
 
 **Facts referenced:**
-- Doc 02, Section 3: program descriptions by age group
-- Doc 02, Section 5: age range served (2 through 5), minimum age 2, OCFS license does not cover children under 2
+- Doc 02, Section 1 (Identity): licensed for ages 2 through 5, NYS OCFS
+- Doc 02, Section 3 (Programs): Twos, Threes, Pre-K
+- Client profile, offerings.dontDo
 
 **Voice notes:**
-- Plain and specific; give the actual age range
-- Parents asking this often have a child who just turned two or is approaching two; they want a direct answer, not a paragraph
-- Don't bury the answer in program description language
+- The infant limitation comes up frequently, often from parents who are planning well in advance. Answer directly but warmly.
+- Don't apologize at length. State the fact, then offer a useful next step.
 
-**When to deflect to a human:**
-- If a parent asks about a child under two, follow Q1.3
+**When to deflect:**
+- Never, for this. A factual answer is appropriate every time.
 
 **Follow-up prompt:**
-"How old is your child?"
+"How old is your child, and when were you hoping to start?"
 
 **Don't say:**
-- "We welcome children of all ages" (false; there is an age floor)
-- "Toddlers and preschoolers" (vague; use the actual class names)
-- Any implication that exceptions can be made on the minimum age
+- "Unfortunately we can't take infants" (the "unfortunately" implies negotiability; just state the fact)
+- "We only serve a limited age range" (vague; be specific: 2 through 5)
 
 ---
 
-### Q1.3: Do you accept infants or children under two?
+### Q1.3: Do you accept infants or children under 2?
 
 **Answer (pre-approved):**
 
-No. Little Friends is licensed by New York State OCFS for children ages two and up. I can't enroll infants or children under two, and that's a licensing requirement, not a policy I can make exceptions to.
+No. Little Friends Learning Loft is licensed by NYS OCFS for children ages 2 and up. That licensing line is firm, and there are no exceptions.
 
-If you're looking for infant or toddler care in the area, I'm happy to point you toward options. [NEEDS CONFIRMATION: specific local infant-care programs Rebecca refers families to]
+If your child is not yet 2, I'd be glad to follow up when they are closer to that age. Many families stay in touch and check back in when their child turns 2. Is that something that would be helpful?
 
 **Facts referenced:**
-- Doc 02, Section 3: "infant care, licensed two-and-up only; high inbound demand but always declined"
-- Doc 02, Section 5: minimum age two, OCFS license does not cover children under age two
-- Doc 02, Section 1: licensed by OCFS for ages 2 and up, licensed capacity 58
+- Doc 02, Section 1: NYS OCFS licensed, ages 2 and up
+- Client profile, offerings.dontDo
 
 **Voice notes:**
-- Be direct and clear; don't soften the "no" into ambiguity or a future possibility
-- Acknowledge the underlying need and offer a referral if available
-- Don't make the parent feel bad for asking; this is one of the most common questions the school receives
+- Parents asking this often have a baby and are planning ahead. The tone should be warm and not dismissive.
+- Offer a path forward: stay in touch for when the child is older.
 
-**When to deflect to a human:**
-- Never for the core answer; it is firm. If the parent is frustrated, route to Rebecca.
+**When to deflect:**
+- Never. This is a factual limitation. State it clearly.
 
 **Follow-up prompt:**
-If the parent also has a two-year-old: "Do you have a child who's two or older? I'd be happy to help with that."
+"When will your child turn 2? I can let you know the right time to reach back out about the Twos program."
 
 **Don't say:**
-- "Unfortunately, we are unable to accommodate infants at this time" (implies this might change)
-- "We may be expanding our programs in the future" (do not suggest infant care is coming)
-- "That would depend on availability" (it doesn't; it is a license limit, not a capacity decision)
-- "Let me check and get back to you" on this question
+- "We'd love to help but unfortunately..." (false sympathy)
+- "That's a great question" (filler)
+- Any implication that exceptions exist
 
 ---
 
-### Q1.4: What is the difference between the Twos, Threes, and Pre-K classes?
+### Q1.4: What is the Twos program?
 
 **Answer (pre-approved):**
 
-The three classrooms are organized by age and staffed separately. The Twos room has Miss Tova and a 1:5 staff-to-child ratio, which is the highest level of adult attention in the building. The Threes room is with Miss Carla at a 1:7 ratio. Pre-K is with Miss Dana at a 1:8 ratio, in the final year before kindergarten.
+The Twos class is led by Miss Tova and is one of the smallest and most intentional programs in the school: one teacher for every five children. For many families, this is their child's first school experience.
 
-The classes aren't just sorted by age; the pacing and expectations are different. The Twos room is usually the first group setting for those children, so separation is expected and the teachers handle it directly. The Threes room is where the social piece develops in earnest. Pre-K has more structured time, and the children are getting used to kindergarten routines.
+The program follows the Montessori approach, which means children work with hands-on materials and real, purposeful tasks rather than worksheets or group instruction. The morning centers on building the habits that make school feel safe and consistent.
 
-[NEEDS CONFIRMATION: actual days, hours, and any curriculum framework for each program]
+[NEEDS CONFIRMATION: What are the schedule options for the Twos (days per week, half-day vs. full-day, start and end times)?]
 
 **Facts referenced:**
-- Doc 02, Section 3: program descriptions, OCFS-required ratios (1:5 Twos, 1:7 Threes, 1:8 Pre-K)
-- Doc 02, Section 2: Miss Tova (Twos), Miss Carla (Threes), Miss Dana (Pre-K)
+- Doc 02, Section 2: Miss Tova leads the Twos
+- Doc 02, Section 5: 1:5 ratio for the Twos class
+- Client profile, capacity.metrics
 
 **Voice notes:**
-- Parents asking this often want to know which class their child belongs in, or whether the school is the right fit for where their child is developmentally
-- Describing the practical difference in pacing across the three rooms is more useful than quoting ratios alone
-- Don't frame Pre-K as "rigorous" or "academic"; say what actually happens
+- Families asking about the Twos are often new to the whole idea of school. Keep the answer warm and reassuring. Emphasize the small ratio and Tova's role by name.
+- Don't oversell readiness or academic outcomes; emphasize safety and consistency.
 
-**When to deflect to a human:**
-- If a parent wants curriculum specifics or has a question about whether their child will be developmentally ready to move up, route to Rebecca
+**When to deflect:**
+- If a parent has specific concerns about whether their child is "ready," route to Rebecca after acknowledging the question.
 
 **Follow-up prompt:**
-"How old is your child? That will tell us which room is the right fit."
+"Is this your child's first school experience, or have they been in any care setting before?"
 
 **Don't say:**
-- "Age-appropriate activities" (banned phrase in doc-01; describe what actually happens instead)
-- "Developmentally appropriate" without explaining what it means in this specific room
-- "Rigorous Pre-K curriculum" (doc-01 explicitly cautions against "curriculum" as a selling point without concrete specifics)
+- "Your child will love it" (narrates the child's future; doc-01 forbids this)
+- "Nurturing environment" (banned phrase per doc-01)
+- "Second family" (banned phrase per doc-01)
 
 ---
 
-### Q1.5: What does "play-based" mean in practice?
+### Q1.5: What is the Threes program?
 
 **Answer (pre-approved):**
 
-It means the morning is structured around what children do when left to explore with good materials and an adult close by. The classrooms have a block corner, an art table, a dramatic play area. [NEEDS CONFIRMATION: confirm actual space names and whether there is dedicated outdoor time and space] The teachers watch and step in, but they're not running a worksheet-style class.
+The Threes class is led by Miss Carla. The ratio is one teacher for every seven children. Children in this program are building on what they started at 2 (or entering school for the first time), and the Montessori work in this class begins to layer in more intentional pre-literacy, pre-numeracy, and social practice.
 
-Play-based doesn't mean unstructured. There's a morning routine, circle time, snack. But the learning that matters at this age, the social skills, language, problem-solving, happens when children are playing next to and with each other. The teachers are trained to see and support that, not direct it.
-
-[NEEDS CONFIRMATION: specific curriculum framework, if any, for example High/Scope or Reggio-influenced, or no named framework]
+[NEEDS CONFIRMATION: What are the schedule options for the Threes (days per week, half-day vs. full-day, start and end times)?]
 
 **Facts referenced:**
-- Doc 02, Section 7: play-based as a key differentiator
-- Doc 01, Section 5: "play, explore, exploring" as vocabulary; block corner and art table as space names
+- Doc 02, Section 2: Miss Carla leads the Threes
+- Doc 02, Section 5: 1:7 ratio for the Threes
 
 **Voice notes:**
-- Parents asking this are often comparing play-based to academic preschools; the real underlying question is "will my child be ready for kindergarten?" Address it
-- Don't claim the method is innovative or novel; just describe what actually happens
-- Use specific space names once confirmed; that specificity is part of the brand voice
+- This is often the first school experience for children who skipped the Twos year. Acknowledge that gently if the parent indicates it.
 
-**When to deflect to a human:**
-- If a parent asks detailed questions about kindergarten readiness benchmarks or specific learning standards, route to Rebecca
+**When to deflect:**
+- Never for factual questions about program structure. Route to Rebecca for anything touching specific child readiness or a particular child's situation.
 
 **Follow-up prompt:**
-"Do you have questions about what the morning actually looks like?"
+"Is your child currently in the Twos here, or would this be a new enrollment?"
 
 **Don't say:**
-- "Child-centered learning" (explicitly banned in doc-01)
-- "Our innovative play-based curriculum" ("innovative" overclaims novelty; doc-01 says say what it is specifically, don't claim it's novel)
-- "Holistic development" (banned)
-- "A love of learning" (banned)
+- "Your child will develop a love of learning" (narrates the child's future)
+- "Play-based" (doc-01 flags this as muddying the Montessori philosophy)
 
 ---
 
-## 3. Tuition and fees
-
-### Q2.1: How much does tuition cost?
+### Q1.6: What is the Pre-K program?
 
 **Answer (pre-approved):**
 
-I'd love to show you the space first before getting into tuition. The number depends on the program and the number of days, and out of context it tends to lose families who would have loved us once they saw what they were actually getting.
+The Pre-K class is led by Miss Dana and serves four-year-olds in their last year before kindergarten. The ratio is one teacher for every eight children. In the Montessori framework, this is the year when the abstract connections begin to land: children who have been handling physical materials for two or three years start making the leap from concrete to symbolic understanding.
 
-The best next step is a tour with me. I walk you through the classrooms, introduce whoever is around that day, and go over all the details including pricing before you leave. No pitch, no pressure. Can I help you set that up?
+Pre-K at Little Friends is the final year of the mixed-age arc. Children who have been in the environment since the Twos typically move through Pre-K with real confidence.
+
+[NEEDS CONFIRMATION: What are the schedule options for Pre-K (days per week, half-day vs. full-day, start and end times)?]
 
 **Facts referenced:**
-- Doc 02, Section 4: tuition is intentionally withheld from public-facing materials; shared only after tour
-- Client profile, pricing.nonShareable: deflection language provided directly by client
+- Doc 02, Section 2: Miss Dana leads Pre-K
+- Doc 02, Section 5: 1:8 ratio for Pre-K
+- Doc 01, Section 5: "concrete to abstract" Montessori vocabulary; "mixed-age"
 
 **Voice notes:**
-- This is the most common question in any first inquiry; use language close to the client's own deflection: "the number out of context tends to lose families who would have loved us"
-- Don't apologize for the policy; frame it as a benefit to the family, not as a rule they have to comply with
-- Warm but not evasive; acknowledge the question directly, name the reason briefly, make the next step concrete
+- Parents asking about Pre-K are often thinking about kindergarten readiness. Don't use the phrase "school-ready" (doc-01 flags it as a loaded phrase). Describe what children actually gain in concrete terms.
 
-**When to deflect to a human:**
-- If the parent pushes back and refuses to consider a tour before getting a number, route to Rebecca for a judgment call; don't override the no-tuition policy
+**When to deflect:**
+- Never for program overview questions. Route to Rebecca for specific kindergarten transition questions.
 
 **Follow-up prompt:**
-The answer itself contains the prompt: "Can I help you set up a tour?"
+"Is your child turning 4 this year, or are you planning a year ahead?"
 
 **Don't say:**
-- Any dollar amount for tuition (this is a standing policy; see doc-02 Section 4)
-- "Our tuition is competitive with other programs in the area" (vague)
-- "Pricing varies" without immediately pairing it with the tour offer
-- "For pricing information, please contact our office" (sounds like a brush-off; always frame it as a tour, not an office call)
+- "School-ready" (doc-01 explicitly flags this)
+- "Your child will be fully prepared for kindergarten" (overpromises)
+- "Emerging readers" (banned phrase per doc-01)
 
 ---
 
-### Q2.2: Is there a registration fee?
+### Q1.7: Do you offer aftercare?
 
 **Answer (pre-approved):**
 
-Yes, there is a $75 registration fee per child. This covers the administrative processing of the enrollment application. [NEEDS CONFIRMATION: is the fee due at the time of submitting the application, or at the point of enrollment commitment? Is it refundable if the family decides not to enroll after paying it?]
+Yes. Aftercare runs after the regular school day and is available for enrolled families. It is staffed by Yael.
+
+[NEEDS CONFIRMATION: What hours does aftercare run?]
+[NEEDS CONFIRMATION: Is aftercare available to all enrolled age groups, or only some?]
+[NEEDS CONFIRMATION: Is aftercare priced separately from tuition, and if so, what does it cost?]
+[NEEDS CONFIRMATION: Is there a waitlist for aftercare?]
+
+For the specifics on aftercare availability and cost, the right conversation is with Rebecca.
 
 **Facts referenced:**
-- Doc 02, Section 4: registration fee $75 confirmed
+- Doc 02, Section 3: Aftercare listed as a core program
+- Doc 03, Section 3: "Aftercare with Yael" referenced in qualification criteria
 
 **Voice notes:**
-- Answer directly; this is a concrete factual question and hedging sounds evasive
-- The deposit question usually follows immediately; see Q2.3
+- Parents asking about aftercare are usually weighing a real logistical question (can I make pickup work?). Answer with what you have and route quickly for the rest. Don't speculate.
 
-**When to deflect to a human:**
-- If a family disputes the fee or asks for it to be waived, route to Rebecca or Linda (bookkeeper)
+**When to deflect:**
+- All cost questions route to Rebecca (director) or Linda (bookkeeper). See Section 10, Deflection Templates.
 
 **Follow-up prompt:**
-"Do you have questions about the rest of the enrollment process?"
+"Do you have a specific pickup time window you need coverage for? That helps Rebecca answer the right question."
 
 **Don't say:**
-- "A small administrative fee" (the real number is $75; use it)
-- Any implication that the fee is negotiable
+- "We have a great aftercare program" (vague)
+- Any specific hours or costs that are not confirmed
 
 ---
 
-### Q2.3: What is the deposit, and is it refundable?
+## 3. Enrollment and Tours
+
+### Q2.1: How do I find out if there is space for my child?
 
 **Answer (pre-approved):**
 
-To hold your child's spot in a classroom, there is a deposit equal to one month's tuition. The deposit is non-refundable.
+The best first step is a tour. Little Friends Learning Loft has 58 licensed spots total across all three classrooms. Right now, there is room for a few more children in the Twos. I can share what's open and walk you through next steps once you've had a chance to see the space.
 
-[NEEDS CONFIRMATION: when is the deposit due, at signing the enrollment agreement or at a different point? What payment method is accepted?]
+[NEEDS CONFIRMATION: Waitlist status for the Threes and Pre-K as of the current enrollment period.]
 
 **Facts referenced:**
-- Doc 02, Section 4: deposit equals one month's tuition, non-refundable, confirmed
+- Doc 02, Section 5: licensed capacity 58, current enrollment 52, room for a few more Twos
+- Client profile, capacity.metrics
 
 **Voice notes:**
-- Be direct about non-refundable; softening it in a way that creates false expectations causes more friction downstream
-- Families ask this because they want to know their financial risk before committing; the honest answer respects that
+- Parents who ask about space are ready to take a step. Don't lead with a form; lead with the tour invitation.
+- Honest about 90% utilization without manufacturing urgency. "Room for a few more" is accurate for the Twos. Threes/Pre-K status requires confirmation.
 
-**When to deflect to a human:**
-- Any request for an exception to the non-refundable policy (family emergency, sudden move) routes to Rebecca; billing and money matters belong with a human
+**When to deflect:**
+- For specific classroom status beyond the Twos, note that Rebecca confirms current availability on the tour.
 
 **Follow-up prompt:**
-"Do you have questions about what comes next after the deposit is paid?"
+"Want me to share how to schedule a tour? It takes about 10 minutes to get on the calendar."
 
 **Don't say:**
-- "Typically non-refundable" (it is non-refundable; don't introduce ambiguity)
-- Any implication that the deposit can be returned under special circumstances without routing to Rebecca first
+- "We have very limited availability" (alarmist)
+- "Act fast" (pressure; not how this school talks)
 
 ---
 
-### Q2.4: Do you offer discounts for JCC members or siblings?
+### Q2.2: How do I schedule a tour?
 
 **Answer (pre-approved):**
 
-[NEEDS CONFIRMATION: sibling discounts, JCC member discounts, early enrollment discounts, and financial aid options have not been confirmed for public sharing as of June 2026. Once confirmed, this answer will include the specific discount types, amounts, and who qualifies for each.]
+Scheduling a tour is done through Sign-Up Genius. [NEEDS CONFIRMATION: Direct URL to the Sign-Up Genius tour calendar.]
 
-Until confirmed, this question routes to Rebecca for a direct answer.
+Tours are by appointment. Rebecca (the director) leads every tour personally.
+
+Come and see. That's the right starting point for any family that's curious.
 
 **Facts referenced:**
-- Doc 02, Section 4: discounts and exceptions listed as pending confirmation as of June 2026
+- Doc 03, Section 4: conversion event is the in-person tour; Sign-Up Genius used for scheduling
+- Doc 02, Section 2: Rebecca leads tours
 
 **Voice notes:**
-- Do not state a JCC discount percentage; this has not been approved for public-facing use
-- Route warmly, not dismissively
+- Use "Come and see" from doc-01. It's warmer than "schedule a visit" or "book a tour."
+- Keep this short. A family asking how to schedule is ready to act. Don't lecture them before they do.
 
-**When to deflect to a human:**
-- Always, until this section of the Business Facts Reference is confirmed
+**When to deflect:**
+- Never.
 
 **Follow-up prompt:**
-"Can I have Rebecca reach out to you directly with the details on pricing and any discounts that apply to your situation?"
+"Would you like me to share the direct scheduling link?"
 
 **Don't say:**
-- Any specific discount percentage
-- "We have great discounts available for JCC families" (overclaims something unconfirmed)
-- "We do not offer discounts" (also unconfirmed)
+- "To begin your enrollment journey..." (corporate language)
+- Any suggestion that tuition will be discussed before the tour (it's shared during and after the visit)
 
 ---
 
-### Q2.5: Do you accept child care subsidy programs or state vouchers?
+### Q2.3: What happens at a tour?
 
 **Answer (pre-approved):**
 
-[NEEDS CONFIRMATION: does the school accept ACS vouchers, the Child Care Assistance Program, or any other state or county subsidy programs? This has not been confirmed in the Business Facts Reference as of June 2026.]
+Rebecca (the director) shows you the school, walks you through the classroom, and explains how the Montessori day works. You'll see the actual environment and the materials, and you'll get a real sense of the scale of the school.
 
-Until confirmed, this question routes to Rebecca. Families asking this are often working with a tight budget and need a real answer, not a placeholder.
+Tours are in-person, at the school. [NEEDS CONFIRMATION: Typical tour duration?] [NEEDS CONFIRMATION: What materials or information do families receive during or after the tour?]
+
+Most families find that seeing it answers a lot of their questions. Tuition and enrollment details come up during and after the visit, once there's a real conversation.
 
 **Facts referenced:**
-- Doc 02, Section 4: subsidy program participation listed as pending confirmation
+- Doc 03, Section 4: tour is the conversion event; Rebecca leads it; in-person at the school
+- Doc 01, Section 5: "the environment," "the materials" (preferred Montessori vocabulary)
 
 **Voice notes:**
-- This is a practically necessary question for some families; don't leave them with "I don't know" as the final answer
-- Route with warmth and a concrete next step
+- Don't inflate what the tour is. Honesty is the brand. Parents value that the director leads it personally.
+- Tuition is not shared before the tour. Keep that framing clear without making it sound like the school is being evasive.
 
-**When to deflect to a human:**
-- Always, until confirmed
+**When to deflect:**
+- Never.
 
 **Follow-up prompt:**
-"I want to make sure you get the right answer on this. Can I have Rebecca follow up with you directly?"
+"Is there a particular day or time that works better for you?"
 
 **Don't say:**
-- "Unfortunately, we do not accept subsidies" (not confirmed)
-- "Yes, we work with many subsidy programs" (not confirmed)
+- "We'll answer all your questions" (overpromises)
+- "Our tours are amazing" (marketing-speak)
 
 ---
 
-## 4. Availability and enrollment
-
-### Q3.1: Do you have openings for the upcoming school year?
+### Q2.4: Is there a waitlist?
 
 **Answer (pre-approved):**
 
-As of June 2026, 52 of the 58 licensed spots are filled. Whether a spot is open in the specific classroom your child needs depends on their age, and that figure changes through the enrollment cycle. The best way to get a current answer is to reach out to Rebecca.
+Right now, there is room for a few more children in the Twos class. [NEEDS CONFIRMATION: Is there a waitlist for the Threes or Pre-K classes? What is the current status for each?]
 
-[NEEDS CONFIRMATION: current waitlist status by classroom; which classrooms, if any, are at or near capacity as of the writing date]
+If the program you're interested in has a waitlist, Rebecca keeps that list and reaches out as space opens. A $75 registration fee is paid when you apply, and your place on the waitlist is held from that point.
+
+[NEEDS CONFIRMATION: Is the $75 registration fee required for a waitlist application? Is it refundable if a waitlisted family does not end up enrolling?]
 
 **Facts referenced:**
-- Doc 02, Section 5: licensed capacity 58, current enrollment 52 as of June 2026; flagged as time-sensitive
-- Doc 02, Section 5: waitlist status by classroom listed as pending confirmation
+- Doc 02, Section 5: capacity metrics; Twos has room
+- Doc 02, Section 4: $75 registration fee
 
 **Voice notes:**
-- The 52 of 58 figure is dated June 2026; flag it as time-sensitive and direct to Rebecca for a current number
-- Don't imply there's definitely a spot, and don't imply there definitely isn't one
-- Honest urgency is fine; pressure language is not
+- Keep this calm and factual. Urgency is not how this school sells.
+- If a parent sounds anxious about timing, "There is no rush" (doc-01 phrase) fits here, followed by the honest facts.
 
-**When to deflect to a human:**
-- When the parent wants a specific answer about a specific classroom, route to Rebecca for the current headcount
+**When to deflect:**
+- For any specific waitlist question about the Threes or Pre-K, route to Rebecca.
 
 **Follow-up prompt:**
-"How old is your child, and are you thinking about September or a different start date?"
+"Which program and year are you thinking about? I can give you the most current picture."
 
 **Don't say:**
-- "We have plenty of availability" (potentially false)
-- "We are completely full" (also potentially false)
-- "Spots go fast, so act now!" (pressure language)
+- "We fill up fast" (pressure-selling; not this brand)
+- Any false precision on waitlist lengths or timeframes
 
 ---
 
-### Q3.2: How do I enroll my child?
+### Q2.5: When does enrollment open for the next school year?
 
 **Answer (pre-approved):**
 
-The first step is a tour. Rebecca leads all the tours in person, walks you through the classrooms, introduces whoever is around that day, and goes over everything including tuition before you leave.
+[NEEDS CONFIRMATION: What is the typical enrollment opening date or window for the next school year? Does re-enrollment for current families happen before new family enrollment opens?]
 
-Once you've toured and decided it's the right fit, you fill out an enrollment application, pay a $75 registration fee and a one-month deposit to hold the spot, and submit your child's current immunization records.
-
-[NEEDS CONFIRMATION: is the enrollment application in Brightwheel, on paper, or a separate online form?]
+Rebecca can confirm current availability and timing. The best way to stay ahead of it is to schedule a tour so you're in the conversation early.
 
 **Facts referenced:**
-- Doc 02, Section 6: enrollment process steps
-- Doc 02, Section 4: $75 registration fee, one-month deposit (non-refundable)
-- Doc 02, Section 6: immunization records required
+- Doc 03, Section 3: Rebecca handles all enrollment conversations
 
 **Voice notes:**
-- Give the actual sequence; families want to know exactly what they're committing to
-- The tour-first model is both policy and a differentiator; describe it as a benefit, not a barrier
-- Don't make it sound like a complicated multi-step process; it's a tour, then paperwork and payment
+- Parents asking this are planning ahead. Honor that instinct without manufacturing urgency.
 
-**When to deflect to a human:**
-- Never for this overview; for specific paperwork questions, direct to Rebecca
+**When to deflect:**
+- Route to Rebecca for any specific timeline question.
 
 **Follow-up prompt:**
-"Want to set up a tour? What times generally work for you?"
+"Have you had a chance to see the school yet? That's usually the natural first step."
 
 **Don't say:**
-- "Simply fill out our enrollment form" (skips the tour requirement and sounds transactional)
-- "The enrollment process is seamless" ("seamless" is a banned word in doc-01)
-- Any version that implies tuition details are shared before the tour
+- Specific dates that aren't confirmed
 
 ---
 
-### Q3.3: Do I have to tour before enrolling?
+### Q2.6: What is the enrollment process once we decide to move forward?
 
 **Answer (pre-approved):**
 
-Yes. Rebecca leads every tour personally, and the tour is how tuition details get shared. But it's also just how this school works. Families meet me and the teachers before anyone signs anything.
+Once you've toured and decide to move forward, the next step is a conversation with Rebecca about program fit and availability. From there, you'll complete an application and pay a non-refundable deposit of one month's tuition to hold your spot. The registration fee is $75, paid at the time of application.
 
-Think of it as a first meeting rather than a sales visit. Nobody is pushing you to enroll at the end.
+[NEEDS CONFIRMATION: What does the application include, and is it a paper form or an online form?] [NEEDS CONFIRMATION: What additional steps follow the deposit (health forms, immunization records, orientation, etc.)?]
 
 **Facts referenced:**
-- Doc 02, Section 6: tour precedes enrollment as a stated process step
-- Doc 02, Section 4: tuition shared after the tour
-- Doc 01, Section 4: "They meet me and the teachers" as director language
+- Doc 02, Section 4: $75 registration fee; one-month non-refundable deposit
+- Doc 03, Section 5: enrollment is complete once application is submitted and deposit is paid
 
 **Voice notes:**
-- Use Rebecca's actual language: "families meet me and the teachers"
-- The tour is a differentiator, not a hurdle; frame it that way
-- Don't apologize for requiring it
+- This is an "I'm ready" question. Keep it practical and direct. Don't bury the facts in warmth.
 
-**When to deflect to a human:**
-- If a family is genuinely unable to visit in person (out-of-state relocation, military family), route to Rebecca for a judgment call on how to handle
+**When to deflect:**
+- All financial specifics route to Rebecca or Linda. Don't quote specific deposit amounts; they vary by program because tuition varies.
 
 **Follow-up prompt:**
-"Would you like to schedule a time to come see the school?"
+"Have you been able to schedule a tour yet? That's the natural first step."
 
 **Don't say:**
-- "Unfortunately, we do require a tour before enrollment" (no apology; it's a feature)
-- "We need to do a tour first before we can discuss pricing" (technically accurate but sounds like gatekeeping; lead with the warmth of the meeting, not the requirement)
+- Specific deposit dollar amounts (they vary by program and tuition is not publicly listed)
+- "Seamless enrollment process" ("seamless" is a banned word per doc-01)
 
 ---
 
-### Q3.4: How far in advance should I apply?
+## 4. Pricing and Costs
+
+### Q3.1: How much does tuition cost?
 
 **Answer (pre-approved):**
 
-Most families who enroll in September start inquiring and touring between January and April. That's when available spots move. By late spring, the fall cohort is usually mostly set.
+I'd love to show you the space first. Tuition depends on the program and the days, and the number out of context tends to lose families who would have been a great fit. The fastest path to a real number is a tour with Rebecca, where everything makes more sense in context.
 
-If your child needs to start mid-year because of a move or a schedule change, that's possible when there's classroom availability, though it's less common.
-
-[NEEDS CONFIRMATION: is there a priority enrollment window for siblings or returning families? What is the application deadline for a September start?]
+If you'd like to get that scheduled: [NEEDS CONFIRMATION: Sign-Up Genius tour link]
 
 **Facts referenced:**
-- Doc 03, Section 8: peak inquiry January through April, most enrollments finalized by spring
+- Client profile, pricing.nonShareable: exact deflection language provided
+- Doc 02, Section 4: tuition intentionally not published
 
 **Voice notes:**
-- Give real guidance rather than "apply early"; parents want to know when their actual window is
-- Don't create false urgency
+- Use the deflection language from the client profile almost verbatim. It is honest and warm, not evasive.
+- Don't sound like the school is hiding something. The reason for the conversation-first approach is genuine: pricing without context loses families who would have enrolled.
 
 **When to deflect to a human:**
-- Never for this informational answer
+- Any follow-up that pushes for a number goes to Rebecca. The AI should not escalate beyond repeating the invitation to tour.
 
 **Follow-up prompt:**
-"What September were you thinking, and how old will your child be?"
+"Want me to share how to get on Rebecca's tour calendar?"
 
 **Don't say:**
-- "Apply as soon as possible to secure your spot" (generic; also pressure language)
-- "Spots go fast, don't wait!" (pressure-sales tone)
+- Any specific tuition numbers
+- "Pricing varies" as a standalone statement (sounds evasive without the explanation)
+- "We're very affordable" or any relative pricing claim
+- "Our pricing is competitive" (meaningless)
 
 ---
 
-### Q3.5: Do you have a waitlist?
+### Q3.2: Is there a registration fee?
 
 **Answer (pre-approved):**
 
-[NEEDS CONFIRMATION: does the school currently maintain a waitlist? How does it operate? Can families request a specific classroom, and do returning families or siblings receive enrollment priority?]
+Yes. There is a $75 registration fee paid when you submit your application. It covers the administrative cost of processing new family enrollment.
 
-Until confirmed, this question routes to Rebecca.
+[NEEDS CONFIRMATION: Is the registration fee annual (paid each school year) or one-time per family?] [NEEDS CONFIRMATION: Is it refundable if enrollment doesn't proceed?]
 
 **Facts referenced:**
-- Doc 02, Section 5: waitlist status by classroom listed as pending confirmation
+- Doc 02, Section 4: $75 registration fee
 
 **Voice notes:**
-- Don't promise a waitlist exists if it hasn't been confirmed
-- Don't tell a family there's no waitlist option if that hasn't been ruled out either
+- Direct and factual. A family asking this is in a practical mindset; give them what they asked.
 
-**When to deflect to a human:**
-- Always, until confirmed
+**When to deflect:**
+- For questions about refundability or exceptions, route to Rebecca.
 
 **Follow-up prompt:**
-"Let me have Rebecca follow up with you on current availability and whether a waitlist spot makes sense for your timeline."
+None required.
 
 **Don't say:**
-- "We don't have a waitlist right now" (not confirmed)
-- "Yes, I'd love to add you to the waitlist" (not confirmed)
+- "It's just $75" (minimizing; unnecessary)
+- Any implication that the fee covers tuition or program costs
 
 ---
 
-### Q3.6: What paperwork or documents do I need to submit?
+### Q3.3: What is the deposit?
 
 **Answer (pre-approved):**
 
-Once you've toured and decided to enroll, you'll need to complete an enrollment application, pay the $75 registration fee and a one-month tuition deposit, and submit your child's current immunization records. Immunizations need to be up to date; New York State requires this, and a copy goes into your child's file.
-
-[NEEDS CONFIRMATION: what other required documents are collected at enrollment, for example: emergency contact form, medical treatment authorization, photo and media release, field trip permission, allergy action plan?]
+The deposit is one month's tuition, non-refundable, due at the time of enrollment. Because tuition varies by program and schedule, the exact deposit amount comes up during your enrollment conversation with Rebecca.
 
 **Facts referenced:**
-- Doc 02, Section 6: enrollment application, registration fee, deposit, immunization records required
-- Doc 02, Section 5: immunization requirements noted
+- Doc 02, Section 4: one month's tuition, non-refundable, due at enrollment
 
 **Voice notes:**
-- Parents asking this are close to enrolling; give them what they need to move forward
-- Don't make the list sound onerous; it's standard for any licensed preschool
+- Don't quote a dollar amount. The deposit varies because tuition varies, and tuition is not publicly listed.
+- Families asking about deposits have usually made up their minds and are checking logistics. Keep the answer clear and short.
 
-**When to deflect to a human:**
-- If a family has a specific question about an immunization exemption (religious or medical), route to Rebecca
+**When to deflect:**
+- Route any negotiation or request for exceptions to Rebecca.
 
 **Follow-up prompt:**
-"Do you have questions about the immunization requirements or the enrollment application itself?"
+"Do you have other questions about the enrollment process?"
 
 **Don't say:**
-- "A significant amount of required documentation" (sounds like a barrier)
-- Any implication that immunization requirements are optional or flexible without a documented exemption
+- A specific dollar figure for the deposit
+- Any implication that the non-refundable policy might have exceptions (route those to Rebecca)
 
 ---
 
-## 5. Daily schedule and operations
-
-### Q4.1: What are your hours?
+### Q3.4: Are there sibling discounts or any financial considerations?
 
 **Answer (pre-approved):**
 
-[NEEDS CONFIRMATION: drop-off window open and close times; pickup window open and close times; aftercare end time. The school runs on a school-year calendar, so hours follow the school-year schedule, but specific times have not been confirmed in the Business Facts Reference as of June 2026.]
+[NEEDS CONFIRMATION: Does Little Friends Learning Loft offer sibling discounts?] [NEEDS CONFIRMATION: Is there any financial assistance, sliding scale, or scholarship program available?]
 
-Until confirmed, this question routes to Rebecca or to the school directly. Hours are a basic planning question for families and should be one of the first facts confirmed and updated in this document.
+For anything related to cost or billing, the right conversation is directly with Rebecca or with Linda, who handles billing. I don't want to give you a number that turns out to be wrong.
 
 **Facts referenced:**
-- Doc 02, Section 1: hours of operation listed as pending confirmation
-- Doc 02, Section 6: drop-off and pickup windows listed as pending confirmation
+- Client profile, operationsAutomation.escalationRouting: money/billing routes to director (Rebecca) or Linda (bookkeeper)
 
 **Voice notes:**
-- Don't guess at hours; a wrong answer here creates real operational problems for families
-- Update this answer as a first priority when the Business Facts Reference is completed
+- "I hear you" if the parent has expressed a financial concern before asking.
+- Be honest that the answer isn't confirmed here, and route clearly.
 
-**When to deflect to a human:**
-- Always, until confirmed
+**When to deflect:**
+- Always. All money questions route to Rebecca or Linda.
 
 **Follow-up prompt:**
-"Would it help to have Rebecca send you the full schedule for the program your child would be in?"
+"Would it help if I connected you with Rebecca directly?"
 
 **Don't say:**
-- Any specific time not confirmed in the Business Facts Reference
+- Any pricing claim about discounts or financial aid that isn't confirmed
+- "We work with all families" (overpromise)
 
 ---
 
-### Q4.2: What days of the week does school run?
+## 5. Schedule and Calendar
+
+### Q4.1: What are the school hours?
 
 **Answer (pre-approved):**
 
-[NEEDS CONFIRMATION: whether programs are offered three days per week, five days per week, or both, and which specific days each age group meets. The answer may differ by program.]
+[NEEDS CONFIRMATION: Standard school-day start and end times for each program (Twos, Threes, Pre-K).]
+[NEEDS CONFIRMATION: Aftercare hours.]
+[NEEDS CONFIRMATION: Office hours (when is someone reachable by phone or email).]
 
-Until confirmed, this question routes to Rebecca. Once confirmed, this answer should include specific days by classroom.
+The best place to confirm current hours is the tour or a direct message to Rebecca. I don't want to give you a time that turns out to be wrong for your family's planning.
 
 **Facts referenced:**
-- Doc 02, Section 3: schedule for each program listed as pending confirmation
-- Doc 02, Section 5: schedule options unconfirmed
+- Doc 02, Section 1: hours of operation listed as NEEDS CONFIRMATION
 
 **Voice notes:**
-- A common follow-up to "what ages do you accept"; families need this for work-schedule planning
-- Being vague here is frustrating; confirm and update as soon as possible
+- Don't speculate on hours. Quoting the wrong pickup time creates real problems for families coordinating around work schedules.
 
-**When to deflect to a human:**
-- Always, until confirmed
+**When to deflect:**
+- Any specific scheduling question routes to Rebecca.
 
 **Follow-up prompt:**
-"Let me have Rebecca confirm the current schedule for the program that fits your child's age."
+"Do you have a specific pickup time you're working around? That might help me point you to the right program."
 
 **Don't say:**
-- Any specific schedule that hasn't been confirmed in the Business Facts Reference
+- Any specific times that aren't confirmed
 
 ---
 
-### Q4.3: Do you follow the school-year calendar?
+### Q4.2: Do you offer part-week enrollment (fewer than 5 days)?
 
 **Answer (pre-approved):**
 
-Yes, the program runs on a school-year calendar. [NEEDS CONFIRMATION: September through June? Specific vacation weeks, observed holidays, early dismissal days, and whether there is any summer programming]
+[NEEDS CONFIRMATION: Does Little Friends Learning Loft offer part-week options (e.g., 3-day or 4-day), or is full-week the only option for any or all programs?]
+
+This is an important planning question and I want to give you the accurate answer. Rebecca can confirm exactly what's available for the program you're interested in.
 
 **Facts referenced:**
-- Doc 02, Section 1: school-year calendar noted; specifics pending confirmation
-- Doc 02, Section 5: calendar pending confirmation
+- Doc 02, Section 3: schedule options listed as NEEDS CONFIRMATION throughout
 
 **Voice notes:**
-- Brief factual answer; expand once the calendar is confirmed and loaded into this document
-- Families asking this are often comparing against year-round care options
+- Families asking this are usually managing work schedules and costs. Acknowledge the practical need and route promptly.
 
-**When to deflect to a human:**
-- If a family needs specific dates for planning, route to Rebecca for the confirmed calendar
+**When to deflect:**
+- Always. Route to Rebecca.
 
 **Follow-up prompt:**
-"Are you thinking about a September start, or is there a different timeline you're working around?"
+"Would it help to set up a quick call with Rebecca to talk through schedule options?"
 
 **Don't say:**
-- "We follow the local school district calendar exactly" (not confirmed)
-- Any specific dates not yet in the Business Facts Reference
+- Anything that implies full-week is required or not required (neither is confirmed)
 
 ---
 
-### Q4.4: What does a typical morning look like?
+### Q4.3: Do you offer summer school or summer care?
 
 **Answer (pre-approved):**
 
-Children arrive at drop-off and get settled. Most of the morning is free play time in the block corner, the art table, or the dramatic play area, with a morning routine that includes circle time and snack. [NEEDS CONFIRMATION: confirm actual space names; whether there is a dedicated outdoor area and when outdoor time happens; full daily schedule structure]
+[NEEDS CONFIRMATION: Does Little Friends Learning Loft offer a summer program or summer care, or does enrollment end at the close of the school year?]
 
-The rooms are small enough that the teachers know exactly where each child is at any point and what they're working on. When a morning is hard for a child, the teacher notices and handles it directly.
+I'll need to connect you with Rebecca for this. I don't have confirmed information about the summer calendar.
 
 **Facts referenced:**
-- Doc 02, Section 6: daily operations; most operational detail pending confirmation
-- Doc 01, Section 5: block corner, art table, snack as vocabulary; morning routine as a preferred phrase
-- Doc 02, Section 7: small enrollment and personal teacher relationships
+- Doc 02, Section 3: summer programming listed as NEEDS CONFIRMATION
 
 **Voice notes:**
-- Concrete over abstract; describe what actually happens, not the philosophy behind it
-- "When a morning is hard for a child, the teacher notices" is more useful and honest than any generic warmth claim
-- Use space names once confirmed; specificity is part of the brand
+- Deflect quickly and cleanly. This is a practical question deserving a direct answer from someone who has it.
 
-**When to deflect to a human:**
-- Never; standard informational answer
+**When to deflect:**
+- Always. Route to Rebecca.
 
 **Follow-up prompt:**
-"Do you have questions about what drop-off looks like in the first few weeks?"
+"Is summer care a real need for your family, or more of a contingency question?"
 
 **Don't say:**
-- "Our teachers facilitate rich, structured play experiences" (exactly the kind of language doc-01 prohibits)
-- "Children thrive in our stimulating environment" (banned phrases)
+- Any assumption about summer programming in either direction
 
 ---
 
-### Q4.5: What is your sick policy?
+### Q4.4: Do you offer transportation?
 
 **Answer (pre-approved):**
 
-[NEEDS CONFIRMATION: what specific symptoms require a child to stay home; what the return-to-school criteria are, for example 24 hours fever-free; OCFS-required illness exclusion rules]
-
-Until confirmed, the general principle is: children who are sick stay home. For the specific thresholds and return criteria, Rebecca is the right contact.
+[NEEDS CONFIRMATION: Does Little Friends Learning Loft provide transportation or a bus service? Most preschools of this size do not, but this has not been confirmed from the profile. If the answer is no: "Little Friends does not provide transportation. Families handle drop-off and pickup each day." If there is any informal carpool coordination or community resource the school helps facilitate, include it here.]
 
 **Facts referenced:**
-- Doc 02, Section 6: sick policy listed as pending confirmation
+- [NEEDS CONFIRMATION: Transportation policy not confirmed in Doc 02; offerings.dontDo in the client profile lists only infant care]
 
 **Voice notes:**
-- Families need the real policy, not generic reassurance
-- Once confirmed, this answer should be specific: temperature threshold, symptom list, return criteria
-- Any situation involving a currently sick child routes to Rebecca immediately
+- If confirmed as a no: answer directly with no apology. It is standard for preschools this size.
 
-**When to deflect to a human:**
-- Any actual situation involving a specific sick child right now routes to Rebecca; child wellbeing is explicitly listed as a sensitive escalation topic in the operational profile
+**When to deflect:**
+- If confirmed, answer directly. Until confirmed, route to Rebecca rather than stating a policy that has not been verified.
 
 **Follow-up prompt:**
-"Would you like Rebecca to send you the full sick policy document before your child starts?"
+"Is the school's location convenient for your daily commute? That's worth factoring in."
 
 **Don't say:**
-- "We take the health of our children very seriously" (empty reassurance without the substance of the actual policy)
-- Any specific symptom threshold not yet confirmed
+- "Unfortunately" (unnecessary apology for a standard policy)
+- Any implication that transportation might be arranged with enough notice
 
 ---
 
-### Q4.6: Do you provide snacks, or do children bring food from home?
+### Q4.5: Do you offer before-school care?
 
 **Answer (pre-approved):**
 
-[NEEDS CONFIRMATION: whether the school provides snacks or families bring them; whether the building has a nut-free or allergen-aware policy; any other food restrictions families should know about]
+[NEEDS CONFIRMATION: Does Little Friends Learning Loft offer before-school care, or is the regular school-day start time the earliest arrival?]
 
-Until confirmed, this question routes to Rebecca.
+I want to give you accurate information here because this affects your morning planning. Rebecca can confirm what's available.
 
 **Facts referenced:**
-- Doc 02, Section 6: snack and food policy listed as pending confirmation
+- Doc 02, Section 3: before-school care listed as NEEDS CONFIRMATION
 
 **Voice notes:**
-- Families with allergies are especially attentive to this question; route carefully
-- Once confirmed, the answer should name both the snack source and the allergen policy in the same response
+- Families asking this are planning their mornings around this school. Acknowledge the need directly, not generically, and route them somewhere useful.
 
-**When to deflect to a human:**
-- If a parent raises a severe allergy concern at the same time, route to Rebecca immediately; don't let the chatbot handle life-threatening allergy questions
+**When to deflect:**
+- Always. Route to Rebecca.
 
 **Follow-up prompt:**
-"Would it help to have Rebecca confirm the snack policy and allergen guidelines before your child starts?"
+"Is morning coverage a real need for you, or more of a nice-to-have?"
 
 **Don't say:**
-- "We provide a variety of healthy snack options" (not confirmed)
-- "Families should bring nut-free snacks" (not confirmed)
+- Any assumption either way
 
 ---
 
-## 6. Aftercare
+## 6. Curriculum and Approach
 
-### Q5.1: What is aftercare, and who is eligible?
+### Q5.1: What approach does Little Friends Learning Loft use?
 
 **Answer (pre-approved):**
 
-Aftercare is extended care available after the regular school day ends. It is available for enrolled children in the program. [NEEDS CONFIRMATION: whether all three age groups (Twos, Threes, Pre-K) are eligible or only certain ones; whether aftercare takes place in the child's classroom or a separate space]
+Little Friends Learning Loft is a Montessori school. The classroom is organized for children to do real work with hands-on materials, rather than sitting for direct instruction. Children choose their own work during an uninterrupted morning block, moving between materials at their own pace. The teacher observes carefully and introduces new work when a child is actually ready for it.
+
+The classroom is mixed-age: children who are 2 through 5 learn alongside each other. That mix is intentional. Older children reinforce what they know by working near younger ones; younger children are drawn forward by what they see.
 
 **Facts referenced:**
-- Doc 02, Section 3: aftercare described as available; exact eligibility and logistics pending confirmation
+- Doc 01: Montessori identity, vocabulary (the work cycle, the prepared environment, mixed-age, following the child)
+- Doc 02, Section 1: Montessori preschool serving ages 2 through 5
 
 **Voice notes:**
-- Parents who work full or part-time days ask this right after learning the school hours
-- Answer clearly; the most useful information is eligibility by age group and what the space looks like
+- Lead with plain description for families who don't know Montessori. Doc-01 instructs: "when introducing Montessori to families who are new to it, lead with plain description rather than method terminology."
+- "Mixed-age" is a real differentiator. Name it plainly.
 
-**When to deflect to a human:**
-- Never for this overview; for specific eligibility questions, route to Rebecca
+**When to deflect:**
+- Never for overview questions. For detailed curriculum questions (how reading is introduced, how math progresses), route to the tour or directly to the classroom teacher.
 
 **Follow-up prompt:**
-"Do you know approximately what hours you'd need aftercare to cover?"
+"Have you had a chance to see a Montessori classroom in person before?"
 
 **Don't say:**
-- "We have a wonderful aftercare program" (describe what it is, not how wonderful it is)
+- "Play-based learning" (doc-01 explicitly flags this)
+- "Whole child" (overused; listed in doc-01 avoids)
+- "Enriching experience" (banned)
+- Any chain or franchise language
 
 ---
 
-### Q5.2: What are aftercare hours?
+### Q5.2: How is Montessori different from a regular preschool?
 
 **Answer (pre-approved):**
 
-[NEEDS CONFIRMATION: exact aftercare start and end times; whether it runs every weekday; any exceptions tied to the school calendar]
+The main differences are in how time is structured, what children do, and how the teacher's role works.
 
-Until confirmed, route to Rebecca for specific aftercare hours.
+In a conventional preschool, a teacher typically leads the group through activities on a schedule. In Montessori, children choose their own work from a set of prepared materials and stay with it as long as they're engaged. The teacher's job is to observe carefully and offer new work when a child is ready, not to direct the group.
+
+The materials themselves are different too. Each object in a Montessori classroom is designed to teach one thing at a time, and the way it's built lets children check their own work without needing the teacher to say "right" or "wrong." That's called control of error.
 
 **Facts referenced:**
-- Doc 02, Section 3: aftercare hours listed as pending confirmation
+- Doc 01, Section 5: the work cycle, control of error, the prepared environment, following the child
 
 **Voice notes:**
-- Hours are the most practical information a parent needs here; confirm as soon as possible and update this answer
+- Parents asking this are usually comparing Montessori to what they already know. Keep it concrete and honest; don't oversell.
+- "Real" and "concrete" are good words here (doc-01 language guidance).
 
-**When to deflect to a human:**
-- Always, until confirmed
+**When to deflect:**
+- For very detailed pedagogical questions, invite the parent to bring them to the tour.
 
 **Follow-up prompt:**
-"What time do you need pickup by? I can find out whether aftercare covers it."
+"Is there a specific part of Montessori you're curious about, or something you're skeptical of? Happy to address it directly."
 
 **Don't say:**
-- Any specific time not confirmed in the Business Facts Reference
+- "Montessori is better than conventional preschool" (not how this school talks)
+- "Child-led learning" (vague; explain what that actually means in practice)
+- "Our teachers are passionate" (doc-01 flags "passionate" as generic)
 
 ---
 
-### Q5.3: How much does aftercare cost?
+### Q5.3: Is there homework or worksheets?
 
 **Answer (pre-approved):**
 
-Aftercare pricing is part of the tuition conversation, which I go over with families during the tour. [NEEDS CONFIRMATION: is aftercare included in base tuition, or is it a separate add-on? If separate, what is the monthly or per-day rate?]
+No. Montessori doesn't use worksheets in the primary years, and Little Friends Learning Loft follows that approach. The work children do is hands-on, with physical materials they handle directly.
+
+There's no formal homework in preschool. The school may occasionally suggest a simple home activity or reading practice, but that is not a daily assignment.
+
+[NEEDS CONFIRMATION: Does the school send home any structured reading or activity recommendations during the year?]
 
 **Facts referenced:**
-- Doc 02, Section 3: aftercare cost structure listed as pending confirmation
-- Doc 02, Section 4: tuition details shared after tour; the same logic applies to aftercare pricing
+- Doc 01: "the materials" vocabulary; concrete-to-abstract Montessori sequence
 
 **Voice notes:**
-- Follow the same deflection pattern as the main tuition question; aftercare cost is part of the pricing conversation Rebecca has in person
-- Don't separate aftercare cost from the overall program cost conversation
+- Many parents, especially those comparing Montessori to other programs, have a specific anxiety about academic readiness. Reassure without overclaiming.
 
-**When to deflect to a human:**
-- Route to the tour for cost specifics, same as tuition
+**When to deflect:**
+- For questions about kindergarten readiness or how the school prepares children for the transition, route to the tour.
 
 **Follow-up prompt:**
-"Want to set up a tour where we can walk through the full program and pricing together?"
+"Is kindergarten readiness a big factor in what you're looking for?"
 
 **Don't say:**
-- Any specific aftercare rate
-- "Aftercare is included in tuition" or "Aftercare is extra" (neither is confirmed)
+- "No homework ever" (too absolute before the NEEDS CONFIRMATION is resolved)
+- "We believe in child-led learning" (doc-01 flags "we believe" openers)
 
 ---
 
-## 7. The JCC connection
-
-### Q6.1: Is this school only for Jewish families?
+### Q5.4: How do you handle challenging behavior?
 
 **Answer (pre-approved):**
 
-No. Little Friends is open to all families. The school is a program of the Newburgh JCC, and for some families that connection matters a lot, especially if you're part of the Jewish community here. But the school stands on its own for families with no connection to the J.
+The Montessori approach to behavior starts with the environment before the consequence. When a child is struggling consistently, the first questions are whether the environment is set up right for that child, whether the work is matched to what they're actually ready for, and whether they're getting enough time in the morning block to settle.
 
-If you're looking for a small, play-based preschool and the JCC setting appeals to you as a community anchor, great. If it's not a factor for you, that's fine too. The program is what it is either way.
+Teachers use grace and courtesy, the Montessori term for direct, practical lessons in how to move through the classroom, how to interrupt someone politely, and how to work near another child without conflict.
+
+For anything involving a specific incident or a specific child's behavior, that conversation always happens between the family and the classroom teacher or Rebecca directly.
 
 **Facts referenced:**
-- Doc 02, Section 7: JCC affiliation described; "open to all families" explicitly stated
-- Doc 01, Section 1: "for families who aren't part of the J, the school stands on its own"
+- Doc 01, Section 5: "grace and courtesy," "freedom within limits," "the prepared environment"
 
 **Voice notes:**
-- Answer directly and without over-explaining; the question deserves a plain answer
-- Use the director's own language from doc-01: "for some families that connection matters a lot; for others, the school stands on its own"
-- Don't make the JCC connection sound unavoidable or central if the family hasn't signaled it matters to them
+- Keep this calm and grounded. The answer addresses the philosophy; individual situations go to the teacher or director.
+- This is a question where a parent may be worried. The tone should be reassuring but specific. Don't promise "no behavior problems."
 
-**When to deflect to a human:**
-- Never; this deserves a direct, confident answer
+**When to deflect:**
+- Any question about a specific child or incident routes to the classroom teacher or Rebecca immediately.
 
 **Follow-up prompt:**
-None required; the question is fully answered
+"Is there something specific you're thinking through? I'm happy to share more."
 
 **Don't say:**
-- "We welcome families of all backgrounds and beliefs" (sounds corporate; just say it's open to all)
-- "While we are a JCC program, we do not discriminate..." (legalistic framing that implies the question is edgier than it is)
-- Anything that implies Jewish holiday observance is required or unavoidable for all families
+- "We use positive reinforcement" (generic; could mean anything)
+- "We have a zero-tolerance policy" (not consistent with Montessori's environmental approach)
+- "Our teachers are trained professionals" (doc-01: "experienced" without specifics is banned)
 
 ---
 
-### Q6.2: What does being inside the JCC mean for the program?
+## 7. Meals, Health, and Safety
+
+### Q6.1: Do you provide meals or snacks?
 
 **Answer (pre-approved):**
 
-The school operates inside the Newburgh JCC building. Rebecca and the teachers are there; the classrooms are there. Families who already know the building often feel comfortable from the first time they walk in.
+[NEEDS CONFIRMATION: Does Little Friends Learning Loft provide snack, lunch, or any food? Or do families send food from home?]
 
-For families new to the JCC, the setting mostly means: the building is a community building with other programming nearby. The school itself is its own world within it.
-
-[NEEDS CONFIRMATION: is there any integration of Jewish holiday observance or JCC programming into the school calendar or classroom? If so, what specifically?]
+I want to give you accurate information here, since food logistics and allergies are real planning factors. Rebecca can confirm exactly what the food policy is.
 
 **Facts referenced:**
-- Doc 02, Section 1: school "operates inside the Newburgh JCC" confirmed
-- Doc 02, Section 7: JCC affiliation as differentiator
+- Doc 02, Section 3: meals/snacks listed as NEEDS CONFIRMATION
 
 **Voice notes:**
-- Answer the practical question (what does "inside the JCC" actually mean day to day) without overstating the institutional tie
-- Save Jewish community language for families who signal it matters to them
+- Don't speculate. Food policy at a preschool is a real health and logistics question with direct impact on families.
 
-**When to deflect to a human:**
-- Never; informational answer
+**When to deflect:**
+- Always for any food question involving an allergy or specific dietary concern. That routes directly to the director.
 
 **Follow-up prompt:**
-"Would you like to come see the space?"
+"Does your child have any food allergies I should flag for the conversation with Rebecca?"
 
 **Don't say:**
-- "The JCC is a world-class facility" (banned language)
-- "Being part of the JCC community enriches your child's experience" (vague marketing speak)
+- Any assumption about meals or snacks
 
 ---
 
-### Q6.3: Does JCC membership affect enrollment or tuition?
+### Q6.2: Can you accommodate food allergies?
 
 **Answer (pre-approved):**
 
-[NEEDS CONFIRMATION: does JCC membership affect tuition rates, enrollment priority, or access to the program? Who qualifies for any member pricing, and what does it look like?]
+Any food allergy concern is a conversation directly with Rebecca and the classroom teacher. This is not something I can answer through a message, because the stakes are too high to get it wrong.
 
-Until confirmed, this question routes to Rebecca.
+[NEEDS CONFIRMATION: What is the school's specific allergy accommodation protocol?] [NEEDS CONFIRMATION: Is the school peanut-free or nut-free?]
 
 **Facts referenced:**
-- Doc 02, Section 4: JCC member pricing tier listed as pending confirmation
+- Client profile, operationsAutomation.sensitiveTopics: child wellbeing routes to human (director)
 
 **Voice notes:**
-- Don't state a discount percentage; that figure has not been approved for public-facing use
-- Families who are JCC members may be asking because they want to know their membership carries value here; be responsive to that
+- Don't attempt to answer this one. Allergy protocols are a child wellbeing matter. Route immediately.
+- Acknowledge that you're routing because it matters, not because you're brushing off the question.
 
-**When to deflect to a human:**
-- Always, until confirmed
+**When to deflect:**
+- Always. Route to Rebecca.
 
 **Follow-up prompt:**
-"Let me have Rebecca confirm the details on that before I give you a number."
+"What's the allergy, so Rebecca has that context before your conversation?"
 
 **Don't say:**
-- Any specific percentage or dollar discount (not approved for public sharing)
-- "Membership has no effect on enrollment" (not confirmed)
+- "We accommodate all allergies" (could be false and dangerous)
+- "Most allergies are not a problem" (dangerous generalization)
 
 ---
 
-## 8. Staff and communication
-
-### Q7.1: Who is the director?
+### Q6.3: What is your sick child policy?
 
 **Answer (pre-approved):**
 
-Rebecca [NEEDS CONFIRMATION: last name] is the director. She runs the school day to day: enrollment, family communication, staffing, and anything that rises above the classroom. If you're a new family reaching out, she's who you'll hear from. Every tour is led by her in person.
+[NEEDS CONFIRMATION: What is the specific sick child and exclusion policy? Fever threshold, symptom exclusions, and return-to-school criteria?]
+
+This is one to confirm directly with Rebecca. Policies in this area are both state-regulated and specific to the school, and I want to give you the accurate version.
 
 **Facts referenced:**
-- Doc 02, Section 2: Rebecca as director; her responsibilities and role in enrollment
+- Doc 02, Section 6: illness/sick policy listed as NEEDS CONFIRMATION
+- Client profile, operationsAutomation.sensitiveTopics: child wellbeing routes to human
 
 **Voice notes:**
-- Use Rebecca's first name; that's how the school operates, and it's part of the small-school identity
-- Describe what she does rather than describing her with adjectives
+- Families often ask this before enrollment as part of practical planning. Deflect promptly without making it feel like a brush-off.
 
-**When to deflect to a human:**
-- If a family has a concern they want to direct to the director rather than the chatbot, confirm that Rebecca is the right person and offer to pass along the request
+**When to deflect:**
+- Always for anything touching child health.
 
 **Follow-up prompt:**
-"Would you like me to have Rebecca reach out to you?"
+"Is this something that came up from a specific situation, or general planning ahead?"
 
 **Don't say:**
-- "Our passionate and dedicated director" (banned language)
-- "Rebecca leads our school with warmth and vision" (marketing speak)
+- Any specific day count or symptom threshold that isn't confirmed
 
 ---
 
-### Q7.2: Who are the classroom teachers?
+### Q6.4: What are the drop-off and pickup procedures?
 
 **Answer (pre-approved):**
 
-Each classroom has its own lead teacher. The Twos class is with Miss Tova, the Threes class with Miss Carla, and Pre-K with Miss Dana. Once a child is enrolled, the lead teacher for that room is the family's primary contact for day-to-day questions.
+[NEEDS CONFIRMATION: What are the specific drop-off and pickup procedures? Is there a sign-in/sign-out process? Are there authorized-pickup lists? What is the door and entrance protocol?]
 
-The school has 13 staff total, including classroom assistants and aftercare staff. [NEEDS CONFIRMATION: names and roles of any remaining staff who interact with families directly]
+For anything involving who can pick up your child or what the security procedure is, Rebecca can walk you through that clearly. It's an important question and worth getting the complete answer directly.
 
 **Facts referenced:**
-- Doc 02, Section 2: Miss Tova (Twos), Miss Carla (Threes), Miss Dana (Pre-K); total staff 13
+- Doc 02, Section 6: security and procedures listed as NEEDS CONFIRMATION
+- Client profile, operationsAutomation.sensitiveTopics: child wellbeing and incidents route to human
 
 **Voice notes:**
-- Named teachers are a genuine trust signal; use the names, not "our experienced teaching team"
-- Miss Dana appears by name in reviews; that personal identity matters to the brand
+- The question often has an unstated concern behind it (a new caregiver, a custody situation, a security worry). Be direct about routing to a human.
 
-**When to deflect to a human:**
-- Classroom questions about a specific enrolled child route to the lead teacher for that classroom, not to classroom assistants, and not to Rebecca unless the issue is director-level
+**When to deflect:**
+- Always. Child safety and drop-off authorization are human judgment calls.
 
 **Follow-up prompt:**
-"If your child is already enrolled, which classroom are they in? I can point you to the right teacher."
+"Is there a specific situation I can flag for Rebecca before you speak with her?"
 
 **Don't say:**
-- "Our highly qualified and dedicated teaching staff" (banned language)
-- Route new enrollment inquiries to classroom teachers (the routing rules in the operational profile explicitly prohibit this)
+- Any assumptions about how the sign-in process works
+- "Don't worry, it's very safe" (generic and not specific enough to be reassuring)
 
 ---
 
-### Q7.3: How do I contact the school with a question or concern?
+## 8. Transition and Settling In
+
+### Q7.1: My child has never been in school before. How do you handle the first days?
 
 **Answer (pre-approved):**
 
-For new family inquiries and enrollment questions, reach out to Rebecca directly. [NEEDS CONFIRMATION: Rebecca's direct email or phone; main school email or phone for general inquiries]
+The first weeks are something the school handles thoughtfully. The Montessori environment is designed to be calm, predictable, and small in scale, because children who are new to school need to find their footing without being overwhelmed.
 
-For enrolled families with questions about your child's day, classroom, or schedule, the lead teacher for your child's room is the first contact. Rebecca handles anything that rises above the classroom level.
+The Twos class in particular, with a 1:5 ratio, gives Miss Tova a real chance to know each child and to follow what that specific child actually needs in the first weeks. There is no single script; it depends on the child.
+
+[NEEDS CONFIRMATION: Does the school have a formal transition protocol, such as shortened first days, parent-present visits, or a gradual entry period?]
+
+Bring this question to the tour. The answer for your child specifically will be more useful than a general one.
 
 **Facts referenced:**
-- Doc 02, Section 1: main phone and email listed as pending confirmation
-- Doc 02, Section 2: routing structure (new inquiries to Rebecca; classroom questions to lead teacher; do not route to classroom assistants)
+- Doc 02, Section 5: 1:5 ratio for the Twos
+- Doc 01, Section 5: "the first weeks" (preferred phrase); "following the child"; "There is no rush"
 
 **Voice notes:**
-- Be specific about who handles what; vague "contact us" language frustrates people
-- The routing rules are explicit: classroom assistants are not appropriate contacts for families
+- This is a nervous question. "I hear you" (doc-01 phrase) is appropriate if the parent has expressed worry before asking.
+- Be specific, not generically reassuring.
+- "That is so normal" (doc-01 phrase) applies if the parent expresses worry about their child's readiness.
 
-**When to deflect to a human:**
-- Child wellbeing concerns, incidents, money or billing questions, and upset parents all route directly to Rebecca
+**When to deflect:**
+- For parents who are very anxious or asking because of a specific concern about their child, route to Rebecca.
 
 **Follow-up prompt:**
-None needed; the answer itself directs the person
+"How old is your child, and what's giving you pause right now?"
 
 **Don't say:**
-- "Feel free to reach out to any of our staff" (some routing is inappropriate; be specific)
-- "Contact our office" (this is a small school with named people, not a faceless office)
+- "Your child will adjust in no time" (narrates the child's future; doc-01 explicitly forbids this)
+- "Separation anxiety is normal" (doc-01 flags this phrasing; use "the first weeks" instead)
+- "We'll take great care of them" (hollow reassurance)
 
 ---
 
-### Q7.4: How do you communicate with families day to day?
+### Q7.2: What if my child cries every morning at drop-off?
 
 **Answer (pre-approved):**
 
-For enrolled families, day-to-day communication goes through the lead teacher for your child's classroom. The school uses Brightwheel, an app for family communication and notes. [NEEDS CONFIRMATION: confirm Brightwheel is the family-facing communication tool and add to Business Facts Reference; also confirm whether the school sends daily updates via Brightwheel, how quickly messages are typically read and responded to, and how teachers and families use it in practice]
+That is so normal. Many children in the Twos and Threes cry at drop-off, sometimes for weeks. That doesn't mean something is wrong, and it doesn't mean the school is the wrong fit.
 
-For anything bigger than a day-to-day classroom question, Rebecca is the contact.
+What matters more is what happens five minutes after you leave. The classroom teachers know which children need a transition routine and which need to be absorbed into something before they have time to think. There is no formula that works the same way for every child.
+
+If drop-off remains hard after the first few weeks, that's a conversation with Miss Tova or Miss Carla (depending on your child's class). They're the ones who see what actually happens in the room after you go.
 
 **Facts referenced:**
-- Doc 03, Section 3: Brightwheel as the CRM and communication platform (pending confirmation for doc-02)
-- Doc 02, Section 2: lead teacher as primary day-to-day contact for enrolled families
+- Doc 02, Section 2: classroom teachers are the primary contact for daily classroom concerns
+- Doc 01, Section 5: "That is so normal"; "There is no rush"; "the first weeks"
 
 **Voice notes:**
-- Families with new children want to know they'll hear something about the day; acknowledge that expectation without overclaiming the frequency of updates
-- Don't oversell the communication tools; describe what they actually do
+- This is a worried parent. Use "That is so normal" at or near the start (doc-01 phrase).
+- Don't promise that crying will stop by a specific date. Don't promise a timeline. Be honest.
 
-**When to deflect to a human:**
-- If a family has a concern about communication quality or response time, route to Rebecca
+**When to deflect:**
+- If the parent describes something beyond normal adjustment (weeks of significant distress, a child who seems afraid of the classroom), route to Rebecca.
 
 **Follow-up prompt:**
-"Do you have questions about how the app works?"
+"How old is your child, and are they starting in the Twos or the Threes?"
 
 **Don't say:**
-- "We keep you updated every day with a full report" (not confirmed as the practice)
-- "We have seamless communication tools" ("seamless" is a banned word in doc-01)
+- "They all stop eventually" (trivializes real parental worry)
+- "Don't worry, they're fine as soon as you leave" (may or may not be true; don't say it unless the teacher confirms it for a specific child)
+- "We have a proven transition process" (doc-01 flags "proven")
 
 ---
 
-### Q7.5: What is Brightwheel?
+## 9. Staff, Ratios, and the School Community
+
+### Q8.1: How many children are in each classroom, and how many teachers?
 
 **Answer (pre-approved):**
 
-Brightwheel is the app the school uses for family communication and records. Once your child is enrolled, you get access. Teachers use it to share notes and messages, and it handles administrative records on the school side.
+The licensed ratios are:
+- Twos (Miss Tova): 1 teacher for every 5 children
+- Threes (Miss Carla): 1 teacher for every 7 children
+- Pre-K (Miss Dana): 1 teacher for every 8 children
 
-[NEEDS CONFIRMATION: which specific features the school uses Brightwheel for, for example daily updates, messaging, billing, or check-in and check-out; how families get set up and onboarded to it]
+The school has 13 staff total for 52 enrolled children. That means most classrooms have additional support beyond the lead teacher.
+
+[NEEDS CONFIRMATION: Does each classroom have a dedicated assistant, or is additional staff shared across rooms?]
 
 **Facts referenced:**
-- Doc 03, Section 3: Brightwheel as the program's CRM and communication platform
+- Doc 02, Section 5: capacity metrics and ratios
+- Client profile, capacity.metrics
 
 **Voice notes:**
-- Parents unfamiliar with it just want to know it's not complicated
-- Don't oversell it; describe what it does
+- The 1:5 Twos ratio is a real differentiator. Name it clearly.
+- Parents comparing options want the actual numbers. Give them the specific ones.
 
-**When to deflect to a human:**
-- Technical issues with Brightwheel route to Rebecca or whoever manages the app
+**When to deflect:**
+- Never for this factual question.
 
 **Follow-up prompt:**
-"You'll get setup information when you enroll. Any questions before then?"
+"Is ratio a specific concern for you, or more general curiosity?"
 
 **Don't say:**
-- "Brightwheel is a revolutionary platform that transforms family engagement" (banned language in every word)
+- "We have an excellent staff-to-child ratio" (vague; give the actual numbers)
+- Any implication that the ratios ever vary from the licensed standards
 
 ---
 
-## 9. Health and safety
-
-### Q8.1: What immunizations are required?
+### Q8.2: Do we need to be JCC members to enroll?
 
 **Answer (pre-approved):**
 
-Every child needs to have current immunizations on file before starting. New York State requires this, and a copy of the records goes into your child's enrollment file.
+[NEEDS CONFIRMATION: Is JCC membership required for enrollment at Little Friends Learning Loft? Is there a tuition differential for JCC members vs. non-members?]
 
-Religious and medical exemptions are accepted when documented according to New York State OCFS requirements. If you have a specific exemption situation, that conversation is with Rebecca, not through the auto-responder.
+The school is operated under the auspices of the Greater Newburgh JCC, and many families discover Little Friends through the JCC or through word of mouth within that community. But Rebecca can confirm whether membership is a requirement or whether it affects tuition.
 
 **Facts referenced:**
-- Doc 02, Section 6: immunizations required; religious and medical exemptions accepted per OCFS
+- Doc 02, Section 1: operated under auspices of the JCC
+- Client profile, customers.primaryCustomer: JCC community is a primary referral source
 
 **Voice notes:**
-- State the requirement plainly; it is a legal requirement, not a preference
-- Don't make the exemption language sound like a loophole; it's a documented, official process
-- This is not emotionally charged in the usual sense; answer it directly
+- Non-JCC families ask this. Don't imply exclusion. Give the factual context and route clearly.
 
-**When to deflect to a human:**
-- If a parent has a specific exemption situation, route to Rebecca
+**When to deflect:**
+- Route to Rebecca for any membership or fee-differential question.
 
 **Follow-up prompt:**
-"Do you have your child's immunization records handy?"
+"Are you currently a JCC member, or is this your first connection to the community?"
 
 **Don't say:**
-- "We require all standard vaccinations" (say "current immunizations" rather than implying a specific list)
-- Any implication that immunization requirements are flexible without a formal documented exemption
+- "You must be a JCC member" (unconfirmed)
+- "Anyone can enroll" (also unconfirmed)
 
 ---
 
-### Q8.2: What happens if my child gets sick at school?
+### Q8.3: How do I reach my child's teacher?
 
 **Answer (pre-approved):**
 
-[NEEDS CONFIRMATION: what is the school's protocol when a child becomes ill during the school day? Who contacts the parent? What symptoms trigger a call home? Is there a designated health contact on site?]
+For everyday questions about your child's day, the right person is the classroom teacher directly: Miss Tova for the Twos, Miss Carla for the Threes, or Miss Dana for Pre-K.
 
-Until confirmed, the general principle is that a child who is sick will be kept comfortable and a parent will be contacted, but the specific protocol should come directly from Rebecca.
+[NEEDS CONFIRMATION: Do teachers have direct email contacts, or does communication flow through Rebecca and the main school contact?]
+
+For anything larger than a daily classroom question (concerns, billing, enrollment, school policy), Rebecca is the right person.
 
 **Facts referenced:**
-- Doc 02, Section 6: sick protocol and day-of medical procedures listed as pending confirmation
+- Doc 02, Section 2: teacher roles and classroom assignments; Rebecca handles escalated matters
+- Client profile, people.routing.doNotRoute: classroom assistants are not a routing destination for families
 
 **Voice notes:**
-- Parents ask this as part of basic risk assessment; once the protocol is confirmed, answer it with specifics
-- Any situation involving a child who is currently sick routes to Rebecca immediately
+- Be specific about who handles what. Enrolled families who feel they can't reach anyone become anxious quickly.
 
-**When to deflect to a human:**
-- Any actual situation involving a specific sick child right now routes to Rebecca; child wellbeing is explicitly listed as a sensitive escalation topic in the operational profile
+**When to deflect:**
+- Route child wellbeing or incident concerns directly to the director. Don't leave those with the classroom teacher alone.
 
 **Follow-up prompt:**
-"Let me have Rebecca walk you through the protocol directly. Can she reach you by email or phone?"
+"Is there something I can help with right now, or were you just checking how to reach the team?"
 
 **Don't say:**
-- "We will contact you if there are any concerns" (vague; families need the actual protocol)
-- Any invented sick protocol detail
+- "You can reach out to anyone on our team" (too vague; not all staff are family-facing contacts)
+- Direct families to classroom assistants as primary contacts
 
 ---
 
-### Q8.3: How do you handle children with allergies?
-
-**Answer (pre-approved):**
-
-[NEEDS CONFIRMATION: what is the school's allergy policy? Is the building nut-free? Who is trained to administer an EpiPen if needed? How are life-threatening allergies communicated to all staff?]
-
-Until confirmed, serious allergy questions route to Rebecca. For any child with a life-threatening allergy, that conversation should happen directly with Rebecca before the child starts, not through the chatbot.
-
-**Facts referenced:**
-- Doc 02, Section 6: allergy protocols listed as pending confirmation
-
-**Voice notes:**
-- Families with severe allergy situations take this question seriously; respond with the seriousness it deserves
-- This is a child wellbeing topic; route with care
-
-**When to deflect to a human:**
-- Always (until confirmed); for life-threatening allergy questions, route to Rebecca immediately regardless of whether the policy has been confirmed
-
-**Follow-up prompt:**
-"I want to make sure Rebecca has a real conversation with you about this before your child starts. Can I have her reach out?"
-
-**Don't say:**
-- "We take allergies very seriously" (empty phrase without the substance of the actual protocol)
-- "We are a nut-free facility" (not confirmed)
-
----
-
-### Q8.4: Is the school licensed by the state?
-
-**Answer (pre-approved):**
-
-Yes. Little Friends Learning Loft is licensed by the New York State Office of Children and Family Services (OCFS). The license covers children ages two and up, and the licensed capacity is 58 children total. [NEEDS CONFIRMATION: OCFS license number and renewal date]
-
-The OCFS license is also the reason infant and under-two enrollment isn't possible; the license doesn't cover that age group.
-
-**Facts referenced:**
-- Doc 02, Section 1: OCFS licensed, ages 2+, capacity 58
-- Doc 02, Section 6: OCFS compliance and records
-
-**Voice notes:**
-- Parents asking this are checking the school's legal standing; answer it directly and specifically
-- The license number is listed as pending confirmation in doc-02; include it once confirmed
-
-**When to deflect to a human:**
-- If a parent mentions OCFS by name in a complaint or dispute context, route to Rebecca immediately; OCFS communications are explicitly listed as a sensitive escalation topic in the operational profile
-
-**Follow-up prompt:**
-None needed
-
-**Don't say:**
-- "We are fully certified and compliant with all applicable state regulations" (corporate language; just state the specific license)
-- Any invented license number
-
----
-
-### Q8.5: How do you handle separation anxiety and the first weeks of school?
-
-**Answer (pre-approved):**
-
-The first couple weeks can be tender, especially for Twos and new Threes. Crying at drop-off is normal and expected. Miss Tova and Miss Carla have both done this many times and they know what a hard morning looks like versus a settling-in morning.
-
-In practice: a drop-off that looks rough in the first minute often looks fine ten minutes later. The teachers will tell you how your child is actually doing, not just reassure you. If drop-off is consistently hard after the first few weeks, that's a conversation Rebecca can have with you directly.
-
-[NEEDS CONFIRMATION: does the school have a specific transition support process, a gradual entry option, or a recommended first-day approach?]
-
-**Facts referenced:**
-- Doc 01, Section 2: "the first couple weeks can be tender" and "that is so normal" as named director language
-- Doc 01, Section 8: "Separation anxiety is real. Two-year-olds cry. Some children take three weeks to settle. Naming this honestly is part of the brand."
-- Doc 02, Section 2: Miss Tova (Twos), Miss Carla (Threes) as lead teachers
-
-**Voice notes:**
-- This is one of the most emotionally loaded questions new families ask
-- Use the director's own language: "the first couple weeks can be tender"
-- Don't over-reassure; naming the real thing is more comforting than false brightness
-- "They'll tell you how your child is actually doing, not just reassure you" is a genuine differentiator; say it plainly
-
-**When to deflect to a human:**
-- If a family has a specific child concern beyond first-week adjustment, route to Rebecca or the classroom teacher
-
-**Follow-up prompt:**
-"Do you have specific concerns about drop-off, or is it more of a general question?"
-
-**Don't say:**
-- "We create a seamlessly supportive transition experience for children at every developmental stage" (this sentence is literally the example of what NOT to say in doc-01)
-- "Every child adjusts differently but they all love it here!" (false reassurance)
-- "Separation anxiety is very common and we are well-equipped to handle it" (corporate language; be specific instead)
-
----
-
-## 10. Deflection templates
+## 10. Deflection Templates
 
 ### When to deflect (not answer)
 
-Some questions are better answered by a human. The templates below provide pre-approved language so the AI can acknowledge the question, signal it's been heard, and route appropriately. An AI that says "I don't know, let me connect you with someone who does" preserves trust. One that invents an answer erodes it.
+Some questions are better answered by a human. The following templates give the AI pre-approved language to acknowledge a question honestly, explain the routing, and move the conversation forward without inventing an answer or leaving a family without a clear next step.
 
 ### Deflection template library
 
-**Template: Tuition and pricing**
-- When it applies: Any direct question about tuition, monthly cost, annual cost, or total program cost, including aftercare pricing.
-- Deflection language: "I'd love to show you the space first before getting into tuition. The number depends on the program and the number of days, and out of context it tends to lose families who would have loved us once they saw what they were actually getting. The best next step is a tour with Rebecca. She walks you through the classrooms, introduces whoever is around, and goes over all the details including pricing before you leave. Can I help you set that up?"
-- Route to: Rebecca for tour scheduling
+**Template: Tuition or pricing request**
+- When it applies: Any question about tuition, specific costs, comparisons, or "Is it expensive?"
+- Deflection language: "I'd love to show you the space first. Tuition depends on the program and the days, and the number out of context tends to lose families who would have been a great fit. The fastest path to a real number is a tour with Rebecca. Want me to share how to schedule one?"
+- Route to: Rebecca (director) via tour or direct conversation
 
-**Template: Child wellbeing, incidents, or medical situations**
-- When it applies: Any question or message involving a child's safety, a specific incident at school, a medical event, a behavioral concern, or anything where a parent is worried about a specific child right now.
-- Deflection language: "This is something I'd rather have Rebecca respond to directly. Can I pass this along to her? What's the best way to reach you?"
-- Route to: Rebecca (director), as soon as possible; do not hold for regular office hours
+**Template: Child wellbeing, incident, or safety concern**
+- When it applies: Any question about a specific child's safety, a reported incident, an injury, or a complaint about a child's experience in the classroom
+- Deflection language: "This is something Rebecca should speak with you about directly, not something I can answer through a message. Let me get you to her. What's the best way to reach you?"
+- Route to: Rebecca (director). This is the highest-priority escalation and should never be delayed.
 
-**Template: Out-of-scope request (infant or under-two enrollment)**
-- When it applies: A family asks about enrolling a child who is under two, or specifically asks about infant care.
-- Deflection language: "Little Friends is licensed by New York State OCFS for children ages two and up. I can't enroll infants or children under two, and that's a licensing requirement rather than a policy I can make exceptions to. If you're looking for infant care in the area, I'm happy to help point you toward options. [NEEDS CONFIRMATION: local infant-care referral resources] If you also have a child who's two or older and are interested in the program for them, I'd be glad to help with that."
-- Route to: No enrollment routing; offer referral if available. If the family has a qualifying child, pivot to that child and toward a tour.
+**Template: Billing, payment, or financial account**
+- When it applies: Questions about a specific invoice, a late payment, a payment method, or a billing error
+- Deflection language: "For anything about billing or your account, Linda, the bookkeeper, is the right person. Rebecca can also help if the question is broader than a specific invoice. What's the best way for one of them to reach you?"
+- Route to: Linda (bookkeeper) for pure billing questions; Rebecca for anything broader
 
-**Template: Money, billing, or financial disputes**
-- When it applies: A family asks about a specific charge, disputes a fee, asks about a refund, or raises any concern about money that goes beyond explaining the published registration fee and deposit structure.
-- Deflection language: "Billing questions are best handled directly by Rebecca or Linda, who handles bookkeeping. I don't want to give you wrong information on something financial. Can I have one of them follow up with you? What's the best way to reach you?"
-- Route to: Rebecca for anything involving judgment or policy; Linda (bookkeeper) for purely billing-related questions
+**Template: Upset or frustrated parent**
+- When it applies: The parent's message contains frustration, complaint, or distress, even if the surface question seems logistical
+- Deflection language: "I hear you. This is something I want Rebecca to respond to directly rather than giving you an automated reply. She'll follow up with you personally. Is [email] still the best place to reach you?"
+- Route to: Rebecca (director)
 
-**Template: Upset or distressed parent**
-- When it applies: A parent's tone or language signals frustration, distress, or that something has gone wrong with their experience, either currently or in the past.
-- Deflection language: "I can hear that something isn't right, and I don't want to leave you with an automated response. Let me make sure Rebecca sees this today. What's the best way for her to reach you?"
-- Route to: Rebecca (director), same day
+**Template: State licensing or OCFS question**
+- When it applies: Any question referencing the NYS Office of Children and Family Services, the school's license, inspection records, or a complaint filed with the state
+- Deflection language: "Anything involving the state or licensing is handled directly by Rebecca. She's the right person for that conversation. Can I help you reach her?"
+- Route to: Rebecca (director) only
 
-**Template: Information not available**
-- When it applies: A parent asks a question that isn't covered in this FAQ bank or in the Business Facts Reference.
-- Deflection language: "That's a good question and I don't have a confident answer ready. I'd rather have Rebecca follow up directly so you get the right information rather than a guess from me. What's the best way to reach you?"
+**Template: Question I don't have an answer for**
+- When it applies: A parent asks something not covered in this FAQ and not covered in the Business Facts Reference
+- Deflection language: "That's a good question and I want to make sure you get the right answer, not my best guess. Let me connect you with Rebecca or the right person on the team. What's the best way to reach you?"
 - Route to: Rebecca
 
 ### The deflection principle
 
-Every deflection preserves trust by acknowledging the question clearly, not faking an answer, and offering a useful and specific next step. A deflection that says "please contact our office" without naming a person or a path is not a deflection; it's a dismissal. Always name who is following up and make the next step concrete.
+An AI that says "I don't know, let me get you to someone who does" builds trust. An AI that makes up an answer destroys it. Deflections are not failures. They are the appropriate response when the question matters more than the efficiency of the reply.
 
 ---
 
-## 11. Conversation flow patterns
+## 11. Conversation Flow Patterns
 
-### The typical new-family conversation
+### The typical family conversation
 
-Most new families ask three to six questions before committing to schedule a tour. The goal across those turns is not just to answer accurately; it is to move the conversation toward a tour with Rebecca. A tour converts. An extended FAQ exchange often doesn't.
+Most families ask 3 to 6 questions before deciding to take a next step. The goal across those turns is not to close them on the spot. It's to help them understand whether this school fits their child and their family. The natural next step is always the tour.
 
 ### Common conversation flows
 
-**Flow A: Initial inquiry, parent of a two-year-old**
-1. Parent asks: "Do you have any spots open for my two-year-old?"
-2. AI answers: Q3.1 (availability, noting the June 2026 enrollment figure and that classroom-specific availability should come from Rebecca), then asks the child's age and September timing
-3. AI follows up: "Would you like to schedule a tour so Rebecca can walk you through the Twos room and go over everything?"
-4. If parent engages: Move directly to tour scheduling
-5. If parent asks about cost first: Follow Q2.1 deflection ("I'd love to show you the space first..."); don't detour into a pricing conversation
-6. Goal: Tour scheduled
-
-**Flow B: Pricing-first inquiry**
-1. Parent asks: "How much does it cost?"
-2. AI answers: Q2.1 (tuition deflection)
-3. If parent pushes ("just give me a ballpark"): Hold the deflection. "I genuinely don't give out that number before a tour because the context of seeing the school matters, and I don't want to lose you over a number before you've seen what you'd be getting. It takes about 30 minutes. Want to set one up?"
-4. If parent accepts the deflection: Offer tour scheduling directly
+**Flow A: Initial inquiry, new family**
+1. Family asks: "Do you have space for a [age]-year-old?"
+2. AI answers with: Q2.1 (availability overview) and Q1.1 or the relevant program-specific answer
+3. AI follows up: "Want me to share how to schedule a tour?"
+4. Family engages: AI provides Sign-Up Genius link (Q2.2)
 5. Goal: Tour scheduled
 
-**Flow C: Out-of-scope request (infant care inquiry)**
-1. Parent asks: "Do you have room for my 8-month-old?"
-2. AI answers: Q1.3 (firm, warm no; OCFS license limitation, not a policy exception)
-3. AI offers: Referral if available [NEEDS CONFIRMATION]; and if the family also has a two-year-old, notes that the school could be a fit for that child
-4. If parent has only an infant: Clean, kind close; no enrollment conversation
-5. If parent also has a two-year-old: Pivot to that child and move toward a tour
-6. Goal: Appropriate close (no false hope on infant care) and serve the family if there's a qualifying child
+**Flow B: Pricing-first inquiry**
+1. Family asks: "How much does it cost?"
+2. AI answers with: Q3.1 (deflect to tour, use exact deflection language from profile)
+3. Family pushes: "Can you give me a ballpark?"
+4. AI repeats the tour invitation: "I really want to show you the school first. The number lands differently once you've seen it."
+5. Family softens: AI offers to help schedule
+6. Goal: Tour scheduled; tuition discussed by Rebecca in person
 
-**Flow D: Constraint-driven inquiry (schedule or logistics)**
-1. Parent asks: "Do you have a Tuesday/Thursday option?" or "Is this near [location]?"
-2. AI answers: Q4.2 (schedule, with a note that specifics are pending confirmation until that fact is loaded) or confirms the JCC location in Newburgh
-3. If the schedule fits: Move toward "want to come see the space?"
-4. If the schedule doesn't fit: Clean, warm close; offer to note their interest for a future year if that makes sense
-5. Goal: If fit is confirmed, tour scheduled; if not, clean and warm close
+**Flow C: Montessori-curious family**
+1. Family asks: "What is Montessori?" or "Is this a Montessori school?"
+2. AI answers with: Q5.1
+3. Family asks: "How is that different from regular preschool?"
+4. AI answers with: Q5.2
+5. AI follows up: "Have you had a chance to see a Montessori classroom in person? That's usually what makes it click."
+6. Goal: Tour invitation extended naturally from curiosity
+
+**Flow D: Worried parent, first school experience**
+1. Family asks: "My child has never been to school. Is this the right fit?"
+2. AI answers with: Q7.1
+3. Family expresses worry: "She's really attached to me."
+4. AI responds with Q7.2 framing, including "That is so normal."
+5. AI follows up: "Come and see. Rebecca and Miss Tova are good at this conversation in person."
+6. Goal: Tour scheduled; Rebecca aware a nervous family is coming
 
 ### Escalation triggers
 
-Stop answering FAQs and route to Rebecca when:
-- The parent has asked four or more questions without moving toward a tour or a concrete next step
-- The parent mentions frustration, a bad experience, or time pressure ("I need to have this figured out by next week")
-- The parent asks a question not covered in this FAQ bank
-- The parent uses emotional language that signals this is more than an information request (a child who had a difficult previous school experience, a family disruption, a loss)
-- The parent mentions a currently enrolled child and has an immediate concern (child wellbeing territory; always route to Rebecca)
-- The parent raises anything involving money, billing, or a deposit dispute
-- The parent explicitly asks to speak with the director or a person
-- The parent's budget is clearly below the program's floor [NEEDS CONFIRMATION: what is the minimum realistic program cost after confirmed discounts?]
+Route to a human when:
+- Family has asked 5 or more questions without any movement toward a tour or concrete next step (possible signal: an unvoiced concern that needs a human to surface)
+- Family uses emotional language: frustration, urgency, distress, anger
+- Family mentions a deadline under 30 days for enrollment (time pressure may require immediate human judgment on availability)
+- Family asks any question not covered in this FAQ
+- Family asks anything about billing, a specific incident, a child's wellbeing, or a state/licensing matter
+- Family mentions an infant or a child under 2 (answer the "no" directly, then offer to follow up when the child is older)
+- Family seems to be comparing unfavorably or says "another school told me..."
 
 ---
 
-## 12. Maintenance and versioning
+## 12. Maintenance and Versioning
 
 ### Quarterly review checklist
 
-- [ ] Re-read every answer. Flag any that have become outdated or reference facts that have changed.
-- [ ] Pull the last 90 days of parent inquiries. Identify questions that come up frequently and aren't yet in this document.
-- [ ] Verify every answer that references the Business Facts Reference: enrollment numbers, staff names, registration fee, deposit terms.
-- [ ] Review deflection templates. Are they routing correctly in practice? Is Rebecca reporting cases where the chatbot should have escalated and didn't?
-- [ ] Confirm conversation flow patterns still match the current enrollment process.
+- [ ] Re-read every answer. Flag any that have become outdated.
+- [ ] Pull the last 90 days of inquiries. Identify questions that come up frequently and aren't yet in this document.
+- [ ] Check every answer that references Document 02 for facts that have changed (especially tuition, deposit, registration fee, enrollment status, staff names, and ratios).
+- [ ] Review deflection templates: is the routing still correct? Are Rebecca and Linda still the right contacts?
+- [ ] Confirm conversation flow patterns match what Rebecca reports actually happens in tour conversations.
+- [ ] Check for any new OCFS licensing updates that affect how the school is described publicly.
+- [ ] Resolve any outstanding [NEEDS CONFIRMATION] items and replace them with confirmed facts.
 
 ### Update immediately when:
 
-- Tuition, registration fee, or deposit structure changes
-- Rebecca, Miss Tova, Miss Carla, Miss Dana, or any named staff member changes (outdated names in automated responses erode trust immediately)
-- School hours, days, or calendar changes
-- OCFS license status changes in any way
-- A parent question comes up three or more times that isn't in this bank (add it)
-- Any new program is added or any existing program is discontinued
+- Any tuition or fee amount changes
+- Rebecca, Tova, Carla, Dana, Yael, or Linda changes roles or leaves
+- The school's capacity or enrollment status changes significantly
+- A new program is added or an existing one is modified
+- A parent question comes up 3 or more times that is not in this FAQ (add it)
+- The JCC affiliation structure changes in any way that affects how the school is described publicly
 
 ### Version history
 
 | Version | Date | Summary of changes | Reviewer |
 |---|---|---|---|
-| 1.0 | June 2026 | Initial publication | Joshua Brown + [NEEDS CONFIRMATION: director's last name] |
+| 1.0 | June 2026 | Initial publication | Joshua + [NEEDS CONFIRMATION: Rebecca's last name for sign-off] |

@@ -1,6 +1,6 @@
 {
   "slug": "littlefriends",
-  "revision": 57,
+  "revision": 58,
   "ready": [
     {
       "id": "doc-01",
@@ -93,6 +93,36 @@
       }
     },
     {
+      "id": "doc-10",
+      "title": "Website Audit",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-11",
+      "title": "Automation Spec Package",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-12",
+      "title": "Measurement & KPI Framework",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
       "id": "doc-13",
       "title": "Master Build Sequence",
       "readiness": {
@@ -151,58 +181,34 @@
         "unverifiedHv": [],
         "missingDocs": []
       }
-    }
-  ],
-  "blocked": [
+    },
     {
-      "id": "doc-10",
-      "title": "Website Audit",
+      "id": "doc-web-prd",
+      "title": "Website Requirements PRD",
       "readiness": {
-        "ready": false,
+        "ready": true,
         "missingFields": [],
         "unverifiedHv": [],
-        "missingDocs": [
-          "doc-08",
-          "doc-09"
-        ]
+        "missingDocs": []
       }
     },
     {
-      "id": "doc-11",
-      "title": "Automation Spec Package",
+      "id": "design-system",
+      "title": "Design System",
       "readiness": {
-        "ready": false,
+        "ready": true,
         "missingFields": [],
         "unverifiedHv": [],
-        "missingDocs": [
-          "doc-08"
-        ]
-      }
-    },
-    {
-      "id": "doc-12",
-      "title": "Measurement & KPI Framework",
-      "readiness": {
-        "ready": false,
-        "missingFields": [],
-        "unverifiedHv": [],
-        "missingDocs": [
-          "doc-09",
-          "doc-11"
-        ]
+        "missingDocs": []
       }
     },
     {
       "id": "i07",
       "title": "Account Access & Governance",
       "readiness": {
-        "ready": false,
-        "missingFields": [
-          "governance.dataResidency"
-        ],
-        "unverifiedHv": [
-          "governance.dataResidency"
-        ],
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
         "missingDocs": []
       }
     },
@@ -210,182 +216,126 @@
       "id": "i01",
       "title": "Client Claude Project",
       "readiness": {
-        "ready": false,
+        "ready": true,
         "missingFields": [],
         "unverifiedHv": [],
-        "missingDocs": [
-          "doc-08",
-          "doc-09",
-          "doc-10",
-          "doc-11",
-          "doc-12",
-          "doc-13",
-          "doc-14",
-          "doc-15",
-          "doc-16",
-          "doc-17",
-          "doc-18",
-          "i07"
-        ]
+        "missingDocs": []
       }
     },
     {
       "id": "i02",
       "title": "Client Skills Deployment",
       "readiness": {
-        "ready": false,
+        "ready": true,
         "missingFields": [],
         "unverifiedHv": [],
-        "missingDocs": [
-          "doc-11",
-          "i01"
-        ]
+        "missingDocs": []
       }
     },
     {
       "id": "i04",
       "title": "Client MCP Server Configuration",
       "readiness": {
-        "ready": false,
-        "missingFields": [
-          "governance.dataResidency"
-        ],
-        "unverifiedHv": [
-          "governance.dataResidency"
-        ],
-        "missingDocs": [
-          "doc-11",
-          "i02"
-        ]
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
       }
     },
     {
       "id": "i03",
       "title": "Client Routines / Cowork",
       "readiness": {
-        "ready": false,
-        "missingFields": [
-          "toolsAndAccess.browserDeviceLandscape"
-        ],
-        "unverifiedHv": [
-          "toolsAndAccess.browserDeviceLandscape"
-        ],
-        "missingDocs": [
-          "doc-11",
-          "doc-12",
-          "i02",
-          "i04"
-        ]
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
       }
     },
     {
       "id": "i05",
       "title": "Client Claude in Chrome",
       "readiness": {
-        "ready": false,
-        "missingFields": [
-          "toolsAndAccess.browserDeviceLandscape"
-        ],
-        "unverifiedHv": [
-          "toolsAndAccess.browserDeviceLandscape"
-        ],
-        "missingDocs": [
-          "doc-11",
-          "i01"
-        ]
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
       }
     },
     {
       "id": "i06",
       "title": "Client Claude Code Setup",
       "readiness": {
-        "ready": false,
-        "missingFields": [
-          "people.technicalCollaborator"
-        ],
+        "ready": true,
+        "missingFields": [],
         "unverifiedHv": [],
-        "missingDocs": [
-          "i01"
-        ]
+        "missingDocs": []
       }
     },
     {
       "id": "i08",
       "title": "Client Custom Styles / Memory / Preferences",
       "readiness": {
-        "ready": false,
-        "missingFields": [
-          "governance.memoryIncognitoPosture"
-        ],
-        "unverifiedHv": [
-          "governance.memoryIncognitoPosture"
-        ],
-        "missingDocs": [
-          "i01"
-        ]
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
       }
     },
     {
       "id": "i09",
       "title": "Client Artifacts & Deliverable Templates",
       "readiness": {
-        "ready": false,
-        "missingFields": [
-          "governance.reviewResponsePolicy"
-        ],
-        "unverifiedHv": [
-          "governance.reviewResponsePolicy"
-        ],
-        "missingDocs": [
-          "doc-11",
-          "doc-12",
-          "i01"
-        ]
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
       }
     }
   ],
+  "blocked": [],
   "unapprovedBlocking": [],
   "conflicts": [],
   "fill": [
     {
       "section": "identity",
-      "filled": 9,
-      "total": 9
+      "filled": 8,
+      "total": 8
     },
     {
       "section": "people",
-      "filled": 5,
-      "total": 5
-    },
-    {
-      "section": "offerings",
-      "filled": 4,
-      "total": 4
-    },
-    {
-      "section": "pricing",
-      "filled": 5,
-      "total": 5
-    },
-    {
-      "section": "capacity",
-      "filled": 3,
-      "total": 3
-    },
-    {
-      "section": "customers",
       "filled": 6,
       "total": 6
     },
     {
-      "section": "positioning",
+      "section": "offerings",
+      "filled": 3,
+      "total": 3
+    },
+    {
+      "section": "pricing",
       "filled": 4,
       "total": 4
     },
     {
-      "section": "voice",
+      "section": "capacity",
+      "filled": 2,
+      "total": 2
+    },
+    {
+      "section": "customers",
+      "filled": 2,
+      "total": 2
+    },
+    {
+      "section": "positioning",
       "filled": 5,
       "total": 5
+    },
+    {
+      "section": "voice",
+      "filled": 4,
+      "total": 4
     },
     {
       "section": "salesProcess",
@@ -394,8 +344,8 @@
     },
     {
       "section": "content",
-      "filled": 9,
-      "total": 9
+      "filled": 11,
+      "total": 11
     },
     {
       "section": "competitors",
@@ -404,8 +354,8 @@
     },
     {
       "section": "seo",
-      "filled": 4,
-      "total": 4
+      "filled": 5,
+      "total": 5
     },
     {
       "section": "toolsAndAccess",
@@ -419,8 +369,8 @@
     },
     {
       "section": "governance",
-      "filled": 3,
-      "total": 3
+      "filled": 6,
+      "total": 6
     },
     {
       "section": "goals",
@@ -437,9 +387,29 @@
     "doc-01",
     "doc-02",
     "doc-03",
+    "doc-13",
+    "doc-14",
+    "doc-15",
+    "doc-17",
+    "doc-18",
     "doc-04",
     "doc-05",
     "doc-07",
-    "doc-06"
+    "doc-06",
+    "doc-08",
+    "doc-09",
+    "doc-11",
+    "doc-10",
+    "doc-16",
+    "doc-12",
+    "i07",
+    "i01",
+    "i02",
+    "i05",
+    "i08",
+    "i09",
+    "i04",
+    "i03",
+    "i06"
   ]
 }

@@ -1,12 +1,11 @@
-# JCC Preschool sales process map
-[NEEDS CONFIRMATION: confirm the public-facing program name used with prospective families]
+# [NEEDS CONFIRMATION: business name] Sales Process Map
 
 **Prepared by:** Joshua Brown / Upriver Consulting
 **Date:** June 2026
 **Version:** 1.0
-**Last process audit:** No prior audit on record. First-touch timing, response quality, and follow-up cadence are unverified. A secret shopper test is required before this document can be considered complete.
+**Last process audit:** [NEEDS CONFIRMATION: no formal process audit has been completed; a secret shopper test is pending]
 
-**For:** Inquiry response automation, follow-up sequences, lead scoring, Brightwheel configuration, sales funnel audits, conversion improvement work.
+**For:** Inquiry response automation, follow-up sequences, lead scoring, CRM configuration, sales funnel audits, conversion improvement work.
 
 **Companion documents:**
 - Document 02: Business Facts Reference (the facts referenced at each stage)
@@ -15,7 +14,7 @@
 - Document 10: Automation Spec Package (where this map gets operationalized)
 - Document 12: Measurement and KPI Framework (where this map's metrics get tracked)
 
-**Critical principle:** This document describes what actually happens, not what the program wishes happened. The "ideal" process belongs in the Automation Spec Package as the future state. This document is the current state, including the gaps.
+**Critical principle:** This document describes what actually happens, not what the director wishes happened. The "ideal" process belongs in the Automation Spec Package as the future state. This document is the current state, including the gaps.
 
 ---
 
@@ -23,96 +22,95 @@
 
 ### Active inbound lead sources
 
-**Word of mouth (parent referrals)**
-- Volume: [NEEDS CONFIRMATION: approximately how many inquiries per year come through parent referrals?]
-- Percentage of total inbound: [NEEDS CONFIRMATION]
-- Quality assessment: Highest. Families referred by current or past families arrive pre-sold on the program's culture. They are the most likely to tour and the most likely to enroll. Their qualification bar is also the easiest to clear because referring parents typically screen for age and program fit before making the introduction.
-- Cost: Free (relationship-driven; no ad spend)
-- Where the inquiry lands: [NEEDS CONFIRMATION: phone call to Rebecca, email to the program, walk-in at the JCC front desk, or a combination?]
-- Who sees it first: [NEEDS CONFIRMATION: Rebecca, or a designated intake contact?]
+**Word of mouth**
+- Volume: [NOT TRACKED]
+- Percentage of total inbound: [NOT TRACKED]
+- Quality assessment: Highest. Families referred by current or past families arrive pre-sold on the school and tend to enroll at a much higher rate than cold inquiries.
+- Cost: Free; sustained by the relationships Rebecca and the teaching team build with enrolled families.
+- Where the inquiry lands: Typically email or an Instagram DM, though some arrive as a phone call to the school directly.
+- Who sees it first: Rebecca (director).
 
-**JCC community (members, JCC staff referrals, programming partners)**
-- Volume: [NEEDS CONFIRMATION: approximately how many inquiries per year originate from within the JCC community?]
-- Percentage of total inbound: [NEEDS CONFIRMATION]
-- Quality assessment: High. JCC-connected families already know the facility, are comfortable with the organizational context, and may qualify for the JCC discount (10%) [NEEDS CONFIRMATION: who qualifies for this discount, and is it restricted to JCC members?], which eases the tuition conversation. This channel benefits from the JCC's existing trust infrastructure.
-- Cost: Free (internal channel)
-- Where the inquiry lands: [NEEDS CONFIRMATION: email, phone, or in-person introduction through JCC staff?]
-- Who sees it first: [NEEDS CONFIRMATION]
+**JCC community**
+- Volume: [NOT TRACKED]
+- Percentage of total inbound: [NOT TRACKED]
+- Quality assessment: High. Families already connected to the JCC arrive with institutional trust and are often already familiar with the school's proximity and affiliation.
+- Cost: No separate marketing spend; relationship maintained through JCC membership and the school's physical presence in the building.
+- Where the inquiry lands: Email or Instagram DM; occasionally a walk-in or an introduction through JCC front-desk staff.
+- Who sees it first: Rebecca.
 
 **Instagram DM**
-- Volume: [NEEDS CONFIRMATION: approximately how many DMs per month?]
-- Percentage of total inbound: [NEEDS CONFIRMATION]
-- Quality assessment: [NEEDS CONFIRMATION: conversion rate from Instagram is unknown. Quality may be mixed; Instagram reaches families at varying stages of research, from curious browsers to ready-to-tour families.]
-- Cost: Free
-- Where the inquiry lands: Instagram inbox
-- Who sees it first: [NEEDS CONFIRMATION: who is responsible for monitoring the program's Instagram DMs, and how frequently are they checked?]
+- Volume: [NOT TRACKED]
+- Percentage of total inbound: [NOT TRACKED]
+- Quality assessment: [NEEDS CONFIRMATION: no conversion data exists to assess Instagram DM quality relative to other channels]
+- Cost: Free; no paid Instagram advertising is currently running.
+- Where the inquiry lands: Instagram inbox.
+- Who sees it first: [NEEDS CONFIRMATION: unclear whether Rebecca or another team member owns the Instagram inbox day to day]
 
-**Email inquiry (general contact)**
-- Volume: [NEEDS CONFIRMATION: approximately how many emails per month?]
-- Percentage of total inbound: [NEEDS CONFIRMATION]
-- Quality assessment: [NEEDS CONFIRMATION]
-- Cost: Free
-- Where the inquiry lands: [NEEDS CONFIRMATION: which email address, and who monitors it?]
-- Who sees it first: [NEEDS CONFIRMATION]
+**Email inquiry (direct)**
+- Volume: [NOT TRACKED]
+- Percentage of total inbound: [NOT TRACKED]
+- Quality assessment: [NEEDS CONFIRMATION: no conversion data]
+- Cost: Free.
+- Where the inquiry lands: School email inbox.
+- Who sees it first: Rebecca.
 
-### Inactive lead sources (currently dormant but possible)
+### Inactive lead sources
 
-- Google Search / Google Business Profile ("preschool near me," "JCC preschool [city]") is the canonical discovery channel for this industry. It is not confirmed as an active lead source in the current profile. [NEEDS CONFIRMATION: does the program have a Google Business Profile listing, and does it currently generate inquiries?]
-- Pediatrician office and neighborhood real estate agent referrals are industry-typical supplemental channels for preschools. [NEEDS CONFIRMATION: are any such referral relationships active or being developed?]
-- Nextdoor, neighborhood Facebook groups, or local parenting forums are used by some preschool programs for community awareness. [NEEDS CONFIRMATION: is the program present or active on any of these?]
+- **Square Online website.** The school has a Square Online presence that Rebecca describes as: "It is old. I do not think anyone finds us through it." This is not currently generating meaningful inbound.
+- **Google Search / Google Maps listing.** [NEEDS CONFIRMATION: whether the school has a Google Business Profile and whether it generates inquiries]
 
-### Lead sources not being used (and why)
+### Lead sources not being used
 
-[NEEDS CONFIRMATION: are there channels the program has consciously decided not to pursue, such as paid digital advertising or listing platforms? Documenting these decisions prevents relitigating them later.]
+- Paid advertising (Google, Instagram): not currently in use.
+- Third-party directories (GreatSchools, Care.com, local parenting publications): [NEEDS CONFIRMATION: whether these are active or have been tried]
+- Real estate agent and pediatrician referral partnerships: [NEEDS CONFIRMATION: whether any formal or informal referral relationships exist with these community professionals]
 
 ### Lead source observations
 
-Word of mouth and the JCC community are the program's clearest top-of-funnel strengths. These two channels produce the highest-quality inquiries and likely account for a disproportionate share of actual enrollments. Instagram DM and email represent channels with unclear volume and unknown conversion performance. Until basic intake tracking is in place, the program cannot confirm which channels are working and which are not. Getting channel attribution for even the past 12 months of enrollments is a near-term priority.
+The channel mix appears almost entirely relationship-driven: word of mouth and the JCC community are the two highest-quality sources, and both are free. Instagram DM is an inbound channel with no defined process around it. None of the volumes or channel-to-enrollment conversion rates are formally tracked, which means I cannot confirm which channels are actually producing the most enrolled families versus the most inquiry noise. Establishing that baseline is a Phase 1 priority.
 
 ---
 
 ## 2. First touch: what happens when an inquiry arrives
 
+### A note on data quality in this section
+
+A secret shopper test has not yet been completed. Everything in this section is drawn from the director's stated process or is flagged as unknown. I will run a secret shopper inquiry before this document is finalized and update this section with actual timing, actual response language, and any gap between stated process and observed process.
+
 ### The actual current process
 
-No secret shopper test has been run. The first-touch process below is marked accordingly. Response time and first-response quality cannot be confirmed until an actual inquiry is submitted across each active channel and timed.
+[NEEDS CONFIRMATION from secret shopper test. What follows is the stated process pending verification.]
 
-[NEEDS CONFIRMATION: walk through what happens from the moment a new inquiry comes in. Which channel does it arrive on? Who sees it first? What happens next? How long before the family receives a substantive response?]
-
-What the profile confirms:
-1. Inquiries arrive via Instagram DM, email, or through word-of-mouth and JCC community contact.
-2. [NEEDS CONFIRMATION: who receives the inquiry first, and on which channels? Is it Rebecca, or is intake shared across the team?]
-3. [NEEDS CONFIRMATION: is there any auto-acknowledgment (a thank-you or receipt confirmation) before a personal response goes out?]
-4. [NEEDS CONFIRMATION: does a first-response template exist, or is each reply written fresh each time?]
-5. [NEEDS CONFIRMATION: what does the first response typically include, a tour invitation, pricing overview, program description, or something else?]
+1. Inquiry arrives via email or Instagram DM.
+2. Rebecca sees it when she next checks her inbox or the Instagram app. There is no automated notification routing or CRM to centralize inbound.
+3. Rebecca responds manually with information about the program and an invitation to tour. Timing depends on her availability.
+4. If the family is interested, tour scheduling happens through Sign-Up Genius.
 
 ### Average response time
 
-[NEEDS CONFIRMATION for all of the following:]
-- Response time by channel (Instagram DM vs. email)
-- Response time by day of week (business hours vs. evenings and weekends)
-- Response time during winter and spring peak inquiry season vs. summer slow period
+- **By channel:** [NEEDS CONFIRMATION: secret shopper test pending for both email and Instagram DM]
+- **By time of day:** [NEEDS CONFIRMATION]
+- **By season:** [NEEDS CONFIRMATION: response time during busy winter/spring tour season may differ from summer]
 
 ### Who responds and what they say
 
-- **Primary responder:** [NEEDS CONFIRMATION: is Rebecca the primary first-touch responder, or does this responsibility fall to another team member?]
-- **Backup responder:** [NEEDS CONFIRMATION: who covers inquiries when the primary responder is unavailable?]
-- **What they say (current first-touch message):** [NEEDS CONFIRMATION: does a written template exist? If so, please share it.]
-- **What they ask in the first reply:** [NEEDS CONFIRMATION]
-- **What they include (pricing, program overview, tour scheduling link, etc.):** [NEEDS CONFIRMATION]
+- **Primary responder:** Rebecca (director).
+- **Backup responder:** [NEEDS CONFIRMATION: no backup process has been described]
+- **Current first-touch message:** [NEEDS CONFIRMATION: no template was shared; will capture from secret shopper test]
+- **What they ask:** [NEEDS CONFIRMATION]
+- **What they include:** [NEEDS CONFIRMATION: whether pricing, a Sign-Up Genius link, or a brochure is attached to the first response]
 
-### What's working in the first touch
+### What is working in the first touch
 
-I cannot make a confident assessment here without a secret shopper result. The one thing the profile suggests is working: the program's word-of-mouth reputation is strong enough that referred families arrive pre-warm. A parent who was referred by a trusted friend is far less sensitive to a 24-hour response delay than a parent who found the program through a cold search. That goodwill buys time, but it does not eliminate the risk of a slow response letting a family schedule a tour at a competitor first.
+The school's reputation travels through its community, so a significant portion of inquiries arrive pre-warmed by word of mouth. A warm referral softens the demand on first-touch quality.
 
-### What's broken or weak
+### What is broken or weak
 
-Without a secret shopper test, I can flag the most likely risks but cannot confirm them as findings. In this industry, the most common first-touch gap is an inconsistent response time across channels, particularly Instagram DM, where messages can sit unread for days because no single person owns the inbox. The second most common gap is a first response that invites further conversation but does not include a clear, low-friction call to action for scheduling a tour. Both should be confirmed before the Automation Spec Package is built.
+Without a secret shopper result, I cannot confirm the actual response time or message quality. The structural weakness I can identify now: there is no system. Inquiries live in two separate inboxes (email and Instagram DM) with no unified view. If Rebecca is unavailable, there is no stated backup. No automation exists to acknowledge receipt within minutes of an inquiry arriving.
 
 ### Drop-off rate at first touch
 
-- Inquiries that go cold after first response (no reply from family): [NEEDS CONFIRMATION: not tracked]
-- Common reasons for cold drop-off: [NEEDS CONFIRMATION]
+- [NOT TRACKED]
 
 ---
 
@@ -120,174 +118,169 @@ Without a secret shopper test, I can flag the most likely risks but cannot confi
 
 ### Lead qualification criteria
 
-The profile confirms the following criteria.
+**Qualified lead criteria:**
+- Child is age 2 through 5 at the time of the intended program start. The school is licensed for children 2 and up; offering infant care is the explicit do-not-promise line.
+- Family is seeking enrollment in one of the three programs (Twos with Tova, Threes with Carla, Pre-K with Dana) or Aftercare with Yael.
+- Family is willing to tour the school before discussing tuition. The tour is the required next step; tuition detail is not shared in advance of the visit.
+- [NEEDS CONFIRMATION: whether program availability for the requested year matters at this stage, i.e., whether the school turns away qualified families when a class is full and what the process is for a waitlist]
 
-**Qualified lead:**
-- Child age 2 to 5. The program is licensed for ages 2 and up. This is an explicit hard limit: infants are not offered and should not be implied or promised under any circumstances.
-- Family is seeking one of the four program formats: Twos, Threes, Pre-K, or aftercare.
-- Family is willing to tour before discussing tuition in detail.
-
-**Disqualified lead:**
-- Child under age 2 (outside the license; infants are a firm non-offer)
-- Family is seeking infant or toddler care below age 2
-- [NEEDS CONFIRMATION: are there other disqualification factors, such as no current classroom availability and no waitlist capacity?]
+**Disqualified lead criteria:**
+- Child is an infant (under 2). The school is not licensed for infant care and this is a firm line.
+- Family is not seeking preschool (Twos through Pre-K) or Aftercare.
+- [NEEDS CONFIRMATION: whether there are additional geographic or affiliation criteria, e.g., whether non-JCC-member families are accepted and whether there is any preference or fee differential]
 
 **How disqualified leads are handled:**
-[NEEDS CONFIRMATION: when a family inquires about an infant or a child clearly outside the program's scope, what does the program say? Is there a referral to another program, or a polite decline only?]
+- [NEEDS CONFIRMATION: whether a referral to another program is offered for infants, or whether the response is simply a decline]
 
-### Information gathered before the next step
+### Information gathered before the next step (tour)
 
-[NEEDS CONFIRMATION: what specific information does the program need before offering a tour? The profile implies that child age and program interest are the threshold. Are other intake questions asked before a tour is confirmed?]
-
-Based on the qualification criteria, the minimum pre-tour intake is likely:
-- Child's current age and anticipated program year
-- Program of interest (Twos, Threes, Pre-K, aftercare, or some combination)
-- Whether the family has a September start in mind or a mid-year need
+- Child's age and intended program year.
+- Which program they are interested in (Twos, Threes, Pre-K, Aftercare).
+- [NEEDS CONFIRMATION: whether any additional information (e.g., family JCC membership status, prior school history) is gathered before scheduling]
 
 ### Tools used in this stage
 
-Brightwheel is the program's CRM. [NEEDS CONFIRMATION: does Brightwheel currently track pre-enrollment stages such as inquiry received, tour scheduled, and tour completed? Or is it used primarily for enrolled families? If the inquiry stage is not tracked in Brightwheel, where do pre-enrollment conversations currently live?]
+- Email (inquiry intake and back-and-forth).
+- Instagram DM (for DM-originated inquiries).
+- Sign-Up Genius (tour scheduling).
+- No CRM. Inquiry status is tracked informally, if at all.
 
 ### Common reasons leads stall here
 
-[NEEDS CONFIRMATION: where do inquiries most often get stuck before a tour is scheduled? Does the program have any data or intuition on this?]
+[NEEDS CONFIRMATION: no data on this. Most likely causes given the setup: families who never get a timely response, families who want tuition information before committing to a tour and don't get it, and families who sign up for a tour on Sign-Up Genius but don't show.]
 
-Industry context: in preschool enrollment, the most common stall at this stage is families deferring tour scheduling while they research multiple programs simultaneously. A family with four or five schools on their list may take weeks to schedule any of them. A clear scheduling link and a concrete next-step ask in the first response reduce this stall significantly.
+### Average time from first response to next step
 
-### Average time from first response to tour scheduled
-
-[NEEDS CONFIRMATION: how long does it typically take to go from the first reply to a confirmed tour on the calendar?]
+[NOT TRACKED]
 
 ---
 
-## 4. The conversion event: the school tour
+## 4. The conversion event
 
-The conversion event is the in-person tour of the JCC Preschool facility.
+The conversion event is the **in-person tour** of the school. It is the required step before tuition is discussed and before a family can apply.
 
 ### What this event is called publicly
 
-[NEEDS CONFIRMATION: is the term "tour," "school visit," "open house," or something else used with prospective families?]
+Tour.
 
 ### Format and length
 
-- **Format:** In-person, at the JCC facility
-- **Length:** Industry typical for preschool programs is 45 to 60 minutes. [NEEDS CONFIRMATION: what is the actual length of the program's tours?]
-- **Location:** JCC facility [NEEDS CONFIRMATION: confirm the address and which spaces are included in the tour path]
+- **Format:** In-person, at the school.
+- **Length:** [NEEDS CONFIRMATION: typical tour duration not stated]
+- **Location:** The school building (JCC-affiliated site).
 
 ### Who runs it
 
-- **Primary:** [NEEDS CONFIRMATION: does Rebecca lead all tours, or do lead teachers (Miss Dana, Miss Carla, Miss Tova) participate? Is the tour format consistent, or does it vary by who is available?]
-- **Backup:** [NEEDS CONFIRMATION: who runs a tour if the primary person is unavailable?]
+- **Primary:** Rebecca (director).
+- **Backup:** [NEEDS CONFIRMATION]
 
 ### Scheduling process
 
-- **How it gets scheduled:** [NEEDS CONFIRMATION: manual back-and-forth via email, a scheduling link, or by phone?]
-- **Typical lead time before the tour:** [NEEDS CONFIRMATION]
-- **Confirmation cadence:** [NEEDS CONFIRMATION: is a confirmation email sent at booking? Is a reminder sent the day before?]
-- **Show-up rate:** [NEEDS CONFIRMATION: not tracked]
-- **No-show handling:** [NEEDS CONFIRMATION: if a family does not show up for a scheduled tour, what happens next?]
+- **How it gets scheduled:** Sign-Up Genius.
+- **Typical lead time before the event:** [NEEDS CONFIRMATION]
+- **Confirmation cadence:** [NEEDS CONFIRMATION: whether Sign-Up Genius sends an automatic confirmation, and whether Rebecca sends a personal reminder]
+- **Show-up rate:** [NOT TRACKED]
+- **No-show handling:** [NEEDS CONFIRMATION: whether a follow-up or reschedule offer is extended]
 
-### Prep done before the tour
+### Prep done before the event
 
-[NEEDS CONFIRMATION: is any preparation done before a family arrives, such as reviewing their inquiry notes, printing program materials, or arranging classroom access?]
+- [NEEDS CONFIRMATION: what Rebecca reviews or prepares before a scheduled tour]
+- **Materials sent to the prospect beforehand:** [NEEDS CONFIRMATION]
+- **Information collected from the prospect beforehand:** At minimum, child's age and program interest (collected during initial inquiry exchange).
 
-### Standard agenda for the tour
+### Standard agenda / structure of the tour
 
-[NEEDS CONFIRMATION: what does a typical tour cover? A reasonable starting framework for a JCC Preschool tour is listed below. Confirm which steps reflect the actual current tour, and note anything that is missing or different.]
+[NEEDS CONFIRMATION: the specific tour sequence has not been described. A preschool tour typically covers the classroom environments, an introduction to the lead teachers, outdoor space, and a sit-down to discuss program structure and tuition.]
 
-1. Welcome and introduction (director or lead staff)
-2. Walk through the Twos classroom
-3. Walk through the Threes classroom
-4. Walk through the Pre-K classroom
-5. Aftercare area and outdoor space
-6. Sit-down discussion covering program overview, tuition, and family questions
-
-### What the family typically leaves with
-
-[NEEDS CONFIRMATION: does the family leave with printed materials, a pricing sheet, an application link, or nothing?]
-
-### What the program staff leaves with
-
-[NEEDS CONFIRMATION: does the staff member who ran the tour record any notes? Is Brightwheel updated after each tour to reflect the family's interest level or next step?]
-
-### Conversion rate from this event
-
-- **Tour-to-enrollment conversion rate:** [NEEDS CONFIRMATION: not tracked]
-- Industry-typical reference point (not this program's actuals): preschool tour-to-enrollment is typically 40 to 70%, depending on program fit and follow-up quality.
-- **Common reasons families do not enroll after a tour:** [NEEDS CONFIRMATION]
-
----
-
-## 5. The close: from verbal agreement to enrolled family
-
-### What "close" means for this program
-
-A family is enrolled when the enrollment application is completed and the deposit is paid.
-
-### Steps from verbal commitment to closed enrollment
-
-[NEEDS CONFIRMATION: walk through what happens after a family says they want to enroll. The steps below are a reasonable starting framework; please confirm or correct each one.]
-
-1. Family is directed to the enrollment application [NEEDS CONFIRMATION: is this through Brightwheel, a paper form, or a separate system?]
-2. Family completes the application
-3. Deposit is collected [NEEDS CONFIRMATION: what is the deposit amount, what payment method is used, and who processes it? Linda the bookkeeper is part-time at the JCC; confirm her specific role in this step.]
-4. Enrollment is confirmed and the family receives a welcome communication [NEEDS CONFIRMATION: does this happen, and what does it include?]
-5. The child's Brightwheel record is created or activated [NEEDS CONFIRMATION: at what point does the child enter Brightwheel, and who creates the record?]
-
-Note on governance: major changes to deposit structure, tuition, or enrollment terms route through the JCC executive director and, for board-level decisions, the board. This is relevant context when building any automation that touches the close process.
-
-### Tools used in the close
-
-- **Enrollment application:** [NEEDS CONFIRMATION: digital via Brightwheel, or paper?]
-- **Payment processor:** [NEEDS CONFIRMATION: how is the deposit collected?]
-- **CRM update:** [NEEDS CONFIRMATION: who updates Brightwheel at the close stage, and when?]
-
-### Average time from "yes" to completed enrollment
+### What the prospect typically leaves with
 
 [NEEDS CONFIRMATION]
 
-### Drop-off between verbal agreement and completed enrollment
+### What the director leaves with
 
-[NEEDS CONFIRMATION: how often does a family express intent to enroll and then not complete the application or deposit? Is this tracked anywhere?]
+[NEEDS CONFIRMATION: whether Rebecca notes qualification level, fit, or likely enrollment after each tour]
 
-### What's included with the close
+### Conversion rate from the tour
 
-[NEEDS CONFIRMATION: what does the family receive when enrollment is confirmed? Orientation dates, a classroom supply list, Brightwheel account setup instructions, or other onboarding materials?]
+- [NOT TRACKED]
+- Common reasons families don't enroll after a tour: [NOT TRACKED; NEEDS CONFIRMATION]
+
+---
+
+## 5. The close
+
+### What "close" means for this business
+
+A family is officially enrolled when they complete an application and pay a deposit. Both happen after the tour.
+
+### Steps from verbal commitment to enrolled family
+
+[NEEDS CONFIRMATION: the specific application and deposit steps have not been described in detail. What follows is the inferred sequence pending confirmation.]
+
+1. Family tours the school and decides to move forward.
+2. Family completes an enrollment application. [NEEDS CONFIRMATION: whether this is paper, a PDF form, or an online form, and who receives it]
+3. Family pays a deposit. [NEEDS CONFIRMATION: amount, payment method, and which tool processes it. Brightwheel handles billing for enrolled families, but it is not confirmed whether it handles the initial deposit or whether a different method is used.]
+4. Seat is confirmed for the program year.
+5. [NEEDS CONFIRMATION: whether a welcome packet, orientation invite, or supply list is sent at this stage]
+
+### Tools used in the close
+
+- **Application:** [NEEDS CONFIRMATION]
+- **Deposit payment:** [NEEDS CONFIRMATION: possibly Brightwheel, possibly Square, not confirmed]
+- **Enrollment tracking:** No CRM. Enrollment is tracked in Brightwheel once the family is active, but the pre-enrollment pipeline is not captured in any system.
+
+### Average time from tour to enrolled
+
+[NEEDS CONFIRMATION]
+
+### Drop-off between tour and enrolled
+
+- [NOT TRACKED]
+- Common reasons: [NEEDS CONFIRMATION]
+
+### What is included with the close
+
+[NEEDS CONFIRMATION: welcome packet, classroom assignment, first Brightwheel account setup, supply list, orientation schedule]
 
 ---
 
 ## 6. Follow-up cadence for stalled leads
 
-### Current follow-up cadence (if any)
+### Current follow-up cadence
 
-The profile does not describe a documented follow-up process for inquiries or tours that do not convert. The following questions are needed to map this section accurately.
+[NEEDS CONFIRMATION: no documented follow-up cadence has been described. Based on the setup (no CRM, inquiries tracked informally), I assess with high confidence that there is no systematic follow-up cadence. The section below reflects that assessment pending confirmation.]
 
-- **After first response with no reply from the family:** Does the program follow up? After how many days? What does the message say? What channel?
-- **After a tour with no enrollment:** Does anyone follow up with the family? When, and how?
-- **After a verbal agreement with no completed application:** Is a reminder sent?
-- **When does the program consider a lead lost?**
+**After first response with no reply:**
+- Follow-up 1: [NEEDS CONFIRMATION: whether any follow-up is sent]
+- Follow-up 2: [NEEDS CONFIRMATION]
+- Stop point: [NEEDS CONFIRMATION]
 
-If the honest answer is that there is no documented follow-up cadence and follow-up happens when someone remembers to do it, that should be stated explicitly here. That is not a failure; it is the most common finding at this stage in the diagnostic, and naming it is the first step toward fixing it.
+**After tour with no application:**
+- Follow-up 1: [NEEDS CONFIRMATION]
+- Follow-up 2: [NEEDS CONFIRMATION]
+- Stop point: [NEEDS CONFIRMATION]
+
+**After verbal interest with no completed application:**
+- Follow-up 1: [NEEDS CONFIRMATION]
+- Follow-up 2: [NEEDS CONFIRMATION]
+- Stop point: [NEEDS CONFIRMATION]
 
 ### Channels used for follow-up
 
-[NEEDS CONFIRMATION: does the program use email, phone, Instagram DM, or a combination for follow-up? Are there any channels the team prefers to avoid because they feel too aggressive for this audience?]
+- Email and Instagram DM (same as initial contact). No SMS or phone-based follow-up has been described.
 
 ### Lost-deal handling
 
-[NEEDS CONFIRMATION: when a family chooses a different school and communicates that, what does the program do? Is there a polite acknowledgment, an archive in Brightwheel, or no action?]
+- [NEEDS CONFIRMATION: whether families who inquired but did not enroll are retained anywhere, or whether they simply fall out of the informal email/DM tracking]
 
-### Long-tail nurture (months later)
+### Long-tail nurture and re-engagement
 
-[NEEDS CONFIRMATION: does the program have any mechanism for staying in touch with families who toured but did not enroll, or who are on a waitlist for a future school year?]
-
-### Re-engagement of past families
-
-[NEEDS CONFIRMATION: for families whose children have graduated from the program, are there systematic touches for sibling enrollment or referral asks? Or does that outreach happen informally if at all?]
+- No newsletter or seasonal touchpoint system currently exists for prospective families.
+- No referral ask cadence for currently enrolled or past families has been described. Given that word of mouth is the highest-quality lead source, this is the largest untapped lever.
 
 ### Gaps in current follow-up
 
-Without a confirmed process, I cannot verify specific gaps. Based on what the profile is silent on, the most probable gaps are: no follow-up after an inquiry goes cold, no follow-up after a tour that did not convert, and no systematic referral ask for families who graduated. These are the most common gaps in preschool enrollment programs. They should be confirmed or denied in the discovery call.
+Based on what I know: there is almost certainly no documented follow-up cadence. Inquiries that don't respond quickly either re-engage on their own or disappear. Families who tour and don't apply immediately are not systematically followed up with. There is no touchpoint system for past families. All of this is addressable with low-complexity automation once the underlying contact data is captured in a CRM.
 
 ---
 
@@ -297,29 +290,31 @@ Without a confirmed process, I cannot verify specific gaps. Based on what the pr
 
 | Stage | Volume | Conversion to next stage | Notes |
 |---|---|---|---|
-| Inquiries received | [NEEDS CONFIRMATION] | n/a | Not tracked by channel |
-| First response sent | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | |
-| Qualified leads | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | |
-| Tour scheduled | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | |
-| Tour completed (family showed up) | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | |
-| Verbal enrollment commitment | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | |
-| Completed enrollment (application and deposit) | [NEEDS CONFIRMATION] | [NEEDS CONFIRMATION] | |
+| Inquiries received | [NOT TRACKED] | n/a | No system counts inbound inquiries |
+| First response sent | [NOT TRACKED] | [NOT TRACKED] | Unknown whether all inquiries receive a response |
+| Qualified leads | [NOT TRACKED] | [NOT TRACKED] | No formal qualification step is recorded |
+| Tour scheduled (Sign-Up Genius) | [NOT TRACKED] | [NOT TRACKED] | Sign-Up Genius may hold this data; not confirmed |
+| Tour completed (show-up) | [NOT TRACKED] | [NOT TRACKED] | |
+| Application submitted | [NOT TRACKED] | [NOT TRACKED] | |
+| Deposit paid / enrolled | [NOT TRACKED] | [NOT TRACKED] | Brightwheel captures active enrolled families; not the intake funnel |
 
 ### Overall inquiry-to-enrollment conversion rate
 
-[NEEDS CONFIRMATION: not tracked. This is the single most important number in this document and it does not currently exist.]
+[NOT TRACKED]
 
 ### Conversion rate by channel
 
-[NEEDS CONFIRMATION: not tracked. Channel attribution for enrollments is unknown.]
+[NOT TRACKED. No channel attribution exists.]
 
-### Average revenue per enrolled child
+### Revenue per enrolled child
 
-Approximately $12,000 to $14,000 per year depending on the program and discount. Full-time Pre-K is approximately $1,180 per month, or roughly $14,160 per year before the JCC 10% member discount. Threes is slightly less; Twos varies by days selected. These figures come from the client profile and are the most reliable numbers in this section.
+Approximately $1,180 per month for full-time Pre-K before the JCC 10% member discount, which is approximately $14,160 per year at list rate. Threes tuition is slightly less. Twos varies by days. Net range across programs is roughly $12,000 to $14,000 per child per year depending on program and applicable discounts.
+
+This means each additional enrolled child is worth $12,000 to $14,000 in annual revenue. Each family lost to a slow response or a lack of follow-up carries that cost.
 
 ### Notes on data quality
 
-No funnel-stage data was available for this document. All conversion metrics above require confirmation. [NEEDS CONFIRMATION: is Brightwheel currently being used to track inquiry stage, tour stage, and enrollment stage separately? If not, where does pre-enrollment information currently live, and is any of it retrievable for a backward-looking baseline?] Establishing funnel tracking is a prerequisite for Document 12 (Measurement Framework). Building automations without it produces automations that cannot be measured or improved.
+Nothing in this funnel is formally tracked except the enrolled-family list in Brightwheel. All stages from inquiry through deposit are invisible. Establishing basic funnel measurement is the prerequisite for every subsequent conversion improvement. That work is spec'd in Document 12.
 
 ---
 
@@ -327,27 +322,27 @@ No funnel-stage data was available for this document. All conversion metrics abo
 
 ### Inquiry volume by season
 
-- **Peak inquiry months:** Winter through spring (roughly January through April). This is when families are researching programs for the following September start. The profile confirms that tours are busiest in this window. [NEEDS CONFIRMATION: does this match the team's experience? Are there specific months that feel particularly intense?]
-- **Low inquiry months:** Summer (June through August). The profile confirms tours are slow during this period.
-- **Booking lag from peak inquiry months:** Families inquiring in January or February are typically enrolling for a September start, a lag of five to eight months.
+- **Peak inquiry months:** Winter through spring. Families who want a September start typically begin touring and researching in January through April. [NEEDS CONFIRMATION: whether the school observes a January or February spike consistent with post-holiday engagement-season patterns seen in other early-childhood programs]
+- **Low inquiry months:** Summer. Families who have not yet enrolled by June are either waiting for a specific situation to change or have chosen elsewhere.
+- **Booking lag:** The school operates on a September school-year calendar. Inquiries that arrive in February or March are booking for a start that is 6 to 7 months away.
 
 ### Booking volume by season
 
-- **Peak enrollment period:** The program targets September as the school-year start. Most applications and deposits are likely completed in the spring.
-- **Mid-year enrollment:** [NEEDS CONFIRMATION: does the program accept mid-year enrollment if classroom capacity allows? If so, what is the minimum lead time a family needs before a start date?]
+- **Peak delivery months:** September through June (the full school year).
+- **Off-season:** July and August, with limited or no programming.
 
 ### Capacity constraints
 
-- **What fills first each year:** [NEEDS CONFIRMATION: which classroom (Twos, Threes, or Pre-K) tends to reach capacity first during the enrollment cycle?]
-- **What is chronically under-enrolled:** [NEEDS CONFIRMATION]
-- **Waitlist management:** [NEEDS CONFIRMATION: does the program maintain a waitlist, and if so, how is it managed? Is it tracked in Brightwheel?]
-- **Maximum enrollment per classroom:** [NEEDS CONFIRMATION: what are the licensed or operational capacity limits per room?]
+- [NEEDS CONFIRMATION: maximum enrollment per class for Twos, Threes, and Pre-K. This determines at what point a class is "full" and whether a waitlist process exists.]
+- [NEEDS CONFIRMATION: whether Aftercare has a capacity ceiling separate from the classroom programs]
+- **What sells out first:** [NEEDS CONFIRMATION: likely the Pre-K class, given its position as the final year before kindergarten, but not confirmed]
+- **How the school handles full classes:** [NEEDS CONFIRMATION: whether a waitlist is maintained and how families are notified when a spot opens]
 
 ### Effect on response time
 
-- **During winter and spring peak:** [NEEDS CONFIRMATION: does higher inquiry volume in January through April strain the team's ability to respond quickly?]
-- **During summer slow season:** [NEEDS CONFIRMATION: does response time improve when inquiry volume drops?]
-- **Capacity issues during peak:** [NEEDS CONFIRMATION: does the team fall behind on follow-ups or tour scheduling during the busiest months?]
+- During the busiest inquiry period (January through April), the risk of response time degradation is highest because Rebecca is simultaneously running tours, handling enrolled-family communications through Brightwheel, and managing normal school operations.
+- A slow response during peak inquiry season has the highest cost, because competing preschools are responding to the same family at the same time.
+- [NEEDS CONFIRMATION from secret shopper test: actual response times during peak versus slow periods]
 
 ---
 
@@ -355,54 +350,48 @@ No funnel-stage data was available for this document. All conversion metrics abo
 
 ### Top 3 bottlenecks
 
-**Bottleneck 1: No funnel tracking, so the program cannot see where it loses families.**
+**Bottleneck 1: The inquiry pipeline is invisible.**
+- What is broken: There is no CRM or tracking system for prospective families. Inquiries live in two separate inboxes (school email and Instagram DM). There is no count of how many inquiries arrive per month, no record of which ones toured, and no record of which tours became enrollments. The school cannot measure its funnel, which means it cannot improve it.
+- The evidence: Rebecca confirmed there is no dedicated CRM. Brightwheel tracks enrolled families only. Sign-Up Genius handles tour scheduling but does not connect to inquiry intake. The school operates on informal email and Instagram tracking.
+- The cost: I cannot size the revenue leakage precisely, because the inquiry volume is unknown. What I can say is this: at $12,000 to $14,000 per enrolled child per year, even two or three families per year lost to process gaps rather than a genuine fit problem represents $24,000 to $42,000 in missed revenue. Until inquiry volume is tracked, the actual number could be higher.
+- The fix: Implement a lightweight CRM (most likely HubSpot free tier or a structured Airtable base) to capture every inquiry from the moment it arrives. This is the prerequisite for every other improvement in this list and for Document 12.
 
-- The bottleneck: There are no confirmed funnel-stage conversion metrics. Inquiry volume, tour show-up rates, and tour-to-enrollment conversion are all unknown.
-- The evidence: The profile contains no tracking data and no Brightwheel configuration details suggesting that pre-enrollment funnel stages are being measured. The revenue-per-enrolled-child figure exists. The funnel leading to that enrollment does not.
-- The cost: At $12,000 to $14,000 per enrolled child per year, even a modest leak of two to three families per year who toured and did not enroll due to a missed follow-up represents $24,000 to $42,000 in lost annual revenue. Without tracking, the size of this leak is invisible.
-- The fix: Configure Brightwheel (or a lightweight supplemental system) to track inquiry stage, tour scheduled, tour completed, and enrollment. Establish this tracking before any automation is built. Measurement first, then automation.
+**Bottleneck 2: Instagram DM is an unmanaged inbound channel.**
+- What is broken: Instagram DM is listed as an active lead source but has no defined ownership, no response process, and no connection to the rest of the inquiry handling flow. If the person who handles the Instagram account is unavailable, inquiries wait.
+- The evidence: The inquiry source list identifies Instagram DM as a channel without specifying who owns it or how quickly it is checked. Rebecca owns the credentials for the account. [NEEDS CONFIRMATION and secret shopper test will clarify actual response time via DM.]
+- The cost: Unknown until DM inquiry volume is tracked. Preschool families increasingly initiate contact through Instagram before they email. A slow or missed DM response hands the inquiry to a competitor.
+- The fix: Either consolidate Instagram DM into a shared inbox tool (e.g., Meta Business Suite connected to a team member beyond just the director's personal device) or deploy an automated DM acknowledgment with a direct link to the Sign-Up Genius tour calendar. Spec'd in Document 10.
 
-**Bottleneck 2: First-touch response time and quality are unverified across all channels.**
-
-- The bottleneck: No secret shopper test has been run. Response time by channel, particularly Instagram DM, is unknown. Whether the first response includes a clear, low-friction next-step call to action is unknown.
-- The evidence: The profile does not identify who monitors the Instagram inbox, how frequently it is checked, or what the first response contains. Instagram DM is listed as an active lead source with no named responder. In the preschool industry, families typically research three to five programs simultaneously; the program that responds first and most warmly often secures the tour.
-- The cost: Slow response at the top of the funnel means tours scheduled at competitors instead. The cost is impossible to quantify without tracking, but even one missed enrollment per year from a slow Instagram DM response represents $12,000 to $14,000 in lost revenue.
-- The fix: Run a secret shopper test across Instagram DM and the email inquiry channel before the Automation Spec Package is built. Document actual response time and content. Then build an AI-assisted first response that goes out within minutes of any inquiry, regardless of channel.
-
-**Bottleneck 3: No documented follow-up cadence for tours that do not immediately convert.**
-
-- The bottleneck: There is no evidence in the profile of a systematic follow-up process for families who toured and did not enroll.
-- The evidence: The profile does not describe any follow-up step after the tour. The most common reality for programs like this is that follow-up is entirely dependent on individual memory, meaning some families receive a call and many do not.
-- The cost: At an industry-typical tour-to-enrollment rate of 40 to 70%, between 30 and 60% of families who tour do not enroll immediately. Some chose another program. Some are still deciding. A single well-timed follow-up three to five days after the tour captures a meaningful portion of the "still deciding" group. The revenue at stake per recovered enrollment is $12,000 to $14,000.
-- The fix: Build a two to three touch follow-up sequence triggered by a tour date that passes without an enrollment application. First touch: three days after the tour. Second touch: ten days after the tour. Messages should be warm and specific, not generic.
+**Bottleneck 3: The Square Online website is sending interested families nowhere useful.**
+- What is broken: The school's public-facing website is, in Rebecca's own description, old, and she does not believe families find the school through it. There is no known contact form that routes to any tracked inbox, no current tour scheduling integration, and no up-to-date program information confirmed to be accurate.
+- The evidence: Direct quote from Rebecca: "It is old. I do not think anyone finds us through it."
+- The cost: A family who finds the school through Google (a realistic path given the JCC's prominence in the neighborhood) and lands on a stale site with no clear call to action will exit. At $12,000 to $14,000 per child, each such family is a significant loss, and this may be occurring regularly without anyone knowing.
+- The fix: Either update the Square Online site with accurate program descriptions, a tour scheduling link (Sign-Up Genius or a new tool), and a working contact form, or replace it with a simple one-page site that routes inquiries correctly. The rebuild does not need to be large. It needs to be current and functional.
 
 ### Quick wins (low effort, high impact)
 
-1. Run a secret shopper test on Instagram DM and the email inquiry channel in the next two weeks. Submit a realistic family inquiry on each channel and time the response. This costs nothing and produces the most important missing data in this document.
-2. Identify who owns the Instagram inbox and confirm a daily check-in cadence. If no single person owns it, assign one now.
-3. Add a clear, low-friction tour scheduling call to action to every first-touch response. If a scheduling link does not yet exist, create one and add it to every reply.
-4. After each of the next three tours, ask the person who ran the tour to note in Brightwheel whether the family was ready to enroll, still deciding, or unlikely to enroll. This begins the tracking habit with no new tools required.
-5. Ask the last five enrolled families how they heard about the program. Record the answers. This is the first step toward real channel attribution.
+1. Add a Sign-Up Genius tour scheduling link to every first-touch reply, so families can self-schedule immediately without back-and-forth. If this is already happening, confirm it and standardize the language around it.
+2. Set up a Meta Business Suite connection for the school Instagram account so DM inbound is visible on a shared desktop, not only on a personal mobile device. This reduces the chance of missed DMs when Rebecca is in the building.
+3. Add a single sentence to the school email signature and Instagram bio pointing families to the tour scheduling link. Reduces friction for families who arrive at the profile or email address without an active conversation in progress.
+4. Run a secret shopper test (Joshua submits a fake inquiry via both email and Instagram DM) to establish actual baseline response times before any automation is built. This needs to happen before this document is considered final.
+5. Ask Rebecca to pull the Sign-Up Genius tour history for the past two full school-year cycles. This is likely the only pre-automation data source that shows tour volume over time, and it costs nothing to retrieve.
 
 ### Structural changes (longer-term, higher impact)
 
-1. Build intake and tour tracking in Brightwheel that captures inquiry date, channel, tour date, and enrollment date for every prospective family. Once this data exists, every other optimization has a feedback loop. This is a two to three week setup effort and it is the prerequisite for everything else in Document 10.
-2. Build a post-tour follow-up sequence (two to three touches over ten days) for families who have not completed enrollment after their tour. This is the highest-ROI automation available at this stage of the engagement, and it requires the Brightwheel tracking above to trigger correctly.
-3. Build a systematic referral ask into the annual calendar. Current and recently graduated families are the program's highest-quality lead source, and there is no process for asking them to refer. A simple, warm annual message to past families is low-cost and high-return.
+1. Implement a lightweight CRM to capture every inquiry from first contact through enrollment decision. Without this, the funnel remains invisible and no optimization can be measured. The CRM does not need to be complex. What it needs to do: log every inquiry with source, date, program interest, and outcome. This is the single most important structural change in the engagement.
+2. Build a 2 to 3 touch follow-up sequence for families who tour but do not apply within 10 to 14 days. At the dollar value of each enrolled child, even a single additional enrollment per semester recovered through follow-up justifies the build time.
+3. Rebuild or replace the Square Online site with a page that is current, has a clear call to action (tour scheduling link), and routes contact to a tracked inbox. This is a one-time fix with permanent downstream value.
 
-### Gaps the program likely does not know it has
+### Gaps the business does not know it has
 
-I cannot state specific confirmed gaps because no secret shopper test has been run and no funnel data was available. Based on what the profile is silent on, the most probable unknowns are:
-
-- The program likely does not know its inquiry-to-tour conversion rate.
-- The program likely does not know which channel is sending the highest-converting families.
-- The program likely does not know how many families tour and then choose another school without any follow-up.
-- The program likely does not know its current Instagram DM response time, and that time may be longer than anyone on the team assumes.
-
-These are not confirmed findings. They are the most probable gaps based on what the profile does not say. They should be confirmed or denied in the discovery call and secret shopper process.
+- The school does not know how many inquiries it receives per month. Rebecca likely has a rough sense, but no count exists.
+- The school does not know which inbound channel produces the most enrolled families (vs. the most inquiries). Word of mouth may be dominant but cannot be confirmed.
+- The school does not know whether families are finding the Square Online website and leaving because the site is stale.
+- Instagram DM response time is unknown. It may be well within an acceptable range, or it may be days. The secret shopper test will tell.
+- There is no system to catch a family who tours and then goes quiet. If Rebecca does not personally remember to follow up, the family simply disappears.
 
 ### Things that are working and should be protected
 
-- Word of mouth is the highest-quality lead source and it is working because of the program's actual culture, the teaching quality of Miss Dana, Miss Carla, and Miss Tova, and the relationships Rebecca has built over time. Nothing in the automation work should undermine the personal warmth that generates those referrals. The goal of any AI-assisted first response is to match the voice of that warmth, not replace it.
-- The JCC community connection is a structural advantage most independent preschools do not have. The shared facility, membership base, and organizational trust reduce the friction of the first enrollment conversation. This should be named explicitly in inquiry responses and tour confirmations.
-- The three-tier program structure (Twos, Threes, Pre-K) combined with aftercare creates natural multi-year retention. A family who enrolls a child in Twos can stay through Pre-K, representing three or four years of enrollment and $36,000 to $56,000 in lifetime revenue per family. This multi-year path should be referenced in the close conversation and in welcome materials.
+- The teaching team (Tova, Carla, Dana) and the relationships Rebecca maintains with enrolled families are the foundation of word-of-mouth referrals. Any automation or system change should support that relationship dynamic, not replace it. Automated first-touch responses should invite families to speak with Rebecca personally, not substitute for it.
+- The tour-first, tuition-second process is a deliberate choice that protects the quality of the school's relationships with prospective families. This should not change. Automation should funnel families toward the tour, not toward a pricing sheet.
+- Rebecca's personal involvement in the admissions process. The school's warmth and community culture come through in personal communication. The goal of any automation here is to close the gap between when an inquiry arrives and when Rebecca can respond personally, not to remove her from the process.

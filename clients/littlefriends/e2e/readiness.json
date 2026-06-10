@@ -1,10 +1,70 @@
 {
   "slug": "littlefriends",
-  "revision": 3,
+  "revision": 51,
   "ready": [
+    {
+      "id": "doc-01",
+      "title": "Brand Voice Guide",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-02",
+      "title": "Business Facts Reference",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-03",
+      "title": "Sales Process Map",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
     {
       "id": "doc-13",
       "title": "Master Build Sequence",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-14",
+      "title": "Client Onboarding Kit",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-15",
+      "title": "Retainer Engagement Playbook",
+      "readiness": {
+        "ready": true,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": []
+      }
+    },
+    {
+      "id": "doc-17",
+      "title": "Handoff & Offboarding",
       "readiness": {
         "ready": true,
         "missingFields": [],
@@ -25,74 +85,12 @@
   ],
   "blocked": [
     {
-      "id": "doc-01",
-      "title": "Brand Voice Guide",
-      "readiness": {
-        "ready": false,
-        "missingFields": [
-          "voice.attributes"
-        ],
-        "unverifiedHv": [],
-        "missingDocs": []
-      }
-    },
-    {
-      "id": "doc-02",
-      "title": "Business Facts Reference",
-      "readiness": {
-        "ready": false,
-        "missingFields": [
-          "people.owners",
-          "pricing.shareable",
-          "governance.dataRetention",
-          "modules.preschool.ocfs.licenseStatus",
-          "modules.preschool.immunizationPolicy",
-          "modules.preschool.enrollmentCapacity",
-          "modules.preschool.trainingMatrix"
-        ],
-        "unverifiedHv": [
-          "pricing.shareable",
-          "governance.dataRetention",
-          "modules.preschool.ocfs.licenseStatus",
-          "modules.preschool.immunizationPolicy",
-          "modules.preschool.enrollmentCapacity",
-          "modules.preschool.trainingMatrix"
-        ],
-        "missingDocs": []
-      }
-    },
-    {
-      "id": "doc-03",
-      "title": "Sales Process Map",
-      "readiness": {
-        "ready": false,
-        "missingFields": [
-          "salesProcess.leadSources",
-          "salesProcess.qualificationCriteria",
-          "salesProcess.funnel.revenuePerCustomer",
-          "capacity.bookingLeadTime"
-        ],
-        "unverifiedHv": [
-          "salesProcess.funnel.revenuePerCustomer",
-          "capacity.bookingLeadTime"
-        ],
-        "missingDocs": []
-      }
-    },
-    {
       "id": "doc-04",
       "title": "Content Library",
       "readiness": {
         "ready": false,
-        "missingFields": [
-          "content.videos.rights",
-          "toolsAndAccess.assetStorage",
-          "positioning.awards"
-        ],
-        "unverifiedHv": [
-          "content.videos.rights",
-          "toolsAndAccess.assetStorage"
-        ],
+        "missingFields": [],
+        "unverifiedHv": [],
         "missingDocs": [
           "doc-01",
           "doc-02"
@@ -104,14 +102,8 @@
       "title": "Competitor Landscape",
       "readiness": {
         "ready": false,
-        "missingFields": [
-          "competitors.direct",
-          "competitors.marketContext",
-          "pricing.shareable"
-        ],
-        "unverifiedHv": [
-          "pricing.shareable"
-        ],
+        "missingFields": [],
+        "unverifiedHv": [],
         "missingDocs": [
           "doc-01",
           "doc-02"
@@ -123,15 +115,8 @@
       "title": "SEO & Keyword Strategy",
       "readiness": {
         "ready": false,
-        "missingFields": [
-          "seo.primaryKeywordTargets",
-          "identity.primaryAddress",
-          "toolsAndAccess.analytics",
-          "content.written"
-        ],
-        "unverifiedHv": [
-          "toolsAndAccess.analytics"
-        ],
+        "missingFields": [],
+        "unverifiedHv": [],
         "missingDocs": [
           "doc-01",
           "doc-02",
@@ -144,14 +129,8 @@
       "title": "FAQ Bank",
       "readiness": {
         "ready": false,
-        "missingFields": [
-          "pricing.nonShareable",
-          "operationsAutomation.escalationRouting"
-        ],
-        "unverifiedHv": [
-          "pricing.nonShareable",
-          "operationsAutomation.escalationRouting"
-        ],
+        "missingFields": [],
+        "unverifiedHv": [],
         "missingDocs": [
           "doc-01",
           "doc-02",
@@ -164,11 +143,7 @@
       "title": "Email Templates",
       "readiness": {
         "ready": false,
-        "missingFields": [
-          "salesProcess.conversionEvent",
-          "salesProcess.followUpCadences",
-          "operationsAutomation.responseSlas"
-        ],
+        "missingFields": [],
         "unverifiedHv": [],
         "missingDocs": [
           "doc-01",
@@ -183,14 +158,8 @@
       "title": "Social Media Playbook",
       "readiness": {
         "ready": false,
-        "missingFields": [
-          "content.performingThemes",
-          "content.videos.rights",
-          "operationsAutomation.responseSlas"
-        ],
-        "unverifiedHv": [
-          "content.videos.rights"
-        ],
+        "missingFields": [],
+        "unverifiedHv": [],
         "missingDocs": [
           "doc-01",
           "doc-02",
@@ -205,9 +174,7 @@
       "title": "Website Audit",
       "readiness": {
         "ready": false,
-        "missingFields": [
-          "salesProcess.conversionEvent"
-        ],
+        "missingFields": [],
         "unverifiedHv": [],
         "missingDocs": [
           "doc-01",
@@ -227,19 +194,8 @@
       "title": "Automation Spec Package",
       "readiness": {
         "ready": false,
-        "missingFields": [
-          "operationsAutomation.escalationRouting",
-          "operationsAutomation.spendCap",
-          "toolsAndAccess.automationPlatform",
-          "toolsAndAccess.apiSpend.caps",
-          "salesProcess.leadSources"
-        ],
-        "unverifiedHv": [
-          "operationsAutomation.escalationRouting",
-          "operationsAutomation.spendCap",
-          "toolsAndAccess.automationPlatform",
-          "toolsAndAccess.apiSpend.caps"
-        ],
+        "missingFields": [],
+        "unverifiedHv": [],
         "missingDocs": [
           "doc-02",
           "doc-03",
@@ -253,18 +209,8 @@
       "title": "Measurement & KPI Framework",
       "readiness": {
         "ready": false,
-        "missingFields": [
-          "seo.measurementTargets",
-          "salesProcess.funnel.revenuePerCustomer",
-          "toolsAndAccess.analytics",
-          "operationsAutomation.spendCap",
-          "operationsAutomation.monitoring"
-        ],
-        "unverifiedHv": [
-          "salesProcess.funnel.revenuePerCustomer",
-          "toolsAndAccess.analytics",
-          "operationsAutomation.spendCap"
-        ],
+        "missingFields": [],
+        "unverifiedHv": [],
         "missingDocs": [
           "doc-03",
           "doc-06",
@@ -274,44 +220,12 @@
       }
     },
     {
-      "id": "doc-14",
-      "title": "Client Onboarding Kit",
-      "readiness": {
-        "ready": false,
-        "missingFields": [
-          "toolsAndAccess.accessChecklist"
-        ],
-        "unverifiedHv": [
-          "toolsAndAccess.accessChecklist"
-        ],
-        "missingDocs": []
-      }
-    },
-    {
-      "id": "doc-15",
-      "title": "Retainer Engagement Playbook",
-      "readiness": {
-        "ready": false,
-        "missingFields": [
-          "operationsAutomation.monitoring"
-        ],
-        "unverifiedHv": [],
-        "missingDocs": []
-      }
-    },
-    {
       "id": "doc-16",
       "title": "Sales Collateral",
       "readiness": {
         "ready": false,
-        "missingFields": [
-          "positioning.recommendedStatement",
-          "pricing.shareable",
-          "content.testimonials"
-        ],
-        "unverifiedHv": [
-          "pricing.shareable"
-        ],
+        "missingFields": [],
+        "unverifiedHv": [],
         "missingDocs": [
           "doc-01",
           "doc-02",
@@ -324,17 +238,32 @@
       }
     },
     {
-      "id": "doc-17",
-      "title": "Handoff & Offboarding",
+      "id": "doc-web-prd",
+      "title": "Website Requirements PRD",
       "readiness": {
         "ready": false,
-        "missingFields": [
-          "governance.offboardingPlan"
-        ],
-        "unverifiedHv": [
-          "governance.offboardingPlan"
-        ],
-        "missingDocs": []
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": [
+          "doc-01",
+          "doc-02",
+          "doc-06",
+          "doc-10"
+        ]
+      }
+    },
+    {
+      "id": "design-system",
+      "title": "Design System",
+      "readiness": {
+        "ready": false,
+        "missingFields": [],
+        "unverifiedHv": [],
+        "missingDocs": [
+          "doc-01",
+          "doc-05",
+          "doc-10"
+        ]
       }
     },
     {
@@ -343,12 +272,12 @@
       "readiness": {
         "ready": false,
         "missingFields": [
-          "governance.dataResidency",
-          "governance.offboardingPlan"
+          "people.billingContact",
+          "governance.dataResidency"
         ],
         "unverifiedHv": [
-          "governance.dataResidency",
-          "governance.offboardingPlan"
+          "people.billingContact",
+          "governance.dataResidency"
         ],
         "missingDocs": []
       }
@@ -407,11 +336,9 @@
       "readiness": {
         "ready": false,
         "missingFields": [
-          "toolsAndAccess.apiSpend.caps",
           "governance.dataResidency"
         ],
         "unverifiedHv": [
-          "toolsAndAccess.apiSpend.caps",
           "governance.dataResidency"
         ],
         "missingDocs": [
@@ -426,7 +353,6 @@
       "readiness": {
         "ready": false,
         "missingFields": [
-          "operationsAutomation.monitoring",
           "toolsAndAccess.browserDeviceLandscape"
         ],
         "unverifiedHv": [
@@ -469,12 +395,9 @@
       "readiness": {
         "ready": false,
         "missingFields": [
-          "people.technicalCollaborator",
-          "toolsAndAccess.apiSpend.caps"
+          "people.technicalCollaborator"
         ],
-        "unverifiedHv": [
-          "toolsAndAccess.apiSpend.caps"
-        ],
+        "unverifiedHv": [],
         "missingDocs": [
           "i01"
         ]
@@ -503,11 +426,9 @@
       "readiness": {
         "ready": false,
         "missingFields": [
-          "toolsAndAccess.assetStorage",
           "governance.reviewResponsePolicy"
         ],
         "unverifiedHv": [
-          "toolsAndAccess.assetStorage",
           "governance.reviewResponsePolicy"
         ],
         "missingDocs": [
@@ -536,13 +457,13 @@
     },
     {
       "section": "offerings",
-      "filled": 4,
-      "total": 4
+      "filled": 3,
+      "total": 3
     },
     {
       "section": "pricing",
-      "filled": 3,
-      "total": 3
+      "filled": 4,
+      "total": 4
     },
     {
       "section": "capacity",
@@ -551,13 +472,13 @@
     },
     {
       "section": "customers",
-      "filled": 6,
-      "total": 6
+      "filled": 2,
+      "total": 2
     },
     {
       "section": "positioning",
-      "filled": 2,
-      "total": 2
+      "filled": 5,
+      "total": 5
     },
     {
       "section": "voice",
@@ -566,38 +487,48 @@
     },
     {
       "section": "salesProcess",
-      "filled": 7,
-      "total": 7
+      "filled": 12,
+      "total": 12
     },
     {
       "section": "content",
+      "filled": 11,
+      "total": 11
+    },
+    {
+      "section": "competitors",
+      "filled": 2,
+      "total": 2
+    },
+    {
+      "section": "seo",
       "filled": 5,
       "total": 5
     },
     {
-      "section": "seo",
-      "filled": 2,
-      "total": 2
-    },
-    {
       "section": "toolsAndAccess",
-      "filled": 9,
-      "total": 9
+      "filled": 13,
+      "total": 13
     },
     {
       "section": "operationsAutomation",
-      "filled": 2,
-      "total": 2
+      "filled": 6,
+      "total": 6
     },
     {
       "section": "governance",
-      "filled": 1,
-      "total": 1
+      "filled": 3,
+      "total": 3
     },
     {
       "section": "goals",
       "filled": 5,
       "total": 5
+    },
+    {
+      "section": "modules",
+      "filled": 4,
+      "total": 4
     }
   ],
   "generated": []
