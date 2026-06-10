@@ -163,3 +163,13 @@ If two skills could apply to the same task (e.g. both `copywriting` and `page-cr
 - Post-hoc cleanup → `copy-editing`.
 
 This precedence is documented in the clone and fixes-apply agent prompts — when in doubt, read those prompts, not the skills themselves.
+
+## Upriver operational skills (not marketing skills)
+
+A second skill set lives at `.agents/upriver-skills/` — the Upriver-specific engagement playbook, referenced by agent prompts the same way but governed differently:
+
+- `audit-methodology.md`, `qa-standards.md`, `clone-visual-fidelity.md`, `clone-fidelity-scoring.md` — how to audit, the launch QA bar, visual fidelity standards and scoring.
+- `interview-facilitation.md`, `intake-handling.md`, `brand-voice-guide-writing.md`, `client-brief-writing.md` — the interview, intake, voice-guide, and brief playbooks.
+- `improvement-layer.md`, `sales-report-narrative.md` — the improve-pass track methodology and report storytelling.
+
+Unlike the marketing skills, these are **safe to edit in this repo** and are never upstreamed — they encode Upriver's own process, not general methodology. They don't appear in the matrix above because they aren't versioned with the marketingskills library.
