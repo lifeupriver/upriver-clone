@@ -1,0 +1,116 @@
+# Build Spec 16: gated Tier B website e2e — runs the FULL live pipeline
+# (Firecrawl scrape of the fixture site + ~3 headless clone sessions).
+#
+# THIS WORKFLOW COSTS REAL MONEY every time it runs: Firecrawl credits
+# (map + multi-page scrape with branding + mobile shots) and ~3 headless
+# `claude` clone sessions (the dominant cost, 3-30 min each).
+#
+# Manual dispatch only, BY DESIGN. It must NEVER gain pull_request, push,
+# or schedule triggers. The inverse invariant also holds (Spec 15): the
+# keyless test.yml must never gain these secrets — a step that needs
+# FIRECRAWL_API_KEY or ANTHROPIC_API_KEY belongs here, not there.
+
+name: e2e-website-tier-b (live)
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_phase:
+        description: >-
+          Harness phase to start from (resume support). One of: preflight,
+          init, discover, scrape, audit, synthesize, scaffold, clone,
+          finalize, capture, fidelity, fixes, report.
+        type: string
+        default: preflight
+      fidelity_bar:
+        description: >-
+          Optional WB_FIDELITY_BAR override (per-page overall score floor).
+          Leave empty to use the harness default.
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+# One shared live scrape target — never overlap runs. A live run should not
+# be killed mid-clone, so no cancel-in-progress; a second dispatch waits.
+concurrency:
+  group: e2e-website-tier-b
+  cancel-in-progress: false
+
+jobs:
+  tier-b:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Fail fast if secrets missing
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          missing=0
+          if [ -z "$FIRECRAWL_API_KEY" ]; then
+            echo "::error::Secret FIRECRAWL_API_KEY is not set — configure it in the repository secrets before dispatching this workflow."
+            missing=1
+          fi
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::Secret ANTHROPIC_API_KEY is not set — configure it in the repository secrets before dispatching this workflow."
+            missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+          echo "Required secrets present."
+
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22        # node --test globs need >=21
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            packages/scaffold-template/pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Install claude CLI (clone stage shells out to it)
+        run: npm i -g @anthropic-ai/claude-code
+
+      - name: Install Playwright chromium
+        run: pnpm --filter @upriver/cli exec playwright install --with-deps chromium
+
+      - name: Run Tier B harness
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          INPUT_BAR: ${{ inputs.fidelity_bar }}
+          START_PHASE: ${{ inputs.start_phase }}
+        run: |
+          # Export WB_FIDELITY_BAR only when an override was supplied — an
+          # empty env var would clobber the harness default.
+          if [ -n "$INPUT_BAR" ]; then
+            export WB_FIDELITY_BAR="$INPUT_BAR"
+          fi
+          bash scripts/e2e-website-tier-b.sh "$START_PHASE"
+
+      - name: Upload run artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tier-b-run
+          path: |
+            clients/wb-live/e2e/run.log
+            clients/wb-live/clone-qa/
+            clients/wb-live/audit/summary.json
+            clients/wb-live/fixes-plan.md
+            clients/wb-live/token-and-credit-usage.log
+          if-no-files-found: warn
