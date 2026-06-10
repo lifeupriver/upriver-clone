@@ -75,3 +75,10 @@ test('extractChunks calls the caller once per chunk and survives a per-chunk fai
   assert.equal(results[0]?.candidates.length, 1);
   assert.equal(results[2]?.candidates.length, 1);
 });
+
+test('P3 (Build Spec 14): the extraction prompt demands ★ recall and a closing self-check', () => {
+  const sys = extractionSystemPrompt('  - identity.category [string] ★');
+  assert.match(sys, /you MUST emit a candidate/);
+  assert.match(sys, /re-scan the chunk/);
+  assert.doesNotMatch(sys, /Prefer the/);
+});

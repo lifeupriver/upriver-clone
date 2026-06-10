@@ -6,7 +6,7 @@ import {
   type Readiness,
 } from '@upriver/schemas';
 
-import type { BatchPlan, BlockedDoc, MarkerAggregate, Tier, TierRunResult } from './batch.js';
+import type { BatchPlan, BlockedDoc, MarkerAggregate, ProvisioningProjection, Tier, TierRunResult } from './batch.js';
 import type { PromptSize } from './prompt-size.js';
 
 export function titleFor(id: DeliverableId): string {
@@ -197,6 +197,37 @@ export function renderTierReport(tr: TierRunResult, agg: MarkerAggregate, opActi
   if (opActions) lines.push(...renderOperatorChecklist(opActions, '[OPERATOR ACTION] across tier'));
   if (tr.failed.length > 0) lines.push(`  failed: ${tr.failed.join(', ')}`);
   if (tr.skipped.length > 0) lines.push(`  skipped (upstream not available): ${tr.skipped.join(', ')}`);
+  return lines.join('\n');
+}
+
+/**
+ * P5 (Build Spec 14, Finding G): the dry-run's provisioning-readiness table.
+ * Field/HV gaps only — the union list at the bottom is the operator's
+ * copy-pasteable gap-fill set before the docs phase.
+ */
+export function renderProvisioningProjection(rows: ProvisioningProjection[]): string {
+  const lines = ['Provisioning readiness projection (i01–i09) — field/HV gaps only (upstream docs excluded):'];
+  const union = new Set<string>();
+  for (const r of rows) {
+    for (const g of [...r.missingFields, ...r.unverifiedHv]) union.add(g);
+    const missingSet = new Set(r.missingFields);
+    const hvOnlyPaths = r.unverifiedHv.filter((p) => !missingSet.has(p));
+    const gaps =
+      r.missingFields.length === 0 && r.unverifiedHv.length === 0
+        ? 'fields ready'
+        : [
+            r.missingFields.length > 0 ? `missing: ${r.missingFields.join(', ')}` : '',
+            hvOnlyPaths.length > 0 ? `unverified HV: ${hvOnlyPaths.join(', ')}` : '',
+          ]
+            .filter(Boolean)
+            .join('; ');
+    lines.push(`  ${r.id.padEnd(4)} ${gaps}`);
+  }
+  lines.push(
+    union.size === 0
+      ? '  all provisioning fields present and verified.'
+      : `  gap-fill list (${union.size}): ${[...union].join(', ')}`,
+  );
   return lines.join('\n');
 }
 

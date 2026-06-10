@@ -18,6 +18,7 @@ import {
   type ManifestEntry,
 } from './manifest.js';
 import { PROFILE_PATH } from './profile-io.js';
+import { I_SERIES } from './provisioning.js';
 
 /**
  * Batch generation over the 01–12 document DAG (M2 `generate --all`). This is
@@ -472,4 +473,24 @@ export function aggregateOperatorActions(docs: DocResult[]): MarkerAggregate {
 export function commitCommand(slug: string, tier: Tier, paths: string[]): string {
   const files = [...paths, 'docs/manifest.json'].map((p) => `clients/${slug}/${p}`).join(' ');
   return `git add -f ${files} && git commit -m "generate(${slug}): approve tier ${tier.index} — ${tier.docs.join(', ')}"`;
+}
+
+export interface ProvisioningProjection {
+  id: DeliverableId;
+  title: string;
+  missingFields: string[];
+  unverifiedHv: string[];
+}
+
+/**
+ * Finding G (Build Spec 14, P5): project the I01–I09 provisioning artifacts'
+ * FIELD readiness for the pre-docs checkpoint. `missingDocs` is deliberately
+ * excluded — upstream docs are by definition ungenerated at the checkpoint, so
+ * reporting them would make the projection all-red and useless. Pure — no I/O.
+ */
+export function projectProvisioningReadiness(profile: ClientProfile): ProvisioningProjection[] {
+  return I_SERIES.map((id) => {
+    const r = deliverableReadiness(profile, id);
+    return { id, title: titleOf(id), missingFields: r.missingFields, unverifiedHv: r.unverifiedHv };
+  });
 }

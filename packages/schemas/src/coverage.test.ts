@@ -167,3 +167,26 @@ test('questionQueue returns unfilled in-scope must-ask fields, ranked by unblock
     assert.ok(q[i - 1]!.unblocksCount >= q[i]!.unblocksCount, 'queue sorted by unblocksCount desc');
   }
 });
+
+test('P2 (Build Spec 14): every deliverable requires identity.publicName — a doc that does not know the client name cannot be client-grade', () => {
+  for (const d of COVERAGE_MAP) {
+    assert.ok(
+      d.requiresFields.includes('identity.publicName'),
+      `${d.id} is missing identity.publicName in requiresFields`,
+    );
+  }
+});
+
+test('P4 (Build Spec 14): recon-filled fields reach the docs whose markers falsely asked for them', () => {
+  const expected: Record<string, string[]> = {
+    'doc-02': ['identity.category', 'identity.primaryAddress', 'identity.hours', 'identity.socialHandles', 'content.reviewPlatforms'],
+    'doc-04': ['content.testimonials', 'content.reviewPlatforms'],
+    'doc-12': ['content.reviewPlatforms'],
+    'doc-16': ['content.testimonials'],
+  };
+  for (const [id, paths] of Object.entries(expected)) {
+    const d = COVERAGE_MAP.find((x) => x.id === id);
+    assert.ok(d, id);
+    for (const p of paths) assert.ok(d?.requiresFields.includes(p), `${id} should require ${p}`);
+  }
+});

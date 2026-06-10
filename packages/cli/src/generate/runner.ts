@@ -60,36 +60,46 @@ export async function runDoc(input: RunDocInput, call: ClaudeCall = claudeCliCal
     // wrote — the model follows the deliverable spec's own file-naming, which we
     // do not constrain. The CLI persists it under the canonical docs/ path.
     let produced = findGeneratedFile(staging);
+    let retried = false;
 
     // F3 (Build Spec 11): a cache hit that left no file is always wrong — the
     // response cache stores TEXT, not the written file, so a replay can never
-    // satisfy a file output. Force exactly one fresh (cache-bypassing) session
-    // automatically rather than erroring and waiting for an operator.
+    // satisfy a file output. Force one fresh (cache-bypassing) session.
+    // NOTE: this F3 forced retry consumes the shared one-retry budget; if it
+    // still produces no file the P6 retry below is intentionally skipped
+    // (retried=true), keeping the max claude calls per runDoc at 2.
     if (!produced && result.fromCache) {
       result = await call({ ...callOpts, noCache: true });
       produced = findGeneratedFile(staging);
+      retried = true;
     }
 
-    // F4 (Build Spec 11): the model may have written to an absolute path outside
-    // the staging cwd (doc-09's D9a failure). Recover the file into staging if it
-    // exists; otherwise fail precisely, naming the offending path.
+    // F4 (Build Spec 11): the model may have written to an absolute path
+    // outside the staging cwd. Recover the file into staging when it exists.
+    if (!produced) produced = relocateClaimedFile(result.text, input.outputFileName, staging);
+
+    // P6 (Build Spec 14): the no-file class (claimed-but-absent absolute path,
+    // or no file and no claim — findings D1/D3) is non-deterministic and
+    // reliably recovers on a genuine retry. Self-heal with at most one fresh
+    // session per runDoc before failing to the operator.
+    // INVARIANT: at most 2 claude calls per runDoc ever — the engine/batch
+    // layer above does not retry, so this is the hard per-doc ceiling.
+    if (!produced && !retried) {
+      result = await call({ ...callOpts, noCache: true });
+      produced = findGeneratedFile(staging) ?? relocateClaimedFile(result.text, input.outputFileName, staging);
+    }
+
     if (!produced) {
       const claimed = findClaimedAbsolutePath(result.text, input.outputFileName);
-      if (claimed && existsSync(claimed)) {
-        const dest = join(staging, basename(claimed));
-        copyFileSync(claimed, dest);
-        rmSync(claimed, { force: true }); // don't leave a stray file in the operator's tree
-        produced = dest;
-      } else if (claimed) {
+      if (claimed) {
         throw new Error(
           `Session wrote outside the staging dir: it claims to have written ${claimed}, but no file is ` +
             'there. The output contract requires a RELATIVE path inside the working directory.',
         );
-      } else {
-        throw new Error(
-          `Session finished but did not write a document. Model reply: ${result.text.slice(0, 200)}`,
-        );
       }
+      throw new Error(
+        `Session finished but did not write a document. Model reply: ${result.text.slice(0, 200)}`,
+      );
     }
 
     const content = readFileSync(produced, 'utf8');
@@ -106,6 +116,32 @@ export async function runDoc(input: RunDocInput, call: ClaudeCall = claudeCliCal
   } finally {
     rmSync(staging, { recursive: true, force: true });
   }
+}
+
+/**
+ * F4: when the reply names an absolute path that actually exists AND whose
+ * basename exactly matches `outputFileName`, pull the file into staging
+ * (removing the stray) so the run proceeds. Returns null in all other cases —
+ * the P6 retry / precise-error path handles them.
+ *
+ * The exact-basename guard is critical: without it, a reply that merely
+ * mentions an unrelated absolute .md path (e.g. "I consulted /notes/foo.md")
+ * would cause that file to be deleted and returned as the generated doc.
+ * `findClaimedAbsolutePath`'s fallback is intentionally preserved for the
+ * final error-message path (line 88+) where it is harmless and useful for
+ * diagnostics.
+ */
+function relocateClaimedFile(text: string, outputFileName: string, staging: string): string | null {
+  const claimed = findClaimedAbsolutePath(text, outputFileName);
+  // Only act when the claimed path is exactly the expected output file.
+  // The fallback path returned by findClaimedAbsolutePath (first absolute .md
+  // mentioned) must never trigger a copyFileSync + rmSync on an unrelated file.
+  if (!claimed || basename(claimed) !== outputFileName) return null;
+  if (!existsSync(claimed)) return null;
+  const dest = join(staging, basename(claimed));
+  copyFileSync(claimed, dest);
+  rmSync(claimed, { force: true }); // don't leave a stray file in the operator's tree
+  return dest;
 }
 
 /**
