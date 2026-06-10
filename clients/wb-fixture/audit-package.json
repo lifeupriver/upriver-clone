@@ -1,0 +1,789 @@
+{
+  "meta": {
+    "clientName": "Wildflour Bakery",
+    "clientSlug": "wb-fixture",
+    "siteUrl": "https://wildflour.example",
+    "auditDate": "2026-04-24T18:02:37.968Z",
+    "auditor": "Upriver Consulting",
+    "totalPages": 3,
+    "totalFindings": 8,
+    "findingsByPriority": {
+      "p0": 3,
+      "p1": 3,
+      "p2": 2
+    },
+    "overallScore": 72,
+    "scoreByDimension": {
+      "aeo": 93,
+      "backlinks": 90,
+      "competitors": 76,
+      "content": 76,
+      "design": 93,
+      "links": 83,
+      "local": 72,
+      "sales": 36,
+      "schema": 76,
+      "seo": 27
+    }
+  },
+  "brandingProfile": {
+    "extracted_at": "2026-04-24T17:09:10.848Z",
+    "source_url": "https://wildflour.example",
+    "colorScheme": "light",
+    "fonts": [
+      {
+        "family": "Brandon Grotesque",
+        "role": "heading"
+      },
+      {
+        "family": "Halis Rmedium",
+        "role": "body"
+      }
+    ],
+    "colors": {
+      "primary": "#2F3A55",
+      "secondary": "#B68534",
+      "accent": "#B68534",
+      "background": "#FCFAF7",
+      "textPrimary": "#1B1B1B",
+      "link": "#424922"
+    },
+    "typography": {
+      "fontFamilies": {
+        "primary": "Halis Rmedium",
+        "heading": "Brandon Grotesque"
+      },
+      "fontStacks": {
+        "heading": [
+          "halis_rmedium"
+        ],
+        "body": [
+          "sans-serif"
+        ],
+        "paragraph": [
+          "brandon-grotesque"
+        ]
+      },
+      "fontSizes": {
+        "h1": "40px",
+        "h2": "16px",
+        "body": "13.6px"
+      }
+    },
+    "spacing": {
+      "baseUnit": 4,
+      "borderRadius": "0px"
+    },
+    "components": {
+      "input": {
+        "background": "transparent",
+        "textColor": "#000000",
+        "borderColor": null,
+        "borderRadius": "0px",
+        "borderRadiusCorners": {
+          "topLeft": "0px",
+          "topRight": "0px",
+          "bottomRight": "0px",
+          "bottomLeft": "0px"
+        },
+        "shadow": "none"
+      },
+      "buttonPrimary": {
+        "background": "#B68534",
+        "textColor": "#FCFAF7",
+        "borderRadius": "0px",
+        "borderRadiusCorners": {
+          "topLeft": "0px",
+          "topRight": "0px",
+          "bottomRight": "0px",
+          "bottomLeft": "0px"
+        },
+        "shadow": "none"
+      },
+      "buttonSecondary": {
+        "background": "#2F3A55",
+        "textColor": "#EDE8CE",
+        "borderRadius": "0px",
+        "borderRadiusCorners": {
+          "topLeft": "0px",
+          "topRight": "0px",
+          "bottomRight": "0px",
+          "bottomLeft": "0px"
+        },
+        "shadow": "none"
+      }
+    },
+    "images": {
+      "logo": "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/b582e808-3e4f-0e75-28fd-88cd28154d1c/Wildflour-Bakery-Logo-Black.png?format=1500w",
+      "favicon": "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/a9559579-d59f-83b5-c17c-ccdd99b93c87/favicon.ico?format=100w",
+      "ogImage": "http://cdn.wildflour.example/static/489fd4de67c0dc0d7fd83e34/t/b87bf0fe924c664f95a6e6ad/1633442187650/IMG_4502.jpg?format=1500w",
+      "logoHref": "/",
+      "logoAlt": "Wildflour&#39;s Bakehouse"
+    },
+    "__llm_logo_reasoning": {
+      "selectedIndex": 1,
+      "reasoning": "Picked the masthead image: it sits in the site header, links back to the homepage, and its alt text names the Wildflour Bakery brand outright.",
+      "confidence": 0.95,
+      "source": "llm"
+    },
+    "__llm_button_reasoning": {
+      "primary": {
+        "index": 2,
+        "text": "Book",
+        "reasoning": "The gold #B68534 'Book' button carries the most visual weight on the page and pairs an imperative verb with high contrast, so it reads as the main conversion path."
+      },
+      "secondary": {
+        "index": 0,
+        "text": "Book",
+        "reasoning": "The navy #2F3A55 'Book' button repeats the booking action at lower contrast, the usual pattern for a supporting CTA."
+      },
+      "confidence": 0.95
+    },
+    "personality": {
+      "tone": "traditional",
+      "energy": "medium",
+      "targetAudience": "weekend guests and small-event hosts who want a working bakery with rooms upstairs"
+    },
+    "designSystem": {
+      "framework": "custom",
+      "componentLibrary": ""
+    },
+    "confidence": {
+      "buttons": 0.95,
+      "colors": 0.9,
+      "overall": 0.925
+    },
+    "__llm_metadata": {
+      "logoSelection": {
+        "llmCalled": true,
+        "llmSucceeded": true,
+        "finalSource": "llm",
+        "rawLogoSelection": {
+          "selectedLogoIndex": 0,
+          "selectedLogoReasoning": "Picked the masthead image: it sits in the site header, links back to the homepage, and its alt text names the Wildflour Bakery brand outright.",
+          "confidence": 0.95
+        }
+      },
+      "buttonClassification": {
+        "llmCalled": true,
+        "llmSucceeded": true
+      }
+    }
+  },
+  "designSystem": {
+    "colors": {
+      "primary": "#2F3A55",
+      "secondary": "#B68534",
+      "accent": "#B68534",
+      "background": "#FCFAF7",
+      "textPrimary": "#1B1B1B",
+      "textSecondary": "#555555",
+      "link": "#424922"
+    },
+    "typography": {
+      "headingFont": "Brandon Grotesque",
+      "bodyFont": "Halis Rmedium",
+      "monoFont": "monospace",
+      "scale": {
+        "h1": "40px",
+        "h2": "16px",
+        "h3": "1.5rem",
+        "body": "13.6px",
+        "small": "0.875rem"
+      }
+    },
+    "spacing": {
+      "baseUnit": 4,
+      "scale": [
+        4,
+        8,
+        12,
+        16,
+        24,
+        32,
+        48,
+        64,
+        96,
+        128
+      ],
+      "borderRadius": "0px"
+    },
+    "components": {
+      "primaryButton": {
+        "background": "#B68534",
+        "textColor": "#FCFAF7",
+        "borderRadius": "0px",
+        "borderRadiusCorners": {
+          "topLeft": "0px",
+          "topRight": "0px",
+          "bottomRight": "0px",
+          "bottomLeft": "0px"
+        },
+        "shadow": "none"
+      },
+      "secondaryButton": {
+        "background": "#2F3A55",
+        "textColor": "#EDE8CE",
+        "borderRadius": "0px",
+        "borderRadiusCorners": {
+          "topLeft": "0px",
+          "topRight": "0px",
+          "bottomRight": "0px",
+          "bottomLeft": "0px"
+        },
+        "shadow": "none"
+      },
+      "inputField": {
+        "background": "transparent",
+        "textColor": "#000000",
+        "borderColor": null,
+        "borderRadius": "0px",
+        "borderRadiusCorners": {
+          "topLeft": "0px",
+          "topRight": "0px",
+          "bottomRight": "0px",
+          "bottomLeft": "0px"
+        },
+        "shadow": "none"
+      }
+    },
+    "logo": "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/b582e808-3e4f-0e75-28fd-88cd28154d1c/Wildflour-Bakery-Logo-Black.png?format=1500w",
+    "favicon": "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/a9559579-d59f-83b5-c17c-ccdd99b93c87/favicon.ico?format=100w",
+    "colorScheme": "light",
+    "personality": []
+  },
+  "siteStructure": {
+    "pages": [
+      {
+        "url": "https://app.wildflour.example/ForgetPassword",
+        "slug": "forgetpassword",
+        "title": "WildflourBakery-App",
+        "description": "",
+        "wordCount": 22,
+        "headings": [
+          {
+            "level": 1,
+            "text": "Forgot Your Password"
+          }
+        ],
+        "images": [
+          "https://app.wildflour.example/assets/Logo-Qx7RbN2k.svg"
+        ],
+        "internalLinks": [],
+        "externalLinks": [],
+        "ctaButtons": [],
+        "schemaTypes": [],
+        "hasCanonical": false,
+        "statusCode": 200
+      },
+      {
+        "url": "https://wildflour.example",
+        "slug": "home",
+        "title": "Wildflour Bakery",
+        "description": "Wildflour Bakery is a small-town bakery and event barn in Milltown, NY — come for the bread, stay the weekend, and celebrate in the Bakehouse Loft., Wildflour Bakery is a small-town bakery and event barn in Milltown, NY — come for the bread, stay the weekend, and celebrate in the Bakehouse Loft.",
+        "wordCount": 1273,
+        "headings": [
+          {
+            "level": 1,
+            "text": "Welcome to Wildflour Bakery"
+          },
+          {
+            "level": 2,
+            "text": "Slow mornings, warm bread, and rooms that feel like home"
+          },
+          {
+            "level": 2,
+            "text": "Navigation"
+          },
+          {
+            "level": 2,
+            "text": "Subscribe"
+          }
+        ],
+        "images": [
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/b582e808-3e4f-0e75-28fd-88cd28154d1c/Wildflour-Bakery-Logo-Black.png?format=1500w",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/0e0a157a-49b2-9861-7ddd-bc23f76f86ad/ExampleStudios_AvaAndLee_WeddingFinals-204.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/49a4b0ab-0175-2e7f-d797-106fac6e0554/Bakehouse-at-the-conservatory-gathering-room.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/6fa155d1-0286-e18d-2936-c9ee08fc3118/Conservatory-supper-in-the-glasshouse.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/eb040cdf-effa-ca1b-17a8-36066bb8ce24/5CeremonyNoraAndSam-262.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/b3d9e6d5-2ad6-36bf-e4a2-589265aeb841/ExampleStudios_AvaAndLee_WeddingFinals-318.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/0fdc99ca-37e8-abe2-3476-4b6198e81d41/string-lit-patio-at-dusk.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/98f2040d-25e3-5353-4812-139421fbe2b8/NS_Wildflour-84.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/62299429-961f-3135-1291-8a62176ea608/ExampleStudios_AvaAndLee_WeddingFinals-407.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/8bf54751-f252-8a7c-46a0-66ba65223d1e/stone-barn-guest-kitchen-with-copper-pots.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/c92ba74a-40a2-7427-ac8a-3f382dbeae14/bakehouse-reading-nook-with-green-walls.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/b2fd2825-3ced-a982-5c06-7bb1e137e17a/Bakery-cat-on-a-windowsill-at-the-conservatory.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/9990bf9d-46cf-3a5a-7092-5ca79682fab1/Bakehouse-at-the-conservatory-hearth-room.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/0eca7df3-3bc2-a06d-e867-5ce93776d4b6/late-summer-table-at-stone-barn.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/7278aaca-35cf-3c80-9b1e-111ef00450a6/harvest-board-spread.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/1609579551105-97G70H58NATF49NO4QK5/loft-room-with-quilts.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/7a744451-e774-6867-ddbc-88605ecad4c9/retreat_harvest_dinner-22.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/c58379c3-959c-a319-3151-630910a43014/bakery-interior-7.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/4fbdde8e-a6c7-9370-9661-e7e59d66a8ab/wb-fixture-glasshouse-aglow-at-dusk.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/08a705d3-a1d3-8f47-48e9-b88d83980de3/stone-barn-parlor-wing-chairs-oak-table.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/a073bb3e-f1e4-fa61-05ee-c9ba760cb229/bakery-interior-60.jpg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/1654755596100-8VH7GI9CQD1NULG7G11I/image-asset.jpeg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/1682516443678-Z2ADQUK66VR1K8AII8SB/image-asset.jpeg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/1619848470797-2D477GIHMWVBPBU23MKK/image-asset.jpeg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/1657547595670-6RHZSQRTD7K9KEGHSABO/image-asset.jpeg",
+          "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/ee481eff-44e6-f36c-652a-86d2d8089ba2/Wildflour%27s+Conservatories+Logo.png"
+        ],
+        "internalLinks": [],
+        "externalLinks": [],
+        "ctaButtons": [
+          {
+            "text": "The Conservatory",
+            "href": "https://wildflour.example/the-conservatory",
+            "type": "primary"
+          },
+          {
+            "text": "Stone Barn",
+            "href": "https://wildflour.example/stone-barn",
+            "type": "primary"
+          },
+          {
+            "text": "Garden and Grove",
+            "href": "https://wildflour.example/garden-and-grove",
+            "type": "primary"
+          },
+          {
+            "text": "Join our mailing list",
+            "href": "https://wildflour.example/home#footer-sections",
+            "type": "link"
+          },
+          {
+            "text": "Find us on Instagram",
+            "href": "https://www.instagram.com/wildflourbakery/",
+            "type": "link"
+          }
+        ],
+        "schemaTypes": [],
+        "hasCanonical": false,
+        "statusCode": 200
+      },
+      {
+        "url": "https://app.wildflour.example/signup",
+        "slug": "signup",
+        "title": "WildflourBakery-App",
+        "description": "",
+        "wordCount": 22,
+        "headings": [
+          {
+            "level": 1,
+            "text": "Get started"
+          }
+        ],
+        "images": [
+          "https://app.wildflour.example/assets/Logo-Qx7RbN2k.svg"
+        ],
+        "internalLinks": [],
+        "externalLinks": [],
+        "ctaButtons": [
+          {
+            "text": "Continue with Google",
+            "href": "https://app.wildflour.example/api/auth/google",
+            "type": "primary"
+          },
+          {
+            "text": "Sign In Now",
+            "href": "https://app.wildflour.example/login",
+            "type": "link"
+          }
+        ],
+        "schemaTypes": [],
+        "hasCanonical": false,
+        "statusCode": 200
+      }
+    ],
+    "navigation": {
+      "primary": [],
+      "footer": []
+    },
+    "missingPages": [
+      {
+        "pageType": "Per-space venue pages",
+        "reason": "The site never gives each gathering space its own page, so visitors can't picture where their event would actually happen.",
+        "priority": "p1"
+      },
+      {
+        "pageType": "Rates and packages page",
+        "reason": "Nothing on the site says what an event costs, and price-shoppers will not email to find out.",
+        "priority": "p0"
+      }
+    ]
+  },
+  "contentInventory": {
+    "testimonials": [
+      {
+        "quote": "Rosa had warm rolls waiting when our shuttle pulled in, and that set the tone for the whole weekend.",
+        "attribution": "Mara Quinlan",
+        "page": "https://wildflour.example"
+      },
+      {
+        "quote": "We planned a sixty-person dinner over two phone calls and it ran without a hitch.",
+        "attribution": "Theo Brandt",
+        "page": "https://wildflour.example"
+      },
+      {
+        "quote": "Months later our friends are still asking about the sourdough and the lantern-lit patio.",
+        "attribution": "Priya Nandakumar",
+        "page": "https://wildflour.example"
+      }
+    ],
+    "teamMembers": [
+      {
+        "name": "Elena Vasquez",
+        "role": "Event Coordinator",
+        "page": "https://wildflour.example"
+      },
+      {
+        "name": "Marcus Okafor",
+        "role": "Head Chef",
+        "page": "https://wildflour.example"
+      },
+      {
+        "name": "June Albright",
+        "role": "General Manager",
+        "page": "https://wildflour.example"
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Which spaces would we have for our celebration?",
+        "answer": "Most celebrations run five hours, starting with a ceremony in the orchard rows or on the covered patio and moving into the Bakehouse Loft for dinner and dancing. If the weather turns, the whole day shifts indoors — the Loft holds every guest comfortably with room to spare.",
+        "page": "https://wildflour.example/garden-and-grove/events"
+      },
+      {
+        "question": "What comes with the venue and catering package?",
+        "answer": "Use of the covered patio, the Bakehouse Loft, and the orchard ceremony site.\n\n- (16) reclaimed-oak farm tables\n- (140) bentwood dining chairs\n- Stoneware place settings and amber glassware\n- Flax table runners and beeswax candles\n- Bread service straight from the wood-fired oven\n- Coffee and tea station\n- Staffed bar pouring local beer, cider and wine\n- Restrooms (3), one fully accessible\n- Gravel lot with room for 60 cars plus a shuttle drop-off\n- Day-of coordinator and floor team\n- Wifi in the Loft and bakery\n- A planning walkthrough one month before your date\n\n**Popular add-ons:**\n- Late-night pretzel and pastry table\n- Wood-fired pizza hour\n- Espresso cart\n- Whole-grain tasting board at cocktail hour\n- Next-morning farewell breakfast in the bakery",
+        "page": "https://wildflour.example/garden-and-grove/events"
+      },
+      {
+        "question": "How much does it cost to rent the venue?",
+        "answer": "Rental runs $2,400 to $4,600 depending on month and weekday.",
+        "page": "https://wildflour.example/garden-and-grove/events"
+      }
+    ],
+    "pricing": [
+      {
+        "item": "Venue Fee",
+        "price": "$3800 - $7200",
+        "page": "https://wildflour.example/riverbend-retreat/events"
+      },
+      {
+        "item": "Catering Fee",
+        "price": "$72 per guest plus a 20% service charge",
+        "page": "https://wildflour.example/riverbend-retreat/events"
+      },
+      {
+        "item": "Lodging Discount",
+        "price": "15% off rooms for event guests",
+        "page": "https://wildflour.example/riverbend-retreat/lodging"
+      }
+    ],
+    "socialLinks": [
+      {
+        "platform": "Instagram",
+        "url": "https://instagram.com/wildflourbakery"
+      },
+      {
+        "platform": "Facebook",
+        "url": "https://facebook.com/wildflourbakery"
+      },
+      {
+        "platform": "Website",
+        "url": "https://wildflour.example"
+      }
+    ],
+    "contactInfo": {
+      "email": "hello@wildflourbakery.example",
+      "phone": "(555) 010-0100",
+      "address": "Wildflour Bakery, 12 Meadow Lane, Milltown, Exampleshire, 00000",
+      "hours": "Available year-round"
+    },
+    "eventSpaces": [
+      {
+        "name": "The Conservatory",
+        "capacity": "",
+        "description": "",
+        "page": "https://wildflour.example/catering"
+      },
+      {
+        "name": "Stone Barn",
+        "capacity": "",
+        "description": "",
+        "page": "https://wildflour.example/catering"
+      },
+      {
+        "name": "Garden and Grove",
+        "capacity": "",
+        "description": "",
+        "page": "https://wildflour.example/catering"
+      }
+    ]
+  },
+  "screenshots": {},
+  "findings": [
+    {
+      "id": "sales-014",
+      "dimension": "sales",
+      "priority": "p0",
+      "effort": "heavy",
+      "title": "No rates or packages page",
+      "description": "Nothing on the site tells a prospect what an event costs or what a package includes, so price-sensitive couples bounce before inquiring.",
+      "why_it_matters": "Venues that publish even a starting rate get shortlisted; venues that hide pricing read as out-of-budget.",
+      "recommendation": "Add a packages page listing starting rates, what each tier covers, and a single inquiry CTA."
+    },
+    {
+      "id": "seo-002",
+      "dimension": "seo",
+      "priority": "p0",
+      "effort": "light",
+      "title": "Some pages ship without a title tag",
+      "description": "One crawled URL is served with an empty <title> element.",
+      "why_it_matters": "The title is what shows in the search result and the browser tab; when it's blank, Google invents one and it's rarely flattering.",
+      "recommendation": "Give every page its own 50-60 character title naming the venue and the page topic.",
+      "affected_pages": [
+        "https://wildflour.example/sitemap.xml"
+      ]
+    },
+    {
+      "id": "seo-005",
+      "dimension": "seo",
+      "priority": "p0",
+      "effort": "light",
+      "title": "No visitor analytics installed",
+      "description": "The homepage loads no measurement script of any kind — no GA4, no Plausible, not even a server-side counter.",
+      "why_it_matters": "Until something counts visits, nobody can say which pages earn inquiries and which leak them.",
+      "recommendation": "Wire up GA4 or Plausible, verify the property in Search Console, and hand it the sitemap."
+    },
+    {
+      "id": "aeo-028",
+      "dimension": "aeo",
+      "priority": "p1",
+      "effort": "medium",
+      "title": "Copy rarely answers questions in plain language",
+      "description": "Almost none of the copy is phrased as questions and answers, which is the shape AI assistants and voice search prefer to quote.",
+      "why_it_matters": "Spoken queries arrive as full questions; pages that answer in kind get read aloud, and the rest get skipped.",
+      "recommendation": "Recast key sections as direct Q&A — for example: 'Can we bring our own baker? We handle bread and dessert in-house, but outside specialty cakes are welcome.'"
+    },
+    {
+      "id": "content-008",
+      "dimension": "content",
+      "priority": "p1",
+      "effort": "medium",
+      "title": "Vague superlatives weaken the copy",
+      "description": "Several pages lean on filler adjectives — 'breathtaking' (2 pages), 'effortless' (2 pages), 'magical' (1 page) — instead of concrete detail.",
+      "why_it_matters": "Readers have learned to skim past empty praise; specifics are what they remember and repeat.",
+      "recommendation": "Swap each superlative for a checkable fact: instead of 'breathtaking setting', try 'a covered patio looking straight down the orchard rows'."
+    },
+    {
+      "id": "content-011",
+      "dimension": "content",
+      "priority": "p1",
+      "effort": "medium",
+      "title": "Empty alt attributes across the photo galleries",
+      "description": "A large share of gallery images carry empty alt attributes, so screen readers and image search both come away with nothing.",
+      "why_it_matters": "Alt text is the only way the photography works for non-sighted visitors, and it is free image SEO.",
+      "recommendation": "Describe each photo plainly: what's in frame, where it was taken, and why it belongs on that page.",
+      "affected_pages": [
+        "https://wildflour.example/404",
+        "https://wildflour.example/careers",
+        "https://wildflour.example/cart",
+        "https://wildflour.example/catering",
+        "https://wildflour.example/events"
+      ]
+    },
+    {
+      "id": "content-009",
+      "dimension": "content",
+      "priority": "p2",
+      "effort": "medium",
+      "title": "Big claims with no proof attached",
+      "description": "A handful of pages claim 'best' or 'leading' status without a single review count, award, or number behind it.",
+      "why_it_matters": "An unsupported superlative invites doubt; the same sentence with a number earns trust.",
+      "recommendation": "Either cut the claim or attach its evidence — the award name, the review score, the year it was earned.",
+      "affected_pages": [
+        "https://wildflour.example/riverbend-retreat/events",
+        "https://wildflour.example/riverbend-retreat/photoshoots",
+        "https://wildflour.example/riverbend-retreat/things-to-do",
+        "https://wildflour.example/the-conservatory/corporate",
+        "https://wildflour.example/the-conservatory/weddings"
+      ]
+    },
+    {
+      "id": "links-022",
+      "dimension": "links",
+      "priority": "p2",
+      "effort": "medium",
+      "title": "Thin internal linking between pages",
+      "description": "Nearly every page links to fewer than three others, leaving both the crawler and the visitor at dead ends.",
+      "why_it_matters": "Internal links are how authority and visitors move through a site; sparse linking strands both.",
+      "recommendation": "Work three to five contextual links into each page's body copy, pointing at related spaces, menus, and lodging."
+    }
+  ],
+  "brandVoiceDraft": {
+    "tone": "Plainspoken and warm, with flour on its hands — the voice of a baker who knows your name and your usual order.",
+    "keywords": [
+      "bakehouse charm",
+      "intimate gatherings",
+      "conservatory weddings",
+      "unforgettable moments",
+      "handcrafted hospitality",
+      "pastoral elegance",
+      "seasonal celebrations",
+      "personal touch",
+      "curated events",
+      "rustic refinement",
+      "community roots"
+    ],
+    "bannedWords": [
+      "amazing",
+      "magical",
+      "stunning",
+      "unique",
+      "perfect",
+      "top-notch",
+      "world-class",
+      "unforgettable",
+      "one-of-a-kind",
+      "luxury"
+    ],
+    "sampleHeadlines": [
+      "Bread Comes Out at Seven. Stay for the Weekend.",
+      "Marry in the Orchard, Dance in the Loft",
+      "A Working Bakery With Twelve Beds Upstairs",
+      "Supper Club Nights Under the Patio Lanterns",
+      "Book the Bakehouse Before the Busy Season Fills",
+      "Your People, One Long Table, Plenty of Butter",
+      "Retreats That Smell Like Fresh Rye",
+      "Milltown's Oven Has Been Warm Since 1902",
+      "Small Weddings, Big Breakfasts",
+      "From First Proof to Final Toast"
+    ],
+    "sampleBodyCopy": [
+      "The ovens at Wildflour have been lit since before your grandparents were born, and the routine hasn't changed much: dough in the small hours, bread on the counter by seven, neighbors trailing in as the loaves cool. Book the bakehouse for a retreat or a wedding and you step into that rhythm — you are not renting a blank hall.",
+      "Our kitchen builds menus around what the valley grows and what the oven does best: braised shanks and blistered flatbreads, roasted roots in brown butter, and a dessert table anchored by whatever fruit the orchard handed us that week.",
+      "You'll work with the same two people from first email to last dance — Rosa on food and rooms, Theo on the floor plan and the weather call. No handoffs, no call center, and nobody who can't answer a question on the spot."
+    ],
+    "voiceCharacteristics": [
+      "Concrete before clever — names real rooms, hours and loaves",
+      "Neighborly without tipping into folksy",
+      "Short declarative sentences with room to breathe",
+      "Comfortable saying no and explaining why",
+      "Seasonal by instinct, not by marketing calendar",
+      "Modest about itself, generous about its guests",
+      "Prefers a number to an adjective"
+    ],
+    "audienceDescription": "Wildflour draws couples and small teams who would rather book a place with a working oven than a banquet hall — people planning a forty-guest wedding, a long-table anniversary supper, or a three-day offsite. They tend to drive in from the city or the nearer valley towns, care more about the food and the morning after than the chandeliers, and want one venue that can feed them, sleep them, and host the party without a fleet of outside vendors."
+  },
+  "implementationPlan": {
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Quick wins",
+        "description": "Knock out the light-effort, high-priority items first — the fixes that need an hour of configuration rather than new content.",
+        "findings": [
+          "seo-002",
+          "seo-005"
+        ],
+        "estimatedEffort": "1-2 weeks",
+        "estimatedImpact": "Closes the measurement gap and the blank-title problem within days, so later phases can be judged with real data."
+      },
+      {
+        "phase": 2,
+        "name": "Structural fixes",
+        "description": "Repair the plumbing: internal links between pages and alt text across the galleries, so crawlers and assistive tech can actually traverse the site.",
+        "findings": [
+          "links-022",
+          "content-011"
+        ],
+        "estimatedEffort": "2-4 weeks",
+        "estimatedImpact": "Every page becomes reachable in two clicks and every photo carries a description, lifting crawl coverage and accessibility together."
+      },
+      {
+        "phase": 3,
+        "name": "Content build-out",
+        "description": "Write and ship the pages the buyer journey is missing — packages and rates first, then per-space pages — while scrubbing filler adjectives from existing copy.",
+        "findings": [
+          "sales-014",
+          "content-008",
+          "content-009"
+        ],
+        "estimatedEffort": "4-6 weeks",
+        "estimatedImpact": "Prospects can finally answer 'what does it cost and where would it happen' without sending an email, which is where most inquiries are currently lost."
+      },
+      {
+        "phase": 4,
+        "name": "AEO and authority",
+        "description": "Reshape key copy into question-and-answer form so AI assistants and voice search can quote the site directly.",
+        "findings": [
+          "aeo-028"
+        ],
+        "estimatedEffort": "2-3 weeks",
+        "estimatedImpact": "Puts Wildflour's own words into AI answers and voice results instead of ceding those surfaces to directories."
+      }
+    ],
+    "quickWins": [
+      {
+        "id": "seo-002",
+        "dimension": "seo",
+        "priority": "p0",
+        "effort": "light",
+        "title": "Some pages ship without a title tag",
+        "description": "One crawled URL is served with an empty <title> element.",
+        "why_it_matters": "The title is what shows in the search result and the browser tab; when it's blank, Google invents one and it's rarely flattering.",
+        "recommendation": "Give every page its own 50-60 character title naming the venue and the page topic.",
+        "affected_pages": [
+          "https://wildflour.example/sitemap.xml"
+        ]
+      },
+      {
+        "id": "seo-005",
+        "dimension": "seo",
+        "priority": "p0",
+        "effort": "light",
+        "title": "No visitor analytics installed",
+        "description": "The homepage loads no measurement script of any kind — no GA4, no Plausible, not even a server-side counter.",
+        "why_it_matters": "Until something counts visits, nobody can say which pages earn inquiries and which leak them.",
+        "recommendation": "Wire up GA4 or Plausible, verify the property in Search Console, and hand it the sitemap."
+      }
+    ],
+    "requiresClientInput": [
+      "Final answer set for the FAQ page — policies, rain plan, payment schedule",
+      "A single authoritative phone number and street address per property",
+      "Google Business Profile access for all three locations",
+      "Short blurbs and contacts for the bakers, florists and photographers you actually recommend",
+      "Which nearby venues you consider direct competition",
+      "Sign-off on the three package tiers and seasonal rates before publication",
+      "Rosa and Theo's founding story plus key dates for the venue timeline",
+      "Parking, shuttle and back-road directions guests should be given",
+      "Links to your profiles on the major wedding review platforms",
+      "A decision on the single booking CTA wording to use site-wide"
+    ],
+    "requiresNewContent": [
+      "One page per gathering space — patio, Loft, orchard, glasshouse",
+      "Rates and packages page with starting prices",
+      "FAQ page",
+      "Inquiry page with a short form and a response-time promise",
+      "About page",
+      "Recommended vendors page with one-line introductions",
+      "Getting-here page covering parking, shuttles and the village",
+      "A gallery section organized by real events rather than themes",
+      "Longer body copy for every page now under 200 words",
+      "Q&A-format copy blocks for the pages AI assistants quote most",
+      "Descriptive alt text across the photo library",
+      "A distinct title tag and H1 on every page"
+    ],
+    "requiresAssets": [
+      "Wide and detail shots of each space in two seasons",
+      "Photography from two or three real celebrations, permissions cleared",
+      "A short walk-through video of the patio and the Loft",
+      "Portraits of Rosa, Theo and the kitchen crew",
+      "Vector logo plus the wordmark in light and dark versions",
+      "Badge artwork from the review platforms you're listed on",
+      "Whatever brand notes exist — even a one-page style sheet helps",
+      "Drone or hillside footage of the eleven acres, if it exists"
+    ]
+  }
+}

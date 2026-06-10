@@ -1,0 +1,196 @@
+{
+  "generated_at": "2026-04-24T17:09:32.159Z",
+  "total": 38,
+  "assets": [
+    {
+      "url": "https://app.wildflour.example/assets/Logo-Qx7RbN2k.svg",
+      "localPath": "clients/wb-fixture/assets/images/Logo-Qx7RbN2k.svg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/b582e808-3e4f-0e75-28fd-88cd28154d1c/Wildflour-Bakery-Logo-Black.png?format=1500w",
+      "localPath": "clients/wb-fixture/assets/images/Wildflour-Bakery-Logo-Black.png",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/1654755596100-8VH7GI9CQD1NULG7G11I/image-asset.jpeg",
+      "localPath": "clients/wb-fixture/assets/images/image-asset.jpeg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/1682516443678-Z2ADQUK66VR1K8AII8SB/image-asset.jpeg",
+      "localPath": "clients/wb-fixture/assets/images/image-asset.jpeg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/1619848470797-2D477GIHMWVBPBU23MKK/image-asset.jpeg",
+      "localPath": "clients/wb-fixture/assets/images/image-asset.jpeg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/1657547595670-6RHZSQRTD7K9KEGHSABO/image-asset.jpeg",
+      "localPath": "clients/wb-fixture/assets/images/image-asset.jpeg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/ee481eff-44e6-f36c-652a-86d2d8089ba2/Wildflour%27s+Conservatories+Logo.png",
+      "localPath": "clients/wb-fixture/assets/images/Wildflour-27s-Conservatories-Logo.png",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/7278aaca-35cf-3c80-9b1e-111ef00450a6/harvest-board-spread.jpg",
+      "localPath": "clients/wb-fixture/assets/images/harvest-board-spread.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/98f2040d-25e3-5353-4812-139421fbe2b8/NS_Wildflour-84.jpg",
+      "localPath": "clients/wb-fixture/assets/images/NS_Wildflour-84.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/0e0a157a-49b2-9861-7ddd-bc23f76f86ad/ExampleStudios_AvaAndLee_WeddingFinals-204.jpg",
+      "localPath": "clients/wb-fixture/assets/images/ExampleStudios_AvaAndLee_WeddingFinals-204.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/49a4b0ab-0175-2e7f-d797-106fac6e0554/Bakehouse-at-the-conservatory-gathering-room.jpg",
+      "localPath": "clients/wb-fixture/assets/images/Bakehouse-at-the-conservatory-gathering-room.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/6fa155d1-0286-e18d-2936-c9ee08fc3118/Conservatory-supper-in-the-glasshouse.jpg",
+      "localPath": "clients/wb-fixture/assets/images/Conservatory-supper-in-the-glasshouse.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/eb040cdf-effa-ca1b-17a8-36066bb8ce24/5CeremonyNoraAndSam-262.jpg",
+      "localPath": "clients/wb-fixture/assets/images/5CeremonyNoraAndSam-262.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/b3d9e6d5-2ad6-36bf-e4a2-589265aeb841/ExampleStudios_AvaAndLee_WeddingFinals-318.jpg",
+      "localPath": "clients/wb-fixture/assets/images/ExampleStudios_AvaAndLee_WeddingFinals-318.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/0fdc99ca-37e8-abe2-3476-4b6198e81d41/string-lit-patio-at-dusk.jpg",
+      "localPath": "clients/wb-fixture/assets/images/string-lit-patio-at-dusk.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/62299429-961f-3135-1291-8a62176ea608/ExampleStudios_AvaAndLee_WeddingFinals-407.jpg",
+      "localPath": "clients/wb-fixture/assets/images/ExampleStudios_AvaAndLee_WeddingFinals-407.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/8bf54751-f252-8a7c-46a0-66ba65223d1e/stone-barn-guest-kitchen-with-copper-pots.jpg",
+      "localPath": "clients/wb-fixture/assets/images/stone-barn-guest-kitchen-with-copper-pots.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/c92ba74a-40a2-7427-ac8a-3f382dbeae14/bakehouse-reading-nook-with-green-walls.jpg",
+      "localPath": "clients/wb-fixture/assets/images/bakehouse-reading-nook-with-green-walls.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/b2fd2825-3ced-a982-5c06-7bb1e137e17a/Bakery-cat-on-a-windowsill-at-the-conservatory.jpg",
+      "localPath": "clients/wb-fixture/assets/images/Bakery-cat-on-a-windowsill-at-the-conservatory.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/9990bf9d-46cf-3a5a-7092-5ca79682fab1/Bakehouse-at-the-conservatory-hearth-room.jpg",
+      "localPath": "clients/wb-fixture/assets/images/Bakehouse-at-the-conservatory-hearth-room.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/0eca7df3-3bc2-a06d-e867-5ce93776d4b6/late-summer-table-at-stone-barn.jpg",
+      "localPath": "clients/wb-fixture/assets/images/late-summer-table-at-stone-barn.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/1609579551105-97G70H58NATF49NO4QK5/loft-room-with-quilts.jpg",
+      "localPath": "clients/wb-fixture/assets/images/loft-room-with-quilts.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/7a744451-e774-6867-ddbc-88605ecad4c9/retreat_harvest_dinner-22.jpg",
+      "localPath": "clients/wb-fixture/assets/images/retreat_harvest_dinner-22.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/c58379c3-959c-a319-3151-630910a43014/bakery-interior-7.jpg",
+      "localPath": "clients/wb-fixture/assets/images/bakery-interior-7.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/a073bb3e-f1e4-fa61-05ee-c9ba760cb229/bakery-interior-60.jpg",
+      "localPath": "clients/wb-fixture/assets/images/bakery-interior-60.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/4fbdde8e-a6c7-9370-9661-e7e59d66a8ab/wb-fixture-glasshouse-aglow-at-dusk.jpg",
+      "localPath": "clients/wb-fixture/assets/images/wb-fixture-glasshouse-aglow-at-dusk.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/08a705d3-a1d3-8f47-48e9-b88d83980de3/stone-barn-parlor-wing-chairs-oak-table.jpg",
+      "localPath": "clients/wb-fixture/assets/images/stone-barn-parlor-wing-chairs-oak-table.jpg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/c58379c3-959c-a319-3151-630910a43014/friends",
+      "localPath": "clients/wb-fixture/repo/public/images/friends",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/0e0a157a-49b2-9861-7ddd-bc23f76f86ad/ExampleStudios",
+      "localPath": "clients/wb-fixture/repo/public/images/ExampleStudios",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/62299429-961f-3135-1291-8a62176ea608/ExampleStudios",
+      "localPath": "clients/wb-fixture/repo/public/images/ExampleStudios-2",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/98f2040d-25e3-5353-4812-139421fbe2b8/NS",
+      "localPath": "clients/wb-fixture/repo/public/images/NS",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/a073bb3e-f1e4-fa61-05ee-c9ba760cb229/friends",
+      "localPath": "clients/wb-fixture/repo/public/images/friends-1",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/7a744451-e774-6867-ddbc-88605ecad4c9/retreat",
+      "localPath": "clients/wb-fixture/repo/public/images/retreat",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/1654755596100-8VH7GI9CQD1NULG7G11I/image-asset.jpeg?format=500w",
+      "localPath": "clients/wb-fixture/assets/images/image-asset.jpeg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/1682516443678-Z2ADQUK66VR1K8AII8SB/image-asset.jpeg?format=500w",
+      "localPath": "clients/wb-fixture/assets/images/image-asset.jpeg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/1619848470797-2D477GIHMWVBPBU23MKK/image-asset.jpeg?format=500w",
+      "localPath": "clients/wb-fixture/assets/images/image-asset.jpeg",
+      "type": "image"
+    },
+    {
+      "url": "https://cdn.wildflour-assets.example/content/v1/489fd4de67c0dc0d7fd83e34/1657547595670-6RHZSQRTD7K9KEGHSABO/image-asset.jpeg?format=500w",
+      "localPath": "clients/wb-fixture/assets/images/image-asset.jpeg",
+      "type": "image"
+    },
+    {
+      "url": "http://cdn.wildflour-assets.example/static/489fd4de67c0dc0d7fd83e34/t/b87bf0fe924c664f95a6e6ad/1633442187650/IMG_4502.jpg?format=1500w",
+      "localPath": "clients/wb-fixture/assets/images/IMG_4502.jpg",
+      "type": "image"
+    }
+  ]
+}
