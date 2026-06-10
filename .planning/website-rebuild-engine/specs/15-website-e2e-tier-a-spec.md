@@ -40,12 +40,13 @@ No production `packages/*` source changes are expected. If a harness assertion e
 - `audit/` — only the files `scaffold` and `fixes-plan` actually read (verify by reading both commands at implementation time; do not commit the full audit dir blindly)
 
 **Sanitization checklist (apply to every committed file):**
-- [ ] Business name → "Wildflour Bakery" (fictional); slug references → `wb-fixture`
-- [ ] Phone numbers → `(555) 010-xxxx`; emails → `hello@wildflour.example`
-- [ ] Street addresses → a fictional address; GBP/maps URLs → removed or `example.com` forms
-- [ ] Person names in testimonials/copy → fictional first names
-- [ ] Live domain → `wildflour.example` everywhere (this also makes the finalize link-rewrite assertion unambiguous: zero `wildflour.example` hrefs may remain)
-- [ ] Asset CDN URLs may stay structurally real but point at `cdn.wildflour.example` paths (finalize must rewrite them; no real downloads occur offline)
+- [x] Business name → "Wildflour Bakery" (fictional); slug references → `wb-fixture`
+- [x] Phone numbers → `(555) 010-xxxx`; emails → `hello@wildflourbakery.example` *(deviation: finalize doesn't rewrite `mailto:`, so a `wildflour.example` mailbox would leave false post-finalize residue — see changelog)*
+- [x] Street addresses → a fictional address; GBP/maps URLs → removed or `example.com` forms
+- [x] Person names in testimonials/copy → fictional first names
+- [x] Live domain → `wildflour.example` everywhere (this also makes the finalize link-rewrite assertion unambiguous: zero `wildflour.example` hrefs may remain)
+- [x] Asset CDN URLs stay structurally real but point at `cdn.wildflour-assets.example` paths *(deviation from the original `cdn.wildflour.example`: finalize's pass-1 consumes subdomains of the client domain, which would leave the manifest-keyed CDN pass unexercised — see changelog)*
+- [x] Beyond the checklist: ALL human-readable prose rewritten (not token-swapped) — verified by an exhaustive 4-gram sweep against the source corpus (1,741 verbatim overlaps → 0 non-boilerplate) plus an independent audit; site/asset ID tokens randomized
 
 The sanitization is a one-time manual step performed during implementation, not a script to maintain.
 
@@ -59,14 +60,14 @@ Named `tier-a` deliberately: Tier B (Build Spec 16) prepends live phases (`init 
 
 | Phase | Runs | Asserts |
 |---|---|---|
-| `fixture` | resets working copies of `clients/wb-fixture/` outputs (removes `repo/`, `fixes-plan.md`, `e2e/`) — committed inputs are never touched | inputs present and parse as JSON/YAML |
+| `fixture` | resets working copies of `clients/wb-fixture/` outputs (removes `repo/` and `fixes-plan.md`; the run log is truncated rather than deleted — it is the harness's own tee target) — committed inputs are never touched | inputs present and parse as JSON/YAML |
 | `scaffold` | `upriver scaffold wb-fixture` | `repo/src/pages/index.astro` exists; `repo/CLAUDE.md` exists; `repo/.agents/product-marketing-context.md` exists |
 | `scaffold` (build) | `pnpm install && pnpm build` inside `repo/` | exit 0 — the only honest "imports resolve / valid Astro" check |
 | `finalize` | `upriver finalize wb-fixture` | zero `wildflour.example` hrefs in `repo/src/**`; zero `cdn.wildflour.example` URLs in `repo/src/**` |
 | `fixes` | `upriver fixes plan wb-fixture` (verify exact command form at implementation time) | `fixes-plan.md` exists with ≥1 `^#+ .*Phase` section |
 | `verify` | — | prints summary; exit 0 |
 
-**Exit codes:** 0 = pass; a distinct code per failing step — fixture=11, scaffold=12, scaffold-build=13, finalize=14, fixes=15 — so CI logs identify the failure without reading the log. Each failure names the exact assertion that failed.
+**Exit codes:** 0 = pass; 2 = preflight (bad phase arg, missing node/pnpm, node < 22); a distinct code per failing step — fixture=11, scaffold=12, scaffold-build=13, finalize=14, fixes=15, verify=16 (verify re-runs cheap idempotent assertions, so it is non-vacuous as a standalone resume point) — so CI logs identify the failure without reading the log. Each failure names the exact assertion that failed.
 
 All command invocations go through `node packages/cli/bin/run.js` as real subprocesses (never imported functions) — the harness must observe what the shell observes.
 
