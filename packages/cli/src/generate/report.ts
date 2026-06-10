@@ -210,12 +210,14 @@ export function renderProvisioningProjection(rows: ProvisioningProjection[]): st
   const union = new Set<string>();
   for (const r of rows) {
     for (const g of [...r.missingFields, ...r.unverifiedHv]) union.add(g);
+    const missingSet = new Set(r.missingFields);
+    const hvOnlyPaths = r.unverifiedHv.filter((p) => !missingSet.has(p));
     const gaps =
       r.missingFields.length === 0 && r.unverifiedHv.length === 0
         ? 'fields ready'
         : [
             r.missingFields.length > 0 ? `missing: ${r.missingFields.join(', ')}` : '',
-            r.unverifiedHv.length > 0 ? `unverified HV: ${r.unverifiedHv.join(', ')}` : '',
+            hvOnlyPaths.length > 0 ? `unverified HV: ${hvOnlyPaths.join(', ')}` : '',
           ]
             .filter(Boolean)
             .join('; ');

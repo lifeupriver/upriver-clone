@@ -203,3 +203,23 @@ test('P5: an all-ready projection says so', () => {
   ]);
   assert.match(text, /all provisioning fields present and verified/);
 });
+
+test('P5: a path in both missingFields and unverifiedHv renders only once per row (no duplicate)', () => {
+  // A field that is both absent AND flagged as HV must not appear twice on the same row.
+  const sharedPath = 'governance.dataResidency';
+  const rows = [
+    {
+      id: 'i07' as DeliverableId,
+      title: 'Account Access & Governance',
+      missingFields: [sharedPath],
+      unverifiedHv: [sharedPath],
+    },
+  ];
+  const text = renderProvisioningProjection(rows);
+  // The path must appear in the missing: column...
+  assert.match(text, /missing: governance\.dataResidency/);
+  // ...but NOT also in the unverified HV column for the same row.
+  assert.doesNotMatch(text, /unverified HV: governance\.dataResidency/);
+  // The union list still counts the path once.
+  assert.match(text, /gap-fill list \(1\): governance\.dataResidency/);
+});

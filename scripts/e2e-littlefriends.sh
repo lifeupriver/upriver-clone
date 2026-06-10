@@ -130,9 +130,12 @@ if phase_ge readiness; then
   run $UPRIVER generate $SLUG --all --dry-run --strict-provisioning || DRY_RC=$?
   if [ "$DRY_RC" = "3" ]; then
     PROV_GAPS=1
-  elif [ "$DRY_RC" != "0" ]; then
+  elif [ "$DRY_RC" = "2" ]; then
     log "CHECKPOINT: F2 prompt-size FAIL — a doc's projected prompt exceeds the ceiling (see table above)."
     log "This is an F1 regression, not an operator gap-fill. Fix the digest/ceiling before generating."
+    exit 4
+  elif [ "$DRY_RC" != "0" ]; then
+    log "FATAL: dry-run failed (rc=$DRY_RC) — not a readiness gap; investigate before continuing."
     exit 4
   fi
   BLOCKED=$(node -e '
@@ -160,6 +163,7 @@ if phase_ge readiness; then
     log "CHECKPOINT: gap-fill needed before generation (doc and/or provisioning fields — see tables above)."
     [ -n "$NOT_READY" ] && log "$NOT_READY"
     log "Gap-fill with: $UPRIVER profile set $SLUG <path> <value> --evidence 'operator gap-fill, synthetic e2e'"
+    log "For HV fields, verify after setting: $UPRIVER profile verify $SLUG <path>  (or resume at the verify phase)"
     log "Then resume:   UPRIVER_GATE_AUTO=1 bash scripts/e2e-littlefriends.sh readiness"
     exit 3
   fi

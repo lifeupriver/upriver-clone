@@ -153,6 +153,10 @@ export default class Generate extends BaseCommand {
 
   /** `--all`: plan the DAG, then (unless --dry-run) generate tier by tier with a per-tier gate. */
   private async runAll(slug: string, flags: AllFlags, ds: ClientDataSource): Promise<void> {
+    if (flags['strict-provisioning'] && !flags['dry-run']) {
+      this.error('--strict-provisioning only takes effect with --all --dry-run (it gates the pre-docs checkpoint).');
+    }
+
     const profile = await readProfile(ds, slug);
     if (!profile) this.error(`No profile for "${slug}". Run: upriver profile import ${slug} <file>`);
 
