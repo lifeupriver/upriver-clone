@@ -11,6 +11,7 @@ import {
   aggregateOperatorActions,
   commitCommand,
   planBatch,
+  projectProvisioningReadiness,
   runTier,
   runTierParallel,
   seedClientTree,
@@ -26,7 +27,7 @@ import { generatedIds, readManifest, setApproved, writeManifest } from '../gener
 import { readProfile } from '../generate/profile-io.js';
 import { I_SERIES } from '../generate/provisioning.js';
 import type { PromptSize } from '../generate/prompt-size.js';
-import { renderBatchPlan, renderOperatorChecklist, renderPromptSizeTable, renderTierReport, tierUnblocks } from '../generate/report.js';
+import { renderBatchPlan, renderOperatorChecklist, renderPromptSizeTable, renderProvisioningProjection, renderTierReport, tierUnblocks } from '../generate/report.js';
 import { claudeCliCall } from '../util/claude-cli.js';
 import { gitWorktreeProvider, resolveGitRepoRoot } from '../util/git-worktree.js';
 import { LocalFsClientDataSource, type ClientDataSource } from '@upriver/core/data';
@@ -42,6 +43,7 @@ interface AllFlags {
   model: string;
   jobs: number;
   'full-upstream': boolean;
+  'strict-provisioning': boolean;
 }
 
 export default class Generate extends BaseCommand {
@@ -115,6 +117,12 @@ export default class Generate extends BaseCommand {
         'Debug escape: inject upstream docs whole instead of as F1 digests (reproduces the pre-hardening, overflow-prone prompt). Slower and may exceed the model window.',
       default: false,
     }),
+    'strict-provisioning': Flags.boolean({
+      description:
+        'With --all --dry-run: exit 3 when any provisioning artifact (i01–i09) is missing fields or HV verification — for unattended runs that must gap-fill before the docs phase (Finding G).',
+      default: false,
+      dependsOn: ['all'],
+    }),
   };
 
   async run(): Promise<void> {
@@ -177,9 +185,20 @@ export default class Generate extends BaseCommand {
       }
       this.log('');
       this.log(renderPromptSizeTable(sizes));
+      // P5 (Build Spec 14, Finding G): project provisioning FIELD readiness at
+      // the checkpoint so the operator gap-fills i01–i09 blockers before the
+      // ~2h docs phase, not after it.
+      let provisioningGaps = false;
+      if (!flags.web) {
+        const projection = projectProvisioningReadiness(profile);
+        provisioningGaps = projection.some((r) => r.missingFields.length > 0 || r.unverifiedHv.length > 0);
+        this.log('');
+        this.log(renderProvisioningProjection(projection));
+      }
       // A doc over the ceiling is a hard pre-run error (F2): stop here rather than
       // let a ~2-hour run wall on it mid-flight.
       if (sizes.some((s) => s.overCeiling)) this.exit(2);
+      if (flags['strict-provisioning'] && provisioningGaps) this.exit(3);
       return;
     }
 

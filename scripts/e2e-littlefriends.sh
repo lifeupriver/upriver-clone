@@ -121,15 +121,20 @@ fi
 # ---- Phase: readiness gate (the one judgment checkpoint) -------------------
 if phase_ge readiness; then
   log "--- PHASE readiness: dry-run the full doc DAG ---"
-  # F2 (Build Spec 11): the dry-run prints a per-doc prompt-size OK/FAIL table and
-  # exits non-zero if any doc's projected prompt would overflow the model session.
-  # That is a hard pre-run error — stop here rather than burn ~2 hours hitting the
-  # wall mid-generation. A FAIL means F1 did not bring that doc under the ceiling.
-  run $UPRIVER generate $SLUG --all --dry-run || {
+  # F2 (Build Spec 11) + Finding G (Build Spec 14): one dry-run prints the
+  # prompt-size table AND the provisioning-field projection. Exit 2 = prompt
+  # overflow (F1 regression, fatal). Exit 3 = provisioning fields missing
+  # (operator gap-fill, joins the doc-field checkpoint below).
+  PROV_GAPS=0
+  DRY_RC=0
+  run $UPRIVER generate $SLUG --all --dry-run --strict-provisioning || DRY_RC=$?
+  if [ "$DRY_RC" = "3" ]; then
+    PROV_GAPS=1
+  elif [ "$DRY_RC" != "0" ]; then
     log "CHECKPOINT: F2 prompt-size FAIL — a doc's projected prompt exceeds the ceiling (see table above)."
     log "This is an F1 regression, not an operator gap-fill. Fix the digest/ceiling before generating."
     exit 4
-  }
+  fi
   BLOCKED=$(node -e '
     const fs=require("fs");
     const log=fs.readFileSync(process.argv[1],"utf8");
@@ -151,14 +156,14 @@ if phase_ge readiness; then
       console.log(`${d.id}: missingFields=[${mf.join(",")}] unverifiedHv=[${hv.join(",")}] missingDocs=[${md.join(",")}]`);
     }
   ' "$PWD/$RUN_DIR/readiness.json" 2>>"$LOG")
-  if [ -n "$NOT_READY" ]; then
-    log "CHECKPOINT: docs blocked — operator gap-fill needed before generation."
-    log "$NOT_READY"
+  if [ -n "$NOT_READY" ] || [ "$PROV_GAPS" = "1" ]; then
+    log "CHECKPOINT: gap-fill needed before generation (doc and/or provisioning fields — see tables above)."
+    [ -n "$NOT_READY" ] && log "$NOT_READY"
     log "Gap-fill with: $UPRIVER profile set $SLUG <path> <value> --evidence 'operator gap-fill, synthetic e2e'"
-    log "Then resume:   UPRIVER_GATE_AUTO=1 bash scripts/e2e-littlefriends.sh docs"
+    log "Then resume:   UPRIVER_GATE_AUTO=1 bash scripts/e2e-littlefriends.sh readiness"
     exit 3
   fi
-  log "All docs READY."
+  log "All docs READY (and provisioning fields present)."
 fi
 
 # `readiness-only` stops here: the F2 dry-run has run; do NOT enter the docs phase.

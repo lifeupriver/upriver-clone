@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createEmptyProfile, type Readiness } from '@upriver/schemas';
+import { createEmptyProfile, type Readiness, type DeliverableId } from '@upriver/schemas';
 import {
   renderReadiness,
   renderGenerationReport,
@@ -9,6 +9,7 @@ import {
   renderOperatorChecklist,
   renderPromptSizeTable,
   renderTierReport,
+  renderProvisioningProjection,
   newlyUnblocked,
   titleFor,
 } from './report.js';
@@ -183,4 +184,22 @@ test('renderTierReport appends the operator-action checklist when the aggregate 
   assert.match(out, /\[OPERATOR ACTION\] across tier \(1\), by artifact:/);
   assert.match(out, /i07 \(1\):/);
   assert.match(out, /1\. upgrade to Team plan/);
+});
+
+test('P5: the provisioning projection renders per-artifact gaps and a copy-pasteable union list', () => {
+  const rows = [
+    { id: 'i03' as DeliverableId, title: 'Client Routines / Cowork', missingFields: ['toolsAndAccess.browserDeviceLandscape'], unverifiedHv: [] },
+    { id: 'i07' as DeliverableId, title: 'Account Access & Governance', missingFields: [], unverifiedHv: ['governance.dataResidency'] },
+  ];
+  const text = renderProvisioningProjection(rows);
+  assert.match(text, /i03 .*browserDeviceLandscape/);
+  assert.match(text, /unverified HV: governance\.dataResidency/);
+  assert.match(text, /gap-fill list \(2\): /);
+});
+
+test('P5: an all-ready projection says so', () => {
+  const text = renderProvisioningProjection([
+    { id: 'i07' as DeliverableId, title: 'Account Access & Governance', missingFields: [], unverifiedHv: [] },
+  ]);
+  assert.match(text, /all provisioning fields present and verified/);
 });
