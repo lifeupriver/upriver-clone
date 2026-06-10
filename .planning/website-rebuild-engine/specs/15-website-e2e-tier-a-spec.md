@@ -125,7 +125,7 @@ Everything keyless by construction: no `FIRECRAWL_API_KEY`, no `ANTHROPIC_API_KE
 - [x] Finalize assertions prove zero fixture-domain hrefs and zero fixture-CDN URLs post-rewrite
 - [x] `scripts/cli-smoke.mjs` passes: all commands' `--help` exit 0, curated dry-run table green, zero stack-trace tripwire hits
 - [x] Deliberate-bug check: reverting the Spec 14 `bin/run.js` fix locally makes the smoke matrix FAIL (proves the matrix guards the bug class), then restore
-- [ ] `.github/workflows/test.yml` green on the PR itself (the PR is its own proof)
+- [x] `.github/workflows/test.yml` green on the PR itself (the PR is its own proof)
 - [x] Tier B record section reviewed; Spec 16 can start from it without re-deciding
 - [x] Changelog appended: findings surfaced by the harness, deviations, CI wall-clock observed
 
@@ -152,4 +152,4 @@ Everything keyless by construction: no `FIRECRAWL_API_KEY`, no `ANTHROPIC_API_KE
 - Smoke hardening from review: env-qualified reproducible failure labels, stderr excerpts, failure recap, 8MB maxBuffer.
 - CI hardening from review: concurrency group (cancel superseded PR runs), `permissions: contents: read`, dual e2e log artifact (deploy-dryrun swallows stdout into its log), template lockfile in the cache key.
 
-**Local rehearsal timing:** ~128s warm (install 1s / build 36s / unit 9s / smoke 56s / tier-a 9s / deploy-dryrun 3s). CI cold-run wall-clock: recorded after the PR run (Step 5).
+**Local rehearsal timing:** ~128s warm (install 1s / build 36s / unit 9s / smoke 56s / tier-a 9s / deploy-dryrun 3s). CI cold-run wall-clock: 3m41s (`test` workflow, PR #46, first run, green — no fix-forward commits needed).
