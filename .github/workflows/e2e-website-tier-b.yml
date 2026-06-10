@@ -16,11 +16,22 @@ on:
   workflow_dispatch:
     inputs:
       start_phase:
-        description: >-
-          Harness phase to start from (resume support). One of: preflight,
-          init, discover, scrape, audit, synthesize, scaffold, clone,
-          finalize, capture, fidelity, fixes, report.
-        type: string
+        description: Harness phase to start from (resume support).
+        type: choice
+        options:
+          - preflight
+          - init
+          - discover
+          - scrape
+          - audit
+          - synthesize
+          - scaffold
+          - clone
+          - finalize
+          - capture
+          - fidelity
+          - fixes
+          - report
         default: preflight
       fidelity_bar:
         description: >-

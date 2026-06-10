@@ -133,7 +133,7 @@ if phase_ge preflight; then
   # package always resolves — assert the chromium BINARY exists, or the run
   # would burn Firecrawl credits before failing at capture.
   ( cd packages/cli && node -e "import('playwright').then(p=>{require('node:fs').accessSync(p.chromium.executablePath());process.exit(0)}).catch(()=>process.exit(1))" ) \
-    || fail "playwright chromium browser not installed — run: pnpm --filter @upriver/cli exec playwright install chromium" 2
+    || fail "playwright chromium browser not installed — run: pnpm --filter @upriver/cli exec playwright install chromium (add --with-deps on a fresh Linux host)" 2
   command -v curl >/dev/null || fail "curl not found on PATH (preflight URL check needs it)" 2
   HEADERS=$(curl -fsSIL "$WB_LIVE_URL") \
     || fail "WB_LIVE_URL not reachable: $WB_LIVE_URL" 2

@@ -121,16 +121,33 @@ One full run ≈ one Firecrawl map + ~4-page scrape with branding + mobile shots
 
 ## Definition of Done
 
-- [ ] `fixture-site/` committed: 4 pages, noindex meta on every page, vercel.json noindex header, sitemap + robots per spec, zero real-client text (4-gram standard applies to any later edits)
-- [ ] Site deployed to Vercel at the pinned URL (or URL corrected in the one-follow-up-commit path), serving 200 + noindex — **requires `VERCEL_TOKEN`; not executable in the build container**
-- [ ] `scripts/e2e-website-tier-b.sh` committed; `bash -n` clean; preflight verified to exit 2 with a readable message when `FIRECRAWL_API_KEY` is unset (verified in the build container) and to validate phase args without truncating a prior log
-- [ ] Tier A harness + `test.yml` untouched and still green (`bash scripts/e2e-website-tier-a.sh` exit 0 on this branch)
-- [ ] `.github/workflows/e2e-website-tier-b.yml` committed, `workflow_dispatch`-only, secrets-gated, artifact upload on always()
+- [x] `fixture-site/` committed: 4 pages, noindex meta on every page, vercel.json noindex header, sitemap + robots per spec, zero real-client text (4-gram standard applies to any later edits) — *content-safety reviewed: every entity traced to the sanitization-verified wb-fixture corpus or fresh fictional copy; every page footer states "Fictional demonstration content"*
+- [ ] Site deployed to Vercel at the pinned URL (or URL corrected in the one-follow-up-commit path), serving 200 + noindex — **requires `VERCEL_TOKEN`; not executable in the build container** → `bash scripts/deploy-fixture-site.sh`
+- [x] `scripts/e2e-website-tier-b.sh` committed; `bash -n` clean; preflight verified to exit 2 with a readable message when `FIRECRAWL_API_KEY` is unset (verified in the build container) and to validate phase args without truncating a prior log; `report` start-phase verified non-vacuous (exit 32 on an empty client dir)
+- [x] Tier A harness + `test.yml` untouched and still green (`bash scripts/e2e-website-tier-a.sh` exit 0 on this branch; branch is purely additive — `git diff --diff-filter=M` vs main is empty)
+- [x] `.github/workflows/e2e-website-tier-b.yml` committed, `workflow_dispatch`-only, secrets-gated, artifact upload on always()
 - [ ] First live run executed (gated workflow or Joshua's machine), exit 0 — **requires FIRECRAWL + Anthropic keys; not executable in the build container**
 - [ ] `16-tier-b-run-report.md` filed from that run, findings numbered for Spec 17
-- [ ] Fidelity bar calibrated (or provisional bar + calibration procedure recorded and the audreys regeneration one-liner documented)
-- [ ] Changelog appended: deviations, findings, what was and was not verifiable in the build environment
+- [x] Fidelity bar calibrated (or provisional bar + calibration procedure recorded and the audreys regeneration one-liner documented) — *provisional path: bar 70 in §5, calibration procedure + `clone-fidelity audreys` one-liner recorded; replace with calibrated number after the first scored run*
+- [x] Changelog appended: deviations, findings, what was and was not verifiable in the build environment
 
 ## Changelog
 
-*(appended at build time)*
+### 2026-06-10 — implemented (build container: no FIRECRAWL/VERCEL/ANTHROPIC keys)
+
+**Findings:**
+
+- The two scoping findings (audreys `summary.json` never existed; `clone-fidelity` needs the harness-inserted `capture` phase because nothing in `run all` produces clone screenshots) are recorded up top in *Findings at scoping* — both feed the run report and Spec 17.
+- Playwright chromium was genuinely absent in the build container, which proved the hardened preflight end-to-end: with a dummy key the harness exits 2 naming the missing **browser binary** (not just the importable package — the package always resolves since playwright is a CLI dependency). Without this check a run would burn Firecrawl credits before failing at `capture`.
+- Tier A initially failed exit 12 in this container — cause was the unbuilt monorepo (fresh clone, no `node_modules`), not a regression; green (exit 0) after `pnpm install && pnpm build`. Worth remembering for anyone running harnesses in a fresh container.
+
+**Deviations:**
+
+- `scripts/checks/fixture-site-check.sh` and `fixture-site/.vercelignore` added beyond the File-ownership table (the plan's verification-first step, and review hardening: the README must not deploy with the site).
+- Deploy script uses `vercel link --yes --project upriver-wb-fixture` then `vercel deploy --prod --yes` instead of the spec's bare `npx vercel deploy fixture-site` — a bare directory deploy would auto-create a project named "fixture-site" rather than the pinned name (rationale in the script header).
+- Workflow uploads a 5th artifact, `clients/wb-live/token-and-credit-usage.log` (spec §3 listed four) — needed for §4's cost line in the run report.
+- Workflow `start_phase` input is a `choice` (13 phases) rather than free text — a typo'd phase otherwise costs ~3–5 min of CI setup before the harness rejects it.
+- Harness: node/pnpm checks run un-gated at top (Tier A idiom); key/claude/playwright/URL checks live in the gated `preflight` phase with `FIRECRAWL_API_KEY` checked first; `run.log` is stashed/restored across init's `rm -rf` of the client dir; scaffold install/build failures share exit 26 (spec assigns scaffold one code, unlike Tier A's 12/13).
+- Review fixes applied: fixture check's self-link assertion now requires an actual `<a href>` (head canonical alone satisfied the old grep) and encodes the robots.txt no-Disallow + og:url contract; harness score printers use optional chaining.
+
+**Verified in-container:** fixture-site check exit 0 (incl. server-cleanup check); harness acceptance (a)–(d) — `bash -n` clean / keyless exit 2 / bad-phase exit 2 without log truncation / `report` exit 32; chromium-preflight exit 2 with dummy key; Tier A exit 0; workflow YAML parsed, `workflow_dispatch`-only confirmed; pinned URL byte-identical across all 10 touchpoints; branch purely additive vs main. **Not verifiable here (keys):** Vercel deploy, the live spine run, the run report, bar calibration — these are the three unticked DoD items, in dependency order.
