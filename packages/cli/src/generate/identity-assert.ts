@@ -19,7 +19,7 @@ const MIN_NAME_LENGTH = 4;
 
 /** Case-fold and normalize typographic quotes so model output (curly) matches profile values (straight). */
 function fold(s: string): string {
-  return s.toLowerCase().normalize('NFKC').replace(/[‘’ʼ]/g, "'").replace(/[“”]/g, '"');
+  return s.normalize('NFKC').toLowerCase().replace(/[‘’ʼ]/g, "'").replace(/[“”]/g, '"');
 }
 
 export function assertIdentity(input: IdentityAssertInput): void {

@@ -217,9 +217,9 @@ export async function runGenerate(
   deps: GenerateDeps,
 ): Promise<GenerateOutcome> {
   const { ds, log } = deps;
-  const fail = (msg: string): GenerateOutcome => {
+  const fail = (msg: string, claudeCalls = 0): GenerateOutcome => {
     log(msg);
-    return { status: 'error', exitCode: 2, approved: false, markers: [], claudeCalls: 0 };
+    return { status: 'error', exitCode: 2, approved: false, markers: [], claudeCalls };
   };
 
   if (!GENERATABLE.includes(opts.id)) {
@@ -313,7 +313,7 @@ export async function runGenerate(
       try {
         assertIdentity({ content, publicName: nameEnv.value, foreignNames: deps.foreignNames ?? [] });
       } catch (err) {
-        return fail(`${opts.id}: ${(err as Error).message}`);
+        return fail(`${opts.id}: ${(err as Error).message}`, claudeCalls);
       }
     }
 
