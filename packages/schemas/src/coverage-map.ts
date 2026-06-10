@@ -42,7 +42,7 @@ export const COVERAGE_MAP: readonly DeliverableCoverage[] = [
   },
   {
     id: 'doc-02', title: 'Business Facts Reference',
-    requiresFields: ['identity.publicName', 'identity.legalName', 'people.owners', 'offerings.core', 'offerings.core.*.priceRange', 'offerings.dontDo', 'pricing.shareable', 'pricing.deposit', 'capacity.metrics', 'positioning.keyDifferentiator', 'governance.dataRetention', 'modules.preschool.ocfs.licenseStatus', 'modules.preschool.immunizationPolicy', 'modules.preschool.enrollmentCapacity', 'modules.preschool.trainingMatrix'],
+    requiresFields: ['identity.publicName', 'identity.legalName', 'identity.category', 'identity.primaryAddress', 'identity.hours', 'identity.socialHandles', 'people.owners', 'offerings.core', 'offerings.core.*.priceRange', 'offerings.dontDo', 'pricing.shareable', 'pricing.deposit', 'capacity.metrics', 'positioning.keyDifferentiator', 'governance.dataRetention', 'modules.preschool.ocfs.licenseStatus', 'modules.preschool.immunizationPolicy', 'modules.preschool.enrollmentCapacity', 'modules.preschool.trainingMatrix', 'content.reviewPlatforms'],
     requiresHvVerified: ['offerings.core.*.priceRange', 'offerings.dontDo', 'pricing.shareable', 'pricing.deposit', 'capacity.metrics', 'governance.dataRetention', 'modules.preschool.ocfs.licenseStatus', 'modules.preschool.immunizationPolicy', 'modules.preschool.enrollmentCapacity', 'modules.preschool.trainingMatrix'],
     requiresDocs: [],
     specPath: `${AOS}/02-business-facts-reference-spec.md`,
@@ -56,7 +56,7 @@ export const COVERAGE_MAP: readonly DeliverableCoverage[] = [
   },
   {
     id: 'doc-04', title: 'Content Library',
-    requiresFields: ['identity.publicName', 'content.photos.storage', 'content.photos.rights', 'content.videos.rights', 'toolsAndAccess.assetStorage', 'positioning.awards'],
+    requiresFields: ['identity.publicName', 'content.photos.storage', 'content.photos.rights', 'content.videos.rights', 'toolsAndAccess.assetStorage', 'positioning.awards', 'content.testimonials', 'content.reviewPlatforms'],
     requiresHvVerified: ['content.photos.rights', 'content.videos.rights', 'toolsAndAccess.assetStorage'],
     requiresDocs: ['doc-01', 'doc-02'],
     specPath: `${AOS}/04-content-library-spec.md`,
@@ -112,7 +112,7 @@ export const COVERAGE_MAP: readonly DeliverableCoverage[] = [
   },
   {
     id: 'doc-12', title: 'Measurement & KPI Framework',
-    requiresFields: ['identity.publicName', 'seo.measurementTargets', 'salesProcess.funnel.revenuePerCustomer', 'toolsAndAccess.analytics', 'goals.budgetConstraints', 'operationsAutomation.spendCap', 'operationsAutomation.monitoring'],
+    requiresFields: ['identity.publicName', 'seo.measurementTargets', 'salesProcess.funnel.revenuePerCustomer', 'toolsAndAccess.analytics', 'goals.budgetConstraints', 'operationsAutomation.spendCap', 'operationsAutomation.monitoring', 'content.reviewPlatforms'],
     requiresHvVerified: ['salesProcess.funnel.revenuePerCustomer', 'toolsAndAccess.analytics', 'goals.budgetConstraints', 'operationsAutomation.spendCap'],
     requiresDocs: ['doc-03', 'doc-06', 'doc-09', 'doc-11'],
     specPath: `${AOS}/12-measurement-kpi-framework-spec.md`,

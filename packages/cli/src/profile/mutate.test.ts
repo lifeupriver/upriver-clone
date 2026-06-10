@@ -44,10 +44,14 @@ const envAt = (p: ClientProfile, path: string): ProfileField<unknown> | undefine
   nearestEnvelope(p as unknown as Record<string, unknown>, path);
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-/** doc-02's 15 required fields, all filled (offerings.core covers the .*.priceRange gate). */
+/** doc-02's required fields, all filled (offerings.core covers the .*.priceRange gate). */
 const DOC02_FILLED: Record<string, unknown> = {
   'identity.publicName': env('LF'),
   'identity.legalName': env('LF LLC'),
+  'identity.category': env('Preschool & child care'),
+  'identity.primaryAddress': env({ line1: '123 Loft Lane', city: 'Albany', state: 'NY' }),
+  'identity.hours': env('Mon–Fri 7:30am–5:30pm'),
+  'identity.socialHandles': env([{ platform: 'Facebook', url: 'https://facebook.com/lf' }]),
   'people.owners': env([{ name: 'Owner' }]),
   'offerings.core': env([{ name: 'Full-day program' }]),
   'offerings.dontDo': env(['Drop-in care']),
@@ -60,6 +64,7 @@ const DOC02_FILLED: Record<string, unknown> = {
   'modules.preschool.immunizationPolicy': env('Follows NYS requirements'),
   'modules.preschool.enrollmentCapacity': env([{ ageGroup: '2s', licensedCapacity: 6 }]),
   'modules.preschool.trainingMatrix': env([{ staffName: 'Lead', role: 'Teacher' }]),
+  'content.reviewPlatforms': env([{ platform: 'Google', count: 14, rating: 4.9 }]),
 };
 const DOC02_HV = [
   'offerings.core.*.priceRange',
