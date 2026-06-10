@@ -90,6 +90,36 @@ test('F4: runDoc fails precisely naming an absolute path the session claims but 
   await assert.rejects(() => runDoc(base, call), /\/nonexistent\/abs\/doc-01-brand-voice-guide\.md/);
 });
 
+test('F4 safety: reply mentioning an unrelated absolute .md path must not delete that file or return its content', async () => {
+  // Create an unrelated file whose basename does NOT match base.outputFileName.
+  const unrelatedDir = mkdtempSync(join(tmpdir(), 'upriver-unrelated-'));
+  const unrelatedFile = join(unrelatedDir, 'strategy.md');
+  writeFileSync(unrelatedFile, '# Secret Strategy\ndo not delete or read this');
+
+  // Both calls (initial + P6 retry) return a reply that only mentions the
+  // unrelated file — no file matching outputFileName is ever written.
+  const claimingText = `I consulted ${unrelatedFile} but could not complete the task.`;
+  let calls = 0;
+  const call: ClaudeCall = async () => {
+    calls++;
+    return ok({ text: claimingText });
+  };
+
+  await assert.rejects(
+    () => runDoc(base, call),
+    /outside the staging dir|did not write/,
+    'should reject because no file matching outputFileName was produced',
+  );
+
+  // The unrelated file must survive — relocation must not have touched it.
+  assert.ok(existsSync(unrelatedFile), 'unrelated file must not be deleted');
+  const surviving = (await import('node:fs')).readFileSync(unrelatedFile, 'utf8');
+  assert.match(surviving, /Secret Strategy/, 'unrelated file content must be intact');
+
+  // Both calls are expected: initial + P6 retry.
+  assert.equal(calls, 2, 'P6 retry fires once before the final error');
+});
+
 test('runDoc passes acceptEdits, write tools, a cwd, and the spec/slice cache key', async () => {
   let captured: Parameters<ClaudeCall>[0] | undefined;
   const call: ClaudeCall = async (opts) => {
