@@ -80,4 +80,5 @@ test('P3 (Build Spec 14): the extraction prompt demands ★ recall and a closing
   const sys = extractionSystemPrompt('  - identity.category [string] ★');
   assert.match(sys, /you MUST emit a candidate/);
   assert.match(sys, /re-scan the chunk/);
+  assert.doesNotMatch(sys, /Prefer the/);
 });
