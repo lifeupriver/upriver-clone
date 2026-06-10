@@ -1,0 +1,64 @@
+name: test
+
+# Build Spec 15: the repo's first test CI. Keyless by construction — no
+# FIRECRAWL/ANTHROPIC/Supabase secrets may ever be added to this workflow;
+# a step that needs a key belongs in a different (gated) workflow.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22        # node --test globs need >=21
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            packages/scaffold-template/pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Unit suites (schemas, cli, core)
+        run: pnpm test
+
+      - name: CLI smoke matrix
+        run: node scripts/cli-smoke.mjs
+
+      - name: Website Tier A e2e
+        run: bash scripts/e2e-website-tier-a.sh
+
+      - name: Deploy dry-run e2e
+        run: bash scripts/e2e-deploy-dryrun.sh wb-fixture
+
+      - name: Upload e2e logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-logs
+          path: |
+            clients/wb-fixture/e2e/run.log
+            clients/e2e-deploy/run.log
+          if-no-files-found: ignore

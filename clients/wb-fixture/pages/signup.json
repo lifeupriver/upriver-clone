@@ -1,0 +1,61 @@
+{
+  "url": "https://app.wildflour.example/signup",
+  "slug": "signup",
+  "scraped_at": "2026-04-24T17:06:56.435Z",
+  "metadata": {
+    "title": "WildflourBakery-App",
+    "description": "",
+    "statusCode": 200
+  },
+  "content": {
+    "markdown": "![logo](https://app.wildflour.example/assets/Logo-Qx7RbN2k.svg)\n\n# Get started\n\nSet up your Wildflour account\n\n[![google_icon](data:image/svg+xml,%3csvg%20width='44'%20height='44'%20viewBox='0%200%2044%2044'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20filter='url(%23filter0_b_356_6329)'%3e%3ccircle%20cx='22'%20cy='22'%20r='22'%20fill='%23D9D9D9'%20fill-opacity='0.24'/%3e%3c/g%3e%3cg%20clip-path='url(%23clip0_356_6329)'%3e%3cpath%20d='M33.9878%2022.7151C33.9878%2021.7728%2033.9095%2021.0852%2033.7402%2020.3721H22.729V24.6251H29.1923C29.0621%2025.6821%2028.3584%2027.2738%2026.7946%2028.3434L26.7727%2028.4858L30.2543%2031.1214L30.4955%2031.1449C32.7107%2029.1457%2033.9878%2026.2042%2033.9878%2022.7151Z'%20fill='white'/%3e%3cpath%20d='M22.7289%2033.9214C25.8954%2033.9214%2028.5537%2032.9026%2030.4954%2031.1454L26.7945%2028.3439C25.8042%2029.0188%2024.475%2029.4899%2022.7289%2029.4899C19.6275%2029.4899%2016.9953%2027.4908%2016.057%2024.7275L15.9194%2024.739L12.2993%2027.4767L12.252%2027.6053C14.1805%2031.3491%2018.142%2033.9214%2022.7289%2033.9214Z'%20fill='white'/%3e%3cpath%20d='M16.057%2024.7267C15.8094%2024.0136%2015.6661%2023.2495%2015.6661%2022.46C15.6661%2021.6705%2015.8094%2020.9065%2016.0439%2020.1934L16.0374%2020.0415L12.3719%2017.2598L12.2519%2017.3155C11.4571%2018.8691%2011.001%2020.6136%2011.001%2022.46C11.001%2024.3065%2011.4571%2026.0509%2012.2519%2027.6045L16.057%2024.7267Z'%20fill='white'/%3e%3cpath%20d='M22.7289%2015.4314C24.9311%2015.4314%2026.4166%2016.3609%2027.2637%2017.1378L30.5735%2013.9797C28.5407%2012.1333%2025.8954%2011%2022.7289%2011C18.142%2011%2014.1805%2013.5722%2012.252%2017.316L16.044%2020.1939C16.9953%2017.4306%2019.6275%2015.4314%2022.7289%2015.4314Z'%20fill='white'/%3e%3c/g%3e%3cdefs%3e%3cfilter%20id='filter0_b_356_6329'%20x='-28.3'%20y='-28.3'%20width='100.6'%20height='100.6'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeGaussianBlur%20in='BackgroundImageFix'%20stdDeviation='14.15'/%3e%3cfeComposite%20in2='SourceAlpha'%20operator='in'%20result='effect1_backgroundBlur_356_6329'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='effect1_backgroundBlur_356_6329'%20result='shape'/%3e%3c/filter%3e%3cclipPath%20id='clip0_356_6329'%3e%3crect%20width='23'%20height='23'%20fill='white'%20transform='translate(11%2011)'/%3e%3c/clipPath%3e%3c/defs%3e%3c/svg%3e)](https://app.wildflour.example/api/auth/google)\n\n![facebook_icon](data:image/svg+xml,%3csvg%20width='44'%20height='44'%20viewBox='0%200%2044%2044'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20filter='url(%23filter0_b_356_6330)'%3e%3ccircle%20cx='22'%20cy='22'%20r='22'%20fill='%23D9D9D9'%20fill-opacity='0.24'/%3e%3c/g%3e%3cpath%20d='M26.755%2023.4023L27.3535%2019.5H23.6094V16.9676C23.6094%2015.9%2024.1324%2014.8594%2025.8094%2014.8594H27.5117V11.5371C27.5117%2011.5371%2025.9668%2011.2734%2024.4898%2011.2734C21.4061%2011.2734%2019.3906%2013.1423%2019.3906%2016.5258V19.5H15.9629V23.4023H19.3906V32.8359C20.7884%2033.0547%2022.2116%2033.0547%2023.6094%2032.8359V23.4023H26.755Z'%20fill='white'/%3e%3cdefs%3e%3cfilter%20id='filter0_b_356_6330'%20x='-28.3'%20y='-28.3'%20width='100.6'%20height='100.6'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeGaussianBlur%20in='BackgroundImageFix'%20stdDeviation='14.15'/%3e%3cfeComposite%20in2='SourceAlpha'%20operator='in'%20result='effect1_backgroundBlur_356_6330'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='effect1_backgroundBlur_356_6330'%20result='shape'/%3e%3c/filter%3e%3c/defs%3e%3c/svg%3e)\n\nor continue with email\n\nSign Up\n\nAlready have an account? [**Sign In Now**](https://app.wildflour.example/login)",
+    "wordCount": 22,
+    "headings": [
+      {
+        "level": 1,
+        "text": "Get started"
+      }
+    ]
+  },
+  "links": {
+    "internal": [],
+    "external": []
+  },
+  "images": [
+    "https://app.wildflour.example/assets/Logo-Qx7RbN2k.svg"
+  ],
+  "screenshots": {
+    "desktop": "clients/wb-fixture/screenshots/desktop/signup.png",
+    "mobile": "clients/wb-fixture/screenshots/mobile/signup.png"
+  },
+  "extracted": {
+    "ctaButtons": [
+      {
+        "href": "https://app.wildflour.example/api/auth/google",
+        "text": "Continue with Google",
+        "type": "primary",
+        "location": "hero"
+      },
+      {
+        "href": "https://app.wildflour.example/login",
+        "text": "Sign In Now",
+        "type": "link",
+        "location": "hero"
+      }
+    ],
+    "contact": {
+      "email": "",
+      "hours": "",
+      "phone": "",
+      "address": ""
+    },
+    "teamMembers": [],
+    "testimonials": [],
+    "faqs": [],
+    "pricing": [],
+    "socialLinks": [],
+    "eventSpaces": []
+  },
+  "rawHtmlPath": "clients/wb-fixture/rawhtml/signup.html",
+  "hasBranding": false
+}

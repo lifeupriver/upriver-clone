@@ -1,0 +1,156 @@
+{
+  "extracted_at": "2026-04-24T17:09:10.848Z",
+  "source_url": "https://wildflour.example",
+  "colorScheme": "light",
+  "fonts": [
+    {
+      "family": "Brandon Grotesque",
+      "role": "heading"
+    },
+    {
+      "family": "Halis Rounded Medium",
+      "role": "body"
+    },
+    {
+      "family": "Bebas Neue",
+      "role": "decorative"
+    },
+    {
+      "family": "Gastromond",
+      "role": "accent-italic"
+    },
+    {
+      "family": "Futura PT",
+      "role": "accent"
+    }
+  ],
+  "colors": {
+    "primary": "#2F3A55",
+    "secondary": "#B68534",
+    "accent": "#B68534",
+    "background": "#FCFAF7",
+    "textPrimary": "#1B1B1B",
+    "link": "#424922"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Halis Rounded Medium",
+      "heading": "Brandon Grotesque"
+    },
+    "fontStacks": {
+      "heading": [
+        "brandon-grotesque"
+      ],
+      "body": [
+        "freight-sans-pro"
+      ],
+      "paragraph": [
+        "freight-sans-pro"
+      ]
+    },
+    "fontSizes": {
+      "h1": "40px",
+      "h2": "16px",
+      "body": "13.6px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "borderRadius": "0px"
+  },
+  "components": {
+    "input": {
+      "background": "transparent",
+      "textColor": "#000000",
+      "borderColor": null,
+      "borderRadius": "0px",
+      "borderRadiusCorners": {
+        "topLeft": "0px",
+        "topRight": "0px",
+        "bottomRight": "0px",
+        "bottomLeft": "0px"
+      },
+      "shadow": "none"
+    },
+    "buttonPrimary": {
+      "background": "#B68534",
+      "textColor": "#FCFAF7",
+      "borderRadius": "0px",
+      "borderRadiusCorners": {
+        "topLeft": "0px",
+        "topRight": "0px",
+        "bottomRight": "0px",
+        "bottomLeft": "0px"
+      },
+      "shadow": "none"
+    },
+    "buttonSecondary": {
+      "background": "#2F3A55",
+      "textColor": "#EDE8CE",
+      "borderRadius": "0px",
+      "borderRadiusCorners": {
+        "topLeft": "0px",
+        "topRight": "0px",
+        "bottomRight": "0px",
+        "bottomLeft": "0px"
+      },
+      "shadow": "none"
+    }
+  },
+  "images": {
+    "logo": "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/b582e808-3e4f-0e75-28fd-88cd28154d1c/Wildflour-Bakery-Logo-Black.png?format=1500w",
+    "favicon": "https://cdn.wildflour.example/content/v1/489fd4de67c0dc0d7fd83e34/a9559579-d59f-83b5-c17c-ccdd99b93c87/favicon.ico?format=100w",
+    "ogImage": "http://cdn.wildflour.example/static/489fd4de67c0dc0d7fd83e34/t/b87bf0fe924c664f95a6e6ad/1633442187650/IMG_4502.jpg?format=1500w",
+    "logoHref": "/",
+    "logoAlt": "Wildflour&#39;s Bakehouse"
+  },
+  "__llm_logo_reasoning": {
+    "selectedIndex": 1,
+    "reasoning": "Picked the masthead image: it sits in the site header, links back to the homepage, and its alt text names the Wildflour Bakery brand outright.",
+    "confidence": 0.95,
+    "source": "llm"
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": 2,
+      "text": "Book",
+      "reasoning": "The gold #B68534 'Book' button carries the most visual weight on the page and pairs an imperative verb with high contrast, so it reads as the main conversion path."
+    },
+    "secondary": {
+      "index": 0,
+      "text": "Book",
+      "reasoning": "The navy #2F3A55 'Book' button repeats the booking action at lower contrast, the usual pattern for a supporting CTA."
+    },
+    "confidence": 0.95
+  },
+  "personality": {
+    "tone": "traditional",
+    "energy": "medium",
+    "targetAudience": "weekend guests and small-event hosts who want a working bakery with rooms upstairs"
+  },
+  "designSystem": {
+    "framework": "custom",
+    "componentLibrary": ""
+  },
+  "confidence": {
+    "buttons": 0.95,
+    "colors": 0.9,
+    "overall": 0.925
+  },
+  "__llm_metadata": {
+    "logoSelection": {
+      "llmCalled": true,
+      "llmSucceeded": true,
+      "finalSource": "llm",
+      "rawLogoSelection": {
+        "selectedLogoIndex": 0,
+        "selectedLogoReasoning": "Picked the masthead image: it sits in the site header, links back to the homepage, and its alt text names the Wildflour Bakery brand outright.",
+        "confidence": 0.95
+      }
+    },
+    "buttonClassification": {
+      "llmCalled": true,
+      "llmSucceeded": true
+    }
+  }
+}
