@@ -85,15 +85,39 @@ Implementation locus: `batch.ts` (a pure `projectProvisioningReadiness(profile):
 
 ## Definition of Done
 
-- [ ] Root `pnpm build` clean; all suites green
-- [ ] P1: slice tests prove `[UNCONFIRMED]` renders exactly for recon+unverified+non-high envelopes (and not for transcript/operator/verified/high); prompt-builder test pins the hedge rule in every deliverable's system prompt
-- [ ] P2: all 27 COVERAGE_MAP entries carry `identity.publicName`; `identity-assert` tests cover present-name pass, missing-name throw, foreign-name throw, short-name skip, empty denylist; engine wires the assert between content and persist (tested with injected call)
-- [ ] P3: catalog test pins ★ on the three added paths; extract prompt carries the recall push + self-check; live extraction re-run on the littlefriends corpus yields candidates for `identity.category`, `identity.socialHandles`, `voice.bannedVocabulary` (recorded in changelog with counts)
-- [ ] P4: each requiresFields addition traces to a named eval false positive; post-addition `--all --dry-run` F2 table all-OK (no prompt re-overflow)
-- [ ] P5: dry-run renders the provisioning projection (missingFields + unverifiedHv, no missingDocs); `--strict-provisioning` exits non-zero on a non-empty projection; e2e script readiness phase passes the flag; a profile fixture reproducing Finding G's six fields shows them all
-- [ ] P6: runner test proves a no-file first attempt triggers exactly one fresh `noCache` retry then succeeds/fails precisely; cache-replay-then-no-file does not double-retry
-- [ ] Changelog: fix→finding map (P1→Montessori metastasis, P2→D3+placeholders, P3→Disclosure E, P4→marker false positives, P5→Finding G, P6→D1), with any deviations called out
+- [x] Root `pnpm build` clean; all suites green
+- [x] P1: slice tests prove `[UNCONFIRMED]` renders exactly for recon+unverified+non-high envelopes (and not for transcript/operator/verified/high); prompt-builder test pins the hedge rule in every deliverable's system prompt
+- [x] P2: all 27 COVERAGE_MAP entries carry `identity.publicName`; `identity-assert` tests cover present-name pass, missing-name throw, foreign-name throw, short-name skip, empty denylist; engine wires the assert between content and persist (tested with injected call)
+- [x] P3: catalog test pins ★ on the three added paths; extract prompt carries the recall push + self-check; live extraction re-run on the littlefriends corpus yields candidates for `identity.category`, `identity.socialHandles`, `voice.bannedVocabulary` (recorded in changelog with counts)
+- [x] P4: each requiresFields addition traces to a named eval false positive; post-addition `--all --dry-run` F2 table all-OK (no prompt re-overflow)
+- [x] P5: dry-run renders the provisioning projection (missingFields + unverifiedHv, no missingDocs); `--strict-provisioning` exits non-zero on a non-empty projection; e2e script readiness phase passes the flag; a profile fixture reproducing Finding G's six fields shows them all
+- [x] P6: runner test proves a no-file first attempt triggers exactly one fresh `noCache` retry then succeeds/fails precisely; cache-replay-then-no-file does not double-retry
+- [x] Changelog: fix→finding map (P1→Montessori metastasis, P2→D3+placeholders, P3→Disclosure E, P4→marker false positives, P5→Finding G, P6→D1), with any deviations called out
 
 ## Changelog
 
 - 2026-06-10: spec written from `13-e2e-live-evaluation.md` (P1–P6). Operator-decided scope: pipeline fixes only; the 27 eval-branch artifacts stay untouched as the run record; content gets regenerated through the fixed pipeline on the next run. P1 approach decided: provenance tags in the slice + universal hedge instruction (not field-blocking, not an operator reconciliation gate).
+- 2026-06-10: implementation complete (Tasks 1–12); DoD verified end-to-end. All suites green (schemas 46, cli 421, core 21; node ≥21 required for the package test globs — verified with node 23).
+
+  **Fix → finding map:**
+  - P1 → the Montessori metastasis: recon-sourced unverified non-high fields render `[UNCONFIRMED — found by automated recon, not confirmed by the client]` in every profile slice; every deliverable system prompt carries the universal hedge rule.
+  - P2 → D3 + the placeholder class (i06 "JCC", i03/i08 placeholders, Camera City contamination): `identity.publicName` required by all 27 COVERAGE_MAP entries; post-generation identity assert (presence + foreign-client denylist) wired between content and persist.
+  - P3 → Disclosure E: dual-source leak fields are transcript-expected, ★-flagged mandatory candidates in the extraction catalog; recall push + self-check in the extract prompt.
+  - P4 → marker false positives: doc-02/04/12/16 slices now consume the recon-filled fields their templates emit markers for.
+  - P5 → Finding G: `--all --dry-run` projects i01–i09 field/HV readiness before the docs phase; `--strict-provisioning` exits 3 on a non-empty projection; e2e readiness phase passes the flag.
+  - P6 → D1 (+D3 no-file class): runner self-heals a no-file attempt with exactly one fresh no-cache retry; cache-replay-then-no-file does not double-retry.
+
+  **Live verification (this date, local data source):**
+  - F2 regression: `generate littlefriends --all --dry-run` → all 18 docs OK, exit 0; worst case doc-10 at 38671/50000 est-tok — P4's slice additions did not push any doc near the ceiling.
+  - `--strict-provisioning` dry-run → exit 3 with a 5-path gap-fill list (toolsAndAccess.browserDeviceLandscape, governance.dataResidency, people.technicalCollaborator, governance.memoryIncognitoPosture, governance.reviewResponsePolicy).
+  - P3 live extraction on the synthetic corpus: applied 47 / conflicted 22 / dropped 41 / discarded 30 / unmapped 14; filled fields 100 → 110. All three target fields produced candidates: `identity.category` APPLIED ("Preschool / early learning center"), `identity.socialHandles` APPLIED (Instagram, previously empty), `voice.bannedVocabulary` produced 2 candidates but both were dropped in validation (one non-verbatim quote, one shape mismatch: model emitted strings where the schema expects objects) — recall fix works (Disclosure E was zero candidates); the value-shape drop is a candidate for prompt-side schema hinting in a follow-up. Profile restored to the committed state after the run.
+
+  **Deviations / hardening beyond the spec text (review-driven):**
+  - `packages/cli/bin/run.js` (outside spec ownership): oclif's ExitError escaped unhandled — `this.exit(n)` produced exit 1 + a stack trace, so the P5 exit-code contract (2/3) never reached the shell. One-line `.catch(handle)` fix; exit 3 empirically verified end-to-end. The e2e dispatch was tightened to exact codes (2 → F2 fatal, 3 → gap-fill, other → generic fatal).
+  - identity-assert hardening: (a) `fold()` normalizes curly→straight quotes + NFKC before comparison — LLM output uses U+2019, so a client named "Audrey's Bakery" would have deterministically failed the presence check; (b) artifact relocation in runner.ts restricted to exact basename match — the old first-`.md`-path fallback combined with `rmSync` could delete an unrelated operator file; (c) assert-failure outcomes report `claudeCalls: 1` (the call was made).
+  - `--strict-provisioning` runtime guard: oclif `dependsOn` is a no-op for defaulted booleans, so a runtime error now fires when the flag is used without `--dry-run`.
+  - Renderer detail: per-row HV display dedupes fields already shown as missing; the union gap-fill list was already deduped.
+
+  **Known limitations (follow-up candidates):**
+  - P4: the new requiresFields hard-block generation if recon misses them and none is in MUST_ASK — recovery is manual `profile set`.
+  - P6: the engine hardcodes claudeCalls=1 per runDoc, so internal P6/F3 retries undercount in tier reports (spend telemetry itself is accurate).
