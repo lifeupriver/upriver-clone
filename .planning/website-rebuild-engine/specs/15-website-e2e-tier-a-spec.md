@@ -119,16 +119,37 @@ Everything keyless by construction: no `FIRECRAWL_API_KEY`, no `ANTHROPIC_API_KE
 
 ## Definition of Done
 
-- [ ] `clients/wb-fixture/` committed (force-added), passes the sanitization checklist (grep-verified: no real business name/phone/email/domain anywhere in the tree)
-- [ ] `scripts/e2e-website-tier-a.sh` passes locally end-to-end (exit 0) and each phase resumes via `phase_ge`
-- [ ] The scaffolded `repo/` genuinely builds (`pnpm build` exit 0) as part of the harness
-- [ ] Finalize assertions prove zero fixture-domain hrefs and zero fixture-CDN URLs post-rewrite
-- [ ] `scripts/cli-smoke.mjs` passes: all commands' `--help` exit 0, curated dry-run table green, zero stack-trace tripwire hits
-- [ ] Deliberate-bug check: reverting the Spec 14 `bin/run.js` fix locally makes the smoke matrix FAIL (proves the matrix guards the bug class), then restore
+- [x] `clients/wb-fixture/` committed (force-added), passes the sanitization checklist (grep-verified: no real business name/phone/email/domain anywhere in the tree)
+- [x] `scripts/e2e-website-tier-a.sh` passes locally end-to-end (exit 0) and each phase resumes via `phase_ge`
+- [x] The scaffolded `repo/` genuinely builds (`pnpm build` exit 0) as part of the harness
+- [x] Finalize assertions prove zero fixture-domain hrefs and zero fixture-CDN URLs post-rewrite
+- [x] `scripts/cli-smoke.mjs` passes: all commands' `--help` exit 0, curated dry-run table green, zero stack-trace tripwire hits
+- [x] Deliberate-bug check: reverting the Spec 14 `bin/run.js` fix locally makes the smoke matrix FAIL (proves the matrix guards the bug class), then restore
 - [ ] `.github/workflows/test.yml` green on the PR itself (the PR is its own proof)
-- [ ] Tier B record section reviewed; Spec 16 can start from it without re-deciding
-- [ ] Changelog appended: findings surfaced by the harness, deviations, CI wall-clock observed
+- [x] Tier B record section reviewed; Spec 16 can start from it without re-deciding
+- [x] Changelog appended: findings surfaced by the harness, deviations, CI wall-clock observed
 
 ## Changelog
 
-(appended at implementation time)
+### 2026-06-10 — implemented
+
+**Findings:**
+
+- finalize's pass-1 rewrites the client domain INCLUDING subdomains, so a CDN host under the fixture domain never reaches the manifest-keyed CDN pass — the fixture's CDN moved to `cdn.wildflour-assets.example` (deviation from the spec's `cdn.wildflour.example`) to exercise both passes (now Internal=102 / CDN=40 / Unmatched=0).
+- The scaffolded repo's build requires Node ≥22 (supabase realtime needs native WebSocket at prerender) — harness preflights this (exit 2).
+- `packages/scaffold-template` had no lockfile, so every CI run would have resolved the latest Astro 5.x — a lockfile is now committed (pins astro@5.18.2) and the harness installs `--frozen-lockfile`. NOTE: this is the one production-package change (data-only, surgical); the lockfile is also copied into every scaffolded client repo by design (deterministic client builds).
+- `e2e-deploy-dryrun.sh wb-fixture` worked unchanged (no input-contract mismatch).
+- Smoke Pass 1: all 73 commands green; no KNOWN_BROKEN list needed.
+
+**Deliberate-bug check (DoD evidence):** removing `.catch(handle)` from bin/run.js makes exactly the two `--strict-provisioning` smoke rows fail (`exit=1` + stack-trace tripwire; expected {0,3} and {2}); restored byte-identical; matrix green again.
+
+**Deviations:**
+
+- PR #45 (Spec 14) unmerged at build time → `build/14-fidelity-hardening` merged into this branch as the prerequisite; the PR is stacked on it.
+- Fixture emails use `hello@wildflourbakery.example` (finalize doesn't rewrite mailto:, so a fixture-domain mailbox would have left false residue).
+- Sanitization required FOUR escalating rounds (token-swap → full prose rewrite): final state verified by an exhaustive 4-gram sweep vs the real client corpus (1,741 verbatim 4-gram overlaps → 0 non-boilerplate) plus independent re-audit; fixture history squashed to a single clean commit before any push (leaky intermediate commits never left the machine).
+- Harness hardening from review: repo-root anchor, node/pnpm preflights, split+retried inner install, non-vacuous verify (exit 16), domain literals hoisted.
+- Smoke hardening from review: env-qualified reproducible failure labels, stderr excerpts, failure recap, 8MB maxBuffer.
+- CI hardening from review: concurrency group (cancel superseded PR runs), `permissions: contents: read`, dual e2e log artifact (deploy-dryrun swallows stdout into its log), template lockfile in the cache key.
+
+**Local rehearsal timing:** ~128s warm (install 1s / build 36s / unit 9s / smoke 56s / tier-a 9s / deploy-dryrun 3s). CI cold-run wall-clock: recorded after the PR run (Step 5).
