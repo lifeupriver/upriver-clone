@@ -9,6 +9,13 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -24,6 +31,9 @@ jobs:
         with:
           node-version: 22        # node --test globs need >=21
           cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            packages/scaffold-template/pnpm-lock.yaml
 
       - name: Install
         run: pnpm install --frozen-lockfile
@@ -43,10 +53,12 @@ jobs:
       - name: Deploy dry-run e2e
         run: bash scripts/e2e-deploy-dryrun.sh wb-fixture
 
-      - name: Upload Tier A log on failure
+      - name: Upload e2e logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: tier-a-run-log
-          path: clients/wb-fixture/e2e/run.log
+          name: e2e-logs
+          path: |
+            clients/wb-fixture/e2e/run.log
+            clients/e2e-deploy/run.log
           if-no-files-found: ignore
