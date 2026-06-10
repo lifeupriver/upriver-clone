@@ -67,9 +67,20 @@ for page in "${PAGES[@]}"; do
     || fail "noindex-meta" "/$page is missing the exact noindex meta tag: $NOINDEX_META"
   grep -q 'rel="canonical"' <<<"$BODY" \
     || fail "canonical" "/$page has no rel=\"canonical\" link"
-  grep -qF "$PINNED_URL" <<<"$BODY" \
-    || fail "absolute-self-link" "/$page has no absolute link containing $PINNED_URL"
+  # Must be an <a> anchor — the canonical/og:url tags in <head> also carry the
+  # pinned URL, but finalize's pass-1 needs an actual absolute self-LINK.
+  grep -qE "<a [^>]*href=\"$PINNED_URL" <<<"$BODY" \
+    || fail "absolute-self-link" "/$page has no absolute <a href> self-link to $PINNED_URL"
+  grep -q 'property="og:url"' <<<"$BODY" \
+    || fail "og-url" "/$page has no og:url meta"
 done
+
+# robots.txt must never grow a Disallow (it would risk blocking Firecrawl's
+# own mapper — spec Findings); it carries only the sitemap pointer.
+ROBOTS=$(curl -fs "$BASE/robots.txt") || fail "robots-fetch" "could not fetch /robots.txt"
+grep -qi '^Disallow' <<<"$ROBOTS" && fail "robots-disallow" "robots.txt contains a Disallow line"
+grep -qF "Sitemap: $PINNED_URL/sitemap.xml" <<<"$ROBOTS" \
+  || fail "robots-sitemap" "robots.txt is missing the pinned Sitemap line"
 
 # Sitemap must list exactly the 4 pinned absolute URLs (map determinism).
 SITEMAP=$(curl -fs "$BASE/sitemap.xml") || fail "sitemap-fetch" "could not fetch /sitemap.xml"
