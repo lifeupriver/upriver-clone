@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 160" role="img" aria-label="Two crossed stalks of wheat tied with twine">
+  <g stroke="#8a5a2b" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M45 150 C50 110 58 70 70 30"/>
+    <path d="M75 150 C70 110 62 70 50 30"/>
+  </g>
+  <g fill="#c79a52">
+    <ellipse cx="70" cy="28" rx="6" ry="14" transform="rotate(14 70 28)"/>
+    <ellipse cx="62" cy="46" rx="5" ry="11" transform="rotate(18 62 46)"/>
+    <ellipse cx="76" cy="46" rx="5" ry="11" transform="rotate(8 76 46)"/>
+    <ellipse cx="50" cy="28" rx="6" ry="14" transform="rotate(-14 50 28)"/>
+    <ellipse cx="44" cy="46" rx="5" ry="11" transform="rotate(-18 44 46)"/>
+    <ellipse cx="56" cy="46" rx="5" ry="11" transform="rotate(-8 56 46)"/>
+  </g>
+  <path d="M48 112 C56 106 64 106 72 112 C64 118 56 118 48 112Z" fill="#6b7d5e"/>
+</svg>

@@ -1,0 +1,134 @@
+/* Wildflour Bakery fixture site — shared styles.
+   Warm bakery palette, no JS, no external fonts, system stack only. */
+
+:root {
+  --flour: #faf5ec;
+  --crust: #8a5a2b;
+  --rye: #4a3320;
+  --butter: #f0dcb4;
+  --sage: #6b7d5e;
+  --cream: #fffdf8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--rye);
+  background: var(--flour);
+  line-height: 1.6;
+}
+
+header.site-header {
+  background: var(--cream);
+  border-bottom: 3px solid var(--butter);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.site-header .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: var(--rye);
+}
+
+.site-header .brand img { height: 44px; width: 44px; }
+
+.site-header .brand span {
+  font-size: 1.3rem;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+}
+
+nav.site-nav { margin-left: auto; }
+
+nav.site-nav a {
+  color: var(--crust);
+  text-decoration: none;
+  margin-left: 1.25rem;
+  font-size: 1.05rem;
+}
+
+nav.site-nav a:hover { text-decoration: underline; }
+
+main { max-width: 56rem; margin: 0 auto; padding: 0 1.5rem 3rem; }
+
+.hero {
+  text-align: center;
+  padding: 3rem 1rem 2rem;
+}
+
+.hero img { width: 220px; max-width: 60%; height: auto; }
+
+.hero h1 { font-size: 2.4rem; margin: 1rem 0 0.5rem; color: var(--crust); }
+
+.hero .tagline { font-size: 1.25rem; font-style: italic; color: var(--sage); margin: 0; }
+
+section { margin: 2.5rem 0; }
+
+section h2 { color: var(--crust); font-size: 1.6rem; border-bottom: 2px solid var(--butter); padding-bottom: 0.3rem; }
+
+.split { display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap; }
+
+.split img { width: 180px; height: auto; flex-shrink: 0; }
+
+.split div { flex: 1 1 18rem; }
+
+blockquote.testimonial {
+  background: var(--cream);
+  border-left: 5px solid var(--sage);
+  margin: 2.5rem 0;
+  padding: 1.25rem 1.5rem;
+  font-style: italic;
+  font-size: 1.15rem;
+}
+
+blockquote.testimonial cite { display: block; margin-top: 0.75rem; font-style: normal; color: var(--sage); }
+
+.cta {
+  background: var(--butter);
+  text-align: center;
+  padding: 2rem 1.5rem;
+  border-radius: 6px;
+}
+
+.cta a.button {
+  display: inline-block;
+  background: var(--crust);
+  color: var(--cream);
+  padding: 0.7rem 1.6rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 1.1rem;
+  margin-top: 0.75rem;
+}
+
+.cta a.button:hover { background: var(--rye); }
+
+ul.offerings { padding-left: 1.25rem; }
+
+ul.offerings li { margin: 0.5rem 0; }
+
+.team { display: flex; gap: 2rem; flex-wrap: wrap; }
+
+.team article { flex: 1 1 14rem; background: var(--cream); padding: 1rem 1.25rem; border-radius: 6px; }
+
+.team h3 { margin-top: 0; color: var(--crust); }
+
+address { font-style: normal; line-height: 1.8; }
+
+footer.site-footer {
+  background: var(--rye);
+  color: var(--butter);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+footer.site-footer a { color: var(--butter); }

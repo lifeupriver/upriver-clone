@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Wildflour Bakery wheat-sheaf logo">
+  <circle cx="32" cy="32" r="30" fill="#f0dcb4" stroke="#8a5a2b" stroke-width="3"/>
+  <g stroke="#8a5a2b" stroke-width="2.5" fill="none" stroke-linecap="round">
+    <path d="M32 50 V18"/>
+    <path d="M32 26 C26 24 24 18 25 14 C30 15 33 20 32 26Z" fill="#8a5a2b"/>
+    <path d="M32 26 C38 24 40 18 39 14 C34 15 31 20 32 26Z" fill="#8a5a2b"/>
+    <path d="M32 34 C26 32 24 26 25 22 C30 23 33 28 32 34Z" fill="#8a5a2b"/>
+    <path d="M32 34 C38 32 40 26 39 22 C34 23 31 28 32 34Z" fill="#8a5a2b"/>
+    <path d="M32 42 C26 40 24 34 25 30 C30 31 33 36 32 42Z" fill="#8a5a2b"/>
+    <path d="M32 42 C38 40 40 34 39 30 C34 31 31 36 32 42Z" fill="#8a5a2b"/>
+  </g>
+</svg>
