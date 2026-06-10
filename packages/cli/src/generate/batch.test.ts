@@ -226,6 +226,8 @@ const FIXTURE = join(
   dirname(fileURLToPath(import.meta.url)),
   '../../../schemas/src/fixtures/littlefriends.profile.json',
 );
+const FIXTURE_NAME = (JSON.parse(readFileSync(FIXTURE, 'utf8')) as { identity: { publicName: { value: string } } })
+  .identity.publicName.value;
 function seededDs(): LocalFsClientDataSource {
   const d = new LocalFsClientDataSource({ baseDir: mkdtempSync(join(tmpdir(), 'upriver-batch-ds-')) });
   return d;
@@ -256,7 +258,7 @@ function deps(d: LocalFsClientDataSource, call: ClaudeCall): { deps: GenerateDep
   };
 }
 /** A claude call that writes the expected doc file for `id`, but throws for ids in `boom`. */
-function partialCall(boom: Set<DeliverableId>, content = '# Doc\n[NEEDS CONFIRMATION: q?]\n'): { call: ClaudeCall; calls: () => number } {
+function partialCall(boom: Set<DeliverableId>, content = `# Doc\n${FIXTURE_NAME} [NEEDS CONFIRMATION: q?]\n`): { call: ClaudeCall; calls: () => number } {
   let n = 0;
   const call: ClaudeCall = async (o) => {
     n += 1;

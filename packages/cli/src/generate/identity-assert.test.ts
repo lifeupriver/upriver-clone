@@ -44,3 +44,13 @@ test('a foreign name equal to the client name is not contamination', () => {
 test('an empty denylist degrades to the presence check alone', () => {
   assert.doesNotThrow(() => assertIdentity({ ...ok, foreignNames: [] }));
 });
+
+test('curly apostrophes in model output match straight apostrophes in the profile name', () => {
+  assert.doesNotThrow(() =>
+    assertIdentity({ content: 'Audrey’s Bakery makes great bread.', publicName: "Audrey's Bakery", foreignNames: [] }),
+  );
+  assert.throws(
+    () => assertIdentity({ ...ok, content: `${ok.content}\nUnlike Audrey’s Bakery down the road.` }),
+    /another client/,
+  );
+});

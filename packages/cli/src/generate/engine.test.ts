@@ -13,6 +13,11 @@ import { ALL_DOCS } from './batch.js';
 import { titleFor } from './report.js';
 import type { ClaudeCall } from './runner.js';
 
+const FIXTURE_NAME = (JSON.parse(readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), '../../../schemas/src/fixtures/littlefriends.profile.json'),
+  'utf8',
+)) as { identity: { publicName: { value: string } } }).identity.publicName.value;
+
 const NOW = '2026-06-04T00:00:00.000Z';
 
 test('M1_DOCS covers the full 18-doc AI Operating System (i01 uploads all 18)', () => {
@@ -54,7 +59,7 @@ async function seedFixture(d: LocalFsClientDataSource): Promise<void> {
 function deps(
   d: LocalFsClientDataSource,
   call: ClaudeCall,
-  opts: { isTty?: boolean; promptApprove?: () => Promise<boolean> } = {},
+  opts: { isTty?: boolean; promptApprove?: () => Promise<boolean>; foreignNames?: string[] } = {},
 ): { deps: GenerateDeps; out: () => string } {
   const logs: string[] = [];
   return {
@@ -65,12 +70,13 @@ function deps(
       isTty: opts.isTty ?? false,
       promptApprove: opts.promptApprove ?? (async () => false),
       now: () => NOW,
+      ...(opts.foreignNames ? { foreignNames: opts.foreignNames } : {}),
     },
     out: () => logs.join('\n'),
   };
 }
 /** A mock claude call that writes the doc the engine expects, for `id`. */
-function writingCall(id: DeliverableId, content = '# Doc\n\nbody'): { call: ClaudeCall; calls: () => number } {
+function writingCall(id: DeliverableId, content = `# Doc\n\n${FIXTURE_NAME} body`): { call: ClaudeCall; calls: () => number } {
   let n = 0;
   const fileName = docFileName(id, titleFor(id));
   const call: ClaudeCall = async (o) => {
@@ -211,7 +217,7 @@ test('the engine scans [OPERATOR ACTION] click-ops into operatorActions alongsid
   process.env['UPRIVER_SPECS_DIR'] = specsDir();
   const d = ds();
   await seedFixture(d);
-  const body = '# Artifact\n\n[NEEDS CONFIRMATION: which plan tier?]\n[OPERATOR ACTION: create the client Project]\n';
+  const body = `# Artifact\n\n${FIXTURE_NAME} [NEEDS CONFIRMATION: which plan tier?]\n[OPERATOR ACTION: create the client Project]\n`;
   const { call } = writingCall('doc-01', body);
   const { deps: dp } = deps(d, call, { isTty: true, promptApprove: async () => true });
   const r = await runGenerate(opts('doc-01'), dp);
@@ -223,10 +229,43 @@ test('markers in the generated doc are scanned and recorded', async () => {
   process.env['UPRIVER_SPECS_DIR'] = specsDir();
   const d = ds();
   await seedFixture(d);
-  const { call } = writingCall('doc-01', '# Doc\n\n[NEEDS CONFIRMATION: who is the owner?]\nbody');
+  const { call } = writingCall('doc-01', `# Doc\n\n${FIXTURE_NAME} [NEEDS CONFIRMATION: who is the owner?]\nbody`);
   const { deps: dp } = deps(d, call, { isTty: true, promptApprove: async () => true });
   const r = await runGenerate(opts('doc-01'), dp);
   assert.deepEqual(r.markers, ['who is the owner?']);
   const manifest = await readManifest(d, 'littlefriends');
   assert.equal(manifest.docs['doc-01']?.markers, 1);
+});
+
+test('P2: a fresh artifact that never names the client errors and is not persisted', async () => {
+  process.env['UPRIVER_SPECS_DIR'] = specsDir();
+  const d = ds();
+  await seedFixture(d);
+  const { call } = writingCall('doc-01', '# Brand Voice\n\nAn anonymous business.');
+  const { deps: dp, out } = deps(d, call);
+  const outcome = await runGenerate(opts('doc-01'), dp);
+  assert.equal(outcome.status, 'error');
+  assert.match(out(), /never names the client/);
+  assert.equal(await d.fileExists('littlefriends', `docs/${docFileName('doc-01', titleFor('doc-01'))}`), false);
+});
+
+test('P2: a fresh artifact naming a foreign client errors (contamination)', async () => {
+  process.env['UPRIVER_SPECS_DIR'] = specsDir();
+  const d = ds();
+  await seedFixture(d);
+  const { call } = writingCall('doc-01', `# Brand Voice\n\n${FIXTURE_NAME}, in partnership with Camera City.`);
+  const { deps: dp, out } = deps(d, call, { foreignNames: ['Camera City'] });
+  const outcome = await runGenerate(opts('doc-01'), dp);
+  assert.equal(outcome.status, 'error');
+  assert.match(out(), /another client/);
+});
+
+test('P2: a correctly-named artifact passes the assert and persists', async () => {
+  process.env['UPRIVER_SPECS_DIR'] = specsDir();
+  const d = ds();
+  await seedFixture(d);
+  const { call } = writingCall('doc-01', `# Brand Voice\n\n${FIXTURE_NAME} is wonderful.`);
+  const { deps: dp } = deps(d, call, { foreignNames: ['Camera City'] });
+  const outcome = await runGenerate(opts('doc-01'), dp);
+  assert.equal(outcome.status, 'generated');
 });

@@ -2,7 +2,7 @@ import { join } from 'node:path';
 import { createInterface } from 'node:readline/promises';
 
 import { Args, Flags } from '@oclif/core';
-import type { DeliverableId } from '@upriver/schemas';
+import { nearestEnvelope, type DeliverableId } from '@upriver/schemas';
 
 import { BaseCommand } from '../base-command.js';
 import {
@@ -128,6 +128,7 @@ export default class Generate extends BaseCommand {
 
     if (!flags.doc) this.error('Specify --doc <id> for a single document, --all for batch generation, or --web for the website tier.');
 
+    const foreignNames = await this.loadForeignNames(ds, args.slug);
     const outcome = await runGenerate(
       {
         slug: args.slug,
@@ -137,7 +138,7 @@ export default class Generate extends BaseCommand {
         model: flags.model,
         fullUpstream: flags['full-upstream'],
       },
-      this.makeDeps(ds, () => this.askApprove(flags.doc as string)),
+      this.makeDeps(ds, () => this.askApprove(flags.doc as string), foreignNames),
     );
     if (outcome.exitCode !== 0) this.exit(outcome.exitCode);
   }
@@ -155,7 +156,8 @@ export default class Generate extends BaseCommand {
     this.log(renderBatchPlan(plan));
     if (flags.provisioning) this.hintProvisioningDocs(slug, plan);
 
-    const deps = this.makeDeps(ds, async () => false);
+    const foreignNames = await this.loadForeignNames(ds, slug);
+    const deps = this.makeDeps(ds, async () => false, foreignNames);
 
     if (flags['dry-run']) {
       const sizes: PromptSize[] = [];
@@ -328,7 +330,33 @@ export default class Generate extends BaseCommand {
     };
   }
 
-  private makeDeps(ds: ClientDataSource, promptApprove: () => Promise<boolean>): GenerateDeps {
+  /**
+   * The identity-assert denylist (P2, Build Spec 14): every OTHER client's
+   * publicName visible to this data source. Best-effort — an unlistable source
+   * or unreadable profile contributes nothing rather than failing the run.
+   */
+  private async loadForeignNames(ds: ClientDataSource, slug: string): Promise<string[]> {
+    let slugs: string[] = [];
+    try {
+      slugs = await ds.listClientSlugs();
+    } catch {
+      return [];
+    }
+    const out: string[] = [];
+    for (const other of slugs) {
+      if (other === slug) continue;
+      try {
+        const p = await readProfile(ds, other);
+        const env = p ? nearestEnvelope(p as unknown as Record<string, unknown>, 'identity.publicName') : undefined;
+        if (typeof env?.value === 'string' && env.value.trim()) out.push(env.value.trim());
+      } catch {
+        // skip unreadable client
+      }
+    }
+    return out;
+  }
+
+  private makeDeps(ds: ClientDataSource, promptApprove: () => Promise<boolean>, foreignNames: string[] = []): GenerateDeps {
     return {
       ds,
       call: claudeCliCall,
@@ -336,6 +364,7 @@ export default class Generate extends BaseCommand {
       isTty: Boolean(process.stdin.isTTY),
       promptApprove,
       now: () => new Date().toISOString(),
+      foreignNames,
     };
   }
 

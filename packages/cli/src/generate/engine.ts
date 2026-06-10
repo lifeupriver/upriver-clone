@@ -1,6 +1,7 @@
 import {
   COVERAGE_MAP,
   deliverableReadiness,
+  nearestEnvelope,
   type DeliverableId,
 } from '@upriver/schemas';
 import type { ClientDataSource } from '@upriver/core/data';
@@ -17,6 +18,7 @@ import {
   type Manifest,
   type ManifestEntry,
 } from './manifest.js';
+import { assertIdentity } from './identity-assert.js';
 import { readProfile } from './profile-io.js';
 import { profileSlice, renderSlice } from './profile-slice.js';
 import { buildPrompt, type UpstreamDoc } from './prompt-builder.js';
@@ -95,6 +97,13 @@ export interface GenerateDeps {
   isTty: boolean;
   promptApprove: () => Promise<boolean>;
   now: () => string;
+  /**
+   * Other clients' identity.publicName values (P2, Build Spec 14): a generated
+   * artifact naming one of these is cross-client contamination and fails the
+   * identity assert. Optional — callers without a client roster pass nothing
+   * and only the own-name presence check runs.
+   */
+  foreignNames?: string[];
 }
 
 export type GenerateStatus = 'generated' | 'reused' | 'blocked' | 'dry-run' | 'error';
@@ -296,6 +305,18 @@ export async function runGenerate(
     claudeCalls = 1;
     content = result.content;
     fromCache = result.fromCache;
+
+    // P2 (Build Spec 14): a fresh artifact must name THIS client and no other.
+    // Reused content (the `unchanged` path) was already asserted when generated.
+    const nameEnv = nearestEnvelope(profile as unknown as Record<string, unknown>, 'identity.publicName');
+    if (typeof nameEnv?.value === 'string' && nameEnv.value.trim().length > 0) {
+      try {
+        assertIdentity({ content, publicName: nameEnv.value, foreignNames: deps.foreignNames ?? [] });
+      } catch (err) {
+        return fail(`${opts.id}: ${(err as Error).message}`);
+      }
+    }
+
     await ds.writeClientFile(opts.slug, docPath, content);
   }
 
