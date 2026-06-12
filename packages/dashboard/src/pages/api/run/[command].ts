@@ -1,43 +1,9 @@
 import { spawn } from 'node:child_process';
 import type { APIRoute } from 'astro';
 import { flagsToArgs, resolveRepoRoot, resolveUpriverBin } from '@/lib/run-cli';
+import { RUN_ALLOWED_COMMANDS as ALLOWED_COMMANDS, commandArgv } from '@/lib/run-allowlist';
 
 export const prerender = false;
-
-/**
- * Allowlist of CLI commands the operator GUI may invoke. Anything outside this
- * list returns 400. New commands must be added explicitly so a future routing
- * mistake (or a path-traversal attempt via the dynamic route segment) cannot
- * spawn arbitrary node binaries.
- */
-const ALLOWED_COMMANDS: ReadonlyArray<string> = [
-  'init',
-  'scrape',
-  'audit',
-  'audit-media',
-  'gap-analysis',
-  'video-audit',
-  'synthesize',
-  'voice-extract',
-  'blog-topics',
-  'schema-build',
-  'design-brief',
-  'scaffold',
-  'clone',
-  'fixes-plan',
-  'qa',
-  'generate',
-  'process-interview',
-  'interview-link',
-  'monitor',
-  'followup',
-  'prototype-app',
-  'custom-tools',
-  'admin-deploy',
-  'admin-status',
-  'admin-pause',
-  'admin-rotate-pin',
-];
 
 /** Time to wait after SIGTERM before escalating to SIGKILL on client abort. */
 const SIGKILL_GRACE_MS = 2_000;
@@ -202,9 +168,11 @@ export const POST: APIRoute = async ({ params, request }) => {
   }
 
   const { args, flags } = parsed.value;
-  // spawn arg array: [binPath, command, ...positional args, ...flags]
+  // spawn arg array: [binPath, ...command tokens, ...positional args, ...flags]
   // No shell — node receives argv as a list, so values are inert to shell metachars.
-  const spawnArgs = [binPath, command, ...args, ...flagsToArgs(flags)];
+  // commandArgv maps allowlist ids to oclif command tokens (`fixes-plan` is the
+  // space-separated `fixes plan` command — see lib/run-allowlist.ts).
+  const spawnArgs = [binPath, ...commandArgv(command), ...args, ...flagsToArgs(flags)];
 
   const encoder = new TextEncoder();
 

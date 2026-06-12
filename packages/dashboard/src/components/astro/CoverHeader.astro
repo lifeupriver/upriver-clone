@@ -13,6 +13,8 @@
  */
 import type { FirecrawlBrandingProfile } from '@upriver/core';
 
+import { isValidCssColor } from '@/lib/css-color';
+
 export interface Props {
   clientName: string;
   clientUrl: string;
@@ -23,15 +25,9 @@ export interface Props {
 
 const { clientName, clientUrl, date, overallScore = null, branding = null } = Astro.props;
 
-/**
- * Validate a CSS color token is a recognizable hex/rgb/hsl form.
- * We only need a coarse check; CSS will silently ignore garbage anyway,
- * but rejecting obviously-bad values keeps the inline style attribute clean.
- */
-function isValidCssColor(value: string | undefined | null): value is string {
-  if (!value || typeof value !== 'string') return false;
-  return /^(#[0-9a-fA-F]{3,8}|rgb|hsl)/.test(value.trim());
-}
+// Accent validation lives in `@/lib/css-color` (unit-tested): the scraped
+// value must full-match a hex/rgb()/hsl() pattern — a mere prefix check would
+// let `#fff;…` or `rgb(0,0,0)}…` inject arbitrary CSS into the inline style.
 
 /**
  * Validate a logo URL is something we can safely render in an <img src>.

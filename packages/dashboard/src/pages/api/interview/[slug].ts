@@ -24,8 +24,9 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 
 export const POST: APIRoute = async ({ params, request }) => {
   const slug = params.slug;
-  if (!slug) {
-    return jsonError(400, 'missing slug');
+  // Kebab-case only — mirrors the gate in `api/share-tokens.ts`.
+  if (!slug || !/^[a-z0-9][a-z0-9-]*$/.test(slug)) {
+    return jsonError(400, 'slug must be kebab-case');
   }
 
   let parsed: unknown;

@@ -19,6 +19,11 @@ if (!auditPackage) {
 
 const existingIntake = (await readIntake(slug)) ?? undefined;
 
+// Share token from the portal link (`?t=…`). The middleware validated it to
+// let this page render at all; IntakeForm passes it back on its /api/intake
+// calls so the (operator-or-token) in-handler gate authorizes the client.
+const shareToken = Astro.url.searchParams.get('t');
+
 const mappedFindings = auditPackage.findings.map(f => ({
   id: f.id,
   title: f.title,
@@ -96,6 +101,7 @@ const tiers: ScopeTier[] = [
         findings={mappedFindings}
         pages={mappedPages}
         initial={existingIntake}
+        shareToken={shareToken}
       />
     </div>
   </section>

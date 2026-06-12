@@ -1,5 +1,8 @@
 import type { APIRoute } from 'astro';
 
+import { getSessionUser, isOperator } from '../../../lib/auth.js';
+import { getDataSource } from '../../../lib/data-source.js';
+
 export const prerender = false;
 
 /**
@@ -74,7 +77,21 @@ function sseComment(text: string, encoder: TextEncoder): Uint8Array {
  * Heartbeat comments (`: ping`) every 15 seconds keep proxies from killing
  * idle connections.
  */
-export const GET: APIRoute = async ({ params, request }) => {
+export const GET: APIRoute = async ({ params, request, cookies }) => {
+  // Defense-in-depth behind the `/api/jobs` middleware gate: in supabase
+  // (hosted) mode the stream is operator-only — run output can leak client
+  // data. Local mode is the operator's laptop, where no auth system exists
+  // (mirrors the middleware's data-source check).
+  if (getDataSource() === 'supabase') {
+    const user = await getSessionUser(request, cookies);
+    if (!isOperator(user)) {
+      return new Response(JSON.stringify({ error: 'forbidden — operator session required' }), {
+        status: 403,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+  }
+
   const id = params.id;
   if (typeof id !== 'string' || id.length === 0) {
     return new Response(JSON.stringify({ error: 'invalid job id' }), {
