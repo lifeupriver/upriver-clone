@@ -2,18 +2,29 @@
 import DeliverableLayout from '@/layouts/DeliverableLayout.astro';
 import MarkdownDoc from '@/components/astro/MarkdownDoc.astro';
 import { readClientConfig, readMarkdownFile, clientExists } from '@/lib/fs-reader';
+import { deliverableHref } from '@/lib/deliverable-links';
 
 const { slug } = Astro.params;
 
-if (!slug || !(await clientExists(slug))) {
+// Share token from the portal link (`?t=`); internal redirects must carry it.
+const token = Astro.url.searchParams.get('t');
+
+if (!slug) {
   return Astro.redirect('/clients');
+}
+if (!(await clientExists(slug))) {
+  return Astro.redirect(token ? deliverableHref(slug, '/not-ready', token) : '/clients');
 }
 
 const config = (await readClientConfig(slug))!;
 const content = await readMarkdownFile(slug, 'claude-design-brief.md');
 
 if (!content) {
-  return Astro.redirect(`/clients/${slug}/design-brief`);
+  // Token holders get the branded "not ready yet" page; operators keep their
+  // workspace redirect.
+  return Astro.redirect(
+    token ? deliverableHref(slug, '/not-ready', token) : `/clients/${slug}/design-brief`,
+  );
 }
 ---
 

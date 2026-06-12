@@ -1,5 +1,12 @@
 ---
-// Legacy URL: redirect to the new report shell at /deliverables/<slug>.
+// Legacy URL: redirect to the new report shell at /deliverables/<slug>,
+// preserving the share token (`?t=`) so client portal links keep working.
+import { deliverableHref } from '@/lib/deliverable-links';
+
 const { slug } = Astro.params;
-return Astro.redirect(`/deliverables/${slug}`);
+if (!slug) {
+  return Astro.redirect('/clients');
+}
+const token = Astro.url.searchParams.get('t');
+return Astro.redirect(deliverableHref(slug, '', token));
 ---

@@ -1,7 +1,8 @@
 ---
 import DeliverableLayout from './DeliverableLayout.astro';
+import { reportTabs, type ReportTab } from '../lib/deliverable-links';
 
-export type ReportTab = 'overview' | 'scorecard' | 'findings' | 'next-steps';
+export type { ReportTab };
 
 export interface Props {
   slug: string;
@@ -12,12 +13,11 @@ export interface Props {
 
 const { slug, clientName, currentTab, title } = Astro.props;
 
-const tabs: Array<{ id: ReportTab; label: string; href: string }> = [
-  { id: 'overview',   label: 'Overview',   href: `/deliverables/${slug}` },
-  { id: 'scorecard',  label: 'Scorecard',  href: `/deliverables/${slug}/scorecard` },
-  { id: 'findings',   label: 'Findings',   href: `/deliverables/${slug}/findings` },
-  { id: 'next-steps', label: 'Next steps', href: `/deliverables/${slug}/next-steps` },
-];
+// Share-token portal sessions carry `?t=` on every request (middleware gate).
+// reportTabs threads it onto each tab href so client navigation keeps working;
+// operator sessions have no token and get clean hrefs.
+const token = Astro.url.searchParams.get('t');
+const tabs = reportTabs(slug, token);
 ---
 
 <DeliverableLayout

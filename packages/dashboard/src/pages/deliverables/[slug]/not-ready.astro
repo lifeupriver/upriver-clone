@@ -1,0 +1,46 @@
+---
+import MessageLayout from '@/layouts/MessageLayout.astro';
+import { deliverableHref } from '@/lib/deliverable-links';
+import { readClientConfig } from '@/lib/fs-reader';
+
+/**
+ * Branded client-facing notice for a deliverable that hasn't been published
+ * yet (audit-package.json missing). Share-token clients land here from the
+ * report pages' missing-artifact guards instead of being bounced through
+ * /clients to the operator login. The middleware's `?t=` gate covers this
+ * route like every other /deliverables/<slug>/* page, so only valid token
+ * holders (or operators) ever see it.
+ */
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect('/clients');
+}
+
+const token = Astro.url.searchParams.get('t');
+
+// Personalize when we can; render the generic notice when the client record
+// itself is missing (this page must never dead-end on absent artifacts).
+const config = await readClientConfig(slug);
+const clientName = config?.name ?? null;
+
+// "Check again" re-enters the report overview with the token intact — if the
+// report has been published in the meantime it renders; otherwise its guard
+// returns the viewer here. Operators (no token) go back to their workspace.
+const retryHref = token ? deliverableHref(slug, '', token) : `/clients/${slug}`;
+---
+
+<MessageLayout title="Report not ready yet" clientFacing={true}>
+  <span class="eyebrow">Audit deliverables</span>
+  <h1>This report isn't ready yet.</h1>
+  <p class="lede">
+    {clientName
+      ? `We're still putting the finishing touches on the audit for ${clientName}.`
+      : `We're still putting the finishing touches on this audit.`}
+    Check back soon — or contact your Upriver contact if you have questions.
+  </p>
+  <a href={retryHref} class="btn-primary">Check again</a>
+  <p class="footnote">
+    Your link stays valid. Once the report is published, it will bring you straight here.
+  </p>
+</MessageLayout>

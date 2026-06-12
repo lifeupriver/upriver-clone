@@ -8,6 +8,15 @@ export const GscConfigZ = z
   })
   .passthrough();
 
+export const PricingTierZ = z
+  .object({
+    name: z.string().min(1),
+    price: z.string().min(1),
+    scope: z.string(),
+    description: z.string(),
+  })
+  .passthrough();
+
 export const ClientConfigZ = z
   .object({
     slug: z.string().min(1),
@@ -25,6 +34,8 @@ export const ClientConfigZ = z
     github_repo: z.string().optional(),
     supabase_project_ref: z.string().optional(),
     dev_port: z.number().int().min(1).max(65535).optional(),
+    // Optional per-client engagement pricing for the portal's next-steps page.
+    pricing: z.array(PricingTierZ).optional(),
   })
   // passthrough so we don't break on fields not yet in this schema. Required
   // fields are still validated.

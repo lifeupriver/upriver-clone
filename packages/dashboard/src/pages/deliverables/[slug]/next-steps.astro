@@ -3,26 +3,34 @@ import ReportLayout from '@/layouts/ReportLayout.astro';
 import IntakeForm from '@/components/react/IntakeForm';
 import { readClientConfig, clientExists, readIntake } from '@/lib/fs-reader';
 import { readAuditPackage } from '@/lib/report-reader';
+import { deliverableHref, missingDeliverableRedirect } from '@/lib/deliverable-links';
+import { resolvePricingTiers } from '@/lib/pricing';
 
 const { slug } = Astro.params;
 
-if (!slug || !(await clientExists(slug))) {
+// Share token from the portal link (`?t=…`). The middleware validated it to
+// let this page render at all; internal redirects must carry it, and
+// IntakeForm passes it back on its /api/intake calls so the
+// (operator-or-token) in-handler gate authorizes the client.
+const shareToken = Astro.url.searchParams.get('t');
+
+if (!slug) {
   return Astro.redirect('/clients');
+}
+if (!(await clientExists(slug))) {
+  return Astro.redirect(shareToken ? deliverableHref(slug, '/not-ready', shareToken) : '/clients');
 }
 
 const config = (await readClientConfig(slug))!;
 const auditPackage = await readAuditPackage(slug);
 
 if (!auditPackage) {
-  return Astro.redirect('/clients');
+  // Token holders get the branded "not ready yet" page; operators keep their
+  // workspace redirect.
+  return Astro.redirect(missingDeliverableRedirect(slug, shareToken));
 }
 
 const existingIntake = (await readIntake(slug)) ?? undefined;
-
-// Share token from the portal link (`?t=…`). The middleware validated it to
-// let this page render at all; IntakeForm passes it back on its /api/intake
-// calls so the (operator-or-token) in-handler gate authorizes the client.
-const shareToken = Astro.url.searchParams.get('t');
 
 const mappedFindings = auditPackage.findings.map(f => ({
   id: f.id,
@@ -36,36 +44,10 @@ const mappedPages = auditPackage.siteStructure.pages.map(p => ({
   url: p.url,
 }));
 
-interface ScopeTier {
-  name: string;
-  price: string;
-  scope: string;
-  description: string;
-}
-
-const tiers: ScopeTier[] = [
-  {
-    name: 'Polish',
-    price: '$2,800',
-    scope: '2-week project',
-    description:
-      'Fix every critical finding in this audit on your existing platform — no replatform, no design changes. For sites that mostly work but have a handful of issues blocking conversions or search visibility.',
-  },
-  {
-    name: 'Rebuild',
-    price: '$9,500',
-    scope: '4–6 week build',
-    description:
-      'Start fresh on a fast, modern stack with every P0 and P1 finding resolved as we build. The new site scores measurably higher on technical and SEO audits the day it ships.',
-  },
-  {
-    name: 'Rebuild + content',
-    price: '$18,500',
-    scope: '6–8 week engagement',
-    description:
-      'Everything in Rebuild plus a copy rewrite informed by your brand voice and a programmatic-SEO layer that publishes pillar content alongside the new site. For venues and service businesses that want to compete on search.',
-  },
-];
+// Engagement tiers: per-client `pricing:` from client-config.yaml when
+// present and well-formed, otherwise the built-in defaults (the values that
+// used to be hard-coded here).
+const tiers = resolvePricingTiers(config);
 ---
 
 <ReportLayout
