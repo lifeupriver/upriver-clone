@@ -135,8 +135,12 @@ export default class CustomTools extends BaseCommand {
     const claudeReady = await claudeCliAvailable();
     let llm: LlmOutput;
     if (!claudeReady) {
-      this.warn('claude CLI not on PATH — writing template-driven proposal without LLM polish.');
-      llm = this.fallbackOutput(config.name ?? slug, config.vertical, flags.count);
+      // Never fabricate: the proposal is client-facing, and the old template
+      // fallback invented effort and pricing numbers.
+      this.error(
+        'claude CLI not on PATH — refusing to write a template proposal with invented pricing. Install Claude Code (or set CLAUDE_BIN) and re-run.',
+        { exit: 1 },
+      );
     } else {
       try {
         const userPrompt = buildPrompt({
@@ -160,8 +164,10 @@ export default class CustomTools extends BaseCommand {
         });
         llm = parseJsonOutput(result.text);
       } catch (err) {
-        this.warn(`LLM call failed: ${err instanceof Error ? err.message : String(err)}. Using fallback.`);
-        llm = this.fallbackOutput(config.name ?? slug, config.vertical, flags.count);
+        this.error(
+          `LLM call failed: ${err instanceof Error ? err.message : String(err)}. Refusing to fall back to a template proposal with invented pricing — re-run when the LLM is available.`,
+          { exit: 1 },
+        );
       }
     }
 
@@ -200,31 +206,6 @@ export default class CustomTools extends BaseCommand {
     }
   }
 
-  private fallbackOutput(clientName: string, vertical: string | undefined, count: number): LlmOutput {
-    const examples = VERTICAL_EXAMPLE_TOOLS[vertical ?? 'generic'] ?? VERTICAL_EXAMPLE_TOOLS['generic']!;
-    const concepts: ToolConcept[] = examples.slice(0, count).map((e, i) => ({
-      name: e.name,
-      problem: e.problem,
-      capabilities: ['(operator: fill in 5-8 bullets after a discovery call)'],
-      integrations: [],
-      technical_sketch: 'A small Astro + Supabase app served from the rebuilt site, surfaced through the natural-language admin.',
-      effort_hours_min: 60 + i * 20,
-      effort_hours_max: 100 + i * 30,
-      price_low: 6000 + i * 2000,
-      price_high: 12000 + i * 4000,
-      prerequisites: [],
-      sales_angle: 'This is the conversation to have after the rebuild ships.',
-      composite_score: 70 - i * 5,
-    }));
-    const proposal = `# Custom tooling proposal: ${clientName}\n\n${concepts.map((c) => `## ${c.name}\n\n**The problem.** ${c.problem}\n\n**Effort.** ${c.effort_hours_min}-${c.effort_hours_max} hours. $${c.price_low.toLocaleString()}-$${c.price_high.toLocaleString()}.\n`).join('\n')}\n`;
-    const talking = `# Sales talking points (operator-only): ${clientName}\n\nclaude CLI was not available, so this is a template fallback. Re-run with the claude CLI installed for tailored prep.\n`;
-    return {
-      signals: ['(claude CLI unavailable; signals not extracted)'],
-      concepts,
-      proposal_markdown: proposal,
-      sales_talking_points_markdown: talking,
-    };
-  }
 }
 
 function loadAuditPackage(dir: string): AuditPackage | null {

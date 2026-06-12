@@ -1,4 +1,4 @@
-import { spawn, execSync, execFileSync } from 'node:child_process';
+import { execSync, execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { Args, Flags } from '@oclif/core';
@@ -6,8 +6,10 @@ import { BaseCommand } from '../../base-command.js';
 import type { AuditFinding, AuditPackage } from '@upriver/core';
 import { loadAuditPackage, resolveScaffoldPaths } from '../../scaffold/template-writer.js';
 import { withKeyedLock } from '../../util/keyed-lock.js';
+import { runAgent } from '../../util/claude-code.js';
+import { findingIdsInText } from '../../util/finding-ids.js';
+import { commitAll, ensureGitInitialized } from '../../util/git-commit.js';
 
-const CLAUDE_BIN = process.env['CLAUDE_BIN'] || 'claude';
 const COPYWRITING_SKILL_PATH = '.agents/skills/copywriting/SKILL.md';
 
 interface FindingRun {
@@ -61,7 +63,10 @@ export default class FixesApply extends BaseCommand {
       this.error(`fixes-plan.md not found at ${planPath}. Run "upriver fixes plan ${slug}" first.`);
     }
     const planText = existsSync(planPath) ? readFileSync(planPath, 'utf8') : '';
-    const planIds = parsePlanFindingIds(planText);
+    // Match against the package's actual finding ids — a grammar-guessing
+    // regex silently dropped deep-pass (`*-deep-001`) and fidelity
+    // (`clone-fidelity-*`) ids, so planned findings were never applied.
+    const planIds = findingIdsInText(planText, pkg.findings.map((f) => f.id));
 
     let findings = pkg.findings.filter((f) => planIds.has(f.id));
     if (flags.finding && flags.finding.length > 0) {
@@ -127,6 +132,14 @@ export default class FixesApply extends BaseCommand {
       this.log(`  [${tag}] ${r.finding.id} — ${r.finding.title}${r.prUrl ? ` → ${r.prUrl}` : ''}`);
       if (!r.ok && r.error) this.log(`        ${r.error}`);
     }
+    // Unattended runs decide by exit code: a fixes pass that applied nothing
+    // must not read as success.
+    if (results.length > 0 && ok === 0) {
+      this.error('every fix failed to apply', { exit: 1 });
+    }
+    if (failed > 0) {
+      this.warn(`${failed} fix(es) failed — re-run with --finding <id> to retry individually.`);
+    }
   }
 
   private async applyOne(opts: {
@@ -158,23 +171,24 @@ export default class FixesApply extends BaseCommand {
       }
     }
 
+    let succeeded = false;
     try {
       this.log(`\n→ ${finding.id}: launching Claude Code (branch ${branch}, cwd ${workCwd})`);
-      await runClaudeCode(prompt, workCwd);
+      await runAgent({ prompt, cwd: workCwd, mode: 'write', echoStdout: true });
 
       appendChangelogEntry(workCwd, finding);
 
-      try {
-        execSync('git add -A', { cwd: workCwd, stdio: 'pipe' });
-        const msg = `fix(${finding.dimension}): ${finding.id} — ${finding.title}`.slice(0, 160);
-        execSync(`git commit -m ${shellQuote(msg)}`, { cwd: workCwd, stdio: 'pipe' });
-      } catch {
-        // nothing to commit
+      // A real commit failure must throw — swallowing it and force-removing
+      // the worktree below would silently destroy the agent's work.
+      const msg = `fix(${finding.dimension}): ${finding.id} — ${finding.title}`.slice(0, 160);
+      if (commitAll(workCwd, msg) === 'clean') {
+        this.warn(`  ${finding.id}: agent made no changes`);
       }
 
       let prUrl: string | undefined;
       if (openPr) prUrl = await openDraftPr(workCwd, branch, finding);
 
+      succeeded = true;
       return { ok: true, finding, branch, ...(prUrl ? { prUrl } : {}) };
     } catch (err) {
       return {
@@ -185,24 +199,19 @@ export default class FixesApply extends BaseCommand {
       };
     } finally {
       if (useWorktree) {
-        try {
-          execSync(`git worktree remove --force ${shellQuote(workCwd)}`, { cwd: repoDir, stdio: 'pipe' });
-        } catch {
-          // best-effort
+        if (succeeded) {
+          try {
+            execSync(`git worktree remove --force ${shellQuote(workCwd)}`, { cwd: repoDir, stdio: 'pipe' });
+          } catch {
+            // best-effort
+          }
+        } else {
+          // Keep the worktree so a failed pass can be inspected/salvaged.
+          this.warn(`  worktree preserved for inspection: ${workCwd}`);
         }
       }
     }
   }
-}
-
-function parsePlanFindingIds(text: string): Set<string> {
-  const ids = new Set<string>();
-  const pattern = /\b([a-z]+-\d{3})\b/gi;
-  let m: RegExpExecArray | null;
-  while ((m = pattern.exec(text)) !== null) {
-    if (m[1]) ids.add(m[1].toLowerCase());
-  }
-  return ids;
 }
 
 function priorityOrder(f: AuditFinding): number {
@@ -271,7 +280,7 @@ ${skillBlock}
 2. Read only the files needed to make the change. If the finding references affected pages, start there.
 3. Make the change. Use existing design tokens from \`src/styles/global.css\` (\`brand-*\`, \`ink-*\`, \`font-display\`, \`font-sans\`, \`radius-button\`, \`radius-card\`) — never introduce hardcoded hex colors.
 4. Reuse existing components in \`src/components/astro/\` (Hero, CTASection, TestimonialCard, Footer, Nav, ContactForm) before adding new ones.
-5. Verify the build: run \`pnpm install --silent\` once if \`node_modules\` is missing, then \`pnpm build\` (or \`pnpm exec astro check\` if the full build fails for environment reasons). The change must compile.
+5. Re-read every file you changed and fix anything that would not compile (imports, frontmatter, unclosed tags). You do not have shell access; the operator's QA pass builds the site after fixes are applied.
 
 > The CLI writes a CHANGELOG fragment to \`CHANGELOG.d/fix-${finding.id.toLowerCase()}.md\` after you finish — you do not need to edit \`CHANGELOG.md\`.
 
@@ -283,51 +292,6 @@ ${skillBlock}
 
 When done, print a single line: \`fix(${finding.dimension}): ${finding.id} — <one-sentence summary of the change>\`.
 `;
-}
-
-function runClaudeCode(prompt: string, cwd: string): Promise<void> {
-  return new Promise((resolveP, rejectP) => {
-    const args = [
-      '--print',
-      '--permission-mode',
-      'acceptEdits',
-      '--allowed-tools',
-      'Read,Edit,Write,Bash,Glob,Grep',
-    ];
-    const child = spawn(CLAUDE_BIN, args, {
-      cwd,
-      stdio: ['pipe', 'inherit', 'inherit'],
-      env: { ...process.env },
-    });
-
-    child.stdin.write(prompt);
-    child.stdin.end();
-
-    child.on('error', (err) => rejectP(err));
-    child.on('exit', (code) => {
-      if (code === 0) resolveP();
-      else rejectP(new Error(`claude exited with code ${code}`));
-    });
-  });
-}
-
-function ensureGitInitialized(repoDir: string): void {
-  if (existsSync(join(repoDir, '.git'))) return;
-  execFileSync('git', ['init', '-b', 'main'], { cwd: repoDir, stdio: 'pipe' });
-  const email = process.env['UPRIVER_GIT_EMAIL'] ?? 'upriver@lifeupriver.com';
-  const name = process.env['UPRIVER_GIT_NAME'] ?? 'Upriver Bot';
-  try {
-    execFileSync('git', ['config', 'user.email', email], { cwd: repoDir, stdio: 'pipe' });
-    execFileSync('git', ['config', 'user.name', name], { cwd: repoDir, stdio: 'pipe' });
-  } catch {
-    // ignore
-  }
-  execFileSync('git', ['add', '-A'], { cwd: repoDir, stdio: 'pipe' });
-  try {
-    execFileSync('git', ['commit', '-m', 'Initial scaffold from upriver'], { cwd: repoDir, stdio: 'pipe' });
-  } catch {
-    // empty
-  }
 }
 
 async function createWorktree(repoDir: string, branch: string): Promise<string> {

@@ -24,6 +24,7 @@ export async function firecrawlSearch(
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ query, limit: opts?.limit ?? 10 }),
+    signal: AbortSignal.timeout(60_000),
   });
   if (!res.ok) {
     const body = await res.text();

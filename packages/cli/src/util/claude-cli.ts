@@ -11,7 +11,7 @@ import { join } from 'node:path';
 
 import { clientDir, logUsageEvent } from '@upriver/core';
 
-const CLAUDE_BIN = process.env['CLAUDE_BIN'] || 'claude';
+import { buildAgentEnv, CLAUDE_BIN, sanitizeAgentTools } from './claude-code.js';
 
 /** Result envelope written by `claude --print --output-format json`. */
 interface ClaudeCliResultEnvelope {
@@ -172,7 +172,9 @@ export async function claudeCliCall(opts: ClaudeCliCallOptions): Promise<ClaudeC
     }
   }
 
-  const allowedTools = opts.allowedTools ?? ['Read', 'Glob', 'Grep'];
+  // Bash is stripped centrally: these sessions carry untrusted content
+  // (scraped sites, client-authored issues) in their prompts.
+  const allowedTools = sanitizeAgentTools(opts.allowedTools ?? ['Read', 'Glob', 'Grep']);
   const permissionMode = opts.permissionMode ?? 'plan';
 
   const args: string[] = [
@@ -239,19 +241,12 @@ function invokeCli(
   cwd?: string,
 ): Promise<ClaudeCliResultEnvelope> {
   return new Promise((resolveP, rejectP) => {
-    // The Claude Code CLI prefers an ANTHROPIC_API_KEY env var when present.
-    // Upriver runs against the operator's Claude Max subscription, so we
-    // strip the API key from the spawned env to force the CLI to use its
-    // own logged-in credential. Operators who want to override and use a
-    // raw API key explicitly can set UPRIVER_USE_API_KEY=1.
-    const childEnv: NodeJS.ProcessEnv = { ...process.env };
-    if (!process.env['UPRIVER_USE_API_KEY']) {
-      delete childEnv['ANTHROPIC_API_KEY'];
-      delete childEnv['ANTHROPIC_AUTH_TOKEN'];
-    }
+    // Allowlisted env (see buildAgentEnv): operator secrets never reach the
+    // session, and ANTHROPIC_* is forwarded only under UPRIVER_USE_API_KEY
+    // so the CLI defaults to the operator's logged-in Claude subscription.
     const child = spawn(CLAUDE_BIN, args, {
       stdio: ['pipe', 'pipe', 'pipe'],
-      env: childEnv,
+      env: buildAgentEnv(),
       ...(cwd !== undefined ? { cwd } : {}),
     });
     let stdout = '';
@@ -262,6 +257,9 @@ function invokeCli(
     child.stderr.on('data', (d: Buffer) => {
       stderr += d.toString('utf8');
     });
+    // EPIPE on a failed spawn must not crash the parent; rejection arrives
+    // via the 'error'/'exit' handlers.
+    child.stdin.on('error', () => {});
     child.stdin.write(stdinPayload);
     child.stdin.end();
     child.on('error', (err) => rejectP(err));

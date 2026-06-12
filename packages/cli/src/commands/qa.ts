@@ -2,6 +2,8 @@ import { Args, Flags } from '@oclif/core';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { BaseCommand } from '../base-command.js';
+import { findingIdsInText } from '../util/finding-ids.js';
+import { urlToSlug } from '../util/url-slug.js';
 import {
   FirecrawlClient,
   clientDir as clientDirFor,
@@ -114,7 +116,11 @@ export default class Qa extends BaseCommand {
     }
     const original = JSON.parse(readFileSync(originalPkgPath, 'utf8')) as AuditPackage;
 
-    const scopeIds = readScopeIds(join(dir, 'fixes-plan-scope.md'), join(dir, 'fixes-plan.md'));
+    const scopeIds = readScopeIds(
+      join(dir, 'fixes-plan-scope.md'),
+      join(dir, 'fixes-plan.md'),
+      original.findings.map((f) => f.id),
+    );
 
     const qaDir = join(dir, 'qa');
     const qaPagesDir = join(qaDir, 'pages');
@@ -147,7 +153,14 @@ export default class Qa extends BaseCommand {
     );
 
     const passed: AuditPassResult[] = [];
-    for (const r of results) if (r.status === 'fulfilled') passed.push(r.value);
+    // Dimensions whose preview pass crashed: their original findings are
+    // INDETERMINATE, not fixed — a crashed pass contributes no preview
+    // findings, which the diff would otherwise read as "all resolved".
+    const crashedDimensions = new Set<string>();
+    results.forEach((r, i) => {
+      if (r.status === 'fulfilled') passed.push(r.value);
+      else crashedDimensions.add(PASSES[i]?.name ?? 'unknown');
+    });
 
     for (const res of passed) {
       writeFileSync(join(qaAuditDir, `${res.dimension}.json`), JSON.stringify(res, null, 2), 'utf8');
@@ -158,7 +171,7 @@ export default class Qa extends BaseCommand {
     this.log(`  Completed ${passed.length}/${PASSES.length} passes in ${elapsed}s. ${newFindings.length} findings on preview.`);
 
     // 3. Compare to original findings
-    const diff = diffFindings(original.findings, newFindings, scopeIds);
+    const diff = diffFindings(original.findings, newFindings, scopeIds, crashedDimensions);
 
     // 4. Write QA report
     const reportPath = join(dir, 'qa-report.md');
@@ -182,6 +195,11 @@ export default class Qa extends BaseCommand {
     this.log(`  In-scope still open:${diff.stillOpenInScope.length}`);
     this.log(`  New issues:         ${diff.newIssues.length}`);
     this.log(`  Out-of-scope open:  ${diff.stillOpenOutOfScope.length}`);
+    if (diff.indeterminate.length > 0) {
+      this.warn(
+        `  Indeterminate:      ${diff.indeterminate.length} (pass crashed: ${[...crashedDimensions].join(', ')})`,
+      );
+    }
     this.log(`  Score: ${original.meta.overallScore} → ${overallScore}`);
   }
 
@@ -239,23 +257,6 @@ export default class Qa extends BaseCommand {
       writeFileSync(join(qaPagesDir, `${slugName}.json`), JSON.stringify(record, null, 2), 'utf8');
     }
     this.log(`  ${scraped.length} page(s) scraped.`);
-  }
-}
-
-function urlToSlug(url: string): string {
-  try {
-    const u = new URL(url);
-    const path = u.pathname.replace(/\/$/, '') || '/';
-    if (path === '/') return 'home';
-    return path
-      .slice(1)
-      .replace(/\//g, '-')
-      .replace(/[^a-z0-9-]/gi, '-')
-      .replace(/-+/g, '-')
-      .toLowerCase()
-      .slice(0, 80);
-  } catch {
-    return 'unknown';
   }
 }
 
@@ -334,22 +335,22 @@ function extractHeadings(markdown: string): Array<{ level: number; text: string 
   return headings;
 }
 
-function readScopeIds(scopePath: string, planPath: string): Set<string> {
-  const ids = new Set<string>();
-  const pattern = /\b([a-z]+-\d{3})\b/gi;
+function readScopeIds(scopePath: string, planPath: string, knownIds: string[]): Set<string> {
+  // Match against the package's actual finding ids (see util/finding-ids):
+  // a grammar-guessing regex silently excluded deep-pass and clone-fidelity
+  // ids from the scope, mislabeling them in the QA report.
   for (const path of [scopePath, planPath]) {
     if (!existsSync(path)) continue;
     const text = readFileSync(path, 'utf8');
     // Prefer a "## In scope" section if present so "## Deferred" items are excluded
     const sectionMatch = text.match(/##\s+In\s*scope\s*\n([\s\S]*?)(?=\n##\s|$)/i);
     const searchIn = sectionMatch ? sectionMatch[1] ?? text : text;
-    let m: RegExpExecArray | null;
-    while ((m = pattern.exec(searchIn)) !== null) {
-      if (m[1]) ids.add(m[1].toLowerCase());
-    }
-    if (ids.size > 0) break; // Prefer scope doc if present
+    const ids = new Set(
+      [...findingIdsInText(searchIn, knownIds)].map((id) => id.toLowerCase()),
+    );
+    if (ids.size > 0) return ids; // Prefer scope doc if present
   }
-  return ids;
+  return new Set();
 }
 
 interface FindingDiff {
@@ -357,12 +358,15 @@ interface FindingDiff {
   stillOpenInScope: Array<{ original: AuditFinding; preview: AuditFinding | null }>;
   newIssues: AuditFinding[];
   stillOpenOutOfScope: AuditFinding[];
+  /** Originals whose preview pass crashed — cannot be classified either way. */
+  indeterminate: AuditFinding[];
 }
 
 function diffFindings(
   originalFindings: AuditFinding[],
   previewFindings: AuditFinding[],
   scopeIds: Set<string>,
+  crashedDimensions: Set<string> = new Set(),
 ): FindingDiff {
   // Match by dimension + normalized title. We do NOT rely on finding IDs
   // between runs because IDs are assigned in order and the preview can have
@@ -376,8 +380,13 @@ function diffFindings(
   const fixedInScope: AuditFinding[] = [];
   const stillOpenInScope: Array<{ original: AuditFinding; preview: AuditFinding | null }> = [];
   const stillOpenOutOfScope: AuditFinding[] = [];
+  const indeterminate: AuditFinding[] = [];
 
   for (const o of originalFindings) {
+    if (crashedDimensions.has(o.dimension)) {
+      indeterminate.push(o);
+      continue;
+    }
     const match = previewByKey.get(key(o));
     const inScope = scopeIds.size === 0 ? o.priority === 'p0' || o.priority === 'p1' : scopeIds.has(o.id.toLowerCase());
     if (!match) {
@@ -393,7 +402,7 @@ function diffFindings(
     if (!originalByKey.has(key(p))) newIssues.push(p);
   }
 
-  return { fixedInScope, stillOpenInScope, newIssues, stillOpenOutOfScope };
+  return { fixedInScope, stillOpenInScope, newIssues, stillOpenOutOfScope, indeterminate };
 }
 
 function normalizeTitle(t: string): string {
@@ -433,7 +442,23 @@ function renderReport(args: {
   lines.push(`| In-scope still open | ${diff.stillOpenInScope.length} |`);
   lines.push(`| New issues introduced | ${diff.newIssues.length} |`);
   lines.push(`| Out-of-scope still open (for reference) | ${diff.stillOpenOutOfScope.length} |`);
+  if (diff.indeterminate.length > 0) {
+    lines.push(`| Indeterminate (preview pass crashed — re-run QA) | ${diff.indeterminate.length} |`);
+  }
   lines.push('');
+
+  if (diff.indeterminate.length > 0) {
+    lines.push('## Indeterminate findings');
+    lines.push('');
+    lines.push('The preview audit pass for these dimensions crashed, so these findings could not be re-checked. They are NOT confirmed fixed — re-run `upriver qa` after resolving the pass error.');
+    lines.push('');
+    lines.push('| ID | Priority | Dimension | Title |');
+    lines.push('|----|----------|-----------|-------|');
+    for (const f of diff.indeterminate) {
+      lines.push(`| ${f.id} | ${f.priority.toUpperCase()} | ${f.dimension} | ${escapePipes(f.title)} |`);
+    }
+    lines.push('');
+  }
 
   lines.push('## In-scope items fixed');
   lines.push('');

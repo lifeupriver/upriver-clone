@@ -1,4 +1,4 @@
-import { spawn, execSync, execFileSync } from 'node:child_process';
+import { execSync, execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { Args, Flags } from '@oclif/core';
@@ -18,8 +18,8 @@ import {
 import { withKeyedLock } from '../util/keyed-lock.js';
 import { resolveWebInputs } from '../web-bridge/inputs.js';
 import { extractEmbeds, pageFileSlug as embedPageSlug } from '../clone/embed-audit.js';
-
-const CLAUDE_BIN = process.env['CLAUDE_BIN'] || 'claude';
+import { runAgent } from '../util/claude-code.js';
+import { commitAll, ensureGitInitialized } from '../util/git-commit.js';
 
 export default class Clone extends BaseCommand {
   static override description = 'Run Claude Code headless agent to visually clone the site page by page';
@@ -183,6 +183,14 @@ export default class Clone extends BaseCommand {
       this.log(`  [${r.ok ? '✓' : '✗'}] ${r.page.slug || '/'} ${r.prUrl ? `→ ${r.prUrl}` : ''}${verifyTag}`);
       if (!r.ok && r.error) this.log(`        ${r.error}`);
     }
+    // Unattended runs (run all, the worker) decide by exit code: a clone that
+    // produced nothing must not let the pipeline proceed to finalize/fixes.
+    if (results.length > 0 && ok === 0) {
+      this.error('every page failed to clone', { exit: 1 });
+    }
+    if (failed > 0) {
+      this.warn(`${failed} page(s) failed — re-run with --page to retry them individually.`);
+    }
   }
 
   private async clonePage(opts: ClonePageOpts): Promise<PageResult> {
@@ -205,20 +213,17 @@ export default class Clone extends BaseCommand {
       }
     }
 
+    let succeeded = false;
     try {
       this.log(`\n→ ${page.slug || '/'}: launching Claude Code (branch ${branch}, cwd ${workCwd})`);
-      await runClaudeCode(prompt, workCwd);
+      await runAgent({ prompt, cwd: workCwd, mode: 'write', echoStdout: true });
 
       appendChangelogEntry(workCwd, page);
 
-      try {
-        execSync('git add -A', { cwd: workCwd, stdio: 'pipe' });
-        execSync(`git commit -m ${shellQuote(`clone(${page.slug || '/'}): visual port + copy pass`)}`, {
-          cwd: workCwd,
-          stdio: 'pipe',
-        });
-      } catch {
-        // nothing to commit
+      // A real commit failure must throw — swallowing it here and then
+      // force-removing the worktree would silently destroy the agent's work.
+      if (commitAll(workCwd, `clone(${page.slug || '/'}): visual port + copy pass`) === 'clean') {
+        this.warn(`  ${page.slug || '/'}: agent made no changes`);
       }
 
       // Verification loop: screenshot the built page, ask Claude to compare and fix.
@@ -243,16 +248,8 @@ export default class Clone extends BaseCommand {
           log: (m) => this.log(m),
         });
         verifyStatus = `${result.status} after ${result.iterationsRun}/${verifyIterations} iter(s)`;
-        // Commit any verification edits as a follow-up.
-        try {
-          execSync('git add -A', { cwd: workCwd, stdio: 'pipe' });
-          execSync(`git commit -m ${shellQuote(`clone(${page.slug || '/'}): verify pass — ${verifyStatus}`)}`, {
-            cwd: workCwd,
-            stdio: 'pipe',
-          });
-        } catch {
-          // nothing changed during verify
-        }
+        // Commit any verification edits as a follow-up ('clean' = no edits).
+        commitAll(workCwd, `clone(${page.slug || '/'}): verify pass — ${verifyStatus}`);
       }
 
       // Deterministic finalize: rewrite client-domain hrefs to local routes
@@ -272,6 +269,7 @@ export default class Clone extends BaseCommand {
         prUrl = await openDraftPr(workCwd, branch, page);
       }
 
+      succeeded = true;
       return { ok: true, page, branch, ...(prUrl ? { prUrl } : {}), ...(verifyStatus ? { verifyStatus } : {}) };
     } catch (err) {
       return {
@@ -282,10 +280,16 @@ export default class Clone extends BaseCommand {
       };
     } finally {
       if (useWorktree) {
-        try {
-          execSync(`git worktree remove --force ${shellQuote(workCwd)}`, { cwd: repoDir, stdio: 'pipe' });
-        } catch {
-          // best-effort cleanup
+        if (succeeded) {
+          try {
+            execSync(`git worktree remove --force ${shellQuote(workCwd)}`, { cwd: repoDir, stdio: 'pipe' });
+          } catch {
+            // best-effort cleanup
+          }
+        } else {
+          // Keep the worktree so a failed/uncommitted agent pass can be
+          // inspected and salvaged instead of being force-deleted.
+          this.warn(`  worktree preserved for inspection: ${workCwd}`);
         }
       }
     }
@@ -442,8 +446,8 @@ ${headings}
 CTAs detected in audit summary:
 ${ctas}
 ${embedsBlock}${uxProfileBlock}
-## Step 4 — verify the build
-Run \`pnpm install --silent\` if \`node_modules\` is missing, then \`pnpm build\`. The page must compile. If a Vercel-adapter or other env error blocks \`pnpm build\`, fall back to \`pnpm exec astro check\`.
+## Step 4 — self-review
+Re-read your generated page file(s) end to end and fix anything that would not compile (unclosed tags, bad frontmatter imports, malformed expressions). You do not have shell access; the harness builds and screenshots the page after you finish, and a verify pass will report compile errors back to you.
 ${clientWantsBlock}
 ## Constraints
 - Do NOT apply brand voice, copywriting, or copy-editing rules here. This is a structural clone, not a redesign.
@@ -487,53 +491,6 @@ ${quoted}
 Honor these wants if and only if they preserve fidelity to the source. Do NOT redesign or rewrite copy — that's the improvement layer's job. Surface any conflict in your final summary line.
 
 `;
-}
-
-function runClaudeCode(prompt: string, cwd: string): Promise<void> {
-  return new Promise((resolveP, rejectP) => {
-    const args = [
-      '--print',
-      '--permission-mode',
-      'acceptEdits',
-      '--allowed-tools',
-      'Read,Edit,Write,Bash,Glob,Grep',
-    ];
-    const child = spawn(CLAUDE_BIN, args, {
-      cwd,
-      stdio: ['pipe', 'inherit', 'inherit'],
-      env: { ...process.env },
-    });
-
-    child.stdin.write(prompt);
-    child.stdin.end();
-
-    child.on('error', (err) => rejectP(err));
-    child.on('exit', (code) => {
-      if (code === 0) resolveP();
-      else rejectP(new Error(`claude exited with code ${code}`));
-    });
-  });
-}
-
-function ensureGitInitialized(repoDir: string): void {
-  if (existsSync(join(repoDir, '.git'))) return;
-  execFileSync('git', ['init', '-b', 'main'], { cwd: repoDir, stdio: 'pipe' });
-  // Local committer identity so commits work even when the user has no global git config.
-  // Override via UPRIVER_GIT_EMAIL / UPRIVER_GIT_NAME.
-  const email = process.env['UPRIVER_GIT_EMAIL'] ?? 'upriver@lifeupriver.com';
-  const name = process.env['UPRIVER_GIT_NAME'] ?? 'Upriver Bot';
-  try {
-    execFileSync('git', ['config', 'user.email', email], { cwd: repoDir, stdio: 'pipe' });
-    execFileSync('git', ['config', 'user.name', name], { cwd: repoDir, stdio: 'pipe' });
-  } catch {
-    // ignore
-  }
-  execFileSync('git', ['add', '-A'], { cwd: repoDir, stdio: 'pipe' });
-  try {
-    execFileSync('git', ['commit', '-m', 'Initial scaffold from upriver'], { cwd: repoDir, stdio: 'pipe' });
-  } catch {
-    // empty
-  }
 }
 
 async function createWorktree(repoDir: string, branch: string): Promise<string> {
@@ -1009,15 +966,7 @@ function runFinalizeRewrite(args: FinalizeRewriteArgs): void {
     log(
       `  finalize: ${report.internalLinksRewritten} links, ${report.cdnImagesRewritten} CDN images rewritten`,
     );
-    try {
-      execSync('git add -A', { cwd: workCwd, stdio: 'pipe' });
-      execSync(
-        `git commit -m ${shellQuote(`clone(${page.slug || '/'}): finalize — rewrite local URLs`)}`,
-        { cwd: workCwd, stdio: 'pipe' },
-      );
-    } catch {
-      // nothing to commit
-    }
+    commitAll(workCwd, `clone(${page.slug || '/'}): finalize — rewrite local URLs`);
   } catch (err) {
     log(`  finalize: skipped (${(err as Error).message})`);
   }

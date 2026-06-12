@@ -1,14 +1,14 @@
-import { execFileSync, spawn } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 import type { AuditPackage, ClientIntake, SitePage } from '@upriver/core';
 
+import { runAgent } from '../util/claude-code.js';
+import { commitAll } from '../util/git-commit.js';
 import { withKeyedLock } from '../util/keyed-lock.js';
 
 import { skillExists, type SkillTrack } from './matrix-loader.js';
-
-const CLAUDE_BIN = process.env['CLAUDE_BIN'] || 'claude';
 
 /**
  * A single page target that an improvement-track agent should consider. Mirrors
@@ -297,6 +297,7 @@ export async function runTrack(opts: RunTrackOptions): Promise<TrackResult> {
   // so multiple tracks could run concurrently in a follow-up.
   let workCwd = repoDir;
   let createdWorktree = false;
+  let lastRunSucceeded = false;
   try {
     if (useWorktree) {
       workCwd = await createWorktree(repoDir, branch);
@@ -305,17 +306,12 @@ export async function runTrack(opts: RunTrackOptions): Promise<TrackResult> {
       execFileSync('git', ['checkout', '-B', branch], { cwd: repoDir, stdio: 'pipe' });
     }
     log(`-> ${track.id}: launching Claude Code (branch ${branch}, cwd ${workCwd})`);
-    await runClaudeCode(prompt, workCwd);
+    await runAgent({ prompt, cwd: workCwd, mode: 'write', echoStdout: true });
 
-    let didCommit = false;
-    try {
-      execFileSync('git', ['add', '-A'], { cwd: workCwd, stdio: 'pipe' });
-      const msg = `improve(${track.id}): apply ${track.skill} skill`.slice(0, 160);
-      execFileSync('git', ['commit', '-m', msg], { cwd: workCwd, stdio: 'pipe' });
-      didCommit = true;
-    } catch {
-      // Nothing to commit — agent decided no changes were needed.
-    }
+    // 'clean' means the agent genuinely made no changes; a real commit
+    // failure throws so the worktree below is preserved, not force-removed.
+    const msg = `improve(${track.id}): apply ${track.skill} skill`.slice(0, 160);
+    const didCommit = commitAll(workCwd, msg) === 'committed';
 
     const summaryPath = writeTrackSummary({
       track,
@@ -350,16 +346,22 @@ export async function runTrack(opts: RunTrackOptions): Promise<TrackResult> {
     const result: TrackResult = { trackId: track.id, branch, ok: true, summaryPath };
     if (prUrl) result.prUrl = prUrl;
     if (prSkippedReason) result.prSkippedReason = prSkippedReason;
+    lastRunSucceeded = true;
     return result;
   } catch (err) {
+    if (createdWorktree) {
+      // Keep the worktree so a failed pass can be inspected/salvaged.
+      log(`[improve] worktree preserved for inspection: ${workCwd}`);
+    }
     return {
       trackId: track.id,
       branch,
       ok: false,
       error: err instanceof Error ? err.message : String(err),
     };
-  } finally {
-    if (createdWorktree) {
+  }
+  finally {
+    if (createdWorktree && lastRunSucceeded) {
       try {
         execFileSync('git', ['worktree', 'remove', '--force', workCwd], {
           cwd: repoDir,
@@ -509,37 +511,6 @@ function safeRead(path: string): string | null {
   } catch {
     return null;
   }
-}
-
-// TODO(roadmap): dedupe `runClaudeCode` and `createWorktree` against the
-// near-identical helpers in `commands/fixes/apply.ts` and `commands/clone.ts`.
-// They were copied here verbatim for E.3 to keep the slice small; the dedupe
-// belongs in a follow-up cleanup PR alongside a shared `util/git-worktree.ts`
-// and `util/claude-code.ts`.
-function runClaudeCode(prompt: string, cwd: string): Promise<void> {
-  return new Promise((resolveP, rejectP) => {
-    const args = [
-      '--print',
-      '--permission-mode',
-      'acceptEdits',
-      '--allowed-tools',
-      'Read,Edit,Write,Bash,Glob,Grep',
-    ];
-    const child = spawn(CLAUDE_BIN, args, {
-      cwd,
-      stdio: ['pipe', 'inherit', 'inherit'],
-      env: { ...process.env },
-    });
-
-    child.stdin.write(prompt);
-    child.stdin.end();
-
-    child.on('error', (err) => rejectP(err));
-    child.on('exit', (code) => {
-      if (code === 0) resolveP();
-      else rejectP(new Error(`claude exited with code ${code}`));
-    });
-  });
 }
 
 async function createWorktree(repoDir: string, branch: string): Promise<string> {

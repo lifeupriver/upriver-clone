@@ -8,6 +8,7 @@ import type { AuditPackage } from '@upriver/core';
 import { BaseCommand } from '../base-command.js';
 import { auditClonedLinks } from '../clone/link-check.js';
 import { resolveScaffoldPaths, loadAuditPackage } from '../scaffold/template-writer.js';
+import { buildAgentEnv } from '../util/claude-code.js';
 
 export default class CloneLinks extends BaseCommand {
   static override description =
@@ -56,7 +57,8 @@ export default class CloneLinks extends BaseCommand {
     const distClient = join(repoDir, 'dist', 'client');
     if (!flags['no-build'] || !existsSync(distClient)) {
       this.log('Building cloned repo to refresh dist/client...');
-      const r = spawnSync('pnpm', ['build'], { cwd: repoDir, stdio: 'inherit' });
+      // Scrubbed env: the build executes agent-written page code.
+      const r = spawnSync('pnpm', ['build'], { cwd: repoDir, stdio: 'inherit', env: buildAgentEnv() });
       if (r.status !== 0) {
         this.error(`Build failed (exit ${r.status}). Fix build errors before auditing links.`);
       }
