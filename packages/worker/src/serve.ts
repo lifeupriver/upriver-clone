@@ -18,6 +18,20 @@ import { functions } from './functions/index.js';
  * `npx inngest-cli@latest dev -u http://localhost:8288/api/inngest`.
  */
 
+// Env contract shim: ops docs/secrets historically said
+// UPRIVER_SUPABASE_SERVICE_ROLE_KEY, but @upriver/core reads
+// UPRIVER_SUPABASE_SERVICE_KEY. Accept the legacy name so machines
+// provisioned either way boot with working storage sync, and nag toward the
+// canonical one. Runs before any function step reads the env.
+const legacyServiceKey = process.env['UPRIVER_SUPABASE_SERVICE_ROLE_KEY'];
+if (legacyServiceKey && !process.env['UPRIVER_SUPABASE_SERVICE_KEY']) {
+  process.env['UPRIVER_SUPABASE_SERVICE_KEY'] = legacyServiceKey;
+  // eslint-disable-next-line no-console
+  console.warn(
+    '[worker] UPRIVER_SUPABASE_SERVICE_ROLE_KEY is deprecated — set UPRIVER_SUPABASE_SERVICE_KEY instead. Value copied across for this process.',
+  );
+}
+
 const PORT = Number(process.env['PORT'] ?? 8288);
 
 const app = express();

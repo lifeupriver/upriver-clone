@@ -22,12 +22,18 @@ RUN corepack enable && corepack prepare pnpm@10.10.0 --activate
 WORKDIR /repo
 
 # Bring lockfile + workspace manifest first for cache-friendly installs.
+# Every workspace importer's package.json must be present or
+# `pnpm install --frozen-lockfile` rejects the lockfile — the lockfile lists
+# nine importers (see pnpm-lock.yaml `importers:`), so all nine are copied.
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.base.json ./
+COPY packages/admin-template/package.json packages/admin-template/
+COPY packages/app-prototype-template/package.json packages/app-prototype-template/
 COPY packages/audit-passes/package.json packages/audit-passes/
 COPY packages/cli/package.json packages/cli/
 COPY packages/core/package.json packages/core/
 COPY packages/dashboard/package.json packages/dashboard/
 COPY packages/scaffold-template/package.json packages/scaffold-template/
+COPY packages/schemas/package.json packages/schemas/
 COPY packages/worker/package.json packages/worker/
 
 RUN pnpm install --frozen-lockfile
@@ -38,10 +44,11 @@ COPY packages/audit-passes packages/audit-passes
 COPY packages/cli packages/cli
 COPY packages/core packages/core
 COPY packages/scaffold-template packages/scaffold-template
+COPY packages/schemas packages/schemas
 COPY packages/worker packages/worker
 COPY tsconfig.base.json ./
 
-RUN pnpm --filter @upriver/core --filter @upriver/audit-passes --filter @upriver/scaffold-template --filter @upriver/cli --filter @upriver/worker run build
+RUN pnpm --filter @upriver/core --filter @upriver/schemas --filter @upriver/audit-passes --filter @upriver/scaffold-template --filter @upriver/cli --filter @upriver/worker run build
 
 # Prune dev deps for the runtime stage. Keeps the final image lean.
 # `pnpm deploy` accepts exactly one --filter; it automatically resolves and
@@ -60,16 +67,37 @@ ENV NODE_ENV=production \
     PORT=8288 \
     # Inngest sends step state through the serve handler — keep the body cap
     # generous so large pipeline outputs round-trip cleanly.
-    NODE_OPTIONS="--max-old-space-size=2048"
+    NODE_OPTIONS="--max-old-space-size=2048" \
+    # `pnpm deploy` places workspace deps under node_modules, not packages/ —
+    # point run-stage's CLI resolution at the deployed location.
+    UPRIVER_CLI_BIN=/app/node_modules/@upriver/cli/bin/run.js
 
 # Install global CLIs the pipeline shells out to. Keep this list pinned and
 # minimal — every binary added here grows the cold-start surface.
+# Exact pins (no @latest): a worker rebuild must not silently change tool
+# behavior. Bump deliberately — see "Pinned tool versions" in DEPLOY.md.
+# claude-code: 2.1.175 verified working against this repo's pipeline 2026-06-12.
 # squirrelscan: verified on npm 2026-04-29 (npm view squirrelscan → 0.0.38).
 RUN npm install -g \
-      @anthropic-ai/claude-code@latest \
+      @anthropic-ai/claude-code@2.1.175 \
       lighthouse@12 \
-      squirrelscan@latest \
+      squirrelscan@0.0.38 \
     && npm cache clean --force
+
+# Runtime shell-outs beyond npm globals: CLI stages run `pnpm` (scaffold /
+# clone / prototype installs), `gh` (repo provisioning), and `zip` (report
+# bundles). The Playwright base ships none of them. gh comes from GitHub's
+# apt repo — it is not in Ubuntu jammy's default repos.
+RUN corepack enable && corepack prepare pnpm@10.10.0 --activate \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends curl ca-certificates zip \
+    && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+         -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+         > /etc/apt/sources.list.d/github-cli.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends gh \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
