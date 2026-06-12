@@ -12,6 +12,7 @@ import {
   validatePitchToken,
 } from '../../lib/pitch-share.js';
 import { escapeHtml, markdownToHtml } from '../../lib/markdown.js';
+import { recordFirstPitchView } from '../../lib/pitch-view.js';
 
 export const prerender = false;
 
@@ -55,6 +56,8 @@ export async function handlePitchPreview(
   if (html === null) {
     return htmlResponse(404, messagePage('Not ready', 'This preview is not staged yet.'));
   }
+  // Only a 200-served preview is a prospect view (spec 18 §5).
+  await recordFirstPitchView(slug);
   return htmlResponse(200, injectNoindexMeta(html));
 }
 
@@ -89,6 +92,8 @@ export async function handlePitchTeaser(
   const body =
     `<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Upriver — preview notes</title></head>` +
     `<body style="font-family: system-ui, sans-serif; max-width: 42rem; margin: 3rem auto; padding: 0 1rem; line-height: 1.6;">${markdownToHtml(md)}</body></html>`;
+  // A 200-served teaser counts as the first view too (spec 18 §5).
+  await recordFirstPitchView(slug);
   return htmlResponse(200, body);
 }
 

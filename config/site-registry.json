@@ -1,0 +1,46 @@
+{
+  "v": 1,
+  "defaultBudgetUsd": 15,
+  "sites": [
+    {
+      "id": "fixture",
+      "platform": "astro-fixture",
+      "url": "https://upriver-wb-fixture.vercel.app",
+      "maxPages": 6,
+      "clonePages": ["/", "/about", "/weddings"],
+      "vertical": "bakery",
+      "permission": "owned",
+      "notes": "The owned Tier B hosted fixture; the matrix's known-good baseline."
+    },
+    {
+      "id": "wordpress-slot",
+      "platform": "wordpress",
+      "url": null,
+      "maxPages": 8,
+      "clonePages": ["/"],
+      "vertical": null,
+      "permission": "pending",
+      "notes": "Fill url + flip permission to owned/permissioned via config edit — no code change (spec 18 decision 1)."
+    },
+    {
+      "id": "wix-or-webflow-slot",
+      "platform": "wix-or-webflow",
+      "url": null,
+      "maxPages": 8,
+      "clonePages": ["/"],
+      "vertical": null,
+      "permission": "pending",
+      "notes": "Fill url + flip permission to owned/permissioned via config edit — no code change (spec 18 decision 1)."
+    },
+    {
+      "id": "shopify-or-spa-slot",
+      "platform": "shopify-or-spa",
+      "url": null,
+      "maxPages": 8,
+      "clonePages": ["/"],
+      "vertical": null,
+      "permission": "pending",
+      "notes": "Fill url + flip permission to owned/permissioned via config edit — no code change (spec 18 decision 1)."
+    }
+  ]
+}

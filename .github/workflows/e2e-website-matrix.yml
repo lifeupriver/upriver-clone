@@ -1,0 +1,123 @@
+# Build Spec 18: gated site-diversity matrix — one FULL Tier B run per
+# runnable site in config/site-registry.json.
+#
+# THIS WORKFLOW COSTS REAL MONEY every time it runs: per site, Firecrawl
+# credits plus headless `claude` clone sessions, budget-capped at the
+# registry's budgetUsd (threaded into the clone phase as --max-spend-usd —
+# the Spec 17b ceiling; the matrix is its first consumer).
+#
+# Manual dispatch only, BY DESIGN. It must NEVER gain pull_request, push,
+# or schedule triggers, and the keyless test.yml must never gain these
+# secrets. Matrix sites are owned/permissioned ONLY — pending registry slots
+# are skipped and listed in the report.
+
+name: e2e-website-matrix (live)
+
+on:
+  workflow_dispatch:
+    inputs:
+      sites:
+        description: >-
+          Comma-separated registry site ids to run (e.g. "fixture").
+          Leave empty to run every runnable site.
+        type: string
+        default: ''
+      fidelity_bar:
+        description: >-
+          Optional MATRIX_FIDELITY_BAR override (per-page overall score
+          floor). Leave empty to use the driver default (70).
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+# Matrix runs share the Tier B fixture and real third-party sites — never
+# overlap; a second dispatch waits rather than killing a mid-clone run.
+concurrency:
+  group: e2e-website-matrix
+  cancel-in-progress: false
+
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120 # multi-site: ~30-60 min per runnable site
+    steps:
+      - name: Fail fast if secrets missing
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          missing=0
+          if [ -z "$FIRECRAWL_API_KEY" ]; then
+            echo "::error::Secret FIRECRAWL_API_KEY is not set — configure it in the repository secrets before dispatching this workflow."
+            missing=1
+          fi
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::Secret ANTHROPIC_API_KEY is not set — configure it in the repository secrets before dispatching this workflow."
+            missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+          echo "Required secrets present."
+
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            packages/scaffold-template/pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Install claude CLI (clone stage shells out to it)
+        run: npm i -g @anthropic-ai/claude-code
+
+      - name: Install Playwright chromium
+        run: pnpm --filter @upriver/cli exec playwright install --with-deps chromium
+
+      - name: Print the matrix plan (free)
+        env:
+          INPUT_SITES: ${{ inputs.sites }}
+        run: |
+          if [ -n "$INPUT_SITES" ]; then export MATRIX_SITES="$INPUT_SITES"; fi
+          MATRIX_PLAN_ONLY=1 bash scripts/e2e-website-matrix.sh
+
+      - name: Run the matrix
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          INPUT_SITES: ${{ inputs.sites }}
+          INPUT_BAR: ${{ inputs.fidelity_bar }}
+        run: |
+          # Export overrides only when supplied — empty env vars would
+          # clobber the driver defaults.
+          if [ -n "$INPUT_SITES" ]; then export MATRIX_SITES="$INPUT_SITES"; fi
+          if [ -n "$INPUT_BAR" ]; then export MATRIX_FIDELITY_BAR="$INPUT_BAR"; fi
+          bash scripts/e2e-website-matrix.sh
+
+      - name: Upload run artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: matrix-run
+          path: |
+            matrix-report.md
+            clients/matrix-*/e2e/run.log
+            clients/matrix-*/clone-qa/
+            clients/matrix-*/audit/summary.json
+            clients/matrix-*/fixes-plan.md
+            clients/matrix-*/token-and-credit-usage.log
+          if-no-files-found: warn

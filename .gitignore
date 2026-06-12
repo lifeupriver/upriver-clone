@@ -8,6 +8,8 @@ dist-test/
 !.env.example
 clients/
 !packages/dashboard/src/pages/clients/
+# Spec 18 matrix-run artifact (uploaded by the gated workflow, never committed)
+matrix-report.md
 *.log
 .DS_Store
 *.tsbuildinfo

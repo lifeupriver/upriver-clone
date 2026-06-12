@@ -69,6 +69,46 @@ export interface FidelityGateResult {
  * missing page entry, or unscored status all refuse — a preview we could
  * not score is a preview we do not show a prospect.
  */
+/**
+ * Per-page bar for CLIENT clones (Spec 17b §1, brainstorm decision 2). Same
+ * provisional value as Tier B's WB_FIDELITY_BAR and PITCH_FIDELITY_MIN, but
+ * a separate constant: the pitch minimum and the client bar calibrate
+ * independently from the Spec 18 harvest corpus.
+ */
+export const CLONE_FIDELITY_BAR = 70;
+
+export interface FidelityPolicyResult {
+  pass: boolean;
+  belowBar: Array<{ pageSlug: string; overall: number }>;
+  unscored: string[];
+}
+
+/**
+ * Apply the per-page bar to a whole-site fidelity summary (Spec 17b §1).
+ * Per page, never a mean — a site mean hides one terrible page behind
+ * several good ones. A missing/empty summary is all-unscored: under the
+ * default warn-and-record policy that is a loud warning; under
+ * --strict-fidelity it fails closed, exactly like fidelityGate.
+ */
+export function evaluateFidelityPolicy(
+  summary: FidelitySummary | null,
+  bar: number = CLONE_FIDELITY_BAR,
+): FidelityPolicyResult {
+  const pages = summary?.pages ?? [];
+  if (pages.length === 0) {
+    return { pass: false, belowBar: [], unscored: ['(no scored pages)'] };
+  }
+  const belowBar: Array<{ pageSlug: string; overall: number }> = [];
+  const unscored: string[] = [];
+  for (const page of pages) {
+    const gate = fidelityGate(summary, page.pageSlug, bar);
+    if (gate.pass) continue;
+    if (gate.score === undefined) unscored.push(page.pageSlug);
+    else belowBar.push({ pageSlug: page.pageSlug, overall: gate.score });
+  }
+  return { pass: belowBar.length === 0 && unscored.length === 0, belowBar, unscored };
+}
+
 export function fidelityGate(
   summary: FidelitySummary | null,
   pageSlug: string,

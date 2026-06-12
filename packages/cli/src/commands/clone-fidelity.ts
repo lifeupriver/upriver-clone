@@ -9,12 +9,22 @@ import { extractCloneText } from '../clone-qa/extract-clone-text.js';
 import {
   aggregateOverall,
   scorePage,
+  type FidelityPolicyBlock,
   type FidelitySummary,
   type PageFidelity,
 } from '../clone-qa/fidelity-scorer.js';
+import { CLONE_FIDELITY_BAR, evaluateFidelityPolicy } from '../clone/hardening.js';
 import { filterUnmatched, findCdnUrlsInRepo } from '../clone/download-missing.js';
 import { buildAssetIndex, DEFAULT_CDN_HOSTS } from '../clone/rewrite-links.js';
 import { resolveScaffoldPaths } from '../scaffold/template-writer.js';
+
+/**
+ * Spec 17b §4 — strict fidelity gate failure. Distinct so `run all
+ * --strict-fidelity` (and CI) can tell "below the bar" from every other
+ * failure. 61 is the spend-ceiling abort; 11–16/21–32/41–47/51–58 belong to
+ * the e2e harnesses.
+ */
+export const EXIT_STRICT_FIDELITY = 62;
 
 interface ClonedPage {
   /** Slug used for screenshots (`index.astro` -> `home`). */
@@ -65,6 +75,16 @@ export default class CloneFidelity extends BaseCommand {
       default: 'screenshots/desktop',
     }),
     force: Flags.boolean({ description: 'Overwrite an existing summary.json', default: false }),
+    'fidelity-bar': Flags.integer({
+      description:
+        'Per-page overall-score bar for the warn/strict policy (spec 17b §1; provisional calibration).',
+      default: CLONE_FIDELITY_BAR,
+    }),
+    'strict-fidelity': Flags.boolean({
+      description:
+        'Fail (exit 62) when any page scores below the bar or could not be scored, instead of warn-and-record.',
+      default: false,
+    }),
   };
 
   async run(): Promise<void> {
@@ -84,7 +104,13 @@ export default class CloneFidelity extends BaseCommand {
     const cloneShotsDir = resolveUnder(clientDir, flags['clone-shots-dir']);
     const liveShotsDir = resolveUnder(clientDir, flags['live-shots-dir']);
 
-    if (this.skipIfExists('clone-qa/summary.json', outPath, { force: flags.force })) return;
+    if (this.skipIfExists('clone-qa/summary.json', outPath, { force: flags.force })) {
+      // Resume path (`run all --from`): no rescoring, but the policy is still
+      // applied to the existing summary so warn/strict behavior stays honest.
+      const existing = JSON.parse(readFileSync(outPath, 'utf-8')) as FidelitySummary;
+      this.applyFidelityPolicy(existing, outPath, flags['fidelity-bar'], flags['strict-fidelity']);
+      return;
+    }
 
     const pagesDir = join(repoDir, 'src', 'pages');
     if (!existsSync(pagesDir)) {
@@ -166,6 +192,51 @@ export default class CloneFidelity extends BaseCommand {
       this.log(`  No fidelity findings (all pages >= ${FIDELITY_THRESHOLD} or unscored)`);
     }
     this.log('');
+
+    // Spec 17b §1 — per-page bar policy, applied LAST so every artifact
+    // (summary, findings) is on disk before a strict gate can abort.
+    this.applyFidelityPolicy(summary, outPath, flags['fidelity-bar'], flags['strict-fidelity']);
+  }
+
+  /**
+   * Evaluate the per-page policy, record it into summary.json, and warn or
+   * (under --strict-fidelity) fail with exit 62. Warn-and-record is the
+   * default: below-bar pages land, flagged here and routed by `fixes plan`.
+   */
+  private applyFidelityPolicy(
+    summary: FidelitySummary,
+    outPath: string,
+    bar: number,
+    strict: boolean,
+  ): void {
+    const result = evaluateFidelityPolicy(summary, bar);
+    const policy: FidelityPolicyBlock = {
+      bar,
+      strict,
+      belowBar: result.belowBar,
+      unscored: result.unscored,
+      evaluatedAt: new Date().toISOString(),
+    };
+    summary.policy = policy;
+    writeFileSync(outPath, `${JSON.stringify(summary, null, 2)}\n`, 'utf-8');
+
+    if (result.pass) {
+      this.log(`  Fidelity policy: every page >= ${bar} — pass.`);
+      return;
+    }
+    for (const p of result.belowBar) {
+      this.warn(`fidelity: page "${p.pageSlug}" scored ${p.overall} — below the ${bar} bar`);
+    }
+    for (const slug of result.unscored) {
+      this.warn(`fidelity: page "${slug}" could not be scored (fail-closed under --strict-fidelity)`);
+    }
+    if (strict) {
+      this.error(
+        `--strict-fidelity: ${result.belowBar.length} below-bar / ${result.unscored.length} unscored page(s); see clone-qa/summary.json policy block.`,
+        { exit: EXIT_STRICT_FIDELITY },
+      );
+    }
+    this.log(`  Recorded in clone-qa/summary.json (policy block); fixes plan routes below-${FIDELITY_THRESHOLD} pages.`);
   }
 }
 

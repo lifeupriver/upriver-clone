@@ -4,12 +4,16 @@ import {
   emptyLedger,
   addSpend,
   estimateStepUsd,
+  estimateUsd,
   wouldExceed,
+  wouldExceedEstimate,
   sumLedgers,
   estimateTable,
   PITCH_STEPS,
   PITCH_MAX_SPEND_USD_DEFAULT,
   PITCH_MAX_BATCH_SPEND_USD_DEFAULT,
+  RATE_USD_PER_FIRECRAWL_CREDIT,
+  RATE_USD_PER_AGENT_SECOND,
 } from './ledger.js';
 
 describe('pitch spend ledger', () => {
@@ -76,5 +80,44 @@ describe('pitch spend ledger', () => {
     assert.ok(
       PITCH_MAX_BATCH_SPEND_USD_DEFAULT >= PITCH_MAX_SPEND_USD_DEFAULT * 10,
     );
+  });
+});
+
+// Spec 17b §2 — the generic estimate API the run-all/clone ceilings build on.
+// Same semantics as the pitch-typed wrappers: estimate exactly at the ceiling
+// runs; over the ceiling aborts before the step.
+describe('generic step-estimate API (spec 17b)', () => {
+  it('estimateUsd prices credits and agent seconds from the rate constants', () => {
+    const usd = estimateUsd({ firecrawlCredits: 10, agentSeconds: 60 });
+    assert.ok(
+      Math.abs(
+        usd - (10 * RATE_USD_PER_FIRECRAWL_CREDIT + 60 * RATE_USD_PER_AGENT_SECOND),
+      ) < 1e-9,
+    );
+  });
+
+  it('wouldExceedEstimate: at-ceiling runs, over-ceiling aborts', () => {
+    const est = { firecrawlCredits: 0, agentSeconds: 250 }; // exactly $1.00
+    const spent = addSpend(emptyLedger(), { estUsd: 4 });
+    assert.equal(wouldExceedEstimate(spent, est, 5), false, 'exactly at ceiling is allowed');
+    assert.equal(wouldExceedEstimate(spent, est, 4.99), true, 'a cent over aborts');
+  });
+
+  it('pitch-typed estimateStepUsd agrees with the generic pricing', () => {
+    // The wrappers must be thin: a pitch step's USD is the generic estimateUsd
+    // of its estimate row, so the two APIs can never drift.
+    const table = estimateTable(PITCH_MAX_SPEND_USD_DEFAULT);
+    for (const row of table.steps) {
+      assert.ok(
+        Math.abs(
+          row.usd / row.count -
+            estimateUsd({
+              firecrawlCredits: row.firecrawlCredits / row.count,
+              agentSeconds: row.agentSeconds / row.count,
+            }),
+        ) < 1e-9,
+        row.step,
+      );
+    }
   });
 });

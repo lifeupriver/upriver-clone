@@ -44,12 +44,27 @@ export interface PageFidelity {
 }
 
 /**
+ * Result of the per-page bar policy (Spec 17b §1), recorded alongside the
+ * scores so the warn-and-record default leaves an artifact trail — harvest
+ * sweeps and `run all` summaries read it from here. Optional: summaries
+ * written before 17b (or by the pitch path) simply don't carry it.
+ */
+export interface FidelityPolicyBlock {
+  bar: number;
+  strict: boolean;
+  belowBar: Array<{ pageSlug: string; overall: number }>;
+  unscored: string[];
+  evaluatedAt: string;
+}
+
+/**
  * Aggregated fidelity summary written to `clone-qa/summary.json`.
  */
 export interface FidelitySummary {
   generatedAt: string;
   overall: number;
   pages: PageFidelity[];
+  policy?: FidelityPolicyBlock;
 }
 
 const PIXEL_WEIGHT = 0.6;
