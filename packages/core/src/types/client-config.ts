@@ -43,10 +43,20 @@ export interface PricingTier {
   description: string;
 }
 
+/**
+ * Engagement stage (Spec 19). `prospect` marks a dir created by the pitch
+ * engine: same layout and confidentiality posture as a client, but filtered
+ * out of client-facing lists. Omitted means `client` — every pre-Spec-19
+ * config keeps its existing semantics.
+ */
+export const ENGAGEMENT_STAGES = ['prospect', 'client'] as const;
+export type EngagementStage = (typeof ENGAGEMENT_STAGES)[number];
+
 export interface ClientConfig {
   slug: string;
   name: string;
   url: string;
+  stage?: EngagementStage;
   platform?: 'squarespace' | 'wordpress' | 'wix' | 'webflow' | 'showit' | 'unknown';
   vertical?: Vertical;
   created_at: string;

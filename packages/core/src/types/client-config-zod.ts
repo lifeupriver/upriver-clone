@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { VERTICALS } from './client-config.js';
+import { ENGAGEMENT_STAGES, VERTICALS } from './client-config.js';
 
 export const GscConfigZ = z
   .object({
@@ -23,6 +23,8 @@ export const ClientConfigZ = z
     slug: z.string().min(1),
     name: z.string().min(1),
     url: z.string().url('client-config.yaml `url` must be a valid URL'),
+    // Spec 19: prospect dirs share the client layout; omitted = client.
+    stage: z.enum(ENGAGEMENT_STAGES).optional(),
     platform: z
       .enum(['squarespace', 'wordpress', 'wix', 'webflow', 'showit', 'unknown'])
       .optional(),
