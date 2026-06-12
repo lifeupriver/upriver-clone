@@ -92,10 +92,44 @@ prospect can hold up at their next stakeholder meeting.
 > get an apples-to-apples diff: here's what scored 60, now scores 85.
 > If it didn't move, that's our problem to fix, not yours."
 
+## Outbound: the pitch engine
+
+For cold or warm outbound, `upriver pitch` produces the opener for you
+(full doc: [`PITCH-ENGINE.md`](PITCH-ENGINE.md)): a faithful rebuild of
+the prospect's own homepage behind a private 14-day preview link, plus
+four teaser docs — before/after, top-3 quick wins, a brand-voice sample
+rewritten from *their* copy, and a vertical opportunity snapshot.
+**Deliberately no pricing in any of it** — the materials earn the
+conversation; pricing happens in it.
+
+```bash
+upriver pitch run https://prospect.example   # draft bundle, ~$5 ceiling
+upriver pitch approve <slug>                 # review the exact email + links, then send
+upriver pitch status                         # who's been sent, who's viewed, who's answered
+upriver pitch convert <slug>                 # they engaged → stage: client, answers seed the profile
+```
+
+Rules of the road:
+
+- **Read the brand-voice teaser before approving.** It's the
+  highest-off-key-risk artifact; the approve gate flags it for explicit
+  operator eyeballs on purpose.
+- **The email never pretends.** It says plainly that we built a preview
+  rebuild of their homepage — nothing implies they asked for it or that
+  it's live. Unsubscribe and the postal footer are baked into the send
+  path; a suppressed address can't be sent to again.
+- **Takedown is a 10-second promise**: `upriver pitch revoke <slug>`
+  kills the preview, the questionnaire link, and the tokens in one
+  command. If a prospect asks, do it immediately, no questions.
+- The questionnaire's last question — "anything we got wrong?" — doubles
+  as the hedging-error report channel. Treat answers as gold: they're
+  both rapport and QA.
+
 ## What to send when
 
 1. **Discovery call done.** Send the prospect the public homepage of a
-   recent audit deliverable as a sample (no slug needed).
+   recent audit deliverable as a sample (no slug needed) — or run the
+   pitch engine and lead with their own homepage rebuilt (above).
 2. **Audit purchased.** Operator runs `upriver init`, `upriver scrape`,
    `upriver audit --mode=all`. Within 48 hours, send the audit share
    link.

@@ -126,6 +126,13 @@ If `UPRIVER_SUPABASE_SERVICE_KEY` isn't set, share-link minting will
 load the page but throw "service-role key required" the moment you
 click **Mint share link**.
 
+If you use the pitch engine (`upriver pitch`), also set
+`UPRIVER_UNSUBSCRIBE_SECRET` here — the dashboard's `/api/unsubscribe`
+endpoint HMAC-verifies unsubscribe links with it, and it must equal the
+value the operator CLI uses for `pitch approve` (see the secrets
+reference in `docs/OPS.md`). Without it, unsubscribe links in sent
+outreach email will fail.
+
 To grab the service-role key:
 1. Open **Supabase Dashboard → Project Settings → API**.
 2. Under "Project API keys" copy the **service_role** key (NOT the

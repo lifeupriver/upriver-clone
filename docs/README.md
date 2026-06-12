@@ -9,6 +9,7 @@ Start with the repo [`README.md`](../README.md) for what Upriver is, setup, and 
 | [`USER-GUIDE.md`](USER-GUIDE.md) | **Start here.** Running a client engagement end to end: the pipeline walkthrough, the intake & profile engine, dashboard, deliverable distribution, retainer work, troubleshooting. |
 | [`COMMAND-REFERENCE.md`](COMMAND-REFERENCE.md) | Every CLI command — flags, inputs/outputs, exit codes — grouped by function. |
 | [`INTAKE-PROFILE-ENGINE.md`](INTAKE-PROFILE-ENGINE.md) | The `recon` / `profile` / `generate` engine: the Client Profile, coverage and verification gates, AI Operating System doc generation. |
+| [`PITCH-ENGINE.md`](PITCH-ENGINE.md) | The `pitch` sales engine: prospect homepage clone, teaser bundle, token-gated preview portal, outreach compliance (approve gate, suppression, unsubscribe), spend ceilings, conversion to a client engagement. |
 
 ## Working on the code
 
@@ -38,4 +39,4 @@ Start with the repo [`README.md`](../README.md) for what Upriver is, setup, and 
 
 ## History and direction
 
-Build specs, plans, the drift report, and the current handoff prompt live in [`.planning/`](../.planning/) — specs 1–15 are shipped; the 2026-06-10 handoff (`.planning/roadmap/2026-06-10-next-phase-handoff-prompt.md`) defines specs 16–19.
+Build specs, plans, the drift report, and handoff docs live in [`.planning/`](../.planning/) — specs 1–19 are shipped (16: Tier B live e2e; 17b: clone hardening + spend ceilings; 18: site-diversity matrix + `upriver harvest`; 19: the pitch engine). The remaining open items are the operator-gated live workflow dispatches recorded in each spec's Definition of Done.
