@@ -1,11 +1,12 @@
 /// <reference path="../.astro/types.d.ts" />
 
 interface ImportMetaEnv {
-  readonly SUPABASE_URL: string;
-  readonly SUPABASE_ANON_KEY: string;
+  // PUBLIC_ vars are exposed to client-side code by Astro; everything else
+  // is server-only.
+  readonly PUBLIC_SUPABASE_URL: string;
+  readonly PUBLIC_SUPABASE_ANON_KEY: string;
+  readonly PUBLIC_SITE_URL: string;
   readonly SUPABASE_SERVICE_ROLE_KEY: string;
-  readonly BETTER_AUTH_SECRET: string;
-  readonly BETTER_AUTH_URL: string;
   readonly GITHUB_TOKEN: string;
   readonly GITHUB_OWNER: string;
   readonly GITHUB_REPO: string;
@@ -19,7 +20,6 @@ interface ImportMeta {
 
 declare namespace App {
   interface Locals {
-    user: Record<string, unknown> | null;
-    session: Record<string, unknown> | null;
+    user: import('@supabase/supabase-js').User | null;
   }
 }

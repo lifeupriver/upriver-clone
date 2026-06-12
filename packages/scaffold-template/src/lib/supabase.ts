@@ -1,16 +1,12 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const url = import.meta.env.SUPABASE_URL ?? process.env.SUPABASE_URL ?? '';
-const anonKey = import.meta.env.SUPABASE_ANON_KEY ?? process.env.SUPABASE_ANON_KEY ?? '';
-const serviceRoleKey =
-  import.meta.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
+// Browser-safe Supabase client. Astro only exposes `PUBLIC_`-prefixed env
+// vars to client-side code, so this module must never read service-role
+// keys — server-only clients live in src/lib/supabase-server.ts.
+const url = import.meta.env.PUBLIC_SUPABASE_URL ?? '';
+const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '';
 
-// Public (anon) client — safe for the browser and for the ContactForm insert.
+// Public (anon) client — safe for the browser. Writes are only possible
+// through the security-definer RPCs granted to `anon` in
+// supabase/migrations/001_schema.sql.
 export const supabase: SupabaseClient = createClient(url || 'http://localhost', anonKey || 'anon');
-
-// Server-only client — use for privileged reads/writes in SSR admin routes.
-export const supabaseAdmin: SupabaseClient = createClient(
-  url || 'http://localhost',
-  serviceRoleKey || anonKey || 'anon',
-  { auth: { persistSession: false, autoRefreshToken: false } },
-);

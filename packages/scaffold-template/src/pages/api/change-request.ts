@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { supabaseAdmin } from '../../lib/supabase';
+import { supabaseAdmin } from '../../lib/supabase-server';
 
 export const prerender = false;
 
@@ -51,8 +51,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
   });
 
   if (!ghRes.ok) {
-    const text = await ghRes.text();
-    return json({ ok: false, error: `GitHub API ${ghRes.status}: ${text}` }, 502);
+    // Log the detail server-side; never echo the raw GitHub response to the
+    // client (it can contain token/scope/rate-limit internals).
+    const text = await ghRes.text().catch(() => '');
+    console.error(`[api/change-request] GitHub API ${ghRes.status}: ${text.slice(0, 2000)}`);
+    return json({ ok: false, error: 'Could not create the GitHub issue — check server logs.' }, 502);
   }
 
   const issue = (await ghRes.json()) as { html_url: string; number: number };

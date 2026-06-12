@@ -1,10 +1,12 @@
 ---
+import { SITE_NAME } from '../../site.config';
+
 const year = new Date().getFullYear();
 ---
 
 <footer class="border-t border-ink-200 bg-white mt-16">
   <div class="mx-auto max-w-6xl px-6 py-8 text-sm text-ink-500 flex items-center justify-between">
-    <div>© {year} Client. All rights reserved.</div>
+    <div>© {year} {SITE_NAME}. All rights reserved.</div>
     <div class="flex gap-4">
       <a href="/privacy" class="hover:text-ink-900">Privacy</a>
       <a href="/terms" class="hover:text-ink-900">Terms</a>

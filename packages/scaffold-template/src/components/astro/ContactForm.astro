@@ -1,9 +1,12 @@
 ---
-// Public inquiry form. Submits client-side to Supabase via the anon key,
-// invoking the `submit_inquiry` RPC (defined in supabase/migrations/001_schema.sql).
+// Public inquiry form. Plain HTML POST to the scaffold's /api/inquiry
+// endpoint (src/pages/api/inquiry.ts), which validates and stores the
+// inquiry via the `submit_inquiry` RPC (supabase/migrations/001_schema.sql).
+// On success the endpoint 303-redirects back to this page with
+// `?submitted=1`; the small script below surfaces that as a confirmation.
 ---
 
-<form id="contact-form" class="mx-auto max-w-xl space-y-4">
+<form method="POST" action="/api/inquiry" class="mx-auto max-w-xl space-y-4">
   <div>
     <label class="block text-sm font-medium text-ink-900" for="name">Name</label>
     <input
@@ -34,43 +37,26 @@
       class="mt-1 block w-full rounded-button border border-ink-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
     ></textarea>
   </div>
+  <!-- Honeypot — humans never see this; submissions that fill it are dropped. -->
+  <div class="hidden" aria-hidden="true">
+    <label for="website">Website</label>
+    <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
   <button
     type="submit"
     class="bg-brand-600 text-white px-6 py-3 rounded-button font-medium hover:bg-brand-700"
   >
     Send message
   </button>
-  <p id="contact-status" class="text-sm" aria-live="polite"></p>
+  <p id="contact-status" data-form-status class="text-sm" aria-live="polite"></p>
 </form>
 
 <script>
-  import { supabase } from '../../lib/supabase';
-
-  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  // Post-redirect confirmation: /api/inquiry answers plain form POSTs with
+  // a 303 back to the referring page + ?submitted=1.
   const status = document.getElementById('contact-status');
-
-  form?.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    if (!status) return;
-    status.textContent = 'Sending…';
-    status.className = 'text-sm text-ink-500';
-
-    const data = new FormData(form);
-    const payload = {
-      p_name: String(data.get('name') ?? ''),
-      p_email: String(data.get('email') ?? ''),
-      p_message: String(data.get('message') ?? ''),
-    };
-
-    const { error } = await supabase.rpc('submit_inquiry', payload);
-    if (error) {
-      status.textContent = `Sorry — something went wrong: ${error.message}`;
-      status.className = 'text-sm text-red-600';
-      return;
-    }
-
+  if (status && new URLSearchParams(window.location.search).get('submitted') === '1') {
     status.textContent = 'Thanks — we will be in touch shortly.';
     status.className = 'text-sm text-green-700';
-    form.reset();
-  });
+  }
 </script>

@@ -1,0 +1,7 @@
+# Operator: replace the Sitemap host below with the production domain
+# before launch (see launch-checklist.md — "Sitemap and robots").
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+Sitemap: https://example.com/sitemap-index.xml

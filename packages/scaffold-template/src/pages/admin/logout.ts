@@ -1,17 +1,16 @@
 import type { APIRoute } from 'astro';
-import { authAdapter } from '../../lib/auth-adapter';
+import { createSupabaseServerClient } from '../../lib/supabase-server';
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ cookies, redirect }) => {
-  const token = cookies.get('upriver_session')?.value;
-  if (token) {
-    try {
-      await authAdapter.deleteSession(token);
-    } catch {
-      // swallow — cookie is cleared regardless
-    }
-    cookies.delete('upriver_session', { path: '/' });
+export const POST: APIRoute = async ({ request, cookies, redirect }) => {
+  try {
+    const supabase = createSupabaseServerClient(request, cookies);
+    // Revokes the refresh token and clears the sb-* auth cookies through
+    // the @supabase/ssr cookie adapter.
+    await supabase.auth.signOut();
+  } catch {
+    // swallow — the user lands on the login page regardless
   }
   return redirect('/admin/login');
 };

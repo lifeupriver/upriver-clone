@@ -115,15 +115,20 @@ ${redirectRows}
 
 ### Analytics
 - [ ] Confirm which analytics tool will be used (GA4, Plausible, Umami). Recommended default: Plausible for simplicity, GA4 if the client already has an account.
-- [ ] Install the snippet in \`src/layouts/BaseLayout.astro\` with the production property ID (not the staging one).
+- [ ] Install the snippet in \`src/layouts/Layout.astro\` with the production property ID (not the staging one).
 - [ ] If GA4: create a data stream, link to Search Console, set up conversions for key events (form submit, phone click, email click).
 - [ ] If Plausible: add the domain, share the dashboard link with the client.
 - [ ] Verify pageviews fire in the tool's real-time view by loading the preview with the production domain spoofed via \`/etc/hosts\`.
 
 ### Sitemap and robots
 - [ ] Build runs \`@astrojs/sitemap\` — confirm \`dist/sitemap-index.xml\` exists after \`pnpm build\`.
-- [ ] \`public/robots.txt\` references the production sitemap URL, not the preview URL.
+- [ ] \`public/robots.txt\` references the production sitemap URL, not the preview URL (the template ships an \`https://example.com\` placeholder).
 - [ ] robots.txt does not contain \`Disallow: /\` left over from staging.
+
+### Placeholder content
+- [ ] Replace the operator-marked placeholder copy on \`/privacy\` and \`/terms\` with client-provided policies (the template ships both pages with a visible "[Operator: replace...]" block).
+- [ ] Replace \`public/favicon.svg\` (neutral template mark) with the client's favicon.
+- [ ] Set \`PUBLIC_SITE_URL\` to the production origin so canonical/OG URLs and the sitemap stop pointing at the placeholder.
 
 ### Preview sign-off
 - [ ] Final \`upriver qa <slug> --preview-url <url>\` run is clean (no in-scope items still open, no new issues introduced).
