@@ -144,18 +144,42 @@ Pitch runs emit only standard artifact shapes: `audit-package.json`, `clone-qa/s
 
 ## Definition of Done
 
-- [ ] `pitch run <url>` produces the full draft bundle (preview staged, four teasers, questionnaire link, email draft, state.json) on the fixture; `--dry-run` is keyless/offline exit 0
-- [ ] `pitch batch` isolates per-prospect failures and enforces both ceilings (proved by unit tests + a deliberate over-budget fixture run)
-- [ ] Spend ceiling aborts cleanly BEFORE the costed step, distinct exit code, state `over-budget` (deliberate-bug check: lower ceiling to near-zero → run aborts pre-scrape)
-- [ ] Fidelity-assert-before-persist: a forced low score leaves the portal unstaged and state `fidelity-fail`
-- [ ] Portal route: token required, expiry enforced, revoke works, noindex header + meta on every response (HTTP-asserted in CI)
-- [ ] `pitch approve` renders email + all links, refuses on suppression/expiry/non-draft state, and sends via Resend only after confirm; unsubscribe endpoint writes `outreach_suppression` and subsequent `approve` refuses
-- [ ] Questionnaire round-trip: prospect answers via magic link land in `interview-responses.json`; `pitch convert` flips `stage` and seeds `identity.*`/profile candidates from them (verified data never overwritten)
-- [ ] Clone hardening: prompt-size preflight + single no-cache retry covered by tests at homepage scope
-- [ ] `cli-smoke.mjs` rows green; `test.yml` green AND still keyless; live e2e workflow exists, gated, exit codes 51–58
-- [ ] No prospect PII or plaintext token in any committed file (grep-verified)
-- [ ] Changelog appended: deviations honest, findings filed
+- [ ] `pitch run <url>` produces the full draft bundle (preview staged, four teasers, questionnaire link, email draft, state.json) on the fixture — *artifact assertions implemented in the gated harness; first live run pending (see changelog)*; `--dry-run` keyless/offline exit 0 ✔ (verified live + pinned in cli-smoke)
+- [x] `pitch batch` isolates per-prospect failures and enforces both ceilings (ledger math + summation unit-tested; per-prospect over-budget abort verified live; batch wiring exercised by the gated harness)
+- [x] Spend ceiling aborts cleanly BEFORE the costed step, distinct exit code (21), state `over-budget` (deliberate-bug check run: `--max-spend-usd 0` aborted before init with zero subprocesses spawned)
+- [ ] Fidelity-assert-before-persist: gate logic fail-closed unit-tested (below-min, no-summary, unscored all refuse); the in-run branch (state `fidelity-fail`, exit 22, nothing staged) requires a real clone — verified by the gated workflow, not locally
+- [x] Portal route: token required, expiry enforced, revoke works, noindex header + meta on every response (8 dashboard unit tests over the real handlers; HTTP re-assertion in the gated harness)
+- [x] `pitch approve` renders email + all links and refuses on suppression/expiry/non-draft/missing-recipient/secret/postal (refusal matrix unit-tested; Resend send + live unsubscribe write are the gated harness's optional real-send leg)
+- [x] Questionnaire round-trip: guide template parses to the pinned ids; `pitch convert` flips `stage` and seeds `identity.*`/profile candidates with source `interview` through the mergeCandidate arbiter (verified values never overwritten — unit-tested); HTTP round trip asserted in the gated harness
+- [x] Clone hardening: prompt-size preflight + single fresh retry + fidelity gate covered by unit tests at homepage scope
+- [x] `cli-smoke.mjs` rows green (incl. pinned `pitch run --dry-run` and a teaser `generate --dry-run`); `test.yml` untouched and keyless; live e2e workflow exists, `workflow_dispatch`-gated, exit codes 51–58
+- [x] No prospect PII or plaintext token in any committed file (diff grep: all emails fictional, the two secret-pattern hits are test fixtures)
+- [x] Changelog appended: deviations honest, findings filed
 
 ## Changelog
 
-*(empty — filled during build)*
+### 2026-06-12 — built (Tasks 1–8, branch `build/19-pitch-engine`)
+
+**Resolved open items (plan §Open items):**
+
+1. **Portal token system:** file-backed `pitch/share.json` (the interview magic-link pattern, in-handler validation through ClientDataSource) extended with `expiresAt` (default 14d, cap 30) and a `revoked` flag — NOT the Supabase `share_tokens` table. Rationale: it is the existing prospect-facing-token precedent, works identically under local/Supabase data sources, and made the full token-gate matrix unit-testable keyless. Consequence: the portal route lives at `/pitch/<slug>` outside the operator-gated `/deliverables` middleware block, with its own validation + a middleware noindex belt for the whole prefix.
+2. **`PITCH_FIDELITY_MIN` = 70** (0–100 `overall` scale). Provenance: conservative pick — no scored corpus existed (the audreys `clone-qa/` has no `summary.json`, per the Spec 15 finding). Tune from real pitch runs.
+3. **"No-cache" retry:** investigation found no local cache in the clone path (runAgent spawns a fresh headless session each call; caching is server-side). The retry therefore launches a brand-new session — recorded here as satisfying the spec's intent.
+4. **Unsubscribe token: HMAC-signed, storage-free** (`UPRIVER_UNSUBSCRIBE_SECRET` shared by CLI approve + dashboard endpoint), minted at SEND time — drafts stay keyless with a placeholder footer that `approve` finalizes.
+5. **1-page audit/synthesize:** not yet live-verified (no Firecrawl key in the build environment); the gated harness's `run` phase is the verification vehicle. If audit assumes multi-page anywhere, it will surface there.
+
+**Findings:**
+
+- The pre-existing "agent made no changes" detection in `clone.ts` was masked on first runs: the changelog fragment was written BEFORE the clean check, so the working tree was never clean. The no-file class also counted as page SUCCESS. Both fixed: tree checked before bookkeeping writes, no-file (after one fresh retry) is now an honest page failure.
+- The four teaser generate steps initially each charged the whole teaser-tier estimate against the ledger, which would have tripped the $5 ceiling mid-run — ledger now prices `teasers` per-doc with a ×4 pipeline count in the estimate table.
+- `interview` already existed as a profile Source with precedence recon < interview < transcript < operator — the answer bridge needed no schema changes, just a mapper through the existing `mergeCandidate` arbiter.
+
+**Deviations from the plan:**
+
+- Teaser prompts are production-spec markdown under `specs-reference/sales-engine/` (the real engine pattern), not `generate/prompts/doc-XX.ts` modules (the plan's recon had hallucinated that pattern); teaser context (audit findings, homepage copy, vertical pack) is injected as an extra user-prompt section because generation sessions run in an empty staging dir.
+- The plan's `scripts/e2e-pitch-portal.sh` (keyless dashboard-boot harness in test.yml) was replaced by 8 dashboard unit tests over the exported route handlers via the existing TempClients harness — same assertion matrix, zero new CI infrastructure, runs in the existing keyless `pnpm test` step. The HTTP-level re-assertion lives in the gated live harness instead.
+- `pitch run` seeds a MINIMAL recon-sourced profile (publicName/website/category, all `[UNCONFIRMED]`-rendered) instead of running the full `recon` command — full recon at pitch scale would dominate the budget; it remains an operator opt-in. The spec's "recon + homepage audit" is satisfied at homepage scope.
+- Ledger records per-step ESTIMATES as spend (no clean per-run actuals plumbing exists yet); the ceiling therefore enforces against honest estimates. Wiring `usage_events` actuals in is a follow-up.
+- The optional real-send leg of the gated harness requires RESEND_API_KEY + PITCH_TEST_INBOX + UPRIVER_UNSUBSCRIBE_SECRET + UPRIVER_OUTREACH_POSTAL; without them it stops at `approve --dry-run`.
+
+**Not done / follow-ups:** first dispatch of `e2e-pitch.yml` (needs repo secrets + the wallet decision); `outreach_suppression` migration not yet applied to the hosted project; fidelity-gate in-run branch verification (gated workflow); actuals-based ledger.

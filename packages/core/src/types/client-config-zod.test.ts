@@ -63,3 +63,19 @@ describe('ClientConfigZ — optional locality fields', () => {
     assert.equal(ClientConfigZ.safeParse({ ...base, localBusiness: 'yes' }).success, false);
   });
 });
+
+describe('ClientConfigZ — engagement stage (Spec 19)', () => {
+  it('accepts a config without stage (existing clients are stage-less = client)', () => {
+    const parsed = ClientConfigZ.parse(base);
+    assert.equal(parsed.stage, undefined);
+  });
+
+  it('accepts stage: prospect and stage: client', () => {
+    assert.equal(ClientConfigZ.parse({ ...base, stage: 'prospect' }).stage, 'prospect');
+    assert.equal(ClientConfigZ.parse({ ...base, stage: 'client' }).stage, 'client');
+  });
+
+  it('rejects unknown stages', () => {
+    assert.equal(ClientConfigZ.safeParse({ ...base, stage: 'lead' }).success, false);
+  });
+});

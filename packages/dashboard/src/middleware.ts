@@ -140,7 +140,17 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   try {
-    return await next();
+    const res = await next();
+    // Spec 19: every prospect-facing pitch response is noindexed at the
+    // middleware level too, so a future route under /pitch/ can't forget.
+    if (pathname === '/pitch' || pathname.startsWith('/pitch/')) {
+      try {
+        res.headers.set('x-robots-tag', 'noindex, nofollow');
+      } catch {
+        // immutable headers (already set by the route) — fine
+      }
+    }
+    return res;
   } catch (err) {
     if (err instanceof DataSourceUnavailableError) {
       const accept = context.request.headers.get('accept') ?? '';

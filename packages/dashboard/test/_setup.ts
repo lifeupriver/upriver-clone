@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 
 import {
   createEmptyProfile,
@@ -42,7 +42,8 @@ export function setupTempClients(): TempClients {
       writeFileSync(join(base, slug, 'client-config.yaml'), `slug: ${slug}\nname: Test ${slug}\n`, 'utf8');
     },
     writeFile(slug: string, name: string, body: string): void {
-      mkdirSync(join(base, slug), { recursive: true });
+      // `name` may be a nested path (e.g. `pitch/share.json`).
+      mkdirSync(dirname(join(base, slug, name)), { recursive: true });
       writeFileSync(join(base, slug, name), body, 'utf8');
     },
     readFile(slug: string, name: string): string | null {
