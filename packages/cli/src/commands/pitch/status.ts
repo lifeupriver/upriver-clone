@@ -7,6 +7,9 @@ import { BaseCommand } from '../../base-command.js';
 import { resolveClientDataSourceOrFail } from '../../generate/data-source.js';
 import { PITCH_STATE_VERSION, type PitchState } from '../../pitch/state.js';
 import type { PitchShareInfo } from '../../pitch/share.js';
+import { formatSpendWithActuals } from '../../spend/actuals.js';
+import { estimateUsd } from '../../pitch/ledger.js';
+import { summarizeUsageText } from '../../util/cost-summary.js';
 
 interface Row {
   slug: string;
@@ -86,10 +89,22 @@ export default class PitchStatus extends BaseCommand {
         }
       }
 
+      // Spec 17b §3 — credits become actuals when the usage log exists;
+      // agent time stays an estimate (reporting-time only, enforcement is
+      // untouched).
+      let actualCreditsUsd: number | null = null;
+      const usageRaw = await ds.readClientFileText(slug, 'token-and-credit-usage.log');
+      if (usageRaw) {
+        const usage = summarizeUsageText(usageRaw);
+        if (usage.totalEvents > 0) {
+          actualCreditsUsd = estimateUsd({ firecrawlCredits: usage.totalCredits, agentSeconds: 0 });
+        }
+      }
+
       rows.push({
         slug,
         status: state?.status ?? (config.stage === 'prospect' ? 'no state' : `stage: ${config.stage ?? 'client'}`),
-        spend: state ? `$${state.ledger.estUsd.toFixed(2)}` : '—',
+        spend: state ? formatSpendWithActuals(state.ledger, actualCreditsUsd) : '—',
         expires,
         answered,
         sentAt: state?.sentAt?.slice(0, 10) ?? '—',
@@ -101,13 +116,16 @@ export default class PitchStatus extends BaseCommand {
       return;
     }
 
+    // The spend cell grew an est+act split (spec 17b §3) — size the column
+    // to the widest value so the table stays aligned either way.
+    const spendW = Math.max(11, ...rows.map((r) => r.spend.length + 2));
     this.log('');
     this.log(
-      `${'SLUG'.padEnd(26)}${'STATUS'.padEnd(15)}${'EST.SPEND'.padEnd(11)}${'EXPIRES'.padEnd(12)}${'ANSWERED'.padEnd(12)}SENT`,
+      `${'SLUG'.padEnd(26)}${'STATUS'.padEnd(15)}${'SPEND'.padEnd(spendW)}${'EXPIRES'.padEnd(12)}${'ANSWERED'.padEnd(12)}SENT`,
     );
     for (const r of rows) {
       this.log(
-        `${r.slug.padEnd(26)}${r.status.padEnd(15)}${r.spend.padEnd(11)}${r.expires.padEnd(12)}${r.answered.padEnd(12)}${r.sentAt}`,
+        `${r.slug.padEnd(26)}${r.status.padEnd(15)}${r.spend.padEnd(spendW)}${r.expires.padEnd(12)}${r.answered.padEnd(12)}${r.sentAt}`,
       );
     }
   }

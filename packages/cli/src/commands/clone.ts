@@ -21,6 +21,9 @@ import { extractEmbeds, pageFileSlug as embedPageSlug } from '../clone/embed-aud
 import { runAgent } from '../util/claude-code.js';
 import { commitAll, ensureGitInitialized, workingTreeDirty } from '../util/git-commit.js';
 import { assertPromptSize, runAgentWithNoFileRetry } from '../clone/hardening.js';
+import { addSpend, emptyLedger, wouldExceedEstimate, type SpendLedger } from '../pitch/ledger.js';
+import { RUN_MAX_SPEND_USD_DEFAULT, stageEstimate } from '../spend/stage-estimates.js';
+import { EXIT_SPEND_CEILING } from '../spend/run-spend-plan.js';
 
 export default class Clone extends BaseCommand {
   static override description = 'Run Claude Code headless agent to visually clone the site page by page';
@@ -48,6 +51,16 @@ export default class Clone extends BaseCommand {
     'all-pages': Flags.boolean({
       description:
         'Clone every page in audit-package.siteStructure.pages (the old behavior). By default, clone only the pages classified as "major" by `upriver major-pages` — homepage, nav targets, conventional hubs, content pages with real h1+body. Run `upriver major-pages <slug>` first to populate the list.',
+    }),
+    'max-spend-usd': Flags.integer({
+      description:
+        'Per-run spend ceiling in USD, checked BEFORE each page agent (spec 17b §2). `run all` passes its remaining budget through here.',
+      default: RUN_MAX_SPEND_USD_DEFAULT,
+    }),
+    'spend-ceiling': Flags.boolean({
+      description: 'Enforce the spend ceiling (--no-spend-ceiling to disable).',
+      default: true,
+      allowNo: true,
     }),
   };
 
@@ -131,6 +144,17 @@ export default class Clone extends BaseCommand {
 
     this.log(`\nCloning ${pages.length} page(s) for "${slug}" into ${repoDir}`);
 
+    // Spec 17b §2 — per-page spend ceiling. One page ≈ one agent session; the
+    // SAME estimate constant feeds this check and run all's table.
+    const perPageEst = stageEstimate('clone', { pages: 1, auditMode: 'base' })!;
+    const perPageUsd = addSpend(emptyLedger(), perPageEst).estUsd;
+    const ceiling = flags['spend-ceiling'] && !flags['dry-run'] ? flags['max-spend-usd'] : null;
+    this.log(
+      `  Estimated ~$${perPageUsd.toFixed(2)}/page, ~$${(perPageUsd * pages.length).toFixed(2)} total; ceiling ${
+        ceiling === null ? (flags['dry-run'] ? `n/a (dry run)` : 'DISABLED (--no-spend-ceiling)') : `$${ceiling}`
+      }.`,
+    );
+
     const useWorktrees = !flags['no-worktree'] && !flags['dry-run'] && pages.length > 1;
     if (!flags['dry-run']) ensureGitInitialized(repoDir);
 
@@ -143,10 +167,22 @@ export default class Clone extends BaseCommand {
     const shouldVerify = !flags['no-verify'] && !flags['dry-run'] && !useWorktrees;
     const verifyPort = shouldVerify ? pickVerifyPort(slug) : 0;
 
+    // Shared across workers (single-threaded event loop: dequeue + ledger
+    // update happen synchronously together, so the check-then-commit is safe).
+    let spendLedger: SpendLedger = emptyLedger();
+    const skippedOverCeiling: SitePage[] = [];
+
     const runWorker = async (): Promise<void> => {
       while (queue.length > 0) {
+        if (ceiling !== null && wouldExceedEstimate(spendLedger, perPageEst, ceiling)) {
+          // Checked BEFORE the page agent: drain the queue so every worker
+          // stops; nothing over the ceiling is ever launched.
+          skippedOverCeiling.push(...queue.splice(0, queue.length));
+          break;
+        }
         const page = queue.shift();
         if (!page) break;
+        spendLedger = addSpend(spendLedger, perPageEst);
         const result = await this.clonePage({
           page,
           slug,
@@ -191,6 +227,19 @@ export default class Clone extends BaseCommand {
     }
     if (failed > 0) {
       this.warn(`${failed} page(s) failed — re-run with --page to retry them individually.`);
+    }
+    if (skippedOverCeiling.length > 0) {
+      // Exit 61 even with partial success (spec 17b §2 deviation from the
+      // "≥1 ok ⇒ 0" contract, ceiling stops only): a budget-truncated clone
+      // must not look complete to an unattended `run all`.
+      for (const p of skippedOverCeiling) {
+        this.log(`  [skipped: over-ceiling] ${canonicalPagePath(p)}`);
+      }
+      this.error(
+        `Spend ceiling: ${skippedOverCeiling.length} page(s) NOT cloned (est ~$${perPageUsd.toFixed(2)}/page vs $${ceiling} ceiling). ` +
+          `Re-run with --page per remaining page, raise --max-spend-usd, or pass --no-spend-ceiling.`,
+        { exit: EXIT_SPEND_CEILING },
+      );
     }
   }
 

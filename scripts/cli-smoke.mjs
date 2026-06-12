@@ -114,6 +114,11 @@ const TABLE = [
   // misuse guard (Spec 14): flag without --dry-run must be a clean oclif error.
   [['generate', 'littlefriends', '--all', '--strict-provisioning'], [2], LOCAL],
   [['run', 'all', 'wb-fixture', '--dry-run'], [0], LOCAL],
+  // Spec 17b: ceiling surfaced in dry-run with enforcement disabled…
+  [['run', 'all', 'wb-fixture', '--dry-run', '--no-spend-ceiling'], [0], LOCAL],
+  // …and the deliberate-bug check: a zero ceiling aborts BEFORE the first
+  // costed stage (exit 61), zero subprocesses spawned, client dir untouched.
+  [['run', 'all', 'wb-fixture', '--max-spend-usd', '0'], [61], LOCAL],
   // Spec 19: the pitch plan + cost table must stay keyless and offline.
   [['pitch', 'run', 'https://wildflour.example', '--dry-run'], [0], LOCAL],
   [['generate', 'littlefriends', '--doc', 'doc-pitch-02', '--dry-run'], [0], LOCAL],

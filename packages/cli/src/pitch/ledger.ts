@@ -46,10 +46,38 @@ const PIPELINE_STEP_COUNTS: Record<PitchStep, number> = {
   teasers: 4,
 };
 
-function toUsd(firecrawlCredits: number, agentSeconds: number): number {
+/**
+ * A single costed step's estimate, independent of which pipeline it belongs
+ * to (Spec 17b §2). The pitch steps above and the run-all stage estimates
+ * both price through this shape so enforcement can never drift by pipeline.
+ */
+export interface StepEstimate {
+  firecrawlCredits: number;
+  agentSeconds: number;
+}
+
+export function estimateUsd(e: StepEstimate): number {
   return (
-    firecrawlCredits * RATE_USD_PER_FIRECRAWL_CREDIT + agentSeconds * RATE_USD_PER_AGENT_SECOND
+    e.firecrawlCredits * RATE_USD_PER_FIRECRAWL_CREDIT +
+    e.agentSeconds * RATE_USD_PER_AGENT_SECOND
   );
+}
+
+function toUsd(firecrawlCredits: number, agentSeconds: number): number {
+  return estimateUsd({ firecrawlCredits, agentSeconds });
+}
+
+/**
+ * Generic form of `wouldExceed`: true when taking a step with estimate `e` on
+ * top of `ledger` would break the ceiling. Same boundary semantics — landing
+ * exactly on the ceiling is allowed; a cent over aborts BEFORE the step.
+ */
+export function wouldExceedEstimate(
+  ledger: SpendLedger,
+  e: StepEstimate,
+  maxUsd: number,
+): boolean {
+  return ledger.estUsd + estimateUsd(e) > maxUsd;
 }
 
 export function emptyLedger(): SpendLedger {
@@ -69,8 +97,7 @@ export function addSpend(
 }
 
 export function estimateStepUsd(step: PitchStep): number {
-  const e = STEP_ESTIMATES[step];
-  return toUsd(e.firecrawlCredits, e.agentSeconds);
+  return estimateUsd(STEP_ESTIMATES[step]);
 }
 
 /**
@@ -79,7 +106,7 @@ export function estimateStepUsd(step: PitchStep): number {
  * with the step untaken, never after the money is gone.
  */
 export function wouldExceed(ledger: SpendLedger, step: PitchStep, maxUsd: number): boolean {
-  return ledger.estUsd + estimateStepUsd(step) > maxUsd;
+  return wouldExceedEstimate(ledger, STEP_ESTIMATES[step], maxUsd);
 }
 
 export function sumLedgers(ledgers: readonly SpendLedger[]): SpendLedger {

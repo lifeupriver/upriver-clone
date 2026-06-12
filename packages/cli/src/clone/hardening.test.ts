@@ -6,6 +6,8 @@ import {
   runAgentWithNoFileRetry,
   fidelityGate,
   PITCH_FIDELITY_MIN,
+  CLONE_FIDELITY_BAR,
+  evaluateFidelityPolicy,
 } from './hardening.js';
 import type { FidelitySummary } from '../clone-qa/fidelity-scorer.js';
 
@@ -109,5 +111,59 @@ describe('fidelityGate (assert-before-persist)', () => {
 
   it('honors an explicit minimum override', () => {
     assert.equal(fidelityGate(summary(50), 'home', 40).pass, true);
+  });
+});
+
+describe('evaluateFidelityPolicy (spec 17b §1 — full-site per-page policy)', () => {
+  const summaryOf = (pages: Array<{ slug: string; overall: number; status?: string }>) =>
+    ({
+      generatedAt: 'now',
+      overall: 0,
+      pages: pages.map((p) => ({ pageSlug: p.slug, overall: p.overall, status: p.status ?? 'scored' })),
+    } as unknown as FidelitySummary);
+
+  it('passes when every page meets the per-page bar', () => {
+    const r = evaluateFidelityPolicy(summaryOf([
+      { slug: 'home', overall: CLONE_FIDELITY_BAR },
+      { slug: 'about', overall: 92 },
+    ]));
+    assert.equal(r.pass, true);
+    assert.deepEqual(r.belowBar, []);
+    assert.deepEqual(r.unscored, []);
+  });
+
+  it('reports every below-bar page with its score — a mean cannot hide one bad page', () => {
+    const r = evaluateFidelityPolicy(summaryOf([
+      { slug: 'home', overall: 95 },
+      { slug: 'about', overall: CLONE_FIDELITY_BAR - 1 },
+      { slug: 'contact', overall: 12 },
+    ]));
+    assert.equal(r.pass, false);
+    assert.deepEqual(r.belowBar.map((p) => p.pageSlug), ['about', 'contact']);
+    assert.equal(r.belowBar[1]!.overall, 12);
+  });
+
+  it('unscored pages fail the policy (fail-closed, like fidelityGate)', () => {
+    const r = evaluateFidelityPolicy(summaryOf([
+      { slug: 'home', overall: 95 },
+      { slug: 'about', overall: 0, status: 'no-clone-shot' },
+    ]));
+    assert.equal(r.pass, false);
+    assert.deepEqual(r.unscored, ['about']);
+  });
+
+  it('a missing or empty summary is all-unscored, never a silent pass', () => {
+    assert.equal(evaluateFidelityPolicy(null).pass, false);
+    assert.equal(evaluateFidelityPolicy(summaryOf([])).pass, false);
+  });
+
+  it('honors a bar override', () => {
+    const r = evaluateFidelityPolicy(summaryOf([{ slug: 'home', overall: 50 }]), 40);
+    assert.equal(r.pass, true);
+  });
+
+  it('client bar and pitch minimum are separate constants (calibrate independently)', () => {
+    assert.equal(CLONE_FIDELITY_BAR, 70);
+    assert.equal(typeof PITCH_FIDELITY_MIN, 'number');
   });
 });
