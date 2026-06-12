@@ -28,6 +28,9 @@ import { assessPromptSize, type PromptSize } from './prompt-size.js';
 import { newlyUnblocked, renderDocLine, renderGenerationReport, renderReadiness, titleFor } from './report.js';
 import { runDoc, type ClaudeCall } from './runner.js';
 import { loadDeliverableSpec } from './spec-loader.js';
+import { buildPitchContext, isPitchDoc, PITCH_DOCS } from '../pitch/teasers.js';
+
+export { PITCH_DOCS };
 
 /**
  * The full AI Operating System document scope — 01–18. Docs 13–18 (Master Build
@@ -56,10 +59,16 @@ export const WEB_DOCS: readonly DeliverableId[] = ['doc-web-prd', 'design-system
 
 /**
  * Everything `generate` can produce: the 18 AI Operating System docs (01–18),
- * the website-tier deliverables (`--web`), plus the provisioning artifacts
- * (i01–i09, Build Spec 09).
+ * the website-tier deliverables (`--web`), the pitch teasers (Spec 19 —
+ * generated one-by-one by `pitch run`, never via --all/--web), plus the
+ * provisioning artifacts (i01–i09, Build Spec 09).
  */
-export const GENERATABLE: readonly DeliverableId[] = [...M1_DOCS, ...WEB_DOCS, ...I_SERIES];
+export const GENERATABLE: readonly DeliverableId[] = [
+  ...M1_DOCS,
+  ...WEB_DOCS,
+  ...PITCH_DOCS,
+  ...I_SERIES,
+];
 
 export function slugifyTitle(title: string): string {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -244,13 +253,30 @@ export async function runGenerate(
   const outputFileName = docFileName(opts.id, title);
   const docPath = `docs/${outputFileName}`;
   const upstreamDocs = await loadUpstreamDocs(ds, opts.slug, opts.id, manifest, opts.fullUpstream ?? false);
-  const prompt = buildPrompt({ id: opts.id, profile, outputPath: outputFileName, upstreamDocs });
+  // Spec 19: teasers are built from recon artifacts, not profile fields — the
+  // audit findings / homepage copy / vertical pack ride in as extra context.
+  const extraUserContext = isPitchDoc(opts.id)
+    ? await buildPitchContext(ds, opts.slug)
+    : undefined;
+  const prompt = buildPrompt({
+    id: opts.id,
+    profile,
+    outputPath: outputFileName,
+    upstreamDocs,
+    ...(extraUserContext !== undefined ? { extraUserContext } : {}),
+  });
 
   if (opts.dryRun) {
     // Estimate against the PROJECTED worst-case prompt (ungenerated deps padded
     // to the digest cap), so the pre-flight catches overflow on a fresh tree.
     const projected = await projectedUpstreamDocs(ds, opts.slug, opts.id, manifest, opts.fullUpstream ?? false);
-    const projectedPrompt = buildPrompt({ id: opts.id, profile, outputPath: outputFileName, upstreamDocs: projected });
+    const projectedPrompt = buildPrompt({
+      id: opts.id,
+      profile,
+      outputPath: outputFileName,
+      upstreamDocs: projected,
+      ...(extraUserContext !== undefined ? { extraUserContext } : {}),
+    });
     const size = assessPromptSize(opts.id, projectedPrompt.system, projectedPrompt.user);
     log(renderReadiness(opts.id, readiness));
     log('');

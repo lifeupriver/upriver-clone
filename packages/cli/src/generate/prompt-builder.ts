@@ -46,6 +46,13 @@ export interface BuildPromptInput {
   outputPath: string;
   /** Already-generated upstream docs this deliverable depends on. */
   upstreamDocs: UpstreamDoc[];
+  /**
+   * Extra user-prompt context for deliverables whose inputs are not profile
+   * fields — the pitch teasers (Spec 19) inject audit findings, scraped
+   * homepage copy, and the vertical pack here. The session cwd is an empty
+   * staging dir, so this is the only road in.
+   */
+  extraUserContext?: string;
 }
 
 /**
@@ -96,6 +103,9 @@ export function buildPrompt(input: BuildPromptInput): BuiltPrompt {
     sliceText,
     '## Upstream document digests (structure + key facts of the already-generated deps — use as context, do not restate)',
     upstream,
+    ...(input.extraUserContext
+      ? ['## Pitch recon context (automated findings — hedge per the [UNCONFIRMED] rule)', input.extraUserContext]
+      : []),
   ].join('\n\n');
 
   return { system, user };

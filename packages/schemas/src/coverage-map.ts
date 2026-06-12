@@ -8,6 +8,9 @@ export type DeliverableId =
   // Website tier (Build Spec 10, gap G6) — post-fork web deliverables, generated
   // under the explicit `--web` scope, excluded from `--all`'s default 01–18 set.
   | 'doc-web-prd' | 'design-system'
+  // Pitch teasers (Spec 19) — prospect-facing short docs built from recon only,
+  // generated one-by-one by `upriver pitch run`; never part of --all/--web.
+  | 'doc-pitch-01' | 'doc-pitch-02' | 'doc-pitch-03' | 'doc-pitch-04'
   | 'i01' | 'i02' | 'i03' | 'i04' | 'i05' | 'i06' | 'i07' | 'i08' | 'i09';
 
 export interface DeliverableCoverage {
@@ -25,6 +28,7 @@ export interface DeliverableCoverage {
 
 const AOS = 'ai-operating-system';
 const INF = 'infrastructure';
+const SALES = 'sales-engine';
 
 /**
  * The field-to-deliverable coverage map (PRD §3). `requiresFields` expands the
@@ -238,6 +242,39 @@ export const COVERAGE_MAP: readonly DeliverableCoverage[] = [
     requiresHvVerified: ['toolsAndAccess.assetStorage', 'governance.reviewResponsePolicy'],
     requiresDocs: ['doc-02', 'doc-04', 'doc-06', 'doc-11', 'doc-12', 'i01'],
     specPath: `${INF}/I09-client-artifacts-deliverable-templates-spec.md`,
+  },
+  // ——— Pitch teasers (Spec 19) ———————————————————————————————————————————
+  // Recon-only prospect docs: minimal field requirements (a prospect profile
+  // is seeded from recon, not an interview), zero HV gates, zero upstream
+  // deps. The audit/homepage context arrives via the engine's pitch-context
+  // injection, not the profile slice.
+  {
+    id: 'doc-pitch-01', title: 'Homepage Before & After',
+    requiresFields: ['identity.publicName'],
+    requiresHvVerified: [],
+    requiresDocs: [],
+    specPath: `${SALES}/pitch-01-before-after-spec.md`,
+  },
+  {
+    id: 'doc-pitch-02', title: 'Top 3 Quick Wins',
+    requiresFields: ['identity.publicName'],
+    requiresHvVerified: [],
+    requiresDocs: [],
+    specPath: `${SALES}/pitch-02-quick-wins-spec.md`,
+  },
+  {
+    id: 'doc-pitch-03', title: 'Brand Voice Sample',
+    requiresFields: ['identity.publicName'],
+    requiresHvVerified: [],
+    requiresDocs: [],
+    specPath: `${SALES}/pitch-03-voice-sample-spec.md`,
+  },
+  {
+    id: 'doc-pitch-04', title: 'Vertical Opportunity Snapshot',
+    requiresFields: ['identity.publicName', 'identity.category'],
+    requiresHvVerified: [],
+    requiresDocs: [],
+    specPath: `${SALES}/pitch-04-vertical-snapshot-spec.md`,
   },
 ];
 
