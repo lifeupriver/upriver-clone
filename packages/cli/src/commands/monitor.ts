@@ -13,6 +13,7 @@ import {
   findPreviousSnapshot,
 } from '../monitor/snapshot.js';
 import { renderEmailHtml, renderReportMarkdown } from '../monitor/render.js';
+import { DEFAULT_FROM, isEmailAddress, sendEmailIfConfigured } from '../report-helpers/resend.js';
 
 export default class Monitor extends BaseCommand {
   static override description =
@@ -38,8 +39,16 @@ export default class Monitor extends BaseCommand {
       description: 'Produce the report files but skip email send.',
       default: false,
     }),
+    to: Flags.string({
+      description:
+        'Recipient email for the report. Defaults to UPRIVER_MONITOR_TO. The worker schedule passes this from client_admins.notify_email. Sends via Resend when RESEND_API_KEY is set; otherwise the report is printed/written for manual forwarding.',
+      env: 'UPRIVER_MONITOR_TO',
+    }),
+    from: Flags.string({
+      description: 'Sender address (must be on a Resend-verified domain). Default chain: flag → UPRIVER_REPORT_FROM → reports@upriverhudsonvalley.com',
+    }),
     lite: Flags.boolean({
-      description: 'Lite mode — reuses the most recent on-disk audit instead of re-scraping. Suitable for quick checks; does not catch live-site drift.',
+      description: 'Reuse the most recent on-disk audit instead of re-scraping. Currently monitor ALWAYS runs lite; the flag is kept for forward compatibility.',
       default: false,
     }),
     force: Flags.boolean({ description: 'Re-run even if today\'s snapshot exists.', default: false }),
@@ -48,6 +57,10 @@ export default class Monitor extends BaseCommand {
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Monitor);
     const { slug } = args;
+
+    if (flags.to && !isEmailAddress(flags.to)) {
+      this.error(`--to does not look like an email address: ${flags.to}`);
+    }
 
     const dir = clientDir(slug);
     if (!existsSync(dir)) this.error(`Client directory not found: ${dir}`);
@@ -77,9 +90,9 @@ export default class Monitor extends BaseCommand {
       );
     }
 
-    if (!flags.lite) {
-      this.log('  Note: full monitor mode (live re-scrape + Lighthouse) is not yet implemented; using --lite path.');
-    }
+    // Honest scope statement: there is no full live re-scrape mode. Every
+    // monitor run is lite mode, regardless of the --lite flag.
+    this.log('  Note: monitor runs in lite mode; it compares on-disk audit artifacts only and does not re-scrape the live site.');
 
     const current = buildSnapshotFromAuditDir(slug, auditDir, flags.baseline as 'qa' | 'previous' | 'original');
     const previous = flags.baseline === 'previous' ? findPreviousSnapshot(monitoringDir, today) : loadBaselineSnapshot(dir, flags.baseline as 'qa' | 'original');
@@ -116,8 +129,28 @@ export default class Monitor extends BaseCommand {
     this.log('');
     this.log(`Status: ${delta.status}. Overall score: ${current.overall_score}/100${previous ? ` (${delta.overall_delta >= 0 ? '+' : ''}${delta.overall_delta} vs prior)` : ' (first run)'}.`);
     this.log(`Monitor complete in ${elapsed}s.`);
+
     if (!flags['no-email']) {
-      this.log('Email send not yet wired (Resend integration is a worker-side concern). The HTML report is ready to forward.');
+      const to = flags.to;
+      if (!to) {
+        this.log('No recipient configured (pass --to or set UPRIVER_MONITOR_TO). The HTML report is ready to forward.');
+      } else {
+        const from = flags.from ?? process.env['UPRIVER_REPORT_FROM'] ?? DEFAULT_FROM;
+        const outcome = await sendEmailIfConfigured({
+          from,
+          to,
+          subject: `Site update: ${clientName} (week of ${today})`,
+          text: md,
+          html,
+        });
+        if (outcome.status === 'sent') {
+          this.log(`Emailed the report to ${to} via Resend (id=${outcome.id}) from ${from}.`);
+        } else if (outcome.status === 'skipped') {
+          this.log(`RESEND_API_KEY not set — report written to ${reportHtmlPath}; forward it to ${to} manually.`);
+        } else {
+          this.warn(`Resend delivery failed: ${outcome.error}. Report written to ${reportHtmlPath}; forward it to ${to} manually.`);
+        }
+      }
     }
     if (auditPkg) {
       // suppress unused-var warning

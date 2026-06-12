@@ -7,6 +7,7 @@ import { clientDir, readClientConfig, type AuditPackage, type VoiceRules } from 
 
 import { BaseCommand } from '../base-command.js';
 import { buildSnapshotFromAuditDir, computeDelta } from '../monitor/snapshot.js';
+import { DEFAULT_FROM, isEmailAddress, sendEmailIfConfigured } from '../report-helpers/resend.js';
 import { claudeCliCall, claudeCliAvailable } from '../util/claude-cli.js';
 
 const MODEL = 'sonnet';
@@ -48,12 +49,24 @@ export default class Followup extends BaseCommand {
     'target-recipient': Flags.string({
       description: 'Recipient name and email for the re-engagement doc, in "Name,email" format.',
     }),
+    to: Flags.string({
+      description:
+        'Recipient email for the re-engagement note. Defaults to UPRIVER_FOLLOWUP_TO, then the email from --target-recipient. The worker schedule passes this from client_admins.notify_email. Sends via Resend when RESEND_API_KEY is set; otherwise the markdown is left on disk for manual forwarding.',
+      env: 'UPRIVER_FOLLOWUP_TO',
+    }),
+    from: Flags.string({
+      description: 'Sender address (must be on a Resend-verified domain). Default chain: flag → UPRIVER_REPORT_FROM → reports@upriverhudsonvalley.com',
+    }),
     force: Flags.boolean({ description: 'Re-run even if outputs exist.', default: false }),
   };
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Followup);
     const { slug } = args;
+
+    if (flags.to && !isEmailAddress(flags.to)) {
+      this.error(`--to does not look like an email address: ${flags.to}`);
+    }
 
     const dir = clientDir(slug);
     if (!existsSync(dir)) this.error(`Client directory not found: ${dir}`);
@@ -125,8 +138,32 @@ export default class Followup extends BaseCommand {
     if (flags.mode !== 'case-study') this.log(`Wrote ${reengagementPath}`);
     this.log('');
     this.log(`Followup complete in ${elapsed}s.`);
+
     if (!flags['no-send']) {
-      this.log('Send not yet wired (Resend integration is a worker-side concern). Forward the markdown manually for now.');
+      if (flags.mode === 'case-study') {
+        this.log('Nothing to email in case-study mode (the case study is an operator-facing draft).');
+      } else {
+        const targetEmail = parseRecipient(flags['target-recipient'])?.email;
+        const to = flags.to ?? (targetEmail && isEmailAddress(targetEmail) ? targetEmail : null);
+        if (!to) {
+          this.log('No recipient configured (pass --to, set UPRIVER_FOLLOWUP_TO, or use --target-recipient). Forward the re-engagement markdown manually.');
+        } else {
+          const from = flags.from ?? process.env['UPRIVER_REPORT_FROM'] ?? DEFAULT_FROM;
+          const outcome = await sendEmailIfConfigured({
+            from,
+            to,
+            subject: `Six-month check-in: ${config.name ?? slug}`,
+            text: docs.reengagement,
+          });
+          if (outcome.status === 'sent') {
+            this.log(`Emailed the re-engagement note to ${to} via Resend (id=${outcome.id}) from ${from}.`);
+          } else if (outcome.status === 'skipped') {
+            this.log(`RESEND_API_KEY not set — re-engagement note written to ${reengagementPath}; forward it to ${to} manually.`);
+          } else {
+            this.warn(`Resend delivery failed: ${outcome.error}. Re-engagement note written to ${reengagementPath}; forward it to ${to} manually.`);
+          }
+        }
+      }
     }
   }
 
