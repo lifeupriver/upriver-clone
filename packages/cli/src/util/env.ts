@@ -64,6 +64,13 @@ export const ENV_REGISTRY: Record<string, EnvVarSpec> = {
     required: false,
     description: 'Committer name for `clone` and `fixes apply` initial commits. Defaults to "Upriver Bot".',
   },
+  UPRIVER_GITHUB_ORG: {
+    name: 'UPRIVER_GITHUB_ORG',
+    required: false,
+    description:
+      'GitHub organization `upriver scaffold github` creates client repos under. Defaults to lifeupriver.',
+    example: 'lifeupriver',
+  },
   AHREFS_API_KEY: {
     name: 'AHREFS_API_KEY',
     required: false,

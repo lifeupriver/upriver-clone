@@ -4,12 +4,12 @@
 // `generic`, passes fall back to small-business defaults that don't bake
 // in any single industry's vocabulary.
 
-export type Vertical =
-  | 'wedding-venue'
-  | 'preschool'
-  | 'restaurant'
-  | 'professional-services'
-  | 'generic';
+import type { Vertical } from '@upriver/core';
+
+// `Vertical` is declared once in @upriver/core (types/client-config.ts) and
+// re-exported here so existing `import { Vertical } from './vertical-pack.js'`
+// call sites — and the package barrel — keep working.
+export type { Vertical } from '@upriver/core';
 
 export interface ExpectedPage {
   pattern: RegExp;
@@ -39,6 +39,18 @@ export interface PassOptions {
   vertical?: Vertical | string;
   /** Override for `<clientDir>/repo` when looking up scaffolded files. */
   cloneRepoDir?: string;
+  /** Primary city the business operates from (e.g. "Austin"). */
+  city?: string;
+  /** Region / county / metro / state served (e.g. "Hudson Valley", "TX"). */
+  region?: string;
+  /** Additional towns or areas served, matched as place tokens. */
+  serviceArea?: string[];
+  /**
+   * Whether the business serves a physical locality. `false` makes the
+   * `local` pass skip its checks entirely (online-only businesses);
+   * undefined/true keeps the default behavior.
+   */
+  localBusiness?: boolean;
 }
 
 export interface VerticalPack {
@@ -271,6 +283,263 @@ const professionalServices: VerticalPack = {
     'Pair the firm name with a city/region in the hero, footer, and `<title>` tag (e.g. "Acme Law — corporate counsel in Austin, TX").',
 };
 
+const retail: VerticalPack = {
+  noun: 'retail shop',
+  buyer: 'shoppers',
+  expectedPages: [
+    { pattern: /shop|store|product|collection|catalog/i, label: 'Shop / product catalog pages', priority: 'p0' },
+    { pattern: /shipping|return|exchange|refund|policy/i, label: 'Shipping and returns policy page', priority: 'p0' },
+    { pattern: /contact|customer.service|support|reach.us/i, label: 'Contact / customer service page', priority: 'p0' },
+    { pattern: /about|our.story|maker|behind/i, label: 'About / Our Story page', priority: 'p1' },
+    { pattern: /faq|questions|help/i, label: 'FAQ or Help page', priority: 'p1' },
+    { pattern: /hours|location|visit|directions|find.us/i, label: 'Store hours and location page', priority: 'p1' },
+    { pattern: /gift.card|gift.certificate/i, label: 'Gift cards page', priority: 'p2' },
+    { pattern: /sale|new.arrival|featured|best.seller/i, label: 'Sale or new arrivals page', priority: 'p2' },
+    { pattern: /review|testimonial/i, label: 'Reviews page', priority: 'p2' },
+  ],
+  directories: [
+    { pattern: /shopping\.google|google\.com\/shopping|merchants?\.google/i, label: 'Google Shopping' },
+    { pattern: /yelp\.com/i, label: 'Yelp' },
+    { pattern: /facebook\.com/i, label: 'Facebook' },
+    { pattern: /instagram\.com/i, label: 'Instagram' },
+    { pattern: /pinterest\.com/i, label: 'Pinterest' },
+  ],
+  expectedTopics: [
+    { pattern: /shipping|deliver|arrive|transit|carrier/i, label: 'Shipping cost and delivery times' },
+    { pattern: /return|exchange|refund/i, label: 'Return and exchange policy' },
+    { pattern: /hours|open|close|location|address|visit/i, label: 'Store hours and location' },
+    { pattern: /size|sizing|fit|measurement|dimension/i, label: 'Sizing / fit / dimensions' },
+    { pattern: /in.stock|availability|back.?order|restock|sold.out/i, label: 'Stock availability and restocks' },
+    { pattern: /material|fabric|made.(?:of|in|from)|sourc|ingredient/i, label: 'Materials, sourcing, and care' },
+    { pattern: /payment|pay|afterpay|klarna|paypal|credit.card/i, label: 'Payment options' },
+    { pattern: /pickup|curbside|local.deliver/i, label: 'Local pickup or delivery' },
+    { pattern: /gift.card|gift.wrap|registry/i, label: 'Gift cards and gift options' },
+    { pattern: /discount|sale|promo|coupon|loyalty|reward/i, label: 'Sales, discounts, and loyalty program' },
+    { pattern: /warranty|guarantee|repair/i, label: 'Warranty or guarantee' },
+  ],
+  exampleBuyerQuestion: 'what is your return policy and how long does shipping take?',
+  searchQueryExample: '[product] shop near me',
+  rankingPhraseTemplate: '[product type] shop in {city}, {state}',
+  socialProofWhy:
+    'Shoppers can\'t touch the product before buying — reviews and customer photos stand in for in-person inspection, and thin proof sends the sale to Amazon.',
+  faqWhy:
+    'Shipping, returns, and sizing questions are the top causes of abandoned carts — every unanswered question at checkout is a lost order.',
+  mobileWhy:
+    'The majority of e-commerce browsing happens on phones. A product grid or checkout that fights the thumb loses the sale before the cart.',
+  bannedWordExample:
+    'Replace banned words with specific, evidence-based language. Instead of "premium quality," name the material and maker: "full-grain Horween leather, cut and stitched in our Portland workshop."',
+  entityDisambiguationExample:
+    'Pair the shop name with a city/neighborhood in the homepage hero, footer address block, and `<title>` tag (e.g. "Forge & Filament — letterpress stationery shop in Asheville, NC").',
+};
+
+const homeServices: VerticalPack = {
+  noun: 'home services company',
+  buyer: 'homeowners',
+  expectedPages: [
+    { pattern: /service|repair|install|replace|what.we.do/i, label: 'Individual service pages', priority: 'p0' },
+    { pattern: /contact|estimate|quote|schedule|book/i, label: 'Contact / free estimate page', priority: 'p0' },
+    { pattern: /service.area|areas.we.serve|location|coverage/i, label: 'Service area page', priority: 'p1' },
+    { pattern: /about|our.team|why.us|our.story/i, label: 'About / Why choose us page', priority: 'p1' },
+    { pattern: /review|testimonial|happy.customer/i, label: 'Reviews or testimonials page', priority: 'p1' },
+    { pattern: /gallery|project|before.after|our.work|portfolio/i, label: 'Project gallery / before-and-after page', priority: 'p1' },
+    { pattern: /faq|questions/i, label: 'FAQ page', priority: 'p1' },
+    { pattern: /financ|payment.plan/i, label: 'Financing options page', priority: 'p2' },
+    { pattern: /emergency|24.7|same.day/i, label: 'Emergency service page', priority: 'p2' },
+    { pattern: /coupon|special|offer|discount/i, label: 'Specials or coupons page', priority: 'p2' },
+  ],
+  directories: [
+    { pattern: /angi\.com|angieslist\.com/i, label: 'Angi' },
+    { pattern: /houzz\.com/i, label: 'Houzz' },
+    { pattern: /thumbtack\.com/i, label: 'Thumbtack' },
+    { pattern: /bbb\.org/i, label: 'Better Business Bureau' },
+    { pattern: /yelp\.com/i, label: 'Yelp' },
+    { pattern: /google.*business|maps\.google/i, label: 'Google Business Profile' },
+  ],
+  expectedTopics: [
+    { pattern: /service.area|areas.we.serve|county|surrounding|within.\d+.miles/i, label: 'Service area / coverage radius' },
+    { pattern: /licens|insur|bonded|certif/i, label: 'Licensing, bonding, and insurance' },
+    { pattern: /estimate|quote|consultation|free/i, label: 'Free estimates / how quoting works' },
+    { pattern: /emergency|same.day|24.7|after.hours|weekend/i, label: 'Emergency / same-day availability' },
+    { pattern: /price|pricing|cost|rate|fee|how.much/i, label: 'Pricing or typical job costs' },
+    { pattern: /financ|payment.plan|payment.option/i, label: 'Financing and payment options' },
+    { pattern: /warranty|guarantee|workmanship/i, label: 'Warranty / workmanship guarantee' },
+    { pattern: /how.long|timeline|process|what.to.expect|step/i, label: 'Job timeline and process' },
+    { pattern: /brand|equipment|carrier|trane|lennox|kohler|parts/i, label: 'Brands and equipment used' },
+    { pattern: /permit|code|inspection/i, label: 'Permits and code compliance' },
+    { pattern: /maintenance|tune.up|service.plan|membership/i, label: 'Maintenance plans' },
+    { pattern: /review|testimonial|reference/i, label: 'Reviews and references' },
+  ],
+  exampleBuyerQuestion: 'are you licensed and insured, and do you offer free estimates?',
+  searchQueryExample: 'plumber near me',
+  rankingPhraseTemplate: '[trade] in {city}, {state}',
+  socialProofWhy:
+    'Hiring a contractor means letting a stranger into the house — reviews, job photos, and license numbers are the trust gate before anyone calls.',
+  faqWhy:
+    'Homeowners compare 2-3 contractors on licensing, estimates, and scheduling before calling — unanswered basics send them to the next search result.',
+  mobileWhy:
+    'Urgent repairs get searched from a phone, often mid-emergency. A slow mobile site or buried phone number loses the job to whoever answers fastest.',
+  bannedWordExample:
+    'Replace banned words with specific, evidence-based language. Instead of "quality workmanship," cite the credential and guarantee: "licensed master plumber (NY #M-12345) with a 2-year labor warranty on every repair."',
+  entityDisambiguationExample:
+    'Pair the company name with a city/region in the homepage hero, footer address block, and `<title>` tag (e.g. "Reliable Air — HVAC contractor in Plano, TX").',
+};
+
+const medical: VerticalPack = {
+  noun: 'medical practice',
+  buyer: 'patients',
+  expectedPages: [
+    { pattern: /service|treatment|procedure|condition|specialt/i, label: 'Services or treatments pages', priority: 'p0' },
+    { pattern: /appointment|book|schedule|request.a.visit/i, label: 'Appointment booking page', priority: 'p0' },
+    { pattern: /contact|location|directions|office/i, label: 'Contact and location page', priority: 'p0' },
+    { pattern: /provider|doctor|dentist|physician|team|staff|meet/i, label: 'Providers / Meet the team page', priority: 'p1' },
+    { pattern: /insurance|payment|billing|financ/i, label: 'Insurance and payment page', priority: 'p1' },
+    { pattern: /new.patient|patient.form|patient.portal|first.visit/i, label: 'New patient / forms page', priority: 'p1' },
+    { pattern: /about|our.practice|mission/i, label: 'About the practice page', priority: 'p1' },
+    { pattern: /faq|questions|what.to.expect/i, label: 'FAQ / What to expect page', priority: 'p1' },
+    { pattern: /review|testimonial|patient.stor/i, label: 'Patient reviews page', priority: 'p2' },
+    { pattern: /blog|resource|education|article/i, label: 'Patient education / blog', priority: 'p2' },
+  ],
+  directories: [
+    { pattern: /zocdoc\.com/i, label: 'Zocdoc' },
+    { pattern: /healthgrades\.com/i, label: 'Healthgrades' },
+    { pattern: /vitals\.com/i, label: 'Vitals' },
+    { pattern: /yelp\.com/i, label: 'Yelp' },
+    { pattern: /facebook\.com/i, label: 'Facebook' },
+    { pattern: /google.*business|maps\.google/i, label: 'Google Business Profile' },
+  ],
+  expectedTopics: [
+    { pattern: /insurance|in.network|aetna|cigna|united|blue.cross|medicare|medicaid/i, label: 'Insurance plans accepted' },
+    { pattern: /new.patient|accepting|first.visit|what.to.expect/i, label: 'New patient process / what to expect' },
+    { pattern: /appointment|book|schedule|same.day|walk.in/i, label: 'Booking and same-day availability' },
+    { pattern: /hours|open|close|location|parking|directions/i, label: 'Hours, location, and parking' },
+    { pattern: /cost|price|self.pay|out.of.pocket|payment.plan|financ/i, label: 'Costs and self-pay pricing' },
+    { pattern: /board.certified|credential|residency|training|dds|md|np/i, label: 'Provider credentials' },
+    { pattern: /cancel|reschedule|no.show|late/i, label: 'Cancellation and no-show policy' },
+    { pattern: /telehealth|virtual.visit|video.visit/i, label: 'Telehealth availability' },
+    { pattern: /emergency|after.hours|urgent|on.call/i, label: 'Emergencies and after-hours care' },
+    { pattern: /form|paperwork|portal|records|bring/i, label: 'Forms and what to bring' },
+    { pattern: /age|pediatric|child|family|adult|senior/i, label: 'Ages and patients treated' },
+    { pattern: /referral|prescription|refill/i, label: 'Referrals and prescription refills' },
+  ],
+  exampleBuyerQuestion: 'do you accept my insurance and are you taking new patients?',
+  searchQueryExample: 'dentist near me accepting new patients',
+  rankingPhraseTemplate: '[specialty] in {city}, {state}',
+  socialProofWhy:
+    'Choosing a provider is a health-and-trust decision — patients read reviews about bedside manner, wait times, and billing surprises before they book.',
+  faqWhy:
+    'Insurance, cost, and what-to-expect questions block bookings — answering them on-page wins the appointment and cuts front-desk call volume.',
+  mobileWhy:
+    'Patients search for care on a phone, often while in discomfort. Click-to-call and one-tap booking are the difference between a new patient and a bounce.',
+  bannedWordExample:
+    'Replace banned words with specific, evidence-based language. Instead of "state-of-the-art care," name the credential or technology: "board-certified dermatologists using the Vbeam Prima pulsed-dye laser."',
+  entityDisambiguationExample:
+    'Pair the practice name with a city/region in the homepage hero, footer address block, and `<title>` tag (e.g. "Lakeview Dental — family dentist in Evanston, IL").',
+};
+
+const fitness: VerticalPack = {
+  noun: 'fitness studio',
+  buyer: 'prospective members',
+  expectedPages: [
+    { pattern: /class|schedule|timetable|calendar/i, label: 'Class schedule page', priority: 'p0' },
+    { pattern: /member|pricing|plan|rate|package|drop.in/i, label: 'Membership and pricing page', priority: 'p0' },
+    { pattern: /contact|join|trial|free.class|get.started|sign.up/i, label: 'Contact / trial sign-up page', priority: 'p0' },
+    { pattern: /trainer|instructor|coach|team|staff/i, label: 'Trainers / instructors page', priority: 'p1' },
+    { pattern: /about|our.story|philosophy|method/i, label: 'About / training philosophy page', priority: 'p1' },
+    { pattern: /faq|questions|new.member|first.visit/i, label: 'FAQ / first-visit page', priority: 'p1' },
+    { pattern: /hours|location|directions|parking/i, label: 'Hours and location page', priority: 'p1' },
+    { pattern: /gallery|facility|tour|space|photo/i, label: 'Facility gallery or tour page', priority: 'p2' },
+    { pattern: /personal.training|private|one.on.one/i, label: 'Personal training page', priority: 'p2' },
+    { pattern: /event|workshop|challenge|community/i, label: 'Events or challenges page', priority: 'p2' },
+  ],
+  directories: [
+    { pattern: /classpass\.com/i, label: 'ClassPass' },
+    { pattern: /mindbodyonline\.com|mindbody\.io/i, label: 'Mindbody' },
+    { pattern: /yelp\.com/i, label: 'Yelp' },
+    { pattern: /facebook\.com/i, label: 'Facebook' },
+    { pattern: /instagram\.com/i, label: 'Instagram' },
+    { pattern: /google.*business|maps\.google/i, label: 'Google Business Profile' },
+  ],
+  expectedTopics: [
+    { pattern: /schedule|class.time|timetable|when/i, label: 'Class schedule and times' },
+    { pattern: /price|pricing|membership|cost|rate|month|unlimited/i, label: 'Membership pricing and plans' },
+    { pattern: /trial|first.class|intro|free.class|new.member/i, label: 'Free trial / intro offer' },
+    { pattern: /beginner|all.levels|new.to|first.time|modif/i, label: 'Beginner-friendliness and levels' },
+    { pattern: /bring|wear|shoes|towel|mat|water/i, label: 'What to bring and wear' },
+    { pattern: /cancel|freeze|pause|contract|commitment/i, label: 'Cancellation / freeze policy' },
+    { pattern: /drop.in|punch|class.pack|single.class/i, label: 'Drop-in rates and class packs' },
+    { pattern: /coach|trainer|instructor|certif/i, label: 'Coach and instructor credentials' },
+    { pattern: /shower|locker|amenit|parking/i, label: 'Showers, lockers, parking, amenities' },
+    { pattern: /personal.training|private.session|one.on.one/i, label: 'Personal training options' },
+    { pattern: /child.?care|kids|family/i, label: 'Childcare and kids programs' },
+    { pattern: /community|event|challenge|workshop/i, label: 'Community events and challenges' },
+  ],
+  exampleBuyerQuestion: 'do you offer a free trial class and is it okay if I am a complete beginner?',
+  searchQueryExample: 'gyms with classes near me',
+  rankingPhraseTemplate: '[class type] studio in {city}, {state}',
+  socialProofWhy:
+    'Joining a gym is an identity decision made nervously — member stories and visible results do more than any equipment list to get someone through the door.',
+  faqWhy:
+    'Pricing, trial offers, and "will I fit in as a beginner" questions decide whether someone books a first class — every unanswered one is a no-show.',
+  mobileWhy:
+    'Schedules get checked from phones between meetings and after work. A class schedule that does not load cleanly on mobile loses the drop-in.',
+  bannedWordExample:
+    'Replace banned words with specific, evidence-based language. Instead of "transform your body," state the program and dose: "a 12-week strength program with two coached sessions per week."',
+  entityDisambiguationExample:
+    'Pair the studio name with a city/neighborhood in the homepage hero, footer address block, and `<title>` tag (e.g. "Ironworks — strength gym in Boise, ID").',
+};
+
+const nonprofit: VerticalPack = {
+  noun: 'nonprofit organization',
+  buyer: 'donors and volunteers',
+  expectedPages: [
+    { pattern: /donat|give|support.us|contribute/i, label: 'Donate page', priority: 'p0' },
+    { pattern: /mission|about|who.we.are|our.story/i, label: 'Mission / About page', priority: 'p0' },
+    { pattern: /contact|reach.us|get.in.touch/i, label: 'Contact page', priority: 'p0' },
+    { pattern: /program|what.we.do|service|initiative/i, label: 'Programs / What we do pages', priority: 'p1' },
+    { pattern: /volunteer|get.involved|take.action|join/i, label: 'Volunteer / Get involved page', priority: 'p1' },
+    { pattern: /impact|results|annual.report|financial|990/i, label: 'Impact / financials page', priority: 'p1' },
+    { pattern: /event|fundrais|gala|drive/i, label: 'Events or fundraisers page', priority: 'p2' },
+    { pattern: /board|leadership|team|staff/i, label: 'Board and leadership page', priority: 'p2' },
+    { pattern: /news|blog|stories|update/i, label: 'News or stories page', priority: 'p2' },
+    { pattern: /faq|questions/i, label: 'FAQ page', priority: 'p2' },
+  ],
+  directories: [
+    { pattern: /guidestar\.org|candid\.org/i, label: 'Candid (GuideStar)' },
+    { pattern: /charitynavigator\.org/i, label: 'Charity Navigator' },
+    { pattern: /greatnonprofits\.org/i, label: 'GreatNonprofits' },
+    { pattern: /give\.org/i, label: 'BBB Wise Giving Alliance' },
+    { pattern: /facebook\.com/i, label: 'Facebook' },
+    { pattern: /instagram\.com/i, label: 'Instagram' },
+  ],
+  expectedTopics: [
+    { pattern: /mission|serve|who.we.(?:help|serve)|communit/i, label: 'Mission and who you serve' },
+    { pattern: /donat.*(?:used|go|fund)|overhead|program.expense|where.*money/i, label: 'How donations are used' },
+    { pattern: /tax.deduct|501\(?c\)?\(?3\)?|ein|nonprofit.status/i, label: 'Tax-deductibility and 501(c)(3) status' },
+    { pattern: /volunteer|get.involved|sign.up|opportunit/i, label: 'Volunteer opportunities and sign-up' },
+    { pattern: /program|service|initiative|project/i, label: 'Programs and services offered' },
+    { pattern: /impact|outcome|served|provided|\d+.(?:meals|families|students|acres|animals)/i, label: 'Impact numbers and outcomes' },
+    { pattern: /monthly.giv|recurring|planned.giv|legacy|in.kind|stock|donor.advised/i, label: 'Ways to give (monthly, planned, in-kind)' },
+    { pattern: /event|gala|fundrais|walk|drive/i, label: 'Events and fundraisers' },
+    { pattern: /board|leadership|director|founder/i, label: 'Board and leadership' },
+    { pattern: /annual.report|financial|audit|990|transparen/i, label: 'Financial transparency / annual report' },
+    { pattern: /newsletter|subscribe|stay.connected|updates/i, label: 'Newsletter / staying connected' },
+    { pattern: /partner|sponsor|corporate/i, label: 'Corporate partnership and sponsorship' },
+  ],
+  exampleBuyerQuestion: 'how much of my donation goes directly to programs?',
+  searchQueryExample: 'volunteer opportunities near me',
+  rankingPhraseTemplate: '[cause] nonprofit in {city}, {state}',
+  socialProofWhy:
+    'Donors give to organizations they trust — beneficiary stories, concrete impact numbers, and third-party ratings like Charity Navigator decide gifts.',
+  faqWhy:
+    'Donors ask about tax-deductibility and overhead before giving, and volunteers ask about time commitment — unanswered questions stall both.',
+  mobileWhy:
+    'Donation links shared on social media open on phones. A clunky mobile donate flow loses the impulse gift that prompted the tap.',
+  bannedWordExample:
+    'Replace banned words with specific, evidence-based language. Instead of "making a difference," quantify the outcome: "1,200 meals delivered to homebound seniors every month."',
+  entityDisambiguationExample:
+    'Pair the organization name with a city/region in the homepage hero, footer address block, and `<title>` tag (e.g. "River Relief — watershed conservation nonprofit in Missoula, MT").',
+};
+
 const generic: VerticalPack = {
   noun: 'small business',
   buyer: 'prospective customers',
@@ -317,6 +586,11 @@ const PACKS: Record<Vertical, VerticalPack> = {
   preschool,
   restaurant,
   'professional-services': professionalServices,
+  retail,
+  'home-services': homeServices,
+  medical,
+  fitness,
+  nonprofit,
   generic,
 };
 

@@ -3,6 +3,7 @@
 import type { AuditPassResult } from '@upriver/core';
 import { loadPages } from '../shared/loader.js';
 import { finding, scoreFromFindings } from '../shared/finding-builder.js';
+import { getVerticalPack, type PassOptions } from '../shared/vertical-pack.js';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -61,7 +62,13 @@ function loadCompetitorScrapes(clientDir: string): CompetitorData[] {
   return results;
 }
 
-export async function run(slug: string, clientDir: string): Promise<AuditPassResult> {
+export async function run(
+  slug: string,
+  clientDir: string,
+  opts: PassOptions = {},
+): Promise<AuditPassResult> {
+  const pack = getVerticalPack(opts.vertical);
+  const isWeddingVenue = opts.vertical === 'wedding-venue';
   const pages = loadPages(clientDir);
   const findings = [];
 
@@ -75,7 +82,7 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
       'competitors', 'p1', 'light',
       'No competitors defined in client configuration',
       'No competitor URLs were identified during discovery. Without competitor benchmarking, it is impossible to identify content and feature gaps.',
-      'Add 3-5 competitor venue URLs to the client-config.yaml under the "competitors:" key, then re-run: upriver audit ' + slug + ' --pass competitors',
+      `Add 3-5 competing ${pack.noun} URLs to the client-config.yaml under the "competitors:" key, then re-run: upriver audit ${slug} --pass competitors`,
       { why: 'Knowing what your top 3 competitors do better (more pages, better pricing page, more reviews) is the fastest route to identifying high-ROI improvements.' },
     ));
   }
@@ -87,7 +94,12 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
   const ourFaqs = ourPages.flatMap((p) => p.extracted.faqs);
   const ourEventSpaces = ourPages.flatMap((p) => p.extracted.eventSpaces);
 
-  const COMPETITOR_STANDARD_FEATURES = [
+  // Venue-specific competitive table-stakes (virtual tours, real-weddings
+  // portfolios, per-space pages). These only make sense — and are only fair
+  // benchmarks — for wedding venues, so they are gated on the vertical.
+  // Cross-vertical "expected page" gaps are covered by the sales pass via
+  // the vertical pack's expectedPages.
+  const COMPETITOR_STANDARD_FEATURES = isWeddingVenue ? [
     {
       check: () => !ourUrls.some((u) => /virtual.tour|360|matterport/i.test(u)) &&
         !ourPages.some((p) => /virtual.tour|360.tour|matterport/i.test(p.content.markdown)),
@@ -121,7 +133,7 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
         { why: 'Individual space pages rank for "[space type] wedding venue [city]" searches and give couples the detail they need to self-qualify, dramatically improving lead quality.' },
       ),
     },
-  ];
+  ] : [];
 
   for (const feature of COMPETITOR_STANDARD_FEATURES) {
     if (feature.check()) {
@@ -133,9 +145,11 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
   if (pages.length < 10) {
     findings.push(finding(
       'competitors', 'p1', 'medium',
-      `Site has only ${pages.length} pages — likely fewer than competing venues`,
-      'Larger sites with more content pages tend to rank for more search queries. Competing venues typically have 20-50+ pages covering all aspects of the venue.',
-      'Build out content to 20+ pages: individual venue spaces, real weddings, planning guides, vendor resources, local area guide, seasonal content.',
+      `Site has only ${pages.length} pages — likely fewer than competitors`,
+      `Larger sites with more content pages tend to rank for more search queries. Established ${pack.noun} competitors typically have 20-50+ pages covering everything ${pack.buyer} ask about.`,
+      isWeddingVenue
+        ? 'Build out content to 20+ pages: individual venue spaces, real weddings, planning guides, vendor resources, local area guide, seasonal content.'
+        : `Build out content to 20+ pages: a dedicated page per service or offering, FAQ content, guides written for ${pack.buyer}, and proof pages (testimonials, case studies, or portfolio entries).`,
       {
         why: 'Each additional page is an opportunity to rank for a different search query. A site with 40 pages has 4x more ranking opportunities than a site with 10 pages.',
       },
@@ -144,11 +158,12 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
 
   // ── Social proof volume ────────────────────────────────────────────────────
   if (ourTestimonials.length < 6) {
+    const reviewSources = pack.directories.slice(0, 2).map((d) => d.label).join('/');
     findings.push(finding(
       'competitors', 'p1', 'medium',
-      `Only ${ourTestimonials.length} testimonials — competing venues typically show 20+`,
-      'Top-performing venue websites display 20-50 testimonials. Social proof volume matters — more reviews = more trust.',
-      'Actively collect and display more testimonials. Reach out to past clients for quotes, import reviews from WeddingWire/The Knot, and display them throughout the site.',
+      `Only ${ourTestimonials.length} testimonials — top competitors typically show 20+`,
+      `Top-performing ${pack.noun} websites display 20-50 testimonials. Social proof volume matters — more reviews = more trust.`,
+      `Actively collect and display more testimonials. Reach out to past clients for quotes, import reviews from ${reviewSources}, and display them throughout the site.`,
     ));
   }
 

@@ -38,4 +38,34 @@ describe('analyzeCopy', () => {
     const signals = analyzeCopy(corpus);
     assert.ok(signals.topPhrases.includes('hudson valley'));
   });
+
+  it('splits Japanese sentences on fullwidth terminators with no trailing space', () => {
+    // Three sentences, zero ASCII sentence punctuation, zero inter-sentence spaces.
+    const corpus = '今日は晴れです。明日は雨が降るでしょう。散歩に行きましょう！';
+    const signals = analyzeCopy(corpus);
+    assert.equal(signals.sentenceCount, 3);
+    assert.ok(signals.wordCount > 0, 'CJK copy must not count zero words');
+    assert.ok(signals.topWords.length > 0, 'CJK copy must produce tokens');
+  });
+
+  it('handles Russian (Cyrillic) sentences and tokens', () => {
+    const corpus = 'Сегодня хорошая погода. Завтра будет дождь! Пойдём гулять?';
+    const signals = analyzeCopy(corpus);
+    assert.equal(signals.sentenceCount, 3);
+    assert.equal(signals.wordCount, 8);
+    const words = signals.topWords.map((w) => w.word);
+    assert.ok(words.includes('погода'), `expected Cyrillic token, got: ${words.join(', ')}`);
+  });
+
+  it('treats ellipses as sentence-final punctuation', () => {
+    const corpus = 'We waited… Then the doors opened.';
+    const signals = analyzeCopy(corpus);
+    assert.equal(signals.sentenceCount, 2);
+  });
+
+  it('keeps abbreviation periods followed by lowercase inside one sentence', () => {
+    const corpus = 'The store opens at 4 p.m. sharp on weekdays and closes late.';
+    const signals = analyzeCopy(corpus);
+    assert.equal(signals.sentenceCount, 1);
+  });
 });

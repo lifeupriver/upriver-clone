@@ -36,20 +36,38 @@ export interface ImageRecord {
   classification_confidence: number;
   /** Heuristic quality score 0-100. */
   quality_score: number;
-  has_alt: boolean;
+  /**
+   * Alt-text presence derived from markdown image syntax (`![alt](url)`).
+   * `true`/`false` when the image appears in the scraped markdown; `null`
+   * when the image was only collected from raw HTML and alt data is
+   * genuinely unknown — never guess `false` for unknowns.
+   */
+  has_alt: boolean | null;
   notes: string[];
 }
 
-/** Patterns commonly found in stock-photo or generic CMS image URLs. */
+/**
+ * Patterns found in genuinely-stock image URLs: stock CDN domains plus
+ * stock-library filename tokens (`shutterstock_1234`, `AdobeStock_1234`,
+ * `iStock-1234`, `stock-photo-...`). Deliberately does NOT include CMS
+ * upload paths like `/wp-content/uploads/YYYY/MM/...` — that is where
+ * WordPress stores the client's OWN photography, and flagging it produced
+ * false "stock photo" P0s on most real WordPress sites.
+ */
 const STOCK_URL_PATTERNS = [
   /unsplash\.com/i,
   /pexels\.com/i,
+  /pixabay\.com/i,
   /shutterstock\.com/i,
   /istockphoto\.com/i,
   /gettyimages/i,
+  /stock\.adobe\.com/i,
+  /depositphotos\.com/i,
+  /dreamstime\.com/i,
   /\bstock[-_]?photo\b/i,
-  /\bphotos?\.(?:wp|wordpress)/i,
-  /\/wp-content\/uploads\/\d{4}\/\d{2}\/[a-z0-9-]+(?:_\d+)?\.(?:jpg|jpeg|png)/i,
+  /\bshutterstock[-_]?\d+/i,
+  /\bistock[-_]\d+/i,
+  /\badobe[-_]?stock[-_]?\d+/i,
 ];
 
 const AI_URL_PATTERNS = [
@@ -98,7 +116,7 @@ function classify(url: string): { classification: ImageClassification; confidenc
     return { classification: 'decorative', confidence: 70, notes };
   }
   if (STOCK_URL_PATTERNS.some((r) => r.test(url))) {
-    notes.push('URL matches a known stock-photo CDN or generic CMS upload pattern.');
+    notes.push('URL matches a known stock-photo CDN or stock-library filename pattern.');
     return { classification: 'stock-suspect', confidence: 70, notes };
   }
   if (AI_URL_PATTERNS.some((r) => r.test(url) || r.test(filename))) {
@@ -111,17 +129,45 @@ function classify(url: string): { classification: ImageClassification; confidenc
   return { classification: 'unknown', confidence: 30, notes };
 }
 
-function qualityScore(classification: ImageClassification, hasAlt: boolean, isShared: boolean): number {
+function qualityScore(classification: ImageClassification, hasAlt: boolean | null, isShared: boolean): number {
   let base = 50;
   if (classification === 'authentic') base = 80;
   if (classification === 'stock-suspect') base = 35;
   if (classification === 'ai-suspect') base = 40;
   if (classification === 'logo' || classification === 'icon') base = 70;
   if (classification === 'decorative') base = 55;
-  if (hasAlt) base += 5;
-  if (!hasAlt && (classification === 'authentic' || classification === 'unknown')) base -= 10;
+  // Only adjust for alt text when its presence is actually known (`null`
+  // means the image never appeared in markdown, so alt data is unavailable).
+  if (hasAlt === true) base += 5;
+  if (hasAlt === false && (classification === 'authentic' || classification === 'unknown')) base -= 10;
   if (isShared) base -= 5; // images repeated everywhere often signal generic stock
   return Math.max(0, Math.min(100, base));
+}
+
+/** Strip query string / fragment so markdown and `<img src>` variants of the same asset match. */
+function stripQuery(url: string): string {
+  return url.split(/[?#]/)[0] ?? url;
+}
+
+/**
+ * Collect alt-text presence from markdown image syntax (`![alt](url)`).
+ * The page records store images as plain URL strings, so markdown is the
+ * only alt-text source available to this pass. Returns a map keyed by
+ * query-stripped URL → "has non-empty alt somewhere".
+ */
+function collectMarkdownAlt(pages: PageData[]): Map<string, boolean> {
+  const map = new Map<string, boolean>();
+  const MD_IMAGE = /!\[([^\]]*)\]\(\s*<?([^)\s>]+)/g;
+  for (const page of pages) {
+    const md = page.content?.markdown ?? '';
+    for (const m of md.matchAll(MD_IMAGE)) {
+      const alt = (m[1] ?? '').trim();
+      const key = stripQuery(m[2] ?? '');
+      if (!key) continue;
+      map.set(key, (map.get(key) ?? false) || alt.length > 0);
+    }
+  }
+  return map;
 }
 
 /** Build per-image records from scraped pages. */
@@ -136,6 +182,10 @@ export function buildInventory(pages: PageData[]): ImageRecord[] {
     }
   }
 
+  // Alt text is only recoverable from markdown image syntax; images that
+  // never appear in markdown get `null` (unknown), not `false`.
+  const altByUrl = collectMarkdownAlt(pages);
+
   const records: ImageRecord[] = [];
   const seen = new Set<string>();
   for (const page of pages) {
@@ -144,11 +194,7 @@ export function buildInventory(pages: PageData[]): ImageRecord[] {
       seen.add(img);
       const cls = classify(img);
       const isShared = (occurrences.get(img)?.length ?? 1) > 3;
-      // Alt-text presence is not directly available in scraped pages here;
-      // approximate by checking if an alt-like token is in the URL itself,
-      // which is rare. Real alt extraction would require raw HTML; we set
-      // false when unknown.
-      const hasAlt = false;
+      const hasAlt = altByUrl.get(stripQuery(img)) ?? null;
       const score = qualityScore(cls.classification, hasAlt, isShared);
       records.push({
         url: img,

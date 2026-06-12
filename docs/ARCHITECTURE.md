@@ -96,7 +96,7 @@ The container image builds to `ghcr.io/lifeupriver/upriver-worker` via `.github/
 
 ### Templates
 
-- `@upriver/scaffold-template` — the Astro hybrid site (Tailwind, Vercel adapter, Supabase client, better-auth scaffolding) copied to `clients/<slug>/repo/` by `upriver scaffold` and customized with the client's tokens/content.
+- `@upriver/scaffold-template` — the Astro hybrid site (Tailwind, Vercel adapter, Supabase client, Supabase Auth-gated admin) copied to `clients/<slug>/repo/` by `upriver scaffold` and customized with the client's tokens/content.
 - `@upriver/admin-template` — F05 natural-language admin: GitHub issue templates, label manifest, optional Vercel change-request form, and the reference webhook handler.
 - `@upriver/app-prototype-template` — F04 Expo React Native prototype scaffold.
 

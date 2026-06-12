@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { VERTICALS } from './client-config.js';
 
 export const GscConfigZ = z
   .object({
@@ -25,9 +26,9 @@ export const ClientConfigZ = z
     platform: z
       .enum(['squarespace', 'wordpress', 'wix', 'webflow', 'showit', 'unknown'])
       .optional(),
-    vertical: z
-      .enum(['wedding-venue', 'preschool', 'restaurant', 'professional-services', 'generic'])
-      .optional(),
+    // Derived from the VERTICALS tuple in client-config.ts so the union type
+    // and this enum can never drift apart.
+    vertical: z.enum(VERTICALS).optional(),
     created_at: z.string(),
     gsc: GscConfigZ.optional(),
     vercel_preview_url: z.string().url().optional(),
@@ -36,6 +37,12 @@ export const ClientConfigZ = z
     dev_port: z.number().int().min(1).max(65535).optional(),
     // Optional per-client engagement pricing for the portal's next-steps page.
     pricing: z.array(PricingTierZ).optional(),
+    // Optional locality fields consumed by the `local` audit pass. All
+    // additive: existing configs without them parse exactly as before.
+    city: z.string().optional(),
+    region: z.string().optional(),
+    serviceArea: z.array(z.string()).optional(),
+    localBusiness: z.boolean().optional(),
   })
   // passthrough so we don't break on fields not yet in this schema. Required
   // fields are still validated.
