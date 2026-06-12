@@ -37,12 +37,11 @@ export default function ChangeRequestForm() {
       <h1>{process.env['NEXT_PUBLIC_CLIENT_NAME'] ?? 'Change requests'}</h1>
       <p>Tell us what you want changed on the site. We will get back to you within a day.</p>
       <form onSubmit={onSubmit}>
-        {process.env['NEXT_PUBLIC_PIN_REQUIRED'] === 'true' ? (
-          <label>
-            <span>PIN</span>
-            <input type="password" value={pin} onChange={(e) => setPin(e.target.value)} required />
-          </label>
-        ) : null}
+        {/* The PIN is always required — the API rejects submissions without it. */}
+        <label>
+          <span>PIN</span>
+          <input type="password" value={pin} onChange={(e) => setPin(e.target.value)} required />
+        </label>
         <label>
           <span>What should change?</span>
           <textarea value={what} onChange={(e) => setWhat(e.target.value)} rows={5} required />
