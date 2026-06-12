@@ -114,6 +114,9 @@ const TABLE = [
   // misuse guard (Spec 14): flag without --dry-run must be a clean oclif error.
   [['generate', 'littlefriends', '--all', '--strict-provisioning'], [2], LOCAL],
   [['run', 'all', 'wb-fixture', '--dry-run'], [0], LOCAL],
+  // Spec 19: the pitch plan + cost table must stay keyless and offline.
+  [['pitch', 'run', 'https://wildflour.example', '--dry-run'], [0], LOCAL],
+  [['generate', 'littlefriends', '--doc', 'doc-pitch-02', '--dry-run'], [0], LOCAL],
   [['doctor'], [0], {}],
 ];
 console.log(`# Pass 2: curated dry-run table (${TABLE.length} rows)`);

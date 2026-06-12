@@ -27,13 +27,23 @@ export const PITCH_STEPS = [
 ] as const;
 export type PitchStep = (typeof PITCH_STEPS)[number];
 
-// Per-step estimates. scrape ≈ 6+ credits/page (scrape.ts ceiling comment);
-// homepage clone ≈ one 10-min agent session; four teaser docs ≈ 2 min each.
+// Per-INVOCATION estimates. scrape ≈ 6+ credits/page (scrape.ts ceiling
+// comment); homepage clone ≈ one 10-min agent session; one teaser doc ≈ 2 min
+// (the pipeline runs the `teasers` step four times, once per doc — the
+// estimate table multiplies by PIPELINE_STEP_COUNTS for the full-run view).
 const STEP_ESTIMATES: Record<PitchStep, { firecrawlCredits: number; agentSeconds: number }> = {
   'init-map': { firecrawlCredits: 2, agentSeconds: 0 },
   'scrape-home': { firecrawlCredits: 8, agentSeconds: 0 },
   'clone-home': { firecrawlCredits: 0, agentSeconds: 600 },
-  teasers: { firecrawlCredits: 0, agentSeconds: 480 },
+  teasers: { firecrawlCredits: 0, agentSeconds: 120 },
+};
+
+/** How many times each costed step runs in one full pitch pipeline. */
+const PIPELINE_STEP_COUNTS: Record<PitchStep, number> = {
+  'init-map': 1,
+  'scrape-home': 1,
+  'clone-home': 1,
+  teasers: 4,
 };
 
 function toUsd(firecrawlCredits: number, agentSeconds: number): number {
@@ -84,19 +94,31 @@ export function sumLedgers(ledgers: readonly SpendLedger[]): SpendLedger {
 }
 
 export interface EstimateTable {
-  steps: Array<{ step: PitchStep; firecrawlCredits: number; agentSeconds: number; usd: number }>;
+  steps: Array<{
+    step: PitchStep;
+    count: number;
+    firecrawlCredits: number;
+    agentSeconds: number;
+    usd: number;
+  }>;
   totalUsd: number;
   ceilingUsd: number;
   fitsCeiling: boolean;
 }
 
-/** The `--dry-run` cost table: every costed step, the total, and the ceiling. */
+/** The `--dry-run` cost table: every costed step ×count, the total, the ceiling. */
 export function estimateTable(ceilingUsd: number): EstimateTable {
-  const steps = PITCH_STEPS.map((step) => ({
-    step,
-    ...STEP_ESTIMATES[step],
-    usd: estimateStepUsd(step),
-  }));
+  const steps = PITCH_STEPS.map((step) => {
+    const count = PIPELINE_STEP_COUNTS[step];
+    const e = STEP_ESTIMATES[step];
+    return {
+      step,
+      count,
+      firecrawlCredits: e.firecrawlCredits * count,
+      agentSeconds: e.agentSeconds * count,
+      usd: estimateStepUsd(step) * count,
+    };
+  });
   const totalUsd = steps.reduce((s, r) => s + r.usd, 0);
   return { steps, totalUsd, ceilingUsd, fitsCeiling: totalUsd <= ceilingUsd };
 }
