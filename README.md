@@ -119,7 +119,7 @@ Unattended runs (CI, `run all`, the worker) rely on pinned exit codes rather tha
 
 - **0** — success. **2** — usage/preflight error (oclif misuse; `generate` prompt-size ceiling). **3** — `generate --strict-provisioning` found provisioning gaps.
 - `clone-links` and `clone-embeds` exit non-zero on broken links / missing embeds unless `--allow-*` flags are passed.
-- The Tier A e2e harness uses 2 = preflight and 11–16 for distinct phase failures.
+- The Tier A e2e harness uses 2 = preflight and 11–16 for distinct phase failures; Tier B uses 21–32; Tier C (runtime HTTP checks) uses 41–47.
 
 `scripts/cli-smoke.mjs` pins this contract in CI — every command's `--help` must exit 0 with no stack trace, and a curated dry-run table asserts the codes above.
 
@@ -185,11 +185,12 @@ pnpm typecheck                          # typecheck everything
 pnpm test                               # unit suites (schemas, cli, core, dashboard)
 node scripts/cli-smoke.mjs              # subprocess smoke matrix: --help + pinned dry-run exit codes
 bash scripts/e2e-website-tier-a.sh      # offline website-pipeline e2e against clients/wb-fixture
+bash scripts/e2e-website-tier-c.sh      # Tier C runtime e2e: boots the scaffolded site, asserts the HTTP contract (keyless)
 bash scripts/e2e-deploy-dryrun.sh       # scaffold→github→supabase→deploy, all dry-run
 bash scripts/e2e-littlefriends.sh       # intake-engine acceptance run (needs `claude` + UPRIVER_GATE_AUTO=1)
 ```
 
-CI (`.github/workflows/test.yml`) runs build + unit + smoke + Tier A + deploy dry-run on every PR — **keyless by construction** (no Firecrawl/Anthropic/Supabase secrets). `automigrations.yml` pushes Supabase migrations on merge to main; `worker-image.yml` builds the worker container to GHCR. Details: [`docs/TESTING.md`](docs/TESTING.md).
+CI (`.github/workflows/test.yml`) runs build + unit + smoke + Tier A + Tier C + deploy dry-run on every PR — **keyless by construction** (no Firecrawl/Anthropic/Supabase secrets). `automigrations.yml` pushes Supabase migrations on merge to main; `worker-image.yml` builds the worker container to GHCR. Details: [`docs/TESTING.md`](docs/TESTING.md).
 
 ## Skills
 

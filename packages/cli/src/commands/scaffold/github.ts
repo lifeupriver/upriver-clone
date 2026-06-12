@@ -5,10 +5,15 @@ import { BaseCommand } from '../../base-command.js';
 import { updateClientConfig } from '@upriver/core';
 import { resolveScaffoldPaths } from '../../scaffold/template-writer.js';
 
-const ORG = 'lifeupriver';
+/** GitHub org for client repos. Override with UPRIVER_GITHUB_ORG; defaults to lifeupriver. */
+const DEFAULT_ORG = 'lifeupriver';
+function resolveOrg(): string {
+  return process.env['UPRIVER_GITHUB_ORG']?.trim() || DEFAULT_ORG;
+}
 
 export default class ScaffoldGithub extends BaseCommand {
-  static override description = 'Create GitHub repo and push scaffolded code (dry-run by default)';
+  static override description =
+    'Create GitHub repo and push scaffolded code (dry-run by default). Target org: UPRIVER_GITHUB_ORG env var, defaults to lifeupriver.';
 
   static override args = {
     slug: Args.string({ description: 'Client slug', required: true }),
@@ -23,15 +28,16 @@ export default class ScaffoldGithub extends BaseCommand {
     const { args, flags } = await this.parse(ScaffoldGithub);
     const { slug } = args;
     const { repoDir } = resolveScaffoldPaths(slug);
+    const org = resolveOrg();
     const repoName = slug;
-    const fullName = `${ORG}/${repoName}`;
+    const fullName = `${org}/${repoName}`;
     const remote = `https://github.com/${fullName}.git`;
 
     if (!existsSync(repoDir)) this.error(`Scaffolded repo not found at ${repoDir}. Run "upriver scaffold ${slug}" first.`);
 
     if (!flags.commit) {
       this.log('\n[dry-run] upriver scaffold github would:');
-      this.log(`  1. Create GitHub repo ${fullName} (private=${flags.private}) via https://api.github.com/orgs/${ORG}/repos`);
+      this.log(`  1. Create GitHub repo ${fullName} (private=${flags.private}) via https://api.github.com/orgs/${org}/repos`);
       this.log(`  2. cd ${repoDir} && git init && git add . && git commit -m "Initial scaffold"`);
       this.log(`  3. git remote add origin ${remote}`);
       this.log(`  4. git push -u origin main`);
@@ -42,7 +48,7 @@ export default class ScaffoldGithub extends BaseCommand {
     const token = this.requireEnv('GITHUB_TOKEN');
 
     this.log(`\nCreating GitHub repo ${fullName}...`);
-    const created = await createRepo(token, ORG, repoName, flags.private);
+    const created = await createRepo(token, org, repoName, flags.private);
     if (created.alreadyExists) {
       this.log(`  Repo already exists at ${created.htmlUrl}.`);
     } else {

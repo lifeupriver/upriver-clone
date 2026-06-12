@@ -52,13 +52,22 @@ function cleanCopy(markdown: string): string {
 }
 
 function splitSentences(text: string): string[] {
-  // Conservative split: . ! ? followed by whitespace + capital, or paragraph
-  // break. Keep the punctuation off the end. Skip empty fragments.
+  // Conservative, Unicode-aware split on two boundary classes:
+  //  - Latin-style terminators ([.!?…], incl. "..." runs) + optional closing
+  //    quotes/brackets, followed by whitespace and an uppercase letter, digit,
+  //    or opening quote — lowercase continuations ("4 p.m. sharp") stay in one
+  //    sentence, and cased scripts (Latin, Cyrillic, Greek) all live in \p{Lu}.
+  //  - Fullwidth CJK terminators (。．！？) + optional closers — these end a
+  //    sentence with NO trailing space (Japanese/Chinese), so the split
+  //    happens immediately after the punctuation.
+  // Keep the punctuation on the sentence; skip fragments with no letters.
   return text
     .replace(/\n+/g, ' ')
-    .split(/(?<=[.!?])\s+(?=[A-Z"'(])/)
+    .split(
+      /(?<=[.!?…]['"”’»)\]]*)\s+(?=[\p{Lu}\p{Lt}\p{N}"'“‘«¿¡([])|(?<=[。．！？]['"」』）»]*)/u,
+    )
     .map((s) => s.trim())
-    .filter((s) => s.length > 0 && /[a-zA-Z]/.test(s));
+    .filter((s) => s.length > 0 && /[\p{L}\p{N}]/u.test(s));
 }
 
 function splitParagraphs(text: string): string[] {
@@ -69,7 +78,10 @@ function splitParagraphs(text: string): string[] {
 }
 
 function wordCount(s: string): number {
-  const m = s.match(/\b[\w'-]+\b/g);
+  // Unicode-aware: a "word" is a run of letters/digits (any script) with
+  // optional inner apostrophes/hyphens. No-space scripts (CJK) count each
+  // unbroken run as one word — a coarse but non-zero heuristic.
+  const m = s.match(/[\p{L}\p{N}][\p{L}\p{N}'’-]*/gu);
   return m ? m.length : 0;
 }
 
@@ -85,7 +97,9 @@ function percentile(sorted: number[], p: number): number {
  */
 function topTokens(text: string, n = 30): Array<{ word: string; count: number }> {
   const counts = new Map<string, number>();
-  const tokens = text.toLowerCase().match(/\b[a-z][a-z'-]{2,}\b/g) ?? [];
+  // \p{L}\p{N}-aware (mirrors clone-qa/fidelity-scorer tokenize()): accented,
+  // Cyrillic, and CJK copy must not produce zero tokens. Min length 3 as before.
+  const tokens = text.toLowerCase().match(/[\p{L}\p{N}][\p{L}\p{N}'’-]{2,}/gu) ?? [];
   for (const t of tokens) {
     if (STOPWORDS.has(t)) continue;
     counts.set(t, (counts.get(t) ?? 0) + 1);
@@ -98,7 +112,7 @@ function topTokens(text: string, n = 30): Array<{ word: string; count: number }>
 
 /** Find 2-3 word phrases that recur (signature phrase candidates). */
 function topPhrases(text: string, n = 10): string[] {
-  const cleaned = text.toLowerCase().replace(/[^a-z\s'-]/g, ' ').replace(/\s+/g, ' ');
+  const cleaned = text.toLowerCase().replace(/[^\p{L}\p{N}\s'’-]/gu, ' ').replace(/\s+/g, ' ');
   const words = cleaned.split(' ').filter((w) => w.length > 2 && !STOPWORDS.has(w));
   const phraseCounts = new Map<string, number>();
   for (let i = 0; i < words.length - 1; i++) {

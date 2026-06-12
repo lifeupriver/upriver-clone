@@ -50,6 +50,13 @@ jobs:
       - name: Website Tier A e2e
         run: bash scripts/e2e-website-tier-a.sh
 
+      # Tier C boots the scaffolded site Tier A just built (repo + install are
+      # reused) and asserts the keyless HTTP contract. Still keyless: the
+      # harness scrubs Supabase/GitHub env from the server process itself.
+      - name: Website Tier C runtime e2e
+        run: bash scripts/e2e-website-tier-c.sh
+        timeout-minutes: 10
+
       - name: Deploy dry-run e2e
         run: bash scripts/e2e-deploy-dryrun.sh wb-fixture
 
@@ -60,5 +67,7 @@ jobs:
           name: e2e-logs
           path: |
             clients/wb-fixture/e2e/run.log
+            clients/wb-fixture/e2e/tier-c.log
+            clients/wb-fixture/e2e/tier-c-server.log
             clients/e2e-deploy/run.log
           if-no-files-found: ignore
