@@ -9,7 +9,7 @@ One prospect-facing sales feature, mostly orchestration of existing primitives:
 1. **`upriver pitch run <url>`** — point at a prospect's website → clone JUST their homepage → generate a short teaser bundle → mint a questionnaire link → draft (never send) an outreach email. Everything lands in `clients/<slug>/` at `stage: prospect`, draft state.
 2. **`upriver pitch batch <file>`** — the same over a prospect list, with per-prospect AND per-batch spend ceilings enforced in code.
 3. **`upriver pitch approve <slug>`** — the only path that sends. Shows the operator the exact email + every link, checks the suppression list, then sends via Resend.
-4. **The killer bridge** — questionnaire answers persist via the existing web-bridge intake into `interview-responses.json` and seed `identity.*`/profile fields, so an engaged prospect has ALREADY started onboarding; conversion is flipping `stage: prospect → client`.
+4. **`upriver pitch convert <slug>`** — the killer bridge, made explicit: flips `stage: prospect → client` AND maps the questionnaire answers from `interview-responses.json` into `identity.*`/profile candidate fields (source-tagged like recon candidates, never overwriting verified data). An engaged prospect has ALREADY started onboarding. NOTE (verified 2026-06-12): nothing in the codebase currently extracts interview answers into the profile — this mapping step is NEW, small, and load-bearing.
 
 v1 sits at autonomy level **L1** (batch generation, human approves every send). L2/L3 are out of scope; the approve gate is the future L2 insertion point.
 
@@ -35,7 +35,7 @@ v1 sits at autonomy level **L1** (batch generation, human approves every send). 
 
 | File | Change |
 |---|---|
-| `packages/cli/src/commands/pitch/{run,batch,approve,revoke,status}.ts` | NEW — oclif topic (space separator: `upriver pitch run …`) |
+| `packages/cli/src/commands/pitch/{run,batch,approve,revoke,status,convert}.ts` | NEW — oclif topic (space separator: `upriver pitch run …`) |
 | `packages/cli/src/pitch/` | NEW — orchestration helpers: state machine, spend ledger, email assembly, prospect interview-guide template, teaser doc specs |
 | `packages/cli/src/commands/clone.ts` + clone internals | homepage-scoped hardening: prompt-size preflight, no-cache retry, fidelity-assert-before-persist |
 | `packages/dashboard/src/pages/pitch/[slug]/*` | NEW — token-gated preview + teaser portal route, noindex |
@@ -64,11 +64,12 @@ v1 sits at autonomy level **L1** (batch generation, human approves every send). 
 
 Every CLI invocation honors `UPRIVER_DATA_SOURCE=local`; e2e drives the real subprocess (`node packages/cli/bin/run.js pitch …`).
 
-## 2. `pitch batch <file>` / `pitch status` / `pitch revoke`
+## 2. `pitch batch <file>` / `pitch status` / `pitch revoke` / `pitch convert`
 
 - **`batch`**: newline-delimited URLs (`#` comments allowed). Sequential (politeness + budget legibility). Per-prospect ceiling AND a batch ceiling (`--max-batch-spend-usd`); a prospect failure (fidelity, budget, scrape error) is isolated — log, continue, summarize. Exit non-zero if any prospect failed, with a per-prospect outcome table. Batch NEVER sends — it produces drafts; `approve` remains per-prospect.
 - **`status [<slug>]`**: funnel view from `pitch/state.json` across `stage: prospect` clients — status, spend, sent-at, token expiry, questionnaire-answered (presence of `interview-responses.json`).
 - **`revoke <slug>`**: takedown-on-request, in code: revoke the share token (and interview token), set state `revoked`, unstage the portal preview. One command, because the guardrail says takedown on request — that has to be a 10-second operation.
+- **`convert <slug>`**: the upsell bridge — flips `stage: prospect → client` in `client-config.yaml` and applies the answer→profile mapping (§7). Idempotent; refuses if no `interview-responses.json` unless `--no-answers`.
 
 ## 3. Spend ceiling — enforced in code, not convention
 
@@ -106,7 +107,8 @@ All built almost entirely from recon — Spec 14 `[UNCONFIRMED]` hedging is load
 ## 7. Questionnaire (web-bridge intake)
 
 - A NEW short prospect interview-guide template (~6–8 questions), distinct from the full client interview: confirm identity (name, role, email, phone), reaction to the preview, biggest business goal, current-site pain, timeline/interest, "anything we got wrong?" (the last one doubles as a hedging-error report channel).
-- Served by the existing dashboard interview route via the existing magic-link flow; answers persist to `interview-responses.json` and seed `identity.*`/profile fields through the existing extractor path — that is the onboarding head start, and it must survive the `stage: prospect → client` flip unchanged.
+- Served by the existing dashboard interview route via the existing magic-link flow (`validateInterviewToken` + `parseInterviewGuide`); answers persist to `interview-responses.json` keyed by `FormItem.id`.
+- **Answer→profile mapping (NEW):** a small module maps prospect question ids onto `identity.*`/profile candidate fields, applied by `pitch convert` via the existing profile-candidate merge semantics (source-tagged, verified data never overwritten). Question ids in the prospect guide template are stable and chosen to make this mapping table trivial. The responses file itself survives the `stage` flip unchanged.
 - Questionnaire form gets the same noindex treatment as §5.
 
 ## 8. Outreach compliance (non-negotiable, in the send path)
@@ -148,7 +150,7 @@ Pitch runs emit only standard artifact shapes: `audit-package.json`, `clone-qa/s
 - [ ] Fidelity-assert-before-persist: a forced low score leaves the portal unstaged and state `fidelity-fail`
 - [ ] Portal route: token required, expiry enforced, revoke works, noindex header + meta on every response (HTTP-asserted in CI)
 - [ ] `pitch approve` renders email + all links, refuses on suppression/expiry/non-draft state, and sends via Resend only after confirm; unsubscribe endpoint writes `outreach_suppression` and subsequent `approve` refuses
-- [ ] Questionnaire round-trip: prospect answers via magic link land in `interview-responses.json` and seed `identity.*` fields; survives the `stage` flip
+- [ ] Questionnaire round-trip: prospect answers via magic link land in `interview-responses.json`; `pitch convert` flips `stage` and seeds `identity.*`/profile candidates from them (verified data never overwritten)
 - [ ] Clone hardening: prompt-size preflight + single no-cache retry covered by tests at homepage scope
 - [ ] `cli-smoke.mjs` rows green; `test.yml` green AND still keyless; live e2e workflow exists, gated, exit codes 51–58
 - [ ] No prospect PII or plaintext token in any committed file (grep-verified)
