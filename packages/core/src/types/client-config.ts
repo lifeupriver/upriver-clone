@@ -5,16 +5,30 @@ export interface GscConfig {
 }
 
 /**
+ * Known business verticals, as a const tuple so the zod enum in
+ * `client-config-zod.ts` and the `Vertical` union stay derived from one list.
+ * This is the single source of truth — `audit-passes` imports the type from
+ * here rather than re-declaring it.
+ */
+export const VERTICALS = [
+  'wedding-venue',
+  'preschool',
+  'restaurant',
+  'professional-services',
+  'retail',
+  'home-services',
+  'medical',
+  'fitness',
+  'nonprofit',
+  'generic',
+] as const;
+
+/**
  * Business vertical — used by audit-passes to swap in vertical-specific copy
  * (page expectations, directory citations, "why it matters" framing). When
  * omitted, audit passes use generic small-business copy.
  */
-export type Vertical =
-  | 'wedding-venue'
-  | 'preschool'
-  | 'restaurant'
-  | 'professional-services'
-  | 'generic';
+export type Vertical = (typeof VERTICALS)[number];
 
 /**
  * One engagement tier shown on the client portal's next-steps page
@@ -47,4 +61,27 @@ export interface ClientConfig {
    * tiers, so existing client configs are unaffected.
    */
   pricing?: PricingTier[];
+  /**
+   * Primary city the business operates from (e.g. "Austin"). Used by the
+   * `local` audit pass to build place-token heuristics instead of guessing
+   * locations. Optional and additive: omitted configs behave as before.
+   */
+  city?: string;
+  /**
+   * Region, county, metro, or state the business serves (e.g. "Hudson
+   * Valley", "Travis County", "TX"). Same locality role as `city`.
+   */
+  region?: string;
+  /**
+   * Additional towns/areas the business serves (e.g. ["Round Rock",
+   * "Pflugerville"]). Each entry is matched as a place token by the `local`
+   * audit pass.
+   */
+  serviceArea?: string[];
+  /**
+   * Whether the business serves a physical locality. Set `false` for
+   * online-only businesses to skip local-SEO checks entirely; omitted/true
+   * keeps the current behavior.
+   */
+  localBusiness?: boolean;
 }

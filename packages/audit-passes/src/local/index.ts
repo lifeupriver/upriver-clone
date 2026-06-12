@@ -10,19 +10,59 @@ const GBP_PATTERNS = [
   /google\.com\/maps/i,
 ];
 
-// Generic place / region tokens. Vertical-specific search-phrase patterns are
+// Truly generic locality patterns — no place names baked in. Client-specific
+// place tokens come from `city` / `region` / `serviceArea` in PassOptions
+// (sourced from client-config.yaml); vertical-specific search-phrase copy is
 // pulled from the vertical pack at runtime.
 const GENERIC_LOCAL_PATTERNS = [
-  /\b(hudson valley|catskill|new york|new paltz|woodstock|rhinebeck|upstate)\b/i,
-  /\bnear\s+(me|us|\w+)\b/i,
+  /\bnear\s+(me|us)\b/i,
   /\b\w+\s+in\s+\w+,\s*[A-Z]{2}\b/, // "<thing> in <city>, <ST>"
 ];
+
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Build a regex matching the client's own place names (city, region,
+ * service-area towns). Returns null when no locality data was provided —
+ * callers then fall back to the generic patterns alone.
+ */
+function buildPlacePattern(opts: PassOptions): RegExp | null {
+  const tokens = [opts.city, opts.region, ...(opts.serviceArea ?? [])]
+    .map((t) => t?.trim())
+    .filter((t): t is string => Boolean(t));
+  if (tokens.length === 0) return null;
+  return new RegExp(`\\b(${tokens.map(escapeRegExp).join('|')})\\b`, 'i');
+}
+
+/** Fill the pack's ranking-phrase template with known locality, leaving placeholders otherwise. */
+function fillRankingPhrase(template: string, opts: PassOptions): string {
+  if (!opts.city) return template;
+  const withCity = template.replace('{city}', opts.city);
+  return opts.region
+    ? withCity.replace('{state}', opts.region)
+    : withCity.replace(/,?\s*\{state\}/, '');
+}
 
 export async function run(
   slug: string,
   clientDir: string,
   opts: PassOptions = {},
 ): Promise<AuditPassResult> {
+  // Online-only businesses opt out of local SEO entirely via
+  // `localBusiness: false` in client-config.yaml. Score follows the
+  // no-findings convention in scoreFromFindings.
+  if (opts.localBusiness === false) {
+    return {
+      dimension: 'local',
+      score: scoreFromFindings([]),
+      summary: 'Not a local business — local-SEO checks skipped.',
+      findings: [],
+      completed_at: new Date().toISOString(),
+    };
+  }
+
   const pack = getVerticalPack(opts.vertical);
   const pages = loadPages(clientDir);
   const findings = [];
@@ -87,15 +127,25 @@ export async function run(
   }
 
   // ── Local keyword presence ─────────────────────────────────────────────────
-  const localKeywordMatches = GENERIC_LOCAL_PATTERNS.filter((p) => p.test(allText));
-  if (localKeywordMatches.length < 2) {
+  // When the client config supplies real place names, mentioning them is the
+  // strongest locality signal. Otherwise fall back to the generic patterns.
+  const placePattern = buildPlacePattern(opts);
+  const genericMatches = GENERIC_LOCAL_PATTERNS.filter((p) => p.test(allText));
+  const hasLocalSignal = placePattern
+    ? placePattern.test(allText) || genericMatches.length >= 2
+    : genericMatches.length >= 2;
+  if (!hasLocalSignal) {
+    const rankingPhrase = fillRankingPhrase(pack.rankingPhraseTemplate, opts);
     findings.push(finding(
       'local', 'p0', 'heavy',
       'Low local keyword density — site not optimized for geographic search terms',
       `The site rarely mentions specific location names (city, region, state). ${pack.buyer} search for "${pack.searchQueryExample}" — if those words aren't on the site, it won't rank.`,
-      `Naturally incorporate location keywords throughout the site: city/town name, region name, and state. Target phrases like "${pack.rankingPhraseTemplate}" in title tags and H1s.`,
+      `Naturally incorporate location keywords throughout the site: city/town name, region name, and state. Target phrases like "${rankingPhrase}" in title tags and H1s.`,
       {
         why: `"${pack.searchQueryExample}" is one of the highest-volume search terms for ${pack.noun} discovery. Ranking for these phrases is the #1 traffic opportunity.`,
+        ...(placePattern
+          ? { evidence: `None of the configured place names (${[opts.city, opts.region, ...(opts.serviceArea ?? [])].filter(Boolean).join(', ')}) appear in the site copy.` }
+          : {}),
       },
     ));
   }

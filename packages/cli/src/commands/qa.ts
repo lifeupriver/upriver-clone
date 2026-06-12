@@ -141,9 +141,19 @@ export default class Qa extends BaseCommand {
     const results = await Promise.allSettled(
       PASSES.map(async ({ name, fn }) => {
         try {
-          const passOpts = config.vertical ? { vertical: config.vertical } : {};
+          const passOpts = {
+            ...(config.vertical !== undefined ? { vertical: config.vertical } : {}),
+            ...(config.city !== undefined ? { city: config.city } : {}),
+            ...(config.region !== undefined ? { region: config.region } : {}),
+            ...(config.serviceArea !== undefined ? { serviceArea: config.serviceArea } : {}),
+            ...(config.localBusiness !== undefined ? { localBusiness: config.localBusiness } : {}),
+          };
           return await (
-            fn as (slug: string, dir: string, opts?: { vertical?: string }) => Promise<AuditPassResult>
+            fn as (
+              slug: string,
+              dir: string,
+              opts?: typeof passOpts,
+            ) => Promise<AuditPassResult>
           )(slug, qaDir, passOpts);
         } catch (err) {
           this.warn(`  [ERR] ${name}: ${String(err)}`);

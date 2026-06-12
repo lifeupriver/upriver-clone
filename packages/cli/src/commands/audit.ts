@@ -42,7 +42,14 @@ import {
 type PassFn = (
   slug: string,
   clientDir: string,
-  opts?: { vertical?: string; cloneRepoDir?: string },
+  opts?: {
+    vertical?: string;
+    cloneRepoDir?: string;
+    city?: string;
+    region?: string;
+    serviceArea?: string[];
+    localBusiness?: boolean;
+  },
 ) => Promise<AuditPassResult>;
 
 const ALL_PASSES: ReadonlyArray<{ name: string; fn: PassFn }> = [
@@ -137,14 +144,28 @@ export default class Audit extends BaseCommand {
     const outDir = flags.out ?? join(dir, 'audit');
     mkdirSync(outDir, { recursive: true });
 
-    // Read vertical from client-config.yaml; passes use it to swap in
-    // industry-specific copy and heuristics. Missing/unknown values fall
-    // back to the generic small-business pack inside audit-passes.
-    let vertical: string | undefined;
+    // Read vertical + locality fields from client-config.yaml; passes use
+    // them to swap in industry-specific copy/heuristics and to scope the
+    // local-SEO pass. Missing/unknown values fall back to the generic
+    // small-business pack inside audit-passes.
+    let passOpts: {
+      vertical?: string;
+      city?: string;
+      region?: string;
+      serviceArea?: string[];
+      localBusiness?: boolean;
+    } = {};
     try {
-      vertical = readClientConfig(slug).vertical;
+      const cfg = readClientConfig(slug);
+      passOpts = {
+        ...(cfg.vertical !== undefined ? { vertical: cfg.vertical } : {}),
+        ...(cfg.city !== undefined ? { city: cfg.city } : {}),
+        ...(cfg.region !== undefined ? { region: cfg.region } : {}),
+        ...(cfg.serviceArea !== undefined ? { serviceArea: cfg.serviceArea } : {}),
+        ...(cfg.localBusiness !== undefined ? { localBusiness: cfg.localBusiness } : {}),
+      };
     } catch {
-      vertical = undefined;
+      passOpts = {};
     }
 
     const mode = (flags.mode ?? 'base') as 'base' | 'deep' | 'tooling' | 'all';
@@ -166,7 +187,7 @@ export default class Audit extends BaseCommand {
       passesToRun.map(async ({ name, fn }) => {
         const passStart = Date.now();
         try {
-          const result = await fn(slug, dir, vertical ? { vertical } : {});
+          const result = await fn(slug, dir, passOpts);
           const elapsed = ((Date.now() - passStart) / 1000).toFixed(1);
           const grade = gradeScore(result.score);
           const p0 = result.findings.filter((f) => f.priority === 'p0').length;

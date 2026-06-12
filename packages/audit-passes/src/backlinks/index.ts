@@ -1,24 +1,79 @@
 // Backlinks audit — stub: requires Ahrefs API (AHREFS_API_KEY)
 // Provides actionable guidance from site data when API is unavailable
-import type { AuditPassResult } from '@upriver/core';
-import { loadPages } from '../shared/loader.js';
+import type { AuditFinding, AuditPassResult } from '@upriver/core';
+import { loadPages, type PageData } from '../shared/loader.js';
 import { finding, scoreFromFindings } from '../shared/finding-builder.js';
+import { getVerticalPack, type PassOptions, type VerticalPack } from '../shared/vertical-pack.js';
 
-export async function run(slug: string, clientDir: string): Promise<AuditPassResult> {
+/**
+ * Structural backlink observations derivable from scraped pages alone.
+ * Shared by both the unkeyed path and the keyed-but-unimplemented path so
+ * the copy can't drift between them. Directory recommendations and nouns
+ * come from the vertical pack — no industry's directories are assumed.
+ */
+function structuralFindings(pages: PageData[], pack: VerticalPack): AuditFinding[] {
+  const findings: AuditFinding[] = [];
+  const allExternal = pages.flatMap((p) => p.links.external);
+  const blogPages = pages.filter((p) => /blog|article|story|journal|guide/i.test(p.url));
+  const wordCount = pages.reduce((sum, p) => sum + p.content.wordCount, 0);
+
+  // ── Linkable asset assessment ─────────────────────────────────────────
+  if (blogPages.length === 0 && wordCount < 5000) {
+    findings.push(finding(
+      'backlinks', 'p1', 'heavy',
+      'No linkable content assets — low natural backlink acquisition potential',
+      'The site has no blog, guide, or long-form content that other sites would naturally link to. Transactional pages (pricing, contact) rarely attract links.',
+      `Create 3-5 high-value content assets: a buyer's guide written for ${pack.buyer}, a comparison or planning guide, a seasonal checklist, or a case-study/portfolio blog. These attract organic links from partners, local press, and industry blogs.`,
+      { why: `A ${pack.noun} that publishes genuinely helpful content earns links from partner businesses, local publications, and industry sites — the highest-quality backlink sources available without paid outreach.` },
+    ));
+  }
+
+  // ── Directory citation potential ───────────────────────────────────────
+  const linkedDirs = pack.directories.filter((d) => allExternal.some((l) => d.pattern.test(l)));
+  if (linkedDirs.length === 0) {
+    const dirList = pack.directories.map((d) => d.label).join(', ');
+    findings.push(finding(
+      'backlinks', 'p2', 'light',
+      'No industry directory profiles linked — missing easy citation backlinks',
+      `Profiles on ${dirList} provide high-authority backlinks for free, and no links to any of them were found on the site.`,
+      `Create and fully complete profiles on ${dirList}. Link to them from the site footer or contact page, and keep name/address/phone details consistent with the website.`,
+      { why: `Completed directory profiles are the easiest high-authority backlinks available to a ${pack.noun} — most of these directories are DA 70+ domains.` },
+    ));
+  }
+
+  // ── Partner link-building opportunities ───────────────────────────────
+  const allTestimonials = pages.flatMap((p) => p.extracted.testimonials);
+  if (allTestimonials.length > 0) {
+    const partnerMentions = allTestimonials.filter((t) =>
+      /photographer|videographer|florist|caterer|planner|vendor|partner|contractor/i.test(t.attribution ?? ''),
+    );
+    if (partnerMentions.length > 0) {
+      findings.push(finding(
+        'backlinks', 'p2', 'light',
+        'Partner link-building opportunity identified',
+        `${partnerMentions.length} testimonial(s) from partner businesses detected. Each partner is a potential link exchange.`,
+        'Reach out to partner businesses that have worked with the client and ask to be listed on their recommendations or partners page. Offer a reciprocal link from a preferred-partners page.',
+        { why: 'Partner link exchanges produce relevant, local, authority links that improve local rankings — and they are standard practice in most service industries.' },
+      ));
+    }
+  }
+
+  return findings;
+}
+
+export async function run(
+  slug: string,
+  clientDir: string,
+  opts: PassOptions = {},
+): Promise<AuditPassResult> {
+  const pack = getVerticalPack(opts.vertical);
   const pages = loadPages(clientDir);
-  const findings = [];
+  const findings: AuditFinding[] = [];
 
   const ahrefsKey = process.env['AHREFS_API_KEY'];
 
   if (!ahrefsKey) {
     // Without API access, surface structural observations about backlink-ability
-    const allExternal = pages.flatMap((p) => p.links.external);
-    const hasWeddingDirLinks = allExternal.some((l) => /weddingwire|theknot|zola/i.test(l));
-    const allTestimonials = pages.flatMap((p) => p.extracted.testimonials);
-    const allFaqs = pages.flatMap((p) => p.extracted.faqs);
-    const blogPages = pages.filter((p) => /blog|article|story|journal|guide/i.test(p.url));
-    const wordCount = pages.reduce((sum, p) => sum + p.content.wordCount, 0);
-
     findings.push(finding(
       'backlinks', 'p1', 'light',
       'Backlink profile not analyzed — Ahrefs API key not configured',
@@ -27,44 +82,7 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
       { why: 'Backlink authority is a top-3 Google ranking factor. Sites with more referring domains from quality sources consistently outrank competitors with better on-page SEO.' },
     ));
 
-    // ── Linkable asset assessment ─────────────────────────────────────────
-    if (blogPages.length === 0 && wordCount < 5000) {
-      findings.push(finding(
-        'backlinks', 'p1', 'heavy',
-        'No linkable content assets — low natural backlink acquisition potential',
-        'The site has no blog, guide, or long-form content that other sites would naturally link to. Transactional pages (pricing, contact) rarely attract links.',
-        'Create 3-5 high-value content assets: a local wedding planning guide, a venue comparison guide, a seasonal wedding checklist, or a real weddings blog. These attract organic links from planners, photographers, and local blogs.',
-        { why: 'Venues that publish helpful content earn links from wedding planners, photographers, and bridal blogs — the highest-quality backlink sources in the wedding industry.' },
-      ));
-    }
-
-    // ── Directory citation potential ───────────────────────────────────────
-    if (!hasWeddingDirLinks) {
-      findings.push(finding(
-        'backlinks', 'p2', 'light',
-        'No wedding directory profiles linked — missing easy citation backlinks',
-        'WeddingWire, The Knot, and Zola profiles provide DA 70+ backlinks for free. No links to these directories were found.',
-        'Create and fully complete profiles on WeddingWire, The Knot, Zola, and wedding.com. These are the easiest high-authority backlinks in the industry.',
-        { why: 'A complete WeddingWire profile typically provides a DA 73 backlink. These are the highest-authority free links available to venue businesses.' },
-      ));
-    }
-
-    // ── Local backlink opportunities ──────────────────────────────────────
-    if (allTestimonials.length > 0) {
-      const photographerMentions = pages
-        .flatMap((p) => p.extracted.testimonials)
-        .filter((t) => /photographer|videographer|florist|caterer|planner/i.test(t.attribution ?? ''));
-
-      if (photographerMentions.length > 0) {
-        findings.push(finding(
-          'backlinks', 'p2', 'light',
-          'Vendor partner link-building opportunity identified',
-          `${photographerMentions.length} vendor testimonials detected. Each vendor is a potential link exchange partner.`,
-          'Reach out to vendors who have worked at the venue and ask to be listed on their "venues we love" page. Offer reciprocal links from a preferred vendors page.',
-          { why: 'Vendor link exchanges in the wedding industry are standard practice and produce relevant, local, authority links that improve local pack rankings.' },
-        ));
-      }
-    }
+    findings.push(...structuralFindings(pages, pack));
 
     return {
       dimension: 'backlinks',
@@ -86,12 +104,6 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
     '[backlinks] AHREFS_API_KEY is set, but Ahrefs API v3 integration is not yet implemented. Falling back to structural observations only.',
   );
 
-  const allExternal = pages.flatMap((p) => p.links.external);
-  const hasWeddingDirLinks = allExternal.some((l) => /weddingwire|theknot|zola/i.test(l));
-  const allTestimonials = pages.flatMap((p) => p.extracted.testimonials);
-  const blogPages = pages.filter((p) => /blog|article|story|journal|guide/i.test(p.url));
-  const wordCount = pages.reduce((sum, p) => sum + p.content.wordCount, 0);
-
   findings.push(finding(
     'backlinks', 'p1', 'light',
     'Ahrefs API integration not yet implemented — structural analysis only',
@@ -100,37 +112,7 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
     { why: 'Without real backlink data, the score below is structural-only and undercounts authority. Treat the priorities directionally, not as evidence of poor backlinks.' },
   ));
 
-  if (blogPages.length === 0 && wordCount < 5000) {
-    findings.push(finding(
-      'backlinks', 'p1', 'heavy',
-      'No linkable content assets — low natural backlink acquisition potential',
-      'The site has no blog, guide, or long-form content that other sites would naturally link to.',
-      'Create 3-5 high-value content assets that attract organic links.',
-      { why: 'Sites that publish helpful content earn the highest-quality backlinks.' },
-    ));
-  }
-  if (!hasWeddingDirLinks) {
-    findings.push(finding(
-      'backlinks', 'p2', 'light',
-      'No wedding directory profiles linked — missing easy citation backlinks',
-      'WeddingWire, The Knot, and Zola profiles provide DA 70+ backlinks for free.',
-      'Create and fully complete profiles on WeddingWire, The Knot, Zola, and wedding.com.',
-      { why: 'These are the easiest high-authority backlinks available to venue businesses.' },
-    ));
-  }
-  if (allTestimonials.length > 0) {
-    const photographerMentions = pages
-      .flatMap((p) => p.extracted.testimonials)
-      .filter((t) => /photographer|videographer|florist|caterer|planner/i.test(t.attribution ?? ''));
-    if (photographerMentions.length > 0) {
-      findings.push(finding(
-        'backlinks', 'p2', 'light',
-        'Vendor partner link-building opportunity identified',
-        `${photographerMentions.length} vendor testimonials detected.`,
-        'Reach out to vendors and ask to be listed on their "venues we love" page.',
-      ));
-    }
-  }
+  findings.push(...structuralFindings(pages, pack));
 
   return {
     dimension: 'backlinks',
