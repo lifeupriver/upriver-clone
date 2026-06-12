@@ -4,9 +4,11 @@ import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
 import type { ClientConfig } from '../types/client-config.js';
 import { ClientConfigZ } from '../types/client-config-zod.js';
 import { ConfigError } from '../errors.js';
+import { assertSafeSlug } from '../util/paths.js';
 
 export function clientDir(slug: string, base = './clients'): string {
-  return join(base, slug);
+  // Slugs become path segments — reject anything non-kebab before joining.
+  return join(base, assertSafeSlug(slug));
 }
 
 export function configPath(slug: string, base = './clients'): string {

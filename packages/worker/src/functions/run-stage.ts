@@ -1,12 +1,13 @@
 import { execFile } from 'node:child_process';
-import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, posix, relative } from 'node:path';
 import { promisify } from 'node:util';
 import { flagsToArgs } from '@upriver/core';
 import { createSupabaseClientDataSourceFromEnv, type SupabaseClientDataSource } from '@upriver/core/data';
 import { inngest } from '../client.js';
 import { STAGE_RUN_EVENT, stageRunPayloadSchema, type StageRunPayload } from '../events.js';
-import { ALLOWED_COMMANDS } from './allowed-commands.js';
+import { ALLOWED_COMMANDS, commandToArgv } from './allowed-commands.js';
+import { scrubSecrets } from './scrub-secrets.js';
 
 /**
  * Where the worker stages a client tree on the local (ephemeral) filesystem
@@ -16,6 +17,15 @@ import { ALLOWED_COMMANDS } from './allowed-commands.js';
  */
 const WORK_ROOT = '/tmp/upriver';
 const CLIENTS_ROOT = `${WORK_ROOT}/clients`;
+
+/**
+ * Hard wall-clock cap on a single CLI stage. A wedged stage (browser that
+ * never exits, claude waiting on interactive input) would otherwise hold its
+ * per-slug concurrency lane — and the Inngest step — forever. SIGKILL rather
+ * than the default SIGTERM: headless Chromium trees are notorious for
+ * shrugging off TERM.
+ */
+const STAGE_TIMEOUT_MS = 30 * 60_000;
 
 /**
  * Resolved path to the upriver CLI bin inside the container. The Dockerfile
@@ -163,38 +173,70 @@ export const runStage = inngest.createFunction(
 
     const pullResult = await step.run('pull', () => pullClient(payload));
 
-    const spawnResult = await step.run('spawn', async () => {
-      const cutoffMs = Date.now();
-      const argv = [
-        resolveCliBin(),
-        payload.command,
-        payload.slug,
-        ...payload.args,
-        ...flagsToArgs(payload.flags),
-      ];
-      const { stdout, stderr } = await execFileAsync('node', argv, {
-        cwd: WORK_ROOT,
-        env: { ...process.env, UPRIVER_CLIENTS_DIR: CLIENTS_ROOT },
-        // Cap captured output so a chatty stage doesn't blow up Inngest's
-        // step-state payload. Anything past this is dropped from the run
-        // history but still reaches the container's stdout for fly logs.
-        maxBuffer: 8 * 1024 * 1024,
+    try {
+      const spawnResult = await step.run('spawn', async () => {
+        const cutoffMs = Date.now();
+        const argv = [
+          resolveCliBin(),
+          // oclif topic commands span multiple argv elements (space
+          // separator) — e.g. `fixes-plan` spawns as `fixes plan`.
+          ...commandToArgv(payload.command),
+          payload.slug,
+          ...payload.args,
+          ...flagsToArgs(payload.flags),
+        ];
+        // Tail to keep the step return small. Inngest persists this verbatim,
+        // so scrub env secrets the CLI may have echoed before anything leaves
+        // the worker.
+        const tail = (s: string): string => (s.length > 4_000 ? s.slice(-4_000) : s);
+        try {
+          const { stdout, stderr } = await execFileAsync('node', argv, {
+            cwd: WORK_ROOT,
+            env: { ...process.env, UPRIVER_CLIENTS_DIR: CLIENTS_ROOT },
+            // Cap captured output so a chatty stage doesn't blow up Inngest's
+            // step-state payload. Anything past this is dropped from the run
+            // history but still reaches the container's stdout for fly logs.
+            maxBuffer: 8 * 1024 * 1024,
+            timeout: STAGE_TIMEOUT_MS,
+            killSignal: 'SIGKILL',
+          });
+          return { cutoffMs, stdoutTail: scrubSecrets(tail(stdout)), stderrTail: scrubSecrets(tail(stderr)) };
+        } catch (err) {
+          // execFile failures carry the captured output and the full command
+          // line; rebuild a scrubbed, tailed error so secrets can't ride into
+          // Inngest's persisted failure message either.
+          const e = err as Error & { stdout?: unknown; stderr?: unknown };
+          const firstLine = scrubSecrets(String(e.message ?? err)).split('\n', 1)[0] ?? 'stage spawn failed';
+          const stderrTail = typeof e.stderr === 'string' ? scrubSecrets(tail(e.stderr)) : '';
+          throw new Error(stderrTail ? `${firstLine}\nstderr tail:\n${stderrTail}` : firstLine);
+        }
       });
-      // Tail to keep the step return small. Inngest persists this verbatim.
-      const tail = (s: string): string => (s.length > 4_000 ? s.slice(-4_000) : s);
-      return { cutoffMs, stdoutTail: tail(stdout), stderrTail: tail(stderr) };
-    });
 
-    const pushResult = await step.run('push', () =>
-      pushClient(payload, spawnResult.cutoffMs),
-    );
+      const pushResult = await step.run('push', () =>
+        pushClient(payload, spawnResult.cutoffMs),
+      );
 
-    return {
-      status: 'completed',
-      pulled: pullResult,
-      pushed: pushResult,
-      stdoutTail: spawnResult.stdoutTail,
-      stderrTail: spawnResult.stderrTail,
-    };
+      return {
+        status: 'completed',
+        pulled: pullResult,
+        pushed: pushResult,
+        stdoutTail: spawnResult.stdoutTail,
+        stderrTail: spawnResult.stderrTail,
+      };
+    } finally {
+      // Best-effort disk reclaim whether the run succeeded or failed (the
+      // failure re-propagates after this). The machine's /tmp is ephemeral
+      // but long-lived across runs — without this, staged client trees
+      // accumulate until the disk fills. Per-slug concurrency is 1, so no
+      // sibling run can be using this directory.
+      await step.run('cleanup', async () => {
+        try {
+          await rm(join(CLIENTS_ROOT, payload.slug), { recursive: true, force: true });
+          return { cleaned: true };
+        } catch {
+          return { cleaned: false };
+        }
+      });
+    }
   },
 );

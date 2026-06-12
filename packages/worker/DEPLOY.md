@@ -30,12 +30,32 @@ fly secrets set \
   INNGEST_EVENT_KEY=... \
   INNGEST_SIGNING_KEY=... \
   INNGEST_SERVE_HOST=https://upriver-worker.fly.dev \
+  UPRIVER_USE_API_KEY=1 \
   ANTHROPIC_API_KEY=... \
   FIRECRAWL_API_KEY=... \
   UPRIVER_SUPABASE_URL=https://qavbpfmhgvkhrnbqalrp.supabase.co \
-  UPRIVER_SUPABASE_SERVICE_ROLE_KEY=... \
+  UPRIVER_SUPABASE_SERVICE_KEY=... \
   --app upriver-worker
 ```
+
+**`UPRIVER_USE_API_KEY=1` + `ANTHROPIC_API_KEY` are REQUIRED for the worker
+container.** The CLI's default `claude` path relies on an operator's logged-in
+Claude Max/Team session, which does not exist inside a container — without
+`UPRIVER_USE_API_KEY=1` the CLI strips `ANTHROPIC_API_KEY` from the spawned
+`claude` env and every LLM-backed stage fails. Set both.
+
+`UPRIVER_SUPABASE_SERVICE_KEY` is the canonical name (it's what
+`@upriver/core` reads). The legacy `UPRIVER_SUPABASE_SERVICE_ROLE_KEY` is
+still accepted — `serve.ts` copies it across at startup with a deprecation
+warning — but set the canonical name on new machines.
+
+### Pinned tool versions
+
+The Dockerfile pins the global CLIs it installs (`@anthropic-ai/claude-code@2.1.175`,
+`lighthouse@12`, `squirrelscan@0.0.38`) so a rebuild can't silently change
+tool behavior. To bump claude-code, verify the new version against the
+pipeline locally (`claude --version`), then update the pin in
+`packages/worker/Dockerfile` and rebuild the image.
 
 ### 3. First deploy
 

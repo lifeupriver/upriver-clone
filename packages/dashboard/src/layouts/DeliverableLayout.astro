@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { deliverableHref } from '../lib/deliverable-links';
 
 export interface Props {
   title: string;
@@ -13,6 +14,13 @@ const { title, clientName, docType, slug, generatedAt } = Astro.props;
 const date = generatedAt
   ? new Date(generatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
   : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+// Share-token clients can't reach the operator workspace at /clients/<slug> —
+// the middleware would bounce them to /login. With a token in the URL, "back"
+// means the portal's report overview (token preserved); without one (operator
+// session) it stays the operator client page.
+const token = Astro.url.searchParams.get('t');
+const backHref = token ? deliverableHref(slug, '', token) : `/clients/${slug}`;
 ---
 
 <html lang="en">
@@ -25,7 +33,7 @@ const date = generatedAt
   <body>
     <div class="deliverable-shell">
       <header class="deliverable-header no-print">
-        <a href={`/clients/${slug}`} class="back-link">
+        <a href={backHref} class="back-link">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M19 12H5M12 5l-7 7 7 7"/>
           </svg>

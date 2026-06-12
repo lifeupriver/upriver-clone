@@ -6,9 +6,16 @@ import Footer from '../components/astro/Footer.astro';
 interface Props {
   title: string;
   description?: string;
+  /** Path or absolute URL to a social-share image, e.g. "/images/og.jpg". */
+  ogImage?: string;
 }
 
-const { title, description = '' } = Astro.props;
+const { title, description = '', ogImage } = Astro.props;
+
+// Canonical URL from the request path + the `site` config (PUBLIC_SITE_URL
+// in astro.config.mjs). Falls back to the request URL when site is unset.
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : Astro.url;
+const ogImageUrl = ogImage ? new URL(ogImage, canonical).toString() : undefined;
 ---
 
 <!doctype html>
@@ -17,8 +24,22 @@ const { title, description = '' } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
-    {description && <meta name="description" content={description} />}
     <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:url" content={canonical} />
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+
+    <meta name="twitter:card" content={ogImageUrl ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
   </head>
   <body class="min-h-screen flex flex-col">
     <Nav />

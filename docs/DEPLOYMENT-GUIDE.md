@@ -514,16 +514,19 @@ fly secrets set \
   INNGEST_EVENT_KEY=ek_... \
   INNGEST_SIGNING_KEY=signkey-... \
   INNGEST_SERVE_HOST=https://upriver-worker.fly.dev \
+  UPRIVER_USE_API_KEY=1 \
   ANTHROPIC_API_KEY=sk-ant-... \
   FIRECRAWL_API_KEY=fc-... \
   UPRIVER_SUPABASE_URL=https://qavbpfmhgvkhrnbqalrp.supabase.co \
-  UPRIVER_SUPABASE_SERVICE_ROLE_KEY=eyJ... \
+  UPRIVER_SUPABASE_SERVICE_KEY=eyJ... \
   RESEND_API_KEY=re_... \
   --app upriver-worker
 ```
 
 Use the **service-role** key, not the publishable key. The worker is
-server-side only.
+server-side only. `UPRIVER_USE_API_KEY=1` + `ANTHROPIC_API_KEY` are required
+in the container — there is no logged-in Claude session there, so the CLI's
+`claude` calls must use the API-key path.
 
 ### 4.5 First container build + deploy
 
@@ -960,19 +963,20 @@ Set via `fly secrets set` (encrypted at rest):
 INNGEST_EVENT_KEY=ek_...
 INNGEST_SIGNING_KEY=signkey-...
 INNGEST_SERVE_HOST=https://upriver-worker.fly.dev
+UPRIVER_USE_API_KEY=1
 ANTHROPIC_API_KEY=sk-ant-...
 FIRECRAWL_API_KEY=fc-...
 UPRIVER_SUPABASE_URL=https://qavbpfmhgvkhrnbqalrp.supabase.co
-UPRIVER_SUPABASE_SERVICE_ROLE_KEY=eyJ...
+UPRIVER_SUPABASE_SERVICE_KEY=eyJ...
 RESEND_API_KEY=re_...
 UPRIVER_REPORT_FROM=reports@upriverhudsonvalley.com
 UPRIVER_REPORT_HOST=https://reports.upriverhudsonvalley.com
 ```
 
-Note the slight name divergence: the worker uses
-`UPRIVER_SUPABASE_SERVICE_ROLE_KEY` (legacy name) while the dashboard
-uses `UPRIVER_SUPABASE_SERVICE_KEY`. Same value, different env var
-name — set both.
+`UPRIVER_SUPABASE_SERVICE_KEY` is the one canonical name across the worker
+and the dashboard. The worker still accepts the legacy
+`UPRIVER_SUPABASE_SERVICE_ROLE_KEY` (copied across at startup with a
+deprecation warning), but new machines should set only the canonical name.
 
 ### A.4 GitHub Actions (for the worker container build)
 

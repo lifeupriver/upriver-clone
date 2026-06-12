@@ -7,6 +7,7 @@ import { Args, Flags } from '@oclif/core';
 import { BaseCommand } from '../base-command.js';
 import { auditEmbeds, type FormEmbed, type IframeEmbed, type ScriptWidget } from '../clone/embed-audit.js';
 import { resolveScaffoldPaths, loadAuditPackage } from '../scaffold/template-writer.js';
+import { buildAgentEnv } from '../util/claude-code.js';
 
 export default class CloneEmbeds extends BaseCommand {
   static override description =
@@ -40,7 +41,8 @@ export default class CloneEmbeds extends BaseCommand {
 
     if (!flags['no-build'] || !existsSync(distClient)) {
       this.log('Building cloned repo to refresh dist/client...');
-      const r = spawnSync('pnpm', ['build'], { cwd: repoDir, stdio: 'inherit' });
+      // Scrubbed env: the build executes agent-written page code.
+      const r = spawnSync('pnpm', ['build'], { cwd: repoDir, stdio: 'inherit', env: buildAgentEnv() });
       if (r.status !== 0) this.error(`Build failed (exit ${r.status}).`);
     }
 

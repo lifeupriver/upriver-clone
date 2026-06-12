@@ -34,7 +34,9 @@ async function readJson(request: Request): Promise<unknown> {
  * up).
  *
  * Body shape: `{ slug: string, expiresInDays?: number | null, label?: string }`.
- * Returns: the inserted row + a ready-to-copy share URL.
+ * Returns: the inserted row + a ready-to-copy share URL. This response is the
+ * ONLY time the plaintext token (and thus the URL) exists — the table stores a
+ * sha256 hash, so the link cannot be re-displayed later.
  */
 export const POST: APIRoute = async ({ request, cookies }) => {
   const user = await getSessionUser(request, cookies);

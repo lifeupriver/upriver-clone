@@ -1,4 +1,6 @@
 ---
+import { markdownToHtml } from '@/lib/markdown';
+
 export interface Props {
   content: string;
   /**
@@ -75,30 +77,9 @@ function parseDoc(md: string, explicitSummary: string | undefined): ParsedDoc {
   return { preamble, sections, callout };
 }
 
-/**
- * Convert a markdown chunk (no `##` headings — those are stripped by
- * `parseDoc` and handled separately) to HTML using the same
- * regex-based pipeline the dashboard has always used.
- */
-function markdownToHtml(md: string): string {
-  return md
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/```[\w]*\n([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
-    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-    .replace(/^\s*[-*] (.+)$/gm, '<li>$1</li>')
-    .replace(/^\s*\d+\. (.+)$/gm, '<li>$1</li>')
-    .replace(/^---+$/gm, '<hr>')
-    .replace(/\n\n(?!<)/g, '</p><p>')
-    .replace(/^(?!<)/, '<p>')
-    .replace(/(?!>)$/, '</p>')
-    .replace(/(<li>[\s\S]*?<\/li>)(?:\s*<li>[\s\S]*?<\/li>)*/g, (m) => `<ul>${m}</ul>`)
-    .replace(/<p>\s*<\/p>/g, '')
-    .replace(/<p>(<[hb])/g, '$1')
-    .replace(/(<\/h[123]>)<\/p>/g, '$1');
-}
+// Markdown → HTML now lives in `@/lib/markdown` (unit-tested). It escapes the
+// ENTIRE untrusted source before applying the regex transforms, so the
+// `set:html` sinks below can only ever receive renderer-generated tags.
 
 const parsed = parseDoc(content, summary);
 

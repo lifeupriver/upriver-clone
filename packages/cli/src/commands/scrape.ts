@@ -10,6 +10,7 @@ import { join, extname } from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { BaseCommand } from '../base-command.js';
+import { urlToSlug } from '../util/url-slug.js';
 import {
   FirecrawlClient,
   readClientConfig,
@@ -185,6 +186,11 @@ export default class Scrape extends BaseCommand {
       description: 'Skip mobile screenshot pass (saves ~35 credits)',
       default: false,
     }),
+    'max-pages': Flags.integer({
+      description:
+        'Hard cap on pages scraped this run (credit-spend ceiling). Default 150; pass a higher value explicitly for large sites.',
+      default: 150,
+    }),
   };
 
   async run(): Promise<void> {
@@ -217,6 +223,17 @@ export default class Scrape extends BaseCommand {
       const before = urls.length;
       urls = urls.filter((u) => !existsSync(join(dir, 'pages', `${urlToSlug(u)}.json`)));
       this.log(`Resume: skipping ${before - urls.length} already-scraped pages, ${urls.length} remaining.`);
+    }
+
+    // Credit-spend ceiling: every URL costs multiple credit-bearing requests
+    // (scrape + json extraction + mobile shot). An unbounded 500-page site
+    // must be an explicit operator choice, not a default.
+    if (flags['max-pages'] > 0 && urls.length > flags['max-pages']) {
+      this.warn(
+        `Site map has ${urls.length} pages — capping this run at ${flags['max-pages']} (≈${flags['max-pages'] * 6}+ credits). ` +
+          `Re-run with --max-pages ${urls.length} to scrape everything, or --resume to continue in batches.`,
+      );
+      urls = urls.slice(0, flags['max-pages']);
     }
 
     if (urls.length === 0) {
@@ -472,23 +489,6 @@ export default class Scrape extends BaseCommand {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function urlToSlug(url: string): string {
-  try {
-    const u = new URL(url);
-    const path = u.pathname.replace(/\/$/, '') || '/';
-    if (path === '/') return 'home';
-    return path
-      .slice(1)
-      .replace(/\//g, '-')
-      .replace(/[^a-z0-9-]/gi, '-')
-      .replace(/-+/g, '-')
-      .toLowerCase()
-      .slice(0, 80);
-  } catch {
-    return 'unknown';
-  }
-}
-
 function selectBrandingUrls(urls: string[], homeUrl: string): string[] {
   const home = urls.find((u) => {
     try {
@@ -594,7 +594,7 @@ async function downloadScreenshot(
   if (!url) return null;
   const localPath = join(dir, `${slug}.png`);
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { signal: AbortSignal.timeout(30000) });
     if (!res.ok || !res.body) return null;
     mkdirSync(dir, { recursive: true });
     const stream = createWriteStream(localPath);

@@ -2,7 +2,12 @@
 export const prerender = false;
 
 import '../../styles/global.css';
+import { createSupabaseServerClient, isSupabaseConfigured } from '../../lib/supabase-server';
 
+// Email + password sign-in against the client's Supabase project. There is
+// deliberately NO signup page — create the first admin user in the Supabase
+// dashboard (Authentication → Users → Add user) or via the operator's
+// provisioning. See README.md ("Admin access").
 let error: string | null = null;
 
 if (Astro.request.method === 'POST') {
@@ -12,30 +17,18 @@ if (Astro.request.method === 'POST') {
 
   if (!email || !password) {
     error = 'Email and password are required.';
+  } else if (!isSupabaseConfigured()) {
+    error = 'Supabase is not configured — set PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY.';
   } else {
     try {
-      const { auth } = await import('../../lib/auth');
-      const result = await auth.api.signInEmail({
-        body: { email, password },
-        headers: Astro.request.headers,
-      });
-
-      const token =
-        (result as { token?: string } | undefined)?.token ??
-        (result as { session?: { token?: string } } | undefined)?.session?.token;
-
-      if (token) {
-        Astro.cookies.set('upriver_session', token, {
-          httpOnly: true,
-          secure: true,
-          sameSite: 'lax',
-          path: '/',
-          maxAge: 60 * 60 * 24 * 7,
-        });
-        return Astro.redirect('/admin/dashboard');
+      // The @supabase/ssr server client writes the sb-* session cookies
+      // through Astro.cookies on successful sign-in.
+      const supabase = createSupabaseServerClient(Astro.request, Astro.cookies);
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (!signInError) {
+        return Astro.redirect('/admin');
       }
-
-      error = 'Invalid credentials.';
+      error = signInError.message || 'Invalid credentials.';
     } catch (err) {
       error = err instanceof Error ? err.message : 'Sign-in failed.';
     }

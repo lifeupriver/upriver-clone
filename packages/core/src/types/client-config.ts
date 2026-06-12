@@ -16,6 +16,19 @@ export type Vertical =
   | 'professional-services'
   | 'generic';
 
+/**
+ * One engagement tier shown on the client portal's next-steps page
+ * (`/deliverables/<slug>/next-steps`). Mirrors that page's card layout:
+ * name + price headline, a scope eyebrow ("2-week project"), and a prose
+ * description.
+ */
+export interface PricingTier {
+  name: string;
+  price: string;
+  scope: string;
+  description: string;
+}
+
 export interface ClientConfig {
   slug: string;
   name: string;
@@ -28,4 +41,10 @@ export interface ClientConfig {
   github_repo?: string;
   supabase_project_ref?: string;
   dev_port?: number;
+  /**
+   * Per-client engagement pricing for the portal's next-steps page. Optional
+   * and additive: when omitted the dashboard renders its built-in default
+   * tiers, so existing client configs are unaffected.
+   */
+  pricing?: PricingTier[];
 }

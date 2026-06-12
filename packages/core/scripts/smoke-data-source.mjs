@@ -25,7 +25,8 @@ if (!url || !key) {
 }
 
 const BUCKET = process.env.UPRIVER_SUPABASE_BUCKET ?? 'upriver';
-const SLUG = '_smoke';
+// Must satisfy assertSafeSlug (kebab-case) — the data source validates slugs.
+const SLUG = 'zz-smoke';
 const client = createClient(url, key, { auth: { persistSession: false } });
 const ds = new SupabaseClientDataSource({ client, bucket: BUCKET });
 

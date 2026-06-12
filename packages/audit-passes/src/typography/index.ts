@@ -36,7 +36,7 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
     const ratio = pages.length === 0 ? 0 : issues.length / pages.length;
     findings.push(
       finding(
-        'design',
+        'typography',
         ratio >= 0.5 ? 'p0' : 'p1',
         'medium',
         `Heading hierarchy issues on ${issues.length}/${pages.length} pages`,
@@ -63,7 +63,7 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
   if (distinctFonts.size === 0 && tokens) {
     findings.push(
       finding(
-        'design',
+        'typography',
         'p1',
         'light',
         'No fonts detected in design tokens',
@@ -75,7 +75,7 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
   } else if (distinctFonts.size === 1) {
     findings.push(
       finding(
-        'design',
+        'typography',
         'p2',
         'light',
         'Single font family across the site',
@@ -87,7 +87,7 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
   } else if (distinctFonts.size > 3) {
     findings.push(
       finding(
-        'design',
+        'typography',
         'p1',
         'medium',
         `${distinctFonts.size} font families loaded`,
@@ -108,7 +108,7 @@ export async function run(slug: string, clientDir: string): Promise<AuditPassRes
     `${distinctFonts.size} font famil${distinctFonts.size === 1 ? 'y' : 'ies'} detected.`;
 
   return {
-    dimension: 'design',
+    dimension: 'typography',
     score,
     summary,
     findings,
@@ -174,7 +174,7 @@ function analyzeTypeScale(typography: Record<string, unknown> | undefined) {
   const avg = ratios.reduce((s, r) => s + r, 0) / ratios.length;
   if (avg < 1.1) {
     return finding(
-      'design',
+      'typography',
       'p2',
       'light',
       `Type scale too tight (avg ratio ${avg.toFixed(2)})`,
@@ -185,7 +185,7 @@ function analyzeTypeScale(typography: Record<string, unknown> | undefined) {
   }
   if (avg > 1.6) {
     return finding(
-      'design',
+      'typography',
       'p2',
       'light',
       `Type scale too loose (avg ratio ${avg.toFixed(2)})`,

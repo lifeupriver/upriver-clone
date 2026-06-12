@@ -1,44 +1,32 @@
-name: Monthly QA
+# Monthly QA — intentionally a disabled stub.
+#
+# An earlier version of this workflow installed `@upriver/cli` from npm and
+# ran QA from inside the client repo. The CLI is not published to npm and
+# the flags it used (`--slug` / `--url`) never existed, so it could never
+# work. Monthly QA runs from the operator's Upriver workspace instead —
+# that's where the CLI, the client's audit baseline, and the API keys live:
+#
+#     upriver qa <slug> --preview-url <production-url>
+#
+# Cadence: 1st of each month, operator-side. See README.md ("Monthly QA").
+#
+# This stub is manual-trigger only (no cron) and does nothing; it stays in
+# the repo so the QA story is documented where people look for it. If you
+# ever add real build steps here, note this site requires Node >= 22 (see
+# package.json `engines` and .nvmrc).
+name: Monthly QA (operator-side — stub)
 
 on:
-  schedule:
-    # 00:00 UTC on the 1st of each month
-    - cron: '0 0 1 * *'
   workflow_dispatch:
 
-permissions:
-  contents: read
-  issues: write
+permissions: {}
 
 jobs:
-  monthly-qa:
+  explain:
     runs-on: ubuntu-latest
-    env:
-      CLIENT_SLUG: ${{ vars.CLIENT_SLUG }}
-      PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
-      FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Install Upriver CLI
-        run: pnpm add -g @upriver/cli
-
-      - name: Run QA
+      - name: Explain where monthly QA runs
         run: |
-          upriver qa \
-            --slug "$CLIENT_SLUG" \
-            --mode production \
-            --url "$PRODUCTION_URL"
+          echo "Monthly QA does not run in this repo."
+          echo "It runs from the operator's Upriver workspace:"
+          echo "  upriver qa <slug> --preview-url <production-url>"

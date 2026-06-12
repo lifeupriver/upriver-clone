@@ -65,4 +65,19 @@ describe('LocalFsClientDataSource', () => {
     assert.equal(s!.size, 14);
     assert.ok(s!.mtimeMs > 0);
   });
+
+  it('rejects slugs that are not kebab-case', async () => {
+    for (const slug of ['../foo', '..', 'foo/bar', 'Foo', '_smoke']) {
+      await assert.rejects(ds.readClientFile(slug, 'client-config.yaml'), /Invalid client slug/);
+      await assert.rejects(ds.writeClientFile(slug, 'x.txt', 'x'), /Invalid client slug/);
+    }
+  });
+
+  it('rejects `..` segments in paths', async () => {
+    for (const path of ['../escape.txt', 'audit/../../escape.txt', 'a/../../b']) {
+      await assert.rejects(ds.readClientFile('foo', path), /Path traversal rejected/);
+      await assert.rejects(ds.writeClientFile('foo', path, 'x'), /Path traversal rejected/);
+      await assert.rejects(ds.listClientFiles('foo', path), /Path traversal rejected/);
+    }
+  });
 });

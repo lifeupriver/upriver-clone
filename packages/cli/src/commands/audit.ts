@@ -330,6 +330,14 @@ export default class Audit extends BaseCommand {
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 
+    // Unattended runs decide by exit code: zero completed passes must not
+    // write an empty summary.json and read as success downstream.
+    if (passed.length === 0) {
+      this.error('every audit pass failed — no summary written. Check the [ERR] lines above.', {
+        exit: 1,
+      });
+    }
+
     // Write individual pass JSON files
     for (const result of passed) {
       const outPath = join(outDir, `${result.dimension}.json`);

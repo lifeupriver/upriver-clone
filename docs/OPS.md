@@ -110,9 +110,11 @@ Environment variables expected on each surface. Required unless noted.
 **Fly.io (worker):**
 - `INNGEST_EVENT_KEY`, `INNGEST_SIGNING_KEY`
 - `INNGEST_SERVE_HOST=https://upriver-worker.fly.dev`
-- `ANTHROPIC_API_KEY`
+- `UPRIVER_USE_API_KEY=1` + `ANTHROPIC_API_KEY` — required; there is no
+  logged-in Claude session in the container, so the CLI must use the API key
 - `FIRECRAWL_API_KEY`
-- `UPRIVER_SUPABASE_URL`, `UPRIVER_SUPABASE_SERVICE_ROLE_KEY`
+- `UPRIVER_SUPABASE_URL`, `UPRIVER_SUPABASE_SERVICE_KEY` (legacy alias
+  `UPRIVER_SUPABASE_SERVICE_ROLE_KEY` still accepted at startup, deprecated)
 
 `UPRIVER_RUN_TOKEN` is retired — purge it with `vercel env rm UPRIVER_RUN_TOKEN production --yes`
 if it lingers (backlog §20).

@@ -60,17 +60,17 @@ const MIN_TOKEN_LENGTH = 3;
 /**
  * Tokenize markdown / plain text into a Set of lowercase tokens.
  *
- * Strategy: lowercase the input, split on any non-alphanumeric run, drop tokens
- * shorter than 3 characters. Unicode is intentionally not preserved (the source
- * markdown is ASCII-leaning); this is fine for an MVP completeness signal.
+ * Strategy: lowercase the input, split on any run of non-letter/non-digit
+ * characters (Unicode-aware — accented, Cyrillic, and CJK content must not
+ * score 0), drop tokens shorter than 3 characters.
  *
  * @param text - Raw text to tokenize.
- * @returns Set of unique lowercase tokens (length >= 3, alphanumeric only).
+ * @returns Set of unique lowercase tokens (length >= 3, letters/digits only).
  */
 export function tokenize(text: string): Set<string> {
   const out = new Set<string>();
   if (!text) return out;
-  const parts = text.toLowerCase().split(/[^a-z0-9]+/);
+  const parts = text.toLowerCase().split(/[^\p{L}\p{N}]+/u);
   for (const t of parts) {
     if (t.length >= MIN_TOKEN_LENGTH) out.add(t);
   }
@@ -151,10 +151,40 @@ function cropRgba(src: Buffer, srcW: number, cropW: number, cropH: number): Buff
 }
 
 /**
- * Compare two PNG files using pixelmatch. The larger image is cropped (not
- * scaled) to the smaller's width and height; this keeps the dependency
- * surface small and avoids the cost of resampling. A diff PNG showing
- * per-pixel differences is written to `diffOutPath`.
+ * Nearest-neighbor resample of an RGBA buffer. Cheap and dependency-free —
+ * adequate for a fidelity heuristic where the alternative (cropping two
+ * different-width screenshots) compares different responsive layouts and
+ * different page regions, structurally depressing every score.
+ */
+function resizeRgba(
+  src: Buffer,
+  srcW: number,
+  srcH: number,
+  dstW: number,
+  dstH: number,
+): Buffer {
+  const out = Buffer.alloc(dstW * dstH * 4);
+  for (let y = 0; y < dstH; y += 1) {
+    const sy = Math.min(srcH - 1, Math.floor((y * srcH) / dstH));
+    for (let x = 0; x < dstW; x += 1) {
+      const sx = Math.min(srcW - 1, Math.floor((x * srcW) / dstW));
+      const si = (sy * srcW + sx) * 4;
+      const di = (y * dstW + x) * 4;
+      out[di] = src[si]!;
+      out[di + 1] = src[si + 1]!;
+      out[di + 2] = src[si + 2]!;
+      out[di + 3] = src[si + 3]!;
+    }
+  }
+  return out;
+}
+
+/**
+ * Compare two PNG files using pixelmatch. When widths differ, the wider
+ * image is scaled (nearest-neighbor, aspect-preserving) down to the
+ * narrower width so the same layout is compared; heights are then cropped
+ * to the shorter side. A diff PNG showing per-pixel differences is written
+ * to `diffOutPath`.
  *
  * If either side is missing or unreadable, returns `score: 0` and
  * `diffPath: null` with the appropriate counts zeroed out.
@@ -181,9 +211,21 @@ export async function computePixelScore(
     };
   }
   const w = Math.min(live.width, clone.width);
-  const h = Math.min(live.height, clone.height);
-  const liveBuf = cropRgba(live.data, live.width, w, h);
-  const cloneBuf = cropRgba(clone.data, clone.width, w, h);
+  let liveData: Buffer = live.data;
+  let liveH = live.height;
+  if (live.width !== w) {
+    liveH = Math.max(1, Math.round((live.height * w) / live.width));
+    liveData = resizeRgba(live.data, live.width, live.height, w, liveH);
+  }
+  let cloneData: Buffer = clone.data;
+  let cloneH = clone.height;
+  if (clone.width !== w) {
+    cloneH = Math.max(1, Math.round((clone.height * w) / clone.width));
+    cloneData = resizeRgba(clone.data, clone.width, clone.height, w, cloneH);
+  }
+  const h = Math.min(liveH, cloneH);
+  const liveBuf = cropRgba(liveData, w, w, h);
+  const cloneBuf = cropRgba(cloneData, w, w, h);
   const diffPng = new PNG({ width: w, height: h });
   const differingPixels = pixelmatch(liveBuf, cloneBuf, diffPng.data, w, h, {
     threshold: 0.1,

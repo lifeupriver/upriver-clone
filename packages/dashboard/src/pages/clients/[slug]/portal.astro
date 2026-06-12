@@ -2,7 +2,7 @@
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
 import { readClientConfig, clientExists } from '@/lib/fs-reader';
 import { readInterviewShare } from '@/lib/interview';
-import { listShareTokens } from '@/lib/share-token';
+import { hashShareToken, listShareTokens } from '@/lib/share-token';
 import { PORTAL_LABEL, portalUrl } from '@/pages/api/portal/_portal-handler';
 
 // Operator-only: the middleware gates /clients/* on an operator session in
@@ -29,7 +29,9 @@ try {
 
 const origin = share?.baseUrl ?? Astro.url.origin;
 const currentUrl = share ? portalUrl(origin, slug, share.token) : null;
-const live = !!(share && portalToken && share.token === portalToken.token);
+// share_tokens stores sha256 hashes (listShareTokens returns them); the
+// interview-share.json side holds the plaintext, so hash it to compare.
+const live = !!(share && portalToken && hashShareToken(share.token) === portalToken.token);
 const status: 'live' | 'partial' | 'none' = live ? 'live' : share ? 'partial' : 'none';
 const createdAt = share?.createdAt ?? null;
 

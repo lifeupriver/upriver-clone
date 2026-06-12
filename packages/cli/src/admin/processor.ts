@@ -192,7 +192,9 @@ Make the change. Use Edit/Write to modify files in ${input.repoDir}. Do not run 
     systemPrompt: CHANGE_SYSTEM_BASE,
     userPrompt,
     permissionMode: 'acceptEdits',
-    allowedTools: ['Read', 'Glob', 'Grep', 'Edit', 'Write', 'Bash'],
+    // No Bash: the prompt embeds the client-authored issue body, so the
+    // session must never be able to run shell commands.
+    allowedTools: ['Read', 'Glob', 'Grep', 'Edit', 'Write'],
   });
 
   const tail = parseChangeJson(result.text);

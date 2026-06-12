@@ -14,7 +14,10 @@ export const ALLOWED_COMMANDS: ReadonlySet<string> = new Set([
   'design-brief',
   'scaffold',
   'clone',
+  'finalize',
+  'clone-fidelity',
   'fixes-plan',
+  'improve',
   'qa',
   // M2/M5 deliverable generation (DAG-batch docs 01–12 + provisioning I01–I09).
   'generate',
@@ -35,3 +38,20 @@ export const ALLOWED_COMMANDS: ReadonlySet<string> = new Set([
   'admin-pause',
   'admin-rotate-pin',
 ]);
+
+/**
+ * Stage command → argv parts for the CLI spawn. The CLI's oclif config uses a
+ * SPACE topic separator (`"topicSeparator": " "` in packages/cli/package.json),
+ * so topic commands must be passed as separate argv elements: `fixes-plan`
+ * spawns as `upriver fixes plan <slug>` — a single `fixes-plan` token would
+ * miss. Mirrors COMMAND_NAME_OVERRIDES in packages/cli/src/commands/run/all.ts.
+ */
+const COMMAND_ARGV_OVERRIDES: Readonly<Record<string, readonly string[]>> = {
+  'fixes-plan': ['fixes', 'plan'],
+};
+
+/** The argv parts that invoke `command` against the CLI bin. */
+export function commandToArgv(command: string): string[] {
+  const parts = COMMAND_ARGV_OVERRIDES[command];
+  return parts ? [...parts] : [command];
+}

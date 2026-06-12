@@ -187,6 +187,7 @@ async function sendViaResend(args: {
 }): Promise<{ id: string }> {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
+    signal: AbortSignal.timeout(30_000),
     headers: {
       authorization: `Bearer ${args.apiKey}`,
       'content-type': 'application/json',

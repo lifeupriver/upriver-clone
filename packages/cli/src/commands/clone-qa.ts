@@ -32,7 +32,10 @@ export default class CloneQa extends BaseCommand {
       description: 'Local dev-server port for the cloned site',
       default: 4322,
     }),
-    width: Flags.integer({ description: 'Viewport width', default: 1280 }),
+    // Must match the scrape-time Firecrawl capture width — comparing a
+    // 1280px clone shot against a 1440px live shot compares two different
+    // responsive layouts and structurally depresses every pixel score.
+    width: Flags.integer({ description: 'Viewport width (match the live capture width)', default: 1440 }),
     height: Flags.integer({ description: 'Viewport height', default: 800 }),
     'full-page': Flags.boolean({
       description: 'Capture full scrollable page (default: viewport only)',
@@ -141,6 +144,7 @@ export default class CloneQa extends BaseCommand {
       outDir,
       viewport: { width: flags.width, height: flags.height },
       fullPage: flags['full-page'],
+      port: flags.port,
     });
     const reportPath = join(clientDir, 'clone-qa', 'index.html');
     writeFileSync(reportPath, reportHtml, 'utf-8');
@@ -162,8 +166,9 @@ function renderReport(args: {
   outDir: string;
   viewport: { width: number; height: number };
   fullPage: boolean;
+  port: number;
 }): string {
-  const { slug, results, liveDir, outDir, viewport, fullPage } = args;
+  const { slug, results, liveDir, outDir, viewport, fullPage, port } = args;
   const reportDir = join(outDir, '..');
 
   const rel = (p: string): string => relative(reportDir, p);
@@ -182,7 +187,7 @@ function renderReport(args: {
       return `
         <section class="row" id="${escapeHtml(r.slug)}">
           <header>
-            <h2><a href="http://localhost:4322${r.route}" target="_blank">${escapeHtml(r.route)}</a></h2>
+            <h2><a href="http://localhost:${port}${r.route}" target="_blank">${escapeHtml(r.route)}</a></h2>
             <div class="meta">${statusBadge}${r.navTimeMs ? ` · ${r.navTimeMs}ms` : ''}</div>
           </header>
           ${errorBlock}

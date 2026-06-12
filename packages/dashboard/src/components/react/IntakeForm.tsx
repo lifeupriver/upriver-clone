@@ -19,6 +19,13 @@ interface Props {
   findings: FindingLite[];
   pages: PageLite[];
   initial?: Partial<ClientIntake>;
+  /**
+   * Share token from the portal link (`?t=…`). Appended to the /api/intake
+   * calls so an anonymous share-link client passes the route's
+   * operator-or-token gate. Operators browsing without a token authenticate
+   * via their session cookies instead.
+   */
+  shareToken?: string | null;
 }
 
 const TIER_LABEL: Record<ScopeTier, string> = {
@@ -74,15 +81,17 @@ function hydrate(initial?: Partial<ClientIntake>): ClientIntake {
  *
  * @param props - Slug, client name, top findings, top pages, optional initial intake.
  */
-export default function IntakeForm({ slug, clientName, findings, pages, initial }: Props) {
+export default function IntakeForm({ slug, clientName, findings, pages, initial, shareToken }: Props) {
   const [state, setState] = useState<ClientIntake>(() => hydrate(initial));
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState<{ kind: 'success' | 'error'; msg: string } | null>(null);
 
+  const intakeUrl = `/api/intake/${slug}${shareToken ? `?t=${encodeURIComponent(shareToken)}` : ''}`;
+
   // On mount, refresh from server in case the user previously submitted.
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/intake/${slug}`)
+    fetch(intakeUrl)
       .then(r => (r.ok ? r.json() : null))
       .then(data => {
         if (cancelled || !data || typeof data !== 'object') return;
@@ -97,7 +106,7 @@ export default function IntakeForm({ slug, clientName, findings, pages, initial 
     return () => {
       cancelled = true;
     };
-  }, [slug]);
+  }, [intakeUrl]);
 
   const sortedFindings = [...findings]
     .sort((a, b) => PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority])
@@ -146,7 +155,7 @@ export default function IntakeForm({ slug, clientName, findings, pages, initial 
         referenceSites: state.referenceSites.filter(s => s.trim().length > 0),
         scopeTier: state.scopeTier,
       };
-      const res = await fetch(`/api/intake/${slug}`, {
+      const res = await fetch(intakeUrl, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload),

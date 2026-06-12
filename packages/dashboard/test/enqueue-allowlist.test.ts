@@ -18,6 +18,12 @@ describe('enqueue allowlist', () => {
     }
   });
 
+  it('admits the stages PipelineStages renders Run buttons for (allowlist drift fix)', () => {
+    for (const cmd of ['finalize', 'clone-fidelity', 'improve']) {
+      assert.ok(ENQUEUE_ALLOWED_COMMANDS.includes(cmd), `expected ${cmd} to be allowlisted`);
+    }
+  });
+
   it('rejects unknown / injected commands', () => {
     for (const cmd of ['', 'generate; rm -rf /', 'GENERATE', 'rm', 'node']) {
       assert.equal(ENQUEUE_ALLOWED_COMMANDS.includes(cmd), false, `expected ${JSON.stringify(cmd)} to be blocked`);

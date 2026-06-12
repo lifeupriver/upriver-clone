@@ -3,9 +3,8 @@ import { existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import type { SitePage } from '@upriver/core';
 
+import { buildAgentEnv, runAgent } from '../util/claude-code.js';
 import type { PageFidelity } from '../clone-qa/fidelity-scorer.js';
-
-const CLAUDE_BIN = process.env['CLAUDE_BIN'] || 'claude';
 
 export interface VerifyOptions {
   page: SitePage;
@@ -61,10 +60,12 @@ export async function verifyClonePage(opts: VerifyOptions): Promise<VerifyResult
     // is a no-op with the Vercel adapter (which writes to .vercel/output/
     // and expects the Vercel runtime). Dev server works for SSR + HMR
     // makes subsequent iterations cheap (no rebuild needed).
+    // Scrubbed env: the dev server executes agent-written frontmatter
+    // server-side, so it must not inherit operator secrets.
     preview = spawn('pnpm', ['exec', 'astro', 'dev', '--port', String(opts.port), '--host', '127.0.0.1'], {
       cwd: opts.repoDir,
       stdio: 'pipe',
-      env: { ...process.env },
+      env: buildAgentEnv(),
     });
     // Drain stdout/stderr so the buffer doesn't fill (would deadlock the child).
     preview.stdout?.on('data', () => {});
@@ -77,7 +78,7 @@ export async function verifyClonePage(opts: VerifyOptions): Promise<VerifyResult
   // preview because it compiles on first request — give it 45s.
   const reachable = await waitForUrl(url, 45_000);
   if (!reachable) {
-    opts.log(`  [verify] ${url} did not respond within 15s. Skipping verification.`);
+    opts.log(`  [verify] ${url} did not respond within 45s. Skipping verification.`);
     if (preview) preview.kill();
     return { iterationsRun: 0, status: 'unreachable', attempts: [] };
   }
@@ -223,7 +224,7 @@ Edit \`${args.pageFile}\` to close the gap. Use only design tokens from \`src/st
 If you used the \`Carousel\` component already at \`src/components/astro/Carousel.astro\` and the source has multi-image hero/gallery, make sure your slides array matches the source's ordering.
 
 ## Iteration ${args.iter} of ${args.maxIter}
-- After your edits, run \`pnpm build\` to confirm the page still compiles.
+- After your edits, re-read the file to confirm it stays syntactically valid (you do not have shell access; the dev server hot-reloads your edits and the next iteration re-screenshots the page).
 - If you believe the attempt is now visually close to the source (within reasonable Astro-vs-Squarespace differences), end your output with: \`DONE\`
 - If you made edits that need another verification pass, end your output with: \`CONTINUE\`
 
@@ -257,37 +258,10 @@ ${missingLine} Treat this list as a high-signal hint about content the clone lef
 `;
 }
 
-function runClaudeAndCaptureLastLine(prompt: string, cwd: string): Promise<string> {
-  return new Promise((resolveP, rejectP) => {
-    const args = [
-      '--print',
-      '--permission-mode',
-      'acceptEdits',
-      '--allowed-tools',
-      'Read,Edit,Write,Bash,Glob,Grep',
-    ];
-    const child = spawn(CLAUDE_BIN, args, {
-      cwd,
-      stdio: ['pipe', 'pipe', 'inherit'],
-      env: { ...process.env },
-    });
-    let stdout = '';
-    child.stdout.on('data', (d) => {
-      const s = d.toString('utf8');
-      stdout += s;
-      process.stdout.write(s);
-    });
-    child.stdin.write(prompt);
-    child.stdin.end();
-    child.on('error', rejectP);
-    child.on('exit', (code) => {
-      if (code !== 0) rejectP(new Error(`claude exited ${code}`));
-      else {
-        const lines = stdout.trim().split('\n').filter((l) => l.trim().length > 0);
-        resolveP((lines[lines.length - 1] ?? '').trim());
-      }
-    });
-  });
+async function runClaudeAndCaptureLastLine(prompt: string, cwd: string): Promise<string> {
+  const { stdout } = await runAgent({ prompt, cwd, mode: 'write', echoStdout: true });
+  const lines = stdout.trim().split('\n').filter((l) => l.trim().length > 0);
+  return (lines[lines.length - 1] ?? '').trim();
 }
 
 function sleep(ms: number): Promise<void> {

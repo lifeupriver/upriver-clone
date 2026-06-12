@@ -1,0 +1,36 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SITE_NAME } from '../site.config';
+
+// PLACEHOLDER PAGE — ships with operator-marked stub copy so the footer's
+// /terms link never 404s. Launch QA must flag this page until the client's
+// real terms replace the marked block below.
+---
+
+<Layout title="Terms of Service" description="Terms of service">
+  <section class="mx-auto max-w-3xl px-6 py-16">
+    <h1 class="text-3xl font-display font-semibold text-ink-900">Terms of Service</h1>
+
+    <div class="mt-6 rounded-card border-2 border-dashed border-red-400 bg-red-50 p-5 text-red-700">
+      <p class="font-semibold">[Operator: replace with client-provided terms of service]</p>
+      <p class="mt-2 text-sm">
+        This page is placeholder copy shipped with the scaffold template. It must be replaced
+        with the client's actual terms before launch — see the "Placeholder content" items in
+        launch-checklist.md.
+      </p>
+    </div>
+
+    <div class="mt-8 space-y-4 text-ink-700">
+      <p>
+        Real terms for {SITE_NAME} belong here, typically covering:
+      </p>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>Acceptable use of the website and its content.</li>
+        <li>Intellectual-property ownership of text, imagery, and branding.</li>
+        <li>Disclaimers and limitation of liability.</li>
+        <li>Governing law and how disputes are handled.</li>
+        <li>How and when these terms may change.</li>
+      </ul>
+    </div>
+  </section>
+</Layout>

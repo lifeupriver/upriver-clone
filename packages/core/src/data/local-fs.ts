@@ -9,6 +9,7 @@ import {
 import { dirname, join, posix } from 'node:path';
 
 import type { ClientDataSource } from './client-data-source.js';
+import { assertSafeSlug } from '../util/paths.js';
 
 export interface LocalFsClientDataSourceOptions {
   /**
@@ -39,9 +40,17 @@ export class LocalFsClientDataSource implements ClientDataSource {
   }
 
   private toFsPath(slug: string, posixPath: string): string {
+    assertSafeSlug(slug);
     // Splitting on `/` keeps the API platform-agnostic while letting
     // `path.join` produce native separators on any OS we support.
     const segments = posixPath.split(posix.sep).filter(Boolean);
+    for (const segment of segments) {
+      if (segment === '..') {
+        throw new Error(
+          `Path traversal rejected: ${JSON.stringify(posixPath)} contains a '..' segment`,
+        );
+      }
+    }
     return join(this.baseDir, slug, ...segments);
   }
 

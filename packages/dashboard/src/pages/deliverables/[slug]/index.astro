@@ -8,11 +8,19 @@ import {
   clientExists,
 } from '@/lib/fs-reader';
 import { readAuditPackage, readExecutiveSummary } from '@/lib/report-reader';
+import { deliverableHref, missingDeliverableRedirect } from '@/lib/deliverable-links';
 
 const { slug } = Astro.params;
 
-if (!slug || !(await clientExists(slug))) {
+// Share token from the portal link (`?t=`); every internal redirect/href must
+// carry it or the middleware bounces the client to the operator login.
+const token = Astro.url.searchParams.get('t');
+
+if (!slug) {
   return Astro.redirect('/clients');
+}
+if (!(await clientExists(slug))) {
+  return Astro.redirect(token ? deliverableHref(slug, '/not-ready', token) : '/clients');
 }
 
 const config = (await readClientConfig(slug))!;
@@ -21,7 +29,9 @@ const passes = await readAuditPasses(slug);
 const auditPackage = await readAuditPackage(slug);
 
 if (!auditPackage) {
-  return Astro.redirect('/clients');
+  // Token holders get the branded "not ready yet" page; operators keep their
+  // workspace redirect.
+  return Astro.redirect(missingDeliverableRedirect(slug, token));
 }
 
 const executiveSummary = await readExecutiveSummary(slug);
@@ -149,7 +159,7 @@ const narrativeBlocks = executiveSummary ? splitNarrative(executiveSummary) : []
         <h3>Ready to act on this?</h3>
         <p>Walk through the recommended fixes and pick the scope that fits.</p>
       </div>
-      <a href={`/deliverables/${slug}/next-steps`} class="cta-btn">
+      <a href={deliverableHref(slug, '/next-steps', token)} class="cta-btn">
         See what we'd do about it
       </a>
     </div>

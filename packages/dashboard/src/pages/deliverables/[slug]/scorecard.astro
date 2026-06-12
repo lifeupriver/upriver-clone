@@ -5,11 +5,18 @@ import { ScoreRadar } from '@/components/react/ScoreRadar';
 import { readClientConfig, readAuditPasses, clientExists } from '@/lib/fs-reader';
 import { readAuditPackage } from '@/lib/report-reader';
 import { resolveClientDataSource } from '@/lib/data-source';
+import { deliverableHref, missingDeliverableRedirect } from '@/lib/deliverable-links';
 
 const { slug } = Astro.params;
 
-if (!slug || !(await clientExists(slug))) {
+// Share token from the portal link (`?t=`); internal redirects must carry it.
+const token = Astro.url.searchParams.get('t');
+
+if (!slug) {
   return Astro.redirect('/clients');
+}
+if (!(await clientExists(slug))) {
+  return Astro.redirect(token ? deliverableHref(slug, '/not-ready', token) : '/clients');
 }
 
 const config = (await readClientConfig(slug))!;
@@ -17,7 +24,9 @@ const passes = await readAuditPasses(slug);
 const auditPackage = await readAuditPackage(slug);
 
 if (!auditPackage) {
-  return Astro.redirect('/clients');
+  // Token holders get the branded "not ready yet" page; operators keep their
+  // workspace redirect.
+  return Astro.redirect(missingDeliverableRedirect(slug, token));
 }
 
 const scores = Object.fromEntries(passes.map(p => [p.dimension, p.score]));

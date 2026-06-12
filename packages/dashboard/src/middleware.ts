@@ -2,10 +2,27 @@ import { defineMiddleware } from 'astro:middleware';
 
 import { createSupabaseServerClient, getSessionUser, isOperator } from './lib/auth.js';
 import { DataSourceUnavailableError, getDataSource } from './lib/data-source.js';
+import { pathIs, safeNext } from './lib/path-guards.js';
 import { validateShareToken } from './lib/share-token.js';
 
-/** Path prefixes that require an `app_metadata.role === 'operator'` session. */
-const OPERATOR_PATH_PREFIXES = ['/clients', '/api/enqueue', '/api/share-tokens', '/deliverables'];
+/**
+ * Path prefixes that require an `app_metadata.role === 'operator'` session.
+ *
+ * Deliberately NOT listed: `/api/intake` (the share-token client portal's
+ * IntakeForm calls it from browser JS, so the route enforces operator-OR-
+ * share-token auth in-handler), and `/api/interview` + `/api/profile` (both
+ * magic-link-token-gated in-handler; the client portal pages call them
+ * anonymously).
+ */
+const OPERATOR_PATH_PREFIXES = [
+  '/clients',
+  '/api/enqueue',
+  '/api/share-tokens',
+  '/deliverables',
+  '/api/jobs',
+  '/api/run',
+  '/api/portal',
+];
 
 /** Paths bypass auth even in supabase mode (login flow). */
 const PUBLIC_PATH_PREFIXES = [
@@ -15,19 +32,6 @@ const PUBLIC_PATH_PREFIXES = [
   '/_image', // Astro asset endpoint
   '/deliverables/expired', // branded share-link-expired page; client-facing, no auth
 ];
-
-function pathIs(pathname: string, prefixes: readonly string[]): boolean {
-  for (const p of prefixes) {
-    if (pathname === p || pathname.startsWith(`${p}/`) || pathname.startsWith(p)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function pathStartsWithAny(pathname: string, prefixes: readonly string[]): boolean {
-  return prefixes.some((p) => pathname.startsWith(p));
-}
 
 /**
  * Catch `DataSourceUnavailableError` from any route and return a clean 503
@@ -68,7 +72,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
         let location = dest.pathname + dest.search + dest.hash;
         if (dest.pathname === '/auth/callback') {
           const nextParam = dest.searchParams.get('next');
-          location = nextParam && nextParam.startsWith('/') ? nextParam : '/clients';
+          // safeNext rejects `//evil.com` / `/\evil.com` (open redirect).
+          location = safeNext(nextParam) ? nextParam : '/clients';
         }
         return new Response(null, {
           status: 302,
@@ -89,7 +94,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // existing token-or-no-auth behavior.
   if (
     getDataSource() === 'supabase' &&
-    pathStartsWithAny(pathname, OPERATOR_PATH_PREFIXES) &&
+    pathIs(pathname, OPERATOR_PATH_PREFIXES) &&
     !pathIs(pathname, PUBLIC_PATH_PREFIXES)
   ) {
     const user = await getSessionUser(context.request, context.cookies);

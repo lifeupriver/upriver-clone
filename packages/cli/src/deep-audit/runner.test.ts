@@ -79,16 +79,20 @@ describe('deep-audit runner', () => {
       assert.equal(result.summary, 'x');
     });
 
-    it('degrades gracefully when the agent throws', async () => {
-      const result = await runDeepPass(fakeSpec, {
-        slug: 's',
-        clientDir: '/tmp/nope',
-        runAgent: async () => {
-          throw new Error('agent down');
-        },
-      });
-      assert.equal(result.findings.length, 0);
-      assert.match(result.summary, /agent down/);
+    it('rethrows when the agent fails — no fabricated mid-range score', async () => {
+      // The caller (audit.ts) catches and SKIPS a failed pass. Returning a
+      // synthetic score:50 here would average invented numbers into the
+      // client's overall audit score.
+      await assert.rejects(
+        runDeepPass(fakeSpec, {
+          slug: 's',
+          clientDir: '/tmp/nope',
+          runAgent: async () => {
+            throw new Error('agent down');
+          },
+        }),
+        /agent down/,
+      );
     });
   });
 });

@@ -1,5 +1,3 @@
-import { spawn } from 'node:child_process';
-
 import type {
   AuditDimension,
   AuditFinding,
@@ -8,11 +6,7 @@ import type {
   FindingPriority,
 } from '@upriver/core';
 
-/**
- * The CLI binary used to invoke Claude Code in headless mode. Override with
- * CLAUDE_BIN=/path/to/claude for tests or alternative installs.
- */
-const CLAUDE_BIN = process.env['CLAUDE_BIN'] || 'claude';
+import { runAgent } from '../util/claude-code.js';
 
 /**
  * A deep audit pass. Produces a prompt from the loaded client context, then
@@ -76,18 +70,10 @@ export async function runDeepPass<Ctx>(
   const ctx = await spec.loadContext(args.slug, args.clientDir);
   const prompt = spec.buildPrompt(ctx);
 
-  let raw: string;
-  try {
-    raw = await args.runAgent(prompt);
-  } catch (err) {
-    return {
-      dimension: spec.dimension,
-      score: 50,
-      summary: `Deep pass "${spec.id}" failed to run: ${err instanceof Error ? err.message : String(err)}`,
-      findings: [],
-      completed_at: new Date().toISOString(),
-    };
-  }
+  // A failed pass must THROW so the caller skips it — returning a fabricated
+  // mid-range score here would average invented numbers into the client's
+  // overall audit score.
+  const raw = await args.runAgent(prompt);
 
   const parsed = parseAgentResponse(raw, spec.dimension);
   return {
@@ -104,35 +90,9 @@ export async function runDeepPass<Ctx>(
  * Uses --print (non-interactive) and constrains tool access to read-only
  * operations since deep audits must not mutate the repo.
  */
-export const claudeCliRunner: AgentRunner = (prompt) => {
-  return new Promise((resolveP, rejectP) => {
-    const child = spawn(
-      CLAUDE_BIN,
-      [
-        '--print',
-        '--permission-mode',
-        'plan',
-        '--allowed-tools',
-        'Read,Glob,Grep',
-      ],
-      { stdio: ['pipe', 'pipe', 'pipe'], env: { ...process.env } },
-    );
-    let stdout = '';
-    let stderr = '';
-    child.stdout.on('data', (d: Buffer) => {
-      stdout += d.toString('utf8');
-    });
-    child.stderr.on('data', (d: Buffer) => {
-      stderr += d.toString('utf8');
-    });
-    child.stdin.write(prompt);
-    child.stdin.end();
-    child.on('error', (err) => rejectP(err));
-    child.on('exit', (code) => {
-      if (code === 0) resolveP(stdout);
-      else rejectP(new Error(`claude exited ${code}: ${stderr.split('\n')[0] ?? ''}`));
-    });
-  });
+export const claudeCliRunner: AgentRunner = async (prompt) => {
+  const { stdout } = await runAgent({ prompt, mode: 'read' });
+  return stdout;
 };
 
 /**
