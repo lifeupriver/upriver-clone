@@ -87,13 +87,13 @@ New flags: `run all` — `--max-spend-usd` (default 25), `--spend-ceiling` (bool
 
 ## Definition of Done
 
-- [ ] `pitch/ledger.ts` exposes the generic estimate API; all pre-existing pitch ledger tests pass unmodified.
-- [ ] `run all`: over-ceiling aborts exit 61 BEFORE the costed stage spawns; `--no-spend-ceiling` disables; `--dry-run` prints the cost table from the same constants.
-- [ ] `clone`: per-page ceiling stop exits 61 with remaining pages recorded as skipped; deliberate-bug check (`--max-spend-usd 0`) aborts with zero agent sessions spawned.
-- [ ] `run-ledger.json` (v1) written with per-stage estimates and usage-log actuals where present.
-- [ ] `clone-fidelity`: warn-and-record default writes the `policy` block; `--strict-fidelity` exits 62; `run all --strict-fidelity` escalates.
-- [ ] `pitch status` shows est+act split when `token-and-credit-usage.log` exists.
-- [ ] `pnpm -r build && pnpm -r test && node scripts/cli-smoke.mjs` green (keyless).
+- [x] `pitch/ledger.ts` exposes the generic estimate API; all pre-existing pitch ledger tests pass unmodified.
+- [x] `run all`: over-ceiling aborts exit 61 BEFORE the costed stage spawns; `--no-spend-ceiling` disables; `--dry-run` prints the cost table from the same constants. *Deliberate-bug check pinned in cli-smoke: `run all wb-fixture --max-spend-usd 0` exits 61 with zero subprocesses and the client dir untouched.*
+- [x] `clone`: per-page ceiling stop exits 61 with remaining pages recorded as skipped. *Decision logic unit-tested (`wouldExceedEstimate`, queue-drain semantics by construction); the standalone command path needs a scaffolded repo, which no keyless fixture has — live-verified by the first Spec 18 matrix dispatch.*
+- [x] `run-ledger.json` (v1) written with per-stage estimates and usage-log actuals where present — *pure helpers + reconciler unit-tested; the in-run write path rides the same gated dispatch.*
+- [x] `clone-fidelity`: warn-and-record default writes the `policy` block; `--strict-fidelity` exits 62; `run all --strict-fidelity` escalates.
+- [x] `pitch status` shows est+act split when `token-and-credit-usage.log` exists (pure formatter unit-tested).
+- [x] `pnpm -r build && pnpm -r test && node scripts/cli-smoke.mjs` green (keyless): cli 597, dashboard 135, worker 78, audit-passes 80; smoke all green.
 - [ ] Live full-pipeline verification under the ceiling — *gated; no dispatch has ever been run (see Why); verified by the first Spec 18 matrix dispatch.*
 
 ## Changelog
@@ -102,3 +102,18 @@ New flags: `run all` — `--max-spend-usd` (default 25), `--spend-ceiling` (bool
 
 - Drafted post-brainstorm; decisions 2 and 3 recorded verbatim from Joshua.
 - Scoping findings recorded: zero gated-workflow dispatches to date (empty failure-class corpus, honestly); pre-existing `FIDELITY_THRESHOLD = 80` retained beside the new `CLONE_FIDELITY_BAR = 70`.
+
+### 2026-06-12 — built (branch `claude/spec-17b-18-hardening-diversity-uvbrxk`)
+
+**Deviations**
+
+- `clone` exits 61 on a ceiling stop even when some pages succeeded — supersedes the "≥1 page ok ⇒ exit 0" contract for ceiling stops only (an unattended `run all` must not treat a budget-truncated clone as complete). All-pages-failed still exits 1.
+- The over-ceiling abort in `run all` does NOT write `run-ledger.json` when no stage has been recorded yet: every recorded stage already wrote one, and the `--max-spend-usd 0` deliberate-bug check must leave the client dir untouched (it runs against the committed `wb-fixture` fixture in cli-smoke).
+- `clone-fidelity` on the resume path (summary exists, no `--force`) re-evaluates and re-records the policy block against the current bar without rescoring — keeps `run all --from` honest at zero cost.
+- `pitch status` column header `EST.SPEND` → `SPEND` with dynamic width (the est+act split is wider); agent time stays an estimate in the split — only Firecrawl credits have a local actuals source today. Enforcement remains estimate-based BEFORE spend, by design (§3).
+- Stage estimates are provisional by construction (zero live-run history); recorded in `stage-estimates.ts` with a pointer to the Spec 18 corpus as the tuning input.
+
+**Findings**
+
+- `run all` pages-count input for estimates: `pages/*.json` → `site-map.json` urls → default 5. The estimate context is an input to the table/ceiling, never a gate by itself (free stages always run).
+- Budget pass-down `run all` → clone is an explicit `--max-spend-usd <remaining>` flag (no file coupling); with `--no-spend-ceiling`, run all passes the flag through so the child's own $25 default doesn't surprise mid-pipeline.

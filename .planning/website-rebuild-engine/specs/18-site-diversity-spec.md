@@ -96,14 +96,14 @@ Name: **`upriver harvest`**, top-level. It sweeps prospects, clients, AND matrix
 
 ## Definition of Done
 
-- [ ] `config/site-registry.json` v1 ships with the fixture + three pending slots; loader tests green.
-- [ ] `e2e-website-tier-b.sh` defaults byte-identical (`WB_SLUG` unset ⇒ `wb-live`; `WB_CLONE_MAX_SPEND_USD` empty ⇒ flag omitted).
-- [ ] `MATRIX_PLAN_ONLY=1 bash scripts/e2e-website-matrix.sh` prints the per-site plan keyless, exit 0; `bash -n` clean.
-- [ ] `.github/workflows/e2e-website-matrix.yml` exists, `workflow_dispatch` only, not referenced by `test.yml`.
-- [ ] `upriver harvest` builds corpus v1 + report from fixtures; `--dry-run` keyless; cli-smoke row green.
-- [ ] Calibration section renders "insufficient data" below 20 scored pages.
-- [ ] Portal records `pitch/views.json` exactly once on valid views; `pitch status` shows VIEWED.
-- [ ] `pnpm -r build && pnpm -r test && node scripts/cli-smoke.mjs` green (keyless).
+- [x] `config/site-registry.json` v1 ships with the fixture + three pending slots; loader tests green (8).
+- [x] `e2e-website-tier-b.sh` defaults byte-identical (`WB_SLUG` unset ⇒ `wb-live`; `WB_CLONE_MAX_SPEND_USD`/`WB_SCRAPE_MAX_PAGES` empty ⇒ flags omitted; name/vertical/min-pages defaults unchanged).
+- [x] `MATRIX_PLAN_ONLY=1 bash scripts/e2e-website-matrix.sh` prints the per-site plan keyless, exit 0 (fixture runnable, three slots listed as SKIPPED); `bash -n` clean on both scripts.
+- [x] `.github/workflows/e2e-website-matrix.yml` exists, `workflow_dispatch` only, not referenced by `test.yml`.
+- [x] `upriver harvest` builds corpus v1 + report from fixtures; `--dry-run` keyless (verified against the committed `wb-fixture`); cli-smoke row green.
+- [x] Calibration section renders "insufficient data" below 20 scored pages (and the ≥20 p25 path is unit-tested).
+- [x] Portal records `pitch/views.json` exactly once on valid views (4 TempClients tests incl. the no-write negative paths); `pitch status` shows VIEWED.
+- [x] `pnpm -r build && pnpm -r test && node scripts/cli-smoke.mjs` green (keyless).
 - [ ] First matrix dispatch against ≥1 runnable site with findings filed per stage — *gated; requires repo secrets + a filled registry slot (operator prerequisite); no gated workflow has ever been dispatched yet.*
 - [ ] Calibration recommendation produced from a real corpus — *gated; follows the first dispatches.*
 
@@ -115,3 +115,16 @@ Name: **`upriver harvest`**, top-level. It sweeps prospects, clients, AND matrix
 - Command named `upriver harvest` (alternatives `pitch harvest`, `diversity harvest` rejected — see §3).
 - `viewedAt` storage decided: dashboard-owned `pitch/views.json`, write-once, to avoid racing `writePitchState`'s whole-file rewrites.
 - Zero-dispatch finding recorded: the matrix produces the first live corpus; calibration starts honest ("insufficient data").
+
+### 2026-06-12 — built (branch `claude/spec-17b-18-hardening-diversity-uvbrxk`)
+
+**Deviations**
+
+- Tier B gained two parameterizations beyond the planned pair (`WB_SITE_NAME`, `WB_VERTICAL`, `WB_MIN_PAGES` alongside `WB_SLUG`, `WB_SCRAPE_MAX_PAGES`, `WB_CLONE_MAX_SPEND_USD`): init hard-coded the fixture's name/vertical, and the ≥3-artifact scrape assertions would have failed honest small matrix sites. Every default preserves the original behavior byte-for-byte.
+- The matrix driver threads the WHOLE per-site budget into each per-page clone invocation (Tier B loops pages itself, so per-invocation ledgers don't accumulate across pages). The effective per-site budget control is the registry's `maxPages`/`clonePages`; the ceiling is the runaway-invocation backstop. Recorded rather than hidden.
+- `matrix-report.md` is gitignored (workflow-artifact only); per-site dirs land under the already-ignored `clients/matrix-<id>/`.
+
+**Findings**
+
+- The registry loader is the single source of registry semantics — the shell driver reads it through `node --input-type=module` against the built CLI, so validation never forks between TS and shell.
+- `harvest` resolves `config/site-registry.json` relative to the cwd (repo root); when missing it degrades to an empty platform column with a warning rather than failing the sweep.
