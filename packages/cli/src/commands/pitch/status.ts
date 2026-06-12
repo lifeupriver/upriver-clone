@@ -17,6 +17,7 @@ interface Row {
   spend: string;
   expires: string;
   answered: string;
+  viewed: string;
   sentAt: string;
 }
 
@@ -101,12 +102,25 @@ export default class PitchStatus extends BaseCommand {
         }
       }
 
+      // Spec 18 §5 — first-party open signal recorded by the portal route.
+      let viewed = '—';
+      const viewsRaw = await ds.readClientFileText(slug, 'pitch/views.json');
+      if (viewsRaw) {
+        try {
+          const views = JSON.parse(viewsRaw) as { v?: number; firstViewedAt?: string };
+          viewed = views.v === 1 && views.firstViewedAt ? views.firstViewedAt.slice(0, 10) : '?';
+        } catch {
+          viewed = '?';
+        }
+      }
+
       rows.push({
         slug,
         status: state?.status ?? (config.stage === 'prospect' ? 'no state' : `stage: ${config.stage ?? 'client'}`),
         spend: state ? formatSpendWithActuals(state.ledger, actualCreditsUsd) : '—',
         expires,
         answered,
+        viewed,
         sentAt: state?.sentAt?.slice(0, 10) ?? '—',
       });
     }
@@ -121,11 +135,11 @@ export default class PitchStatus extends BaseCommand {
     const spendW = Math.max(11, ...rows.map((r) => r.spend.length + 2));
     this.log('');
     this.log(
-      `${'SLUG'.padEnd(26)}${'STATUS'.padEnd(15)}${'SPEND'.padEnd(spendW)}${'EXPIRES'.padEnd(12)}${'ANSWERED'.padEnd(12)}SENT`,
+      `${'SLUG'.padEnd(26)}${'STATUS'.padEnd(15)}${'SPEND'.padEnd(spendW)}${'EXPIRES'.padEnd(12)}${'ANSWERED'.padEnd(12)}${'VIEWED'.padEnd(12)}SENT`,
     );
     for (const r of rows) {
       this.log(
-        `${r.slug.padEnd(26)}${r.status.padEnd(15)}${r.spend.padEnd(spendW)}${r.expires.padEnd(12)}${r.answered.padEnd(12)}${r.sentAt}`,
+        `${r.slug.padEnd(26)}${r.status.padEnd(15)}${r.spend.padEnd(spendW)}${r.expires.padEnd(12)}${r.answered.padEnd(12)}${r.viewed.padEnd(12)}${r.sentAt}`,
       );
     }
   }

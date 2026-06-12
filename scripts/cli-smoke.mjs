@@ -122,6 +122,8 @@ const TABLE = [
   // Spec 19: the pitch plan + cost table must stay keyless and offline.
   [['pitch', 'run', 'https://wildflour.example', '--dry-run'], [0], LOCAL],
   [['generate', 'littlefriends', '--doc', 'doc-pitch-02', '--dry-run'], [0], LOCAL],
+  // Spec 18: the harvest sweep plan stays keyless and writes nothing.
+  [['harvest', '--dry-run'], [0], LOCAL],
   [['doctor'], [0], {}],
 ];
 console.log(`# Pass 2: curated dry-run table (${TABLE.length} rows)`);
