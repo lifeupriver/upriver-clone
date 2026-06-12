@@ -8,6 +8,19 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 /**
+ * True when `cwd` has any uncommitted change (staged, unstaged, untracked).
+ * The clone no-file retry checks this BEFORE the changelog fragment is
+ * written, so bookkeeping writes can't mask an agent that produced nothing.
+ */
+export function workingTreeDirty(cwd: string): boolean {
+  return (
+    execFileSync('git', ['status', '--porcelain'], { cwd, stdio: 'pipe' })
+      .toString('utf8')
+      .trim() !== ''
+  );
+}
+
+/**
  * Stage and commit everything in `cwd`. Returns 'clean' when there is
  * nothing to commit; throws when staging/committing actually fails
  * (missing identity, hooks, lock contention, …).

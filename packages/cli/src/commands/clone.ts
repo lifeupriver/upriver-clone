@@ -19,7 +19,8 @@ import { withKeyedLock } from '../util/keyed-lock.js';
 import { resolveWebInputs } from '../web-bridge/inputs.js';
 import { extractEmbeds, pageFileSlug as embedPageSlug } from '../clone/embed-audit.js';
 import { runAgent } from '../util/claude-code.js';
-import { commitAll, ensureGitInitialized } from '../util/git-commit.js';
+import { commitAll, ensureGitInitialized, workingTreeDirty } from '../util/git-commit.js';
+import { assertPromptSize, runAgentWithNoFileRetry } from '../clone/hardening.js';
 
 export default class Clone extends BaseCommand {
   static override description = 'Run Claude Code headless agent to visually clone the site page by page';
@@ -215,16 +216,28 @@ export default class Clone extends BaseCommand {
 
     let succeeded = false;
     try {
+      // Spec 19 hardening: a pathological prompt aborts BEFORE any spend.
+      assertPromptSize(prompt, page.slug || '/');
+
       this.log(`\n→ ${page.slug || '/'}: launching Claude Code (branch ${branch}, cwd ${workCwd})`);
-      await runAgent({ prompt, cwd: workCwd, mode: 'write', echoStdout: true });
+      // Spec 19 hardening: the no-file failure class gets exactly one more
+      // FRESH session, then is an honest page failure (it used to be a
+      // warning that still counted as success — and was masked on first
+      // runs by the changelog fragment written before the clean check).
+      const outcome = await runAgentWithNoFileRetry({
+        run: () => runAgent({ prompt, cwd: workCwd, mode: 'write', echoStdout: true }),
+        producedWork: () => workingTreeDirty(workCwd),
+        log: (m) => this.warn(`  ${page.slug || '/'}: ${m}`),
+      });
+      if (outcome === 'no-file') {
+        return { ok: false, page, branch, error: 'agent made no changes (after one fresh retry)' };
+      }
 
       appendChangelogEntry(workCwd, page);
 
       // A real commit failure must throw — swallowing it here and then
       // force-removing the worktree would silently destroy the agent's work.
-      if (commitAll(workCwd, `clone(${page.slug || '/'}): visual port + copy pass`) === 'clean') {
-        this.warn(`  ${page.slug || '/'}: agent made no changes`);
-      }
+      commitAll(workCwd, `clone(${page.slug || '/'}): visual port + copy pass`);
 
       // Verification loop: screenshot the built page, ask Claude to compare and fix.
       let verifyStatus: string | undefined;
