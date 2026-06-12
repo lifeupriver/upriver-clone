@@ -7,11 +7,17 @@ import { useState } from 'react';
  * Server hands us `initialTokens` and `origin` so the first paint already
  * shows the current state without a fetch round-trip; mutations talk to
  * `/api/share-tokens` (POST mint, DELETE revoke).
+ *
+ * Tokens are hashed at rest, so a share URL is only constructible from the
+ * mint response — it is shown (and auto-copied) once, right after minting.
+ * Previously-minted rows list label/created/expiry and can be revoked, but
+ * their links cannot be re-displayed.
  */
 
 export interface ShareTokenRecord {
   id: string;
   slug: string;
+  /** sha256 hash for server-listed rows; never usable to rebuild a URL. */
   token: string;
   createdAt: string;
   expiresAt: string | null;
@@ -20,6 +26,7 @@ export interface ShareTokenRecord {
 
 interface Props {
   slug: string;
+  /** Kept for the server caller's prop shape; URLs now come from the mint response. */
   origin: string;
   initialTokens: ShareTokenRecord[];
 }
@@ -28,6 +35,9 @@ interface MintResponse extends ShareTokenRecord {
   shareUrl: string;
 }
 
+/** A listed row, plus the share URL when (and only when) minted this session. */
+type TokenRow = ShareTokenRecord & { shareUrl?: string };
+
 const EXPIRY_OPTIONS: Array<{ value: number | null; label: string }> = [
   { value: 7, label: '7 days' },
   { value: 30, label: '30 days' },
@@ -35,10 +45,6 @@ const EXPIRY_OPTIONS: Array<{ value: number | null; label: string }> = [
   { value: 365, label: '1 year' },
   { value: null, label: 'No expiry' },
 ];
-
-function buildShareUrl(origin: string, slug: string, token: string): string {
-  return `${origin}/deliverables/${encodeURIComponent(slug)}?t=${encodeURIComponent(token)}`;
-}
 
 function formatDate(iso: string | null): string {
   if (!iso) return 'never';
@@ -54,8 +60,8 @@ function isExpired(iso: string | null): boolean {
   return t <= Date.now();
 }
 
-export default function ShareTokenManager({ slug, origin, initialTokens }: Props): JSX.Element {
-  const [tokens, setTokens] = useState<ShareTokenRecord[]>(initialTokens);
+export default function ShareTokenManager({ slug, initialTokens }: Props): JSX.Element {
+  const [tokens, setTokens] = useState<TokenRow[]>(initialTokens);
   const [label, setLabel] = useState('');
   const [expiryDays, setExpiryDays] = useState<number | null>(90);
   const [busy, setBusy] = useState(false);
@@ -90,6 +96,9 @@ export default function ShareTokenManager({ slug, origin, initialTokens }: Props
           createdAt: minted.createdAt,
           expiresAt: minted.expiresAt,
           label: minted.label,
+          // The one and only chance to keep a usable link — the server stores
+          // a hash and can never show this URL again.
+          shareUrl: minted.shareUrl,
         },
         ...prev,
       ]);
@@ -180,7 +189,7 @@ export default function ShareTokenManager({ slug, origin, initialTokens }: Props
         ) : (
           <ul className="token-list">
             {tokens.map((t) => {
-              const url = buildShareUrl(origin, slug, t.token);
+              const url = t.shareUrl;
               const expired = isExpired(t.expiresAt);
               return (
                 <li key={t.id} className={`token-card${expired ? ' expired' : ''}`}>
@@ -192,13 +201,15 @@ export default function ShareTokenManager({ slug, origin, initialTokens }: Props
                       </span>
                     </div>
                     <div className="token-actions">
-                      <button
-                        type="button"
-                        className="btn-secondary"
-                        onClick={() => copy(url, t.id)}
-                      >
-                        {copiedId === t.id ? 'Copied' : 'Copy link'}
-                      </button>
+                      {url && (
+                        <button
+                          type="button"
+                          className="btn-secondary"
+                          onClick={() => copy(url, t.id)}
+                        >
+                          {copiedId === t.id ? 'Copied' : 'Copy link'}
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="btn-danger"
@@ -208,7 +219,13 @@ export default function ShareTokenManager({ slug, origin, initialTokens }: Props
                       </button>
                     </div>
                   </div>
-                  <pre className="token-url" title={url}>{url}</pre>
+                  {url ? (
+                    <pre className="token-url" title={url}>{url}</pre>
+                  ) : (
+                    <p className="token-note">
+                      Link shown once at creation — if it wasn't saved, revoke this and mint a new one.
+                    </p>
+                  )}
                 </li>
               );
             })}
@@ -310,6 +327,8 @@ export default function ShareTokenManager({ slug, origin, initialTokens }: Props
           overflow-x: auto;
           white-space: pre;
         }
+
+        .token-note { margin: 0; font-size: var(--fs-xs); color: var(--text-muted); font-style: italic; }
 
         @media (max-width: 36rem) {
           .form-row { grid-template-columns: 1fr; }
