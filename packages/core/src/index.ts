@@ -42,7 +42,7 @@ export {
 export { logUsageEvent, formatCost } from './usage/logger.js';
 
 // Util
-export { assertPathInside } from './util/paths.js';
+export { assertPathInside, assertSafeSlug } from './util/paths.js';
 export { flagsToArgs } from './util/flags.js';
 
 // Errors

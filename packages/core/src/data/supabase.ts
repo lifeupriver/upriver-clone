@@ -1,6 +1,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import type { ClientDataSource } from './client-data-source.js';
+import { assertSafeSlug } from '../util/paths.js';
 
 export interface SupabaseClientDataSourceOptions {
   /** Pre-configured Supabase client. Tests inject a mock here. */
@@ -32,12 +33,16 @@ export class SupabaseClientDataSource implements ClientDataSource {
   }
 
   private keyFor(slug: string, path: string): string {
+    assertSafeSlug(slug);
     const trimmed = path.replace(/^\/+/, '');
+    rejectDotDotSegments(trimmed);
     return `${this.prefix}/${slug}/${trimmed}`;
   }
 
   private dirFor(slug: string, dir: string): string {
+    assertSafeSlug(slug);
     const trimmed = dir.replace(/^\/+|\/+$/g, '');
+    rejectDotDotSegments(trimmed);
     return trimmed
       ? `${this.prefix}/${slug}/${trimmed}`
       : `${this.prefix}/${slug}`;
@@ -132,14 +137,24 @@ export class SupabaseClientDataSource implements ClientDataSource {
     slug: string,
     dir: string,
   ): Promise<Array<{ name: string; isDirectory: boolean }>> {
-    const { data, error } = await this.client.storage
-      .from(this.bucket)
-      .list(this.dirFor(slug, dir), { limit: 1000 });
-    if (error) {
-      if (isNotFound(error)) return [];
-      throw error;
+    const prefix = this.dirFor(slug, dir);
+    const limit = 1000;
+    const entries: Array<{ name: string; isDirectory: boolean }> = [];
+    // Storage caps each list() at `limit` entries — page with `offset` until
+    // a short page so large directories aren't silently truncated.
+    for (let offset = 0; ; offset += limit) {
+      const { data, error } = await this.client.storage
+        .from(this.bucket)
+        .list(prefix, { limit, offset });
+      if (error) {
+        if (isNotFound(error)) return entries;
+        throw error;
+      }
+      const page = data ?? [];
+      entries.push(...page.map(e => ({ name: e.name, isDirectory: e.id === null })));
+      if (page.length < limit) break;
     }
-    return (data ?? []).map(e => ({ name: e.name, isDirectory: e.id === null }));
+    return entries;
   }
 
   async signClientFileUrl(
@@ -178,6 +193,21 @@ export function createSupabaseClientDataSourceFromEnv(): SupabaseClientDataSourc
     client,
     bucket: process.env['UPRIVER_SUPABASE_BUCKET'] ?? 'upriver',
   });
+}
+
+/**
+ * Reject `..` path segments so a hostile path can never address objects
+ * outside `clients/<slug>/`. Mirrors the segment check in the local-fs
+ * source — both data sources must behave identically.
+ */
+function rejectDotDotSegments(path: string): void {
+  for (const segment of path.split('/')) {
+    if (segment === '..') {
+      throw new Error(
+        `Path traversal rejected: ${JSON.stringify(path)} contains a '..' segment`,
+      );
+    }
+  }
 }
 
 function isNotFound(err: unknown): boolean {

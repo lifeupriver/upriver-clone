@@ -10,12 +10,24 @@ import { logUsageEvent } from '../usage/logger.js';
 import { FirecrawlError } from '../errors.js';
 
 const FIRECRAWL_BASE_URL = 'https://api.firecrawl.dev';
+const DEFAULT_REQUEST_TIMEOUT_MS = 60_000;
+const DEFAULT_POLL_INTERVAL_MS = 3_000;
+// ~30 min at the default interval — large sites legitimately take that long.
+const DEFAULT_POLL_MAX_ATTEMPTS = 600;
 
 export interface FirecrawlClientOptions {
   apiKey: string;
   clientSlug: string;
   command: string;
   creditLogPath?: string;
+  /** Per-request timeout in ms. Defaults to 60s. */
+  requestTimeoutMs?: number;
+  /** Delay between batch-job status polls in ms. Defaults to 3s. */
+  pollIntervalMs?: number;
+  /** Max batch-job status polls before giving up. Defaults to 600 (~30 min). */
+  pollMaxAttempts?: number;
+  /** Injectable fetch for tests. Defaults to `globalThis.fetch`. */
+  fetchImpl?: typeof fetch;
 }
 
 export class FirecrawlClient {
@@ -23,12 +35,20 @@ export class FirecrawlClient {
   private clientSlug: string;
   private command: string;
   private creditLogPath?: string;
+  private requestTimeoutMs: number;
+  private pollIntervalMs: number;
+  private pollMaxAttempts: number;
+  private fetchImpl: typeof fetch;
 
   constructor(opts: FirecrawlClientOptions) {
     this.apiKey = opts.apiKey;
     this.clientSlug = opts.clientSlug;
     this.command = opts.command;
     if (opts.creditLogPath !== undefined) this.creditLogPath = opts.creditLogPath;
+    this.requestTimeoutMs = opts.requestTimeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS;
+    this.pollIntervalMs = opts.pollIntervalMs ?? DEFAULT_POLL_INTERVAL_MS;
+    this.pollMaxAttempts = opts.pollMaxAttempts ?? DEFAULT_POLL_MAX_ATTEMPTS;
+    this.fetchImpl = opts.fetchImpl ?? globalThis.fetch;
   }
 
   private async request<T>(
@@ -41,17 +61,21 @@ export class FirecrawlClient {
     let lastErr: unknown;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      // Per-attempt timeout so a hung connection can't stall a run forever.
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), this.requestTimeoutMs);
       try {
-        const res = await fetch(url, {
+        const res = await this.fetchImpl(url, {
           method,
           headers: {
             Authorization: `Bearer ${this.apiKey}`,
             'Content-Type': 'application/json',
           },
+          signal: controller.signal,
           ...(body != null ? { body: JSON.stringify(body) } : {}),
         });
 
-        if (res.ok) return res.json() as Promise<T>;
+        if (res.ok) return (await res.json()) as T;
 
         // Retry transient failures (429 rate limit, 5xx). Honor Retry-After when
         // the server provides it; otherwise exponential backoff with jitter.
@@ -67,14 +91,23 @@ export class FirecrawlClient {
           context: { method, path, status: res.status, body: text.slice(0, 500) },
         });
       } catch (err) {
-        // Network errors (DNS, ECONNRESET, abort) — retry. fetch() throws TypeError.
-        lastErr = err;
-        const transient = err instanceof TypeError;
+        // Network errors (DNS, ECONNRESET) throw TypeError; our per-request
+        // timeout surfaces as an AbortError. Both are transient — retry.
+        const timedOut = err instanceof Error && err.name === 'AbortError';
+        lastErr = timedOut
+          ? new FirecrawlError(
+              `Firecrawl ${method} ${path} timed out after ${this.requestTimeoutMs}ms`,
+              { context: { method, path, timeoutMs: this.requestTimeoutMs }, cause: err },
+            )
+          : err;
+        const transient = timedOut || err instanceof TypeError;
         if (transient && attempt < maxAttempts) {
           await sleep(backoffMs(attempt));
           continue;
         }
-        throw err;
+        throw lastErr;
+      } finally {
+        clearTimeout(timer);
       }
     }
 
@@ -197,6 +230,7 @@ export class FirecrawlClient {
   private async pollBatchJob(jobId: string): Promise<FirecrawlScrapeResult[]> {
     interface PollResponse {
       status: string;
+      completed?: number;
       data?: FirecrawlScrapeResult[];
       next?: string;
     }
@@ -204,25 +238,29 @@ export class FirecrawlClient {
     const allResults: FirecrawlScrapeResult[] = [];
     let nextUrl: string | undefined;
     let attempts = 0;
-    const maxAttempts = 120;
+    let pagesSeen = 0;
+    const maxAttempts = this.pollMaxAttempts;
 
     while (attempts < maxAttempts) {
-      await new Promise((r) => setTimeout(r, 3000));
+      await sleep(this.pollIntervalMs);
       attempts++;
 
       const url = nextUrl ?? `/v1/batch/scrape/${jobId}`;
       const poll = await this.request<PollResponse>(url, 'GET');
-
-      if (poll.data) {
-        allResults.push(...poll.data);
-      }
+      pagesSeen = Math.max(pagesSeen, poll.completed ?? poll.data?.length ?? 0);
 
       if (poll.status === 'completed') {
+        // Only accumulate on the terminal status: while still scraping, the
+        // API reports cumulative partial data, so pushing it every poll would
+        // duplicate pages. Completed responses paginate via `next`.
+        if (poll.data) {
+          allResults.push(...poll.data);
+        }
         if (poll.next) {
           nextUrl = poll.next;
           continue;
         }
-        break;
+        return allResults;
       }
 
       if (poll.status === 'failed') {
@@ -232,7 +270,21 @@ export class FirecrawlClient {
       }
     }
 
-    return allResults;
+    // Exhausted the poll budget — fail loudly rather than silently returning
+    // partial results.
+    const minutes = Math.round((maxAttempts * this.pollIntervalMs) / 60_000);
+    throw new FirecrawlError(
+      `Batch scrape job ${jobId} timed out after ${maxAttempts} polls (~${minutes} min); ` +
+        `${pagesSeen} page(s) had been scraped before the timeout`,
+      {
+        context: {
+          jobId,
+          attempts: maxAttempts,
+          pollIntervalMs: this.pollIntervalMs,
+          pagesScraped: pagesSeen,
+        },
+      },
+    );
   }
 
   private estimateScrapeCredits(options: ScrapeOptions): number {

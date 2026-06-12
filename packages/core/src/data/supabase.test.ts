@@ -115,4 +115,59 @@ describe('SupabaseClientDataSource', () => {
     const ds = new SupabaseClientDataSource({ client });
     assert.equal(await ds.signClientFileUrl('foo', 'missing', 60), null);
   });
+
+  it('rejects slugs that are not kebab-case', async () => {
+    const { client, captured } = mockClient({});
+    const ds = new SupabaseClientDataSource({ client });
+    for (const slug of ['../foo', '..', 'foo/bar', 'Foo', '_smoke']) {
+      await assert.rejects(ds.readClientFile(slug, 'client-config.yaml'), /Invalid client slug/);
+      await assert.rejects(ds.writeClientFile(slug, 'x.txt', 'x'), /Invalid client slug/);
+      await assert.rejects(ds.listClientFiles(slug, 'audit'), /Invalid client slug/);
+    }
+    // Validation fires before any storage call.
+    assert.equal(captured.length, 0);
+  });
+
+  it('rejects `..` segments in paths', async () => {
+    const { client, captured } = mockClient({});
+    const ds = new SupabaseClientDataSource({ client });
+    for (const path of ['../escape.txt', 'audit/../../escape.txt', 'a/../../b']) {
+      await assert.rejects(ds.readClientFile('foo', path), /Path traversal rejected/);
+      await assert.rejects(ds.writeClientFile('foo', path, 'x'), /Path traversal rejected/);
+      await assert.rejects(ds.listClientFiles('foo', path), /Path traversal rejected/);
+    }
+    assert.equal(captured.length, 0);
+  });
+
+  it('listClientEntries pages past the 1000-entry storage limit', async () => {
+    // Paged stub: 1500 objects served 1000 at a time via limit/offset.
+    const total = 1500;
+    const objects = Array.from({ length: total }, (_, i) => ({
+      name: `file-${String(i).padStart(4, '0')}.json`,
+      id: `id-${i}`,
+    }));
+    const calls: Array<{ limit: number; offset: number }> = [];
+    const storage = {
+      from() {
+        return {
+          list(_prefix: string, opts: { limit: number; offset?: number }) {
+            const offset = opts.offset ?? 0;
+            calls.push({ limit: opts.limit, offset });
+            return Promise.resolve({
+              data: objects.slice(offset, offset + opts.limit),
+              error: null,
+            });
+          },
+        };
+      },
+    };
+    const ds = new SupabaseClientDataSource({
+      client: { storage } as unknown as SupabaseClient,
+    });
+    const entries = await ds.listClientEntries('foo', 'pages');
+    assert.equal(entries.length, total);
+    assert.deepEqual(calls.map(c => c.offset), [0, 1000]);
+    // No entry is duplicated across pages.
+    assert.equal(new Set(entries.map(e => e.name)).size, total);
+  });
 });

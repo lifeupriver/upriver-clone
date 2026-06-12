@@ -31,6 +31,7 @@ export type AuditDimension =
   | 'seo'
   | 'content'
   | 'design'
+  | 'typography'
   | 'sales'
   | 'backlinks'
   | 'links'
