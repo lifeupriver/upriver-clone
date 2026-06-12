@@ -26,6 +26,15 @@
 #      WB_FIDELITY_BAR    per-page overall-score gate  (default: 70, spec 16 §5 provisional)
 #      WB_CLONE_PAGES     space-separated page paths   (default: "/ /about /weddings")
 #
+# Matrix parameterization (spec 18 §2 — every default preserves the original
+# single-fixture behavior byte-for-byte):
+#      WB_SLUG                 client slug            (default: wb-live)
+#      WB_SITE_NAME            init --name            (default: "Wildflour Bakery")
+#      WB_VERTICAL             init --vertical        (default: wedding-venue)
+#      WB_SCRAPE_MAX_PAGES     scrape --max-pages     (default: empty = command default)
+#      WB_CLONE_MAX_SPEND_USD  clone --max-spend-usd  (default: empty = command default)
+#      WB_MIN_PAGES            min scraped-page count (default: 3)
+#
 # Resume notes: resuming mid-pipeline requires the earlier phases' artifacts
 # to already exist under clients/wb-live (e.g. starting at `scaffold` needs a
 # prior synthesize's audit-package.json; `capture` needs a cloned repo).
@@ -45,7 +54,7 @@ command -v pnpm  >/dev/null || { echo "pnpm not found on PATH";  exit 2; }
 NODE_MAJOR=$(node -p 'process.versions.node.split(".")[0]')
 [ "$NODE_MAJOR" -ge 22 ] || { echo "node >=22 required (have $(node -v)); the scaffolded repo's build needs native WebSocket"; exit 2; }
 
-SLUG=wb-live
+SLUG="${WB_SLUG:-wb-live}"
 ROOT="clients/$SLUG"
 UPRIVER="node packages/cli/bin/run.js"
 export UPRIVER_DATA_SOURCE=local
@@ -56,6 +65,11 @@ WB_LIVE_URL="${WB_LIVE_URL:-https://upriver-wb-fixture.vercel.app}"
 WB_FIDELITY_BAR="${WB_FIDELITY_BAR:-70}"
 WB_CLONE_PAGES="${WB_CLONE_PAGES:-/ /about /weddings}"
 CLAUDE_BIN="${CLAUDE_BIN:-claude}"
+WB_SITE_NAME="${WB_SITE_NAME:-Wildflour Bakery}"
+WB_VERTICAL="${WB_VERTICAL:-wedding-venue}"
+WB_SCRAPE_MAX_PAGES="${WB_SCRAPE_MAX_PAGES:-}"
+WB_CLONE_MAX_SPEND_USD="${WB_CLONE_MAX_SPEND_USD:-}"
+WB_MIN_PAGES="${WB_MIN_PAGES:-3}"
 
 # Hoisted live-host literals — used in the finalize residue check.
 WB_LIVE_HOST="${WB_LIVE_URL#*://}"
@@ -159,7 +173,7 @@ if phase_ge init; then
   rm -rf "$ROOT"
   mkdir -p "$RUN_DIR"
   mv "$TMP_LOG" "$LOG"
-  run $UPRIVER init "$WB_LIVE_URL" --slug "$SLUG" --name "Wildflour Bakery" --vertical wedding-venue \
+  run $UPRIVER init "$WB_LIVE_URL" --slug "$SLUG" --name "$WB_SITE_NAME" --vertical "$WB_VERTICAL" \
     || fail "init command failed" 21
   [ -f "$ROOT/client-config.yaml" ] || fail "init did not write client-config.yaml" 21
   grep -E '^url:' "$ROOT/client-config.yaml" | grep -qF "$WB_LIVE_URL" \
@@ -181,13 +195,15 @@ fi
 # ---- Phase: scrape — pages, tokens, assets, screenshots, raw HTML ----------
 if phase_ge scrape; then
   phase_begin scrape
-  run $UPRIVER scrape "$SLUG" || fail "scrape command failed" 23
-  [ "$(ls "$ROOT"/pages/*.json 2>/dev/null | wc -l)" -ge 3 ] || fail "need >=3 pages/*.json after scrape" 23
+  # shellcheck disable=SC2086 — deliberate word-split of the optional flag.
+  run $UPRIVER scrape "$SLUG" ${WB_SCRAPE_MAX_PAGES:+--max-pages $WB_SCRAPE_MAX_PAGES} \
+    || fail "scrape command failed" 23
+  [ "$(ls "$ROOT"/pages/*.json 2>/dev/null | wc -l)" -ge "$WB_MIN_PAGES" ] || fail "need >=$WB_MIN_PAGES pages/*.json after scrape" 23
   for f in design-tokens.json asset-manifest.json; do
     json_assert "$ROOT/$f" 'true' || fail "$f missing or not valid JSON" 23
   done
-  [ "$(ls "$ROOT"/screenshots/desktop/*.png 2>/dev/null | wc -l)" -ge 3 ] || fail "need >=3 screenshots/desktop/*.png after scrape" 23
-  [ "$(ls "$ROOT"/rawhtml/*.html 2>/dev/null | wc -l)" -ge 3 ] || fail "need >=3 rawhtml/*.html after scrape" 23
+  [ "$(ls "$ROOT"/screenshots/desktop/*.png 2>/dev/null | wc -l)" -ge "$WB_MIN_PAGES" ] || fail "need >=$WB_MIN_PAGES screenshots/desktop/*.png after scrape" 23
+  [ "$(ls "$ROOT"/rawhtml/*.html 2>/dev/null | wc -l)" -ge "$WB_MIN_PAGES" ] || fail "need >=$WB_MIN_PAGES rawhtml/*.html after scrape" 23
   phase_end scrape
 fi
 
@@ -256,7 +272,9 @@ if phase_ge clone; then
   touch "$CLONE_MARKER"
   # Deliberate word-split: WB_CLONE_PAGES is a space-separated path list.
   for p in $WB_CLONE_PAGES; do
+    # shellcheck disable=SC2086 — deliberate word-split of the optional flag.
     run $UPRIVER clone "$SLUG" --page "$p" --no-pr --no-worktree --no-verify \
+      ${WB_CLONE_MAX_SPEND_USD:+--max-spend-usd $WB_CLONE_MAX_SPEND_USD} \
       || fail "clone command failed for page $p" 27
     ASTRO="$(page_to_astro "$p")"
     [ -f "$ROOT/repo/src/pages/$ASTRO" ] \
