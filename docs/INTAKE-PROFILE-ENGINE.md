@@ -28,6 +28,8 @@ Four inlets, in rough order of an engagement:
 3. **Transcript extraction** — `upriver profile extract-transcript <slug> <file>` mines the client interview transcript and proposes profile updates.
 4. **Operator edits** — `upriver profile set <slug> <section> <field> <value>` for single fields; the dashboard's intake chat writes through the same merge rules (rate-limited server-side).
 
+A fifth inlet exists for converted prospects: `upriver pitch convert` maps the pitch questionnaire's answers into `identity.*`/profile candidates with `source:"interview"` through the same merge arbiter — verified data is never overwritten. See [`PITCH-ENGINE.md`](PITCH-ENGINE.md).
+
 Legacy engagements migrate via `upriver profile migrate-intake`.
 
 ## Coverage, conflicts, verification

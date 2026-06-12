@@ -1,15 +1,16 @@
 # upriver
 
-Productized tool suite for Upriver Consulting. Point it at a small-business website and it audits the site across 15+ dimensions, produces signed-off client deliverables, rebuilds the site in Astro via headless Claude Code, generates a full "AI Operating System" document set from a structured client profile, and walks the engagement through launch and retainer — all in a few hours of human time per client.
+Productized tool suite for Upriver Consulting. Point it at a small-business website and it audits the site across 15+ dimensions, produces signed-off client deliverables, rebuilds the site in Astro via headless Claude Code, generates a full "AI Operating System" document set from a structured client profile, and walks the engagement through launch and retainer — all in a few hours of human time per client. It even opens the door: the pitch engine rebuilds a prospect's homepage and stages it behind a private preview link as the outreach hook, with every send operator-approved.
 
 > **New here?** Read this page top to bottom, then go to [`docs/USER-GUIDE.md`](docs/USER-GUIDE.md) to run your first engagement. The full documentation index is at [`docs/README.md`](docs/README.md).
 
 ## What this repo contains
 
-Upriver is two engines sharing one CLI, one client data model, and one dashboard:
+Upriver is three engines sharing one CLI, one client data model, and one dashboard:
 
 1. **The website rebuild engine** — `init → scrape → audit → synthesize → scaffold → clone → finalize → fixes → qa → launch`. Ten-plus audit passes emit structured P0/P1/P2 findings; headless Claude Code agents clone the site page-by-page into an Astro repo and then apply audit fixes as reviewable PRs.
 2. **The intake & profile engine** — `recon → profile → generate`. A Zod-typed Client Profile (`@upriver/schemas`) is filled from automated reconnaissance, interview transcripts, and operator edits, then drives gated generation of the 18-document AI Operating System deliverable set plus provisioning artifacts.
+3. **The pitch engine (sales tool)** — `pitch run → approve → convert`. Points at a prospect's site, clones just their homepage, generates a no-pricing teaser bundle behind a token-gated, noindexed preview link, and drafts an outreach email that only an explicit operator `pitch approve` can send (suppression list, one-click unsubscribe, CAN-SPAM footer built into the send path). A converted prospect flips straight into the engagement pipeline. See [`docs/PITCH-ENGINE.md`](docs/PITCH-ENGINE.md).
 
 Around the engines:
 
@@ -27,9 +28,11 @@ upriver-clone/
 │   └── upriver-skills/          # Upriver operational skills (safe to edit)
 ├── .github/workflows/           # test CI, Supabase auto-migrations, worker image build
 ├── .planning/                   # build specs, roadmap, handoff docs (history & direction)
-├── clients/                     # one directory per client engagement
+├── clients/                     # one directory per client engagement (incl. stage: prospect pitch dirs)
 │   ├── littlefriends/           # Little Friends corpus (intake-engine acceptance run)
 │   └── wb-fixture/              # sanitized offline fixture ("Wildflour Bakery") for e2e tests
+├── config/
+│   └── site-registry.json       # site-diversity matrix registry (owned/permissioned sites only)
 ├── docs/                        # user-facing documentation (start at docs/README.md)
 ├── marketingskills-main/        # cloned marketing skills library (do not edit)
 ├── packages/
@@ -90,13 +93,13 @@ upriver report build audreys            # self-contained static audit report
 upriver sync push audreys               # publish artifacts to the hosted dashboard
 ```
 
-`upriver run all` walks the canonical stage list (defined once in `packages/core/src/pipeline/stages.ts`, shared by the CLI and the dashboard's Run buttons): scrape → audit → media/gap/video audits → synthesize → voice-extract → blog-topics → schema-build → design-brief → scaffold → clone → finalize → clone-fidelity → fixes plan → qa → improve. `--from <stage>` resumes mid-pipeline, `--dry-run` prints the plan, `--audit-mode base|deep|tooling|all` controls audit depth.
+`upriver run all` walks the canonical stage list (defined once in `packages/core/src/pipeline/stages.ts`, shared by the CLI and the dashboard's Run buttons): scrape → audit → media/gap/video audits → synthesize → voice-extract → blog-topics → schema-build → design-brief → scaffold → clone → finalize → clone-fidelity → fixes plan → qa → improve. `--from <stage>` resumes mid-pipeline, `--dry-run` prints the plan plus the cost-estimate table, `--audit-mode base|deep|tooling|all` controls audit depth. A **per-run spend ceiling** (default $25, `--max-spend-usd` to change, `--no-spend-ceiling` to disable) is checked in code before every costed stage — an over-ceiling run aborts with exit 61 before spending, and per-stage estimates plus usage-log actuals are recorded to `clients/<slug>/run-ledger.json`.
 
 The long-form walkthrough — including the human-in-the-loop moments (interview, fixes signoff, QA review) — is in [`docs/USER-GUIDE.md`](docs/USER-GUIDE.md).
 
 ## The CLI at a glance
 
-Roughly 60 commands in functional groups. The full per-command reference (flags, inputs, outputs, exit codes) is [`docs/COMMAND-REFERENCE.md`](docs/COMMAND-REFERENCE.md).
+Roughly 65 commands in functional groups. The full per-command reference (flags, inputs, outputs, exit codes) is [`docs/COMMAND-REFERENCE.md`](docs/COMMAND-REFERENCE.md).
 
 | Group | Commands | What it covers |
 |---|---|---|
@@ -111,7 +114,8 @@ Roughly 60 commands in functional groups. The full per-command reference (flags,
 | Dashboard & sync | `dashboard`, `dashboard export`, `sync push/pull` | Local dashboard server, browser PDF export, Supabase bucket sync |
 | Natural-language admin | `admin-deploy`, `admin-status`, `admin-pause`, `admin-rotate-pin`, `admin-process` | F05 — clients file plain-English change requests; Claude Code opens PRs |
 | Sales artifacts | `prototype-app`, `custom-tools` | F04 Expo prototype, F11 bespoke tool proposals |
-| Operations | `run all`, `doctor`, `cost`, `compress-images`, `archive`, `restore` | Orchestrator, preflight, credit accounting, image compression, Backblaze B2 archival |
+| Pitch engine | `pitch run/batch/approve/convert/status/revoke` | Prospect homepage clone + teaser bundle + gated outreach. See [`docs/PITCH-ENGINE.md`](docs/PITCH-ENGINE.md) |
+| Operations | `run all`, `doctor`, `cost`, `harvest`, `compress-images`, `archive`, `restore` | Orchestrator (with per-run spend ceiling), preflight, credit accounting, findings-corpus harvest, image compression, Backblaze B2 archival |
 
 ### Exit-code contract
 
@@ -119,7 +123,9 @@ Unattended runs (CI, `run all`, the worker) rely on pinned exit codes rather tha
 
 - **0** — success. **2** — usage/preflight error (oclif misuse; `generate` prompt-size ceiling). **3** — `generate --strict-provisioning` found provisioning gaps.
 - `clone-links` and `clone-embeds` exit non-zero on broken links / missing embeds unless `--allow-*` flags are passed.
-- The Tier A e2e harness uses 2 = preflight and 11–16 for distinct phase failures; Tier B uses 21–32; Tier C (runtime HTTP checks) uses 41–47.
+- **61** — spend-ceiling abort (`run all`, `clone`): the over-ceiling step was *not* taken. **62** — `clone-fidelity --strict-fidelity` gate failed (below-bar or unscored page; escalated to a hard failure by `run all --strict-fidelity`).
+- `pitch run` exits **21** (over-budget, aborted before the costed step) and **22** (homepage fidelity below the bar — nothing staged).
+- Harness ranges: Tier A 11–16; Tier B 21–32; Tier C (runtime HTTP checks) 41–47; pitch live e2e 51–58; site-diversity matrix driver 64–66.
 
 `scripts/cli-smoke.mjs` pins this contract in CI — every command's `--help` must exit 0 with no stack trace, and a curated dry-run table asserts the codes above.
 
@@ -150,6 +156,10 @@ Copy `.env.example` to `.env` at the repo root; the CLI auto-loads it from the w
 | `ADMIN_OPERATOR_SLACK_WEBHOOK` | F05 worker | Slack notifications for PR-ready / asset-needed. |
 | `UPRIVER_USE_API_KEY` | (override) | Keep `ANTHROPIC_API_KEY` in spawned `claude` envs instead of stripping it. |
 | `UPRIVER_GATE_AUTO` | `generate`, e2e | Auto-accept Continue gates for synthetic/unattended runs. |
+| `UPRIVER_PITCH_FROM` | `pitch approve` | Sender address for outreach email (falls back to the report-from default). |
+| `UPRIVER_OUTREACH_POSTAL` | `pitch approve` | Physical-address footer line (CAN-SPAM). `approve` refuses to send without one. |
+| `UPRIVER_UNSUBSCRIBE_SECRET` | `pitch approve`, dashboard | HMAC secret for one-click unsubscribe tokens — must match between CLI and the dashboard's `/api/unsubscribe`. |
+| `UPRIVER_DASHBOARD_BASE_URL` | `pitch run/approve` | Origin used in portal/questionnaire links (or pass `--base-url`). |
 | `UPRIVER_LLM_NO_CACHE` | `generate` | Force fresh LLM sessions on resumed runs. |
 | `UPRIVER_CASE_STUDIES_PATH` | `followup` | Optional copy destination for case-study drafts. |
 | `OPERATOR_VIDEO_DAY_RATE` | `video-audit` | Override full-day shoot pricing. |
@@ -174,6 +184,8 @@ clients/audreys/
 ├── docs/ deliverables/ manifest.json       # generated AI OS documents (generate)
 ├── clone-qa/ clone-link-audit.json clone-embed-report.json      # clone QA artifacts
 ├── report-static/ monitoring/ followups/ custom-tools/ app-prototype/ admin/
+├── pitch/                      # prospect dirs only: state.json, preview/, teasers, email-draft.md, views.json
+├── run-ledger.json             # per-stage spend estimates + reconciled actuals (run all)
 ├── token-and-credit-usage.log  # parsed by `upriver cost`
 └── repo/                       # the scaffolded + cloned Astro site
 ```
@@ -188,9 +200,10 @@ bash scripts/e2e-website-tier-a.sh      # offline website-pipeline e2e against c
 bash scripts/e2e-website-tier-c.sh      # Tier C runtime e2e: boots the scaffolded site, asserts the HTTP contract (keyless)
 bash scripts/e2e-deploy-dryrun.sh       # scaffold→github→supabase→deploy, all dry-run
 bash scripts/e2e-littlefriends.sh       # intake-engine acceptance run (needs `claude` + UPRIVER_GATE_AUTO=1)
+MATRIX_PLAN_ONLY=1 bash scripts/e2e-website-matrix.sh   # site-diversity matrix plan over config/site-registry.json (keyless)
 ```
 
-CI (`.github/workflows/test.yml`) runs build + unit + smoke + Tier A + Tier C + deploy dry-run on every PR — **keyless by construction** (no Firecrawl/Anthropic/Supabase secrets). `automigrations.yml` pushes Supabase migrations on merge to main; `worker-image.yml` builds the worker container to GHCR. Details: [`docs/TESTING.md`](docs/TESTING.md).
+CI (`.github/workflows/test.yml`) runs build + unit + smoke + Tier A + Tier C + deploy dry-run on every PR — **keyless by construction** (no Firecrawl/Anthropic/Supabase secrets). The live, costed e2e workflows (`e2e-website-tier-b.yml`, `e2e-website-matrix.yml`, `e2e-pitch.yml`) are `workflow_dispatch`-gated with repo secrets and are never referenced by `test.yml`. `automigrations.yml` pushes Supabase migrations on merge to main; `worker-image.yml` builds the worker container to GHCR. Details: [`docs/TESTING.md`](docs/TESTING.md).
 
 ## Skills
 
@@ -208,12 +221,13 @@ Upriver's own operational skills live in `.agents/upriver-skills/` — the engag
 | [`docs/COMMAND-REFERENCE.md`](docs/COMMAND-REFERENCE.md) | You need flags/outputs/exit codes for a specific command |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | You're changing code and need the system map |
 | [`docs/INTAKE-PROFILE-ENGINE.md`](docs/INTAKE-PROFILE-ENGINE.md) | You're working with profiles, recon, or `generate` |
+| [`docs/PITCH-ENGINE.md`](docs/PITCH-ENGINE.md) | You're prospecting with `upriver pitch` (preview portal, outreach compliance, conversion) |
 | [`docs/TESTING.md`](docs/TESTING.md) | You're adding tests or debugging CI |
 | [`docs/DEPLOYMENT-GUIDE.md`](docs/DEPLOYMENT-GUIDE.md) | You're standing up the hosted dashboard/worker |
 | [`docs/OPS.md`](docs/OPS.md) | You're operating the hosted surfaces (auth, secrets, recovery) |
 | [`docs/TEAM-WORKFLOW.md`](docs/TEAM-WORKFLOW.md), [`docs/CLIENT-ONBOARDING.md`](docs/CLIENT-ONBOARDING.md), [`docs/SALES-PLAYBOOK.md`](docs/SALES-PLAYBOOK.md) | Team process, onboarding, and sales material |
 
-Build history and direction live in `.planning/` — specs 1–15 are shipped (see `.planning/roadmap/` for the drift report and the current handoff prompt covering specs 16–19: Tier B live e2e, clone hardening, site-diversity matrix, and the sales tool).
+Build history and direction live in `.planning/` — specs 1–19 are shipped: the original engines (1–15), Tier B live e2e (16), full-site clone hardening with spend ceilings (17b), the site-diversity matrix + `upriver harvest` (18), and the pitch engine (19). See `.planning/roadmap/` for the drift report and handoff docs; the remaining open items are the operator-gated live dispatches recorded in each spec's DoD.
 
 ## Security and secrets
 

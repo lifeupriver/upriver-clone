@@ -8,6 +8,12 @@ salesy or robotic.
 > real client names. Don't paste another client's specifics into a new
 > engagement.
 
+> **Cold outreach is not hand-written from this file.** The pitch
+> engine drafts prospect outreach itself, with the compliance footer
+> (one-click unsubscribe, postal address) and the suppression check
+> built into the send path — see [`PITCH-ENGINE.md`](PITCH-ENGINE.md).
+> The templates below are for clients already in an engagement.
+
 ---
 
 ## 1. Welcome / kickoff

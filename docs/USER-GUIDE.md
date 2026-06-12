@@ -244,7 +244,9 @@ Flags:
 - `--audit-mode=base|deep|tooling|all` — pass-through to `audit --mode`.
 - `--from=<stage-id>` — resume at a stage (run with `--dry-run` to see the stage ids).
 - `--continue-on-error` — keep going after a failure (diagnostics).
-- `--dry-run` — print the planned stages without executing.
+- `--dry-run` — print the planned stages plus the cost-estimate table without executing.
+- `--max-spend-usd` (default 25) / `--no-spend-ceiling` — the per-run spend ceiling, checked in code **before** every costed stage. An over-ceiling run aborts with exit 61 before spending a cent; the remaining budget is handed down to the clone stage. Per-stage estimates and usage-log actuals are recorded in `clients/<slug>/run-ledger.json`.
+- `--strict-fidelity` — turn the clone-fidelity stage's warn-and-record default into a hard gate: any page below the per-page bar (default 70) fails the run with exit 62. Without the flag, below-bar pages still land but are listed loudly in the run summary and recorded in `clone-qa/summary.json` for `fixes plan`.
 
 ---
 
@@ -269,6 +271,28 @@ Things to know:
 - **Secret shopper** (`upriver recon secret-shopper start/record`) logs an inquiry *you* send manually and records the business's reply to measure first-touch response time. Recon never contacts the business itself.
 - **Exit codes matter here**: `generate` exits **2** when a prompt exceeds the token ceiling (preflight) and **3** when `--strict-provisioning` finds provisioning gaps — script accordingly.
 - `profile push` / `profile pull` sync the profile with Supabase using merge rules that never clobber verified values or open conflicts.
+
+---
+
+## Prospecting with the pitch engine
+
+Before there's a client, there's a prospect. The pitch engine clones **just their homepage**, builds a four-doc teaser bundle (before/after, top-3 quick wins, brand-voice sample, vertical snapshot — no pricing anywhere), and stages it behind a token-gated, noindexed preview link that dies in 14 days or on revoke. Full doc: [`PITCH-ENGINE.md`](PITCH-ENGINE.md). The short version:
+
+```bash
+upriver pitch run https://prospect.example --dry-run    # step plan + cost table, keyless
+upriver pitch run https://prospect.example              # draft bundle → clients/<slug>/pitch/ (≈$5 ceiling)
+upriver pitch approve <slug>                            # THE ONLY SEND PATH: shows the exact email + links, then Resend
+upriver pitch status                                    # funnel: status, spend, sent, viewed, answered
+upriver pitch convert <slug>                            # prospect → client; questionnaire answers seed the profile
+upriver pitch revoke <slug>                             # 10-second takedown on request
+```
+
+Things to know:
+
+- **Nothing sends without you.** `run` and `batch` only produce drafts; `approve` renders exactly what the prospect will receive and checks the suppression list before sending. Unsubscribe and the CAN-SPAM postal footer are built into the send path (`UPRIVER_PITCH_FROM`, `UPRIVER_OUTREACH_POSTAL`, `UPRIVER_UNSUBSCRIBE_SECRET`).
+- **Budget is enforced in code** — per prospect (default $5) and per batch (default $50), checked before each costed step; an over-budget run aborts cleanly with partial artifacts preserved.
+- **A bad clone never ships.** A homepage scoring below the fidelity bar is never staged to the portal — the run stops at `fidelity-fail` with the worktree preserved.
+- **Converting is the bridge to everything above**: `pitch convert` flips the directory to `stage: client` and the normal engagement pipeline takes over with the questionnaire answers already mapped into the profile.
 
 ---
 
@@ -392,11 +416,16 @@ upriver run all audreys --from=clone
 ```bash
 upriver cost audreys                       # summarize token-and-credit-usage.log
 upriver cost audreys --estimate=scrape     # project a future command from historical averages
+upriver run all audreys --dry-run          # per-stage cost-estimate table vs the spend ceiling
+cat clients/audreys/run-ledger.json        # per-stage estimates + reconciled actuals from the last run
+upriver harvest --dry-run                  # corpus sweep plan across all clients/prospects/matrix runs
 ```
+
+Spend ceilings (`run all`, `clone`, `pitch run/batch`) enforce against **estimates before the step is taken** — that's the safety property. Actuals from the usage log are reconciled afterwards into `run-ledger.json` and the `pitch status` display; they never weaken the pre-spend check.
 
 ### See what a run would do without running
 
-`--dry-run` exists on `run all`, `clone`, `fixes apply`, `improve`, `finalize`, `generate`, `sync push/pull`, `archive`, `compress-images`, and the `scaffold github/supabase/deploy` provisioning commands (those are dry-run *by default*).
+`--dry-run` exists on `run all`, `clone`, `fixes apply`, `improve`, `finalize`, `generate`, `sync push/pull`, `archive`, `compress-images`, `pitch run/batch/approve`, `harvest`, and the `scaffold github/supabase/deploy` provisioning commands (those are dry-run *by default*).
 
 ### Abort a long-running stage
 
@@ -465,3 +494,7 @@ Run `upriver profile show <slug> --deliverable=<doc-id>`: the coverage report na
 - **Service-role key** — `UPRIVER_SUPABASE_SERVICE_KEY`. Bypasses RLS. Server-side only.
 - **Publishable key** — `UPRIVER_SUPABASE_PUBLISHABLE_KEY`. Subject to RLS; safe in client code.
 - **PKCE flow** — the code-exchange flow Supabase Auth uses for magic links.
+- **Prospect** — a `clients/<slug>/` dir with `stage: prospect`, created by `pitch run`. Same data model as a client; `pitch convert` flips the stage.
+- **Spend ceiling** — a per-run USD cap checked in code *before* each costed step (`run all`/`clone` default $25, exit 61; `pitch run` default $5, exit 21). Estimates enforce; actuals reconcile afterwards.
+- **Fidelity bar** — the per-page acceptability threshold (default 70) checked by `clone-fidelity`; warn-and-record by default, hard gate (exit 62) under `--strict-fidelity`. Distinct from the 80-point findings threshold that routes pages into `fixes plan`.
+- **Harvest corpus** — the sanitized, committable findings corpus `upriver harvest` builds from every client/prospect/matrix dir; its calibration section recommends fidelity-bar values once ≥20 scored pages exist.

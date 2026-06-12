@@ -6,7 +6,7 @@ Conventions used below:
 
 - **Dry-run by default** means the command only prints a plan until you pass the apply flag.
 - **Agent-driven** means the command spawns headless Claude Code (`claude` on PATH, override with `CLAUDE_BIN`).
-- Exit codes follow the repo-wide contract: `0` success, `2` usage/preflight error, `3` strict-provisioning gap; QA gates (`clone-links`, `clone-embeds`) exit non-zero on findings unless `--allow-*` is passed.
+- Exit codes follow the repo-wide contract: `0` success, `2` usage/preflight error, `3` strict-provisioning gap; QA gates (`clone-links`, `clone-embeds`) exit non-zero on findings unless `--allow-*` is passed; `61` spend-ceiling abort (`run all`, `clone`); `62` strict fidelity gate (`clone-fidelity --strict-fidelity`); `pitch run` uses `21` (over-budget) and `22` (fidelity-fail).
 
 ---
 
@@ -115,8 +115,8 @@ Profile interactive UX — carousels, animations, hover/scroll effects, sticky e
 Flags: `--page`, `--no-video`, `--no-flipbook`, `--desktop-only`, `--hover-limit`, `--carousel-watch-ms`. Writes `ux-profile/`.
 
 ### `upriver clone <slug>` *(agent-driven)*
-Visually clone the site page by page via headless Claude Code, with a per-page verify loop. Defaults to the major-page set; one PR per page unless `--no-pr`.
-Flags: `--page`, `--all-pages`, `--skip`, `--include-junk`, `--concurrency` (default 3), `--no-pr`, `--no-worktree`, `--dry-run`, `--no-verify`, `--verify-iterations`, `--design-system=client|upriver`.
+Visually clone the site page by page via headless Claude Code, with a per-page verify loop. Defaults to the major-page set; one PR per page unless `--no-pr`. Includes the hardening trio: per-page prompt-size preflight, one fresh retry on the no-file failure class, and a per-run **spend ceiling** checked before each page is dispatched — on a ceiling stop the remaining pages are recorded as skipped and the command exits **61** even if some pages succeeded (so an unattended `run all` never treats a budget-truncated clone as complete).
+Flags: `--page`, `--all-pages`, `--skip`, `--include-junk`, `--concurrency` (default 3), `--no-pr`, `--no-worktree`, `--dry-run` (prints the cost-estimate line), `--no-verify`, `--verify-iterations`, `--design-system=client|upriver`, `--max-spend-usd` (default 25), `--no-spend-ceiling`.
 
 ### `upriver finalize <slug>`
 Rewrite client-domain links to internal routes and CDN image URLs to local assets; optionally download missing assets first. Offline by default — `--download-missing` is the only network path.
@@ -131,8 +131,8 @@ Screenshot every cloned route and render a side-by-side HTML report against the 
 Flags: `--port` (default 4322), `--width`, `--height`, `--full-page`.
 
 ### `upriver clone-fidelity <slug>`
-Score cloned vs live per page (pixel diff + copy completeness) → `clone-qa/summary.json` + diff PNGs.
-Flags: `--out`, `--diff-dir`, `--clone-shots-dir`, `--live-shots-dir`, `--force`.
+Score cloned vs live per page (pixel diff + copy completeness) → `clone-qa/summary.json` + diff PNGs. Every scored page is then checked against a **per-page fidelity bar** (default 70, `CLONE_FIDELITY_BAR`): below-bar and unscored pages are warned about and recorded in the summary's `policy` block by default; `--strict-fidelity` turns that into a hard gate (exit **62**, fail-closed — a missing or unscored summary also fails). The separate pre-existing threshold of 80 still routes pages into `clone-fidelity-findings.json` for `fixes plan`: 80 decides what's worth improving, 70 decides what's acceptable at all.
+Flags: `--out`, `--diff-dir`, `--clone-shots-dir`, `--live-shots-dir`, `--force`, `--fidelity-bar` (default 70), `--strict-fidelity`.
 
 ### `upriver clone-links <slug>` *(gate)*
 Audit the cloned site's internal link graph: broken links, missing pages, orphans. **Exits non-zero on broken links or missing pages.**
@@ -285,11 +285,39 @@ F11 — propose 3–5 bespoke backend tools tailored to the client's industry an
 
 ---
 
+## Pitch engine (prospect outreach)
+
+Full semantics in [`PITCH-ENGINE.md`](PITCH-ENGINE.md). Prospects live in ordinary `clients/<slug>/` dirs with `stage: prospect`; everything stays draft-state until `pitch approve`.
+
+### `upriver pitch run <url>` *(agent-driven)*
+Clone the prospect's homepage, generate the four-doc teaser bundle, mint the preview share token (14-day default expiry) and questionnaire link, and draft the outreach email — all to `clients/<slug>/pitch/`, state `draft`. Refuses to touch an existing client dir unless `--force-prospect`. Spend ceiling checked before every costed step.
+Flags: `--slug`, `--name`, `--vertical`, `--max-spend-usd` (default 5), `--expires-days` (cap 30), `--base-url`, `--force-prospect`, `--from=<step-id>`, `--dry-run` (keyless/offline: step plan + cost table).
+**Exit codes:** `21` over-budget (aborted before the costed step), `22` homepage fidelity below `PITCH_FIDELITY_MIN` (nothing staged).
+
+### `upriver pitch batch <file>`
+`pitch run` over a newline-delimited URL list (`#` comments allowed), sequentially. Per-prospect failures are isolated; exits non-zero if any prospect failed, with a per-prospect outcome table. Never sends.
+Flags: `--max-spend-usd` (per prospect), `--max-batch-spend-usd` (default 50, checked before each prospect), `--expires-days`, `--base-url`, `--dry-run`.
+
+### `upriver pitch approve <slug>` *(the only send path)*
+Render the exact email, portal URL, questionnaire URL, and teaser list; check the suppression list; confirm interactively; send via Resend. Refuses on suppression, expired token, fidelity-fail, non-draft state, or missing sender/postal identity. The footer carries an HMAC-signed one-click unsubscribe link.
+Flags: `--to`, `--from`, `--postal`, `--base-url`, `--yes`, `--dry-run`.
+
+### `upriver pitch status [<slug>]`
+Funnel view across prospects: state, spend (`est + act` split when `token-and-credit-usage.log` exists), sent-at, VIEWED (first portal open), questionnaire-answered, token expiry.
+
+### `upriver pitch convert <slug>`
+Flip `stage: prospect → client` and map questionnaire answers into `identity.*`/profile candidates (source-tagged `interview`; verified data never overwritten). Idempotent; refuses without `interview-responses.json` unless `--no-answers`.
+
+### `upriver pitch revoke <slug>`
+Takedown in one command: revoke the share + interview tokens, set state `revoked`, unstage the portal preview.
+
+---
+
 ## Operations
 
 ### `upriver run all <slug>`
-Orchestrate every pipeline stage in dependency order. Optional stages are attempted but don't halt the run; the pipeline stops on the first non-optional failure.
-Flags: `--from=<stage-id>`, `--dry-run`, `--continue-on-error`, `--audit-mode=base|deep|tooling|all`.
+Orchestrate every pipeline stage in dependency order. Optional stages are attempted but don't halt the run; the pipeline stops on the first non-optional failure. A per-run **spend ceiling** (default $25) is checked in code before every costed stage — over-ceiling aborts with exit **61** before spending; the remaining budget is passed down to the clone stage via `--max-spend-usd`. Per-stage estimates and usage-log actuals land in `clients/<slug>/run-ledger.json` (v1); `--dry-run` prints the same cost-estimate table the ceiling enforces.
+Flags: `--from=<stage-id>`, `--dry-run`, `--continue-on-error`, `--audit-mode=base|deep|tooling|all`, `--max-spend-usd` (default 25), `--no-spend-ceiling`, `--strict-fidelity` (passes through to clone-fidelity and escalates its exit 62 to a hard run failure).
 
 ### `upriver doctor`
 Preflight: check API keys and external binaries; report which features are available, degraded, or unavailable. Diagnostic — always exits 0.
@@ -297,6 +325,10 @@ Preflight: check API keys and external binaries; report which features are avail
 ### `upriver cost <slug>`
 Summarize `token-and-credit-usage.log`; optionally estimate a future command from historical averages.
 Flags: `--estimate=<command>`, `--usd-per-credit` (default 0.001).
+
+### `upriver harvest`
+Sweep every `clients/*/` dir (prospects, clients, and `matrix-*` runs) into one versioned findings corpus + report — fidelity distribution, spend, pitch funnel counts, and a **calibration section** that recommends `PITCH_FIDELITY_MIN`/`CLONE_FIDELITY_BAR` values once ≥20 scored pages exist (below that it honestly reports "insufficient data"; recommendations are applied by hand, never auto). Reads only standard artifacts (`pitch/state.json`, `clone-qa/summary.json`, `audit-package.json` meta, `run-ledger.json`, `pitch/views.json`); a corrupt file degrades that source, never the sweep. Never reads tokens, emails, or questionnaire answers — the corpus is the sanitized, committable derivative of the gitignored client dirs.
+Flags: `--out` (default `.planning/website-rebuild-engine/corpus/`), `--dry-run` (sweep plan only). Writes `<date>-harvest.json` + `<date>-harvest-report.md`.
 
 ### `upriver compress-images <slug>`
 Recompress PNG/JPG screenshots to AVIF (or WebP). Idempotent.

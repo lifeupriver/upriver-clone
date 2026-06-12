@@ -144,6 +144,26 @@ Environment variables expected on each surface. Required unless noted.
 - `UPRIVER_SUPABASE_SERVICE_KEY` — required for share-token mint/revoke
 - `INNGEST_EVENT_KEY` — required to enqueue jobs
 - `INNGEST_SIGNING_KEY` — optional, surfaces auth on the Inngest UI
+- `UPRIVER_UNSUBSCRIBE_SECRET` — required for the pitch engine's
+  `/api/unsubscribe` endpoint (HMAC verification); **must equal the value
+  the operator CLI uses for `pitch approve`**, or unsubscribe links in
+  sent emails will 4xx
+
+**Operator CLI (pitch engine sends):**
+- `RESEND_API_KEY` — the actual send in `pitch approve`
+- `UPRIVER_PITCH_FROM` — sender address (Resend-verified domain;
+  falls back to the report-from default)
+- `UPRIVER_OUTREACH_POSTAL` — physical-address footer (CAN-SPAM);
+  `approve` refuses to send without one
+- `UPRIVER_UNSUBSCRIBE_SECRET` — same value as the dashboard (above)
+- `UPRIVER_DASHBOARD_BASE_URL` — origin for the preview/questionnaire
+  links embedded in outreach email
+
+Pitch takedown on request is `upriver pitch revoke <slug>` — revokes the
+preview + questionnaire tokens and unstages the portal preview in one
+command. Suppressed addresses live only in the Supabase
+`outreach_suppression` table (never in the repo); `pitch approve`
+refuses them automatically.
 
 **Fly.io (worker):**
 - `INNGEST_EVENT_KEY`, `INNGEST_SIGNING_KEY`

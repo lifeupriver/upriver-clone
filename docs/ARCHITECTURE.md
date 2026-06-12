@@ -11,7 +11,7 @@ Upriver is a pnpm workspace with a four-layer architecture:
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  Surfaces                                                        │
-│  @upriver/cli (oclif, ~60 commands)   @upriver/dashboard (Astro) │
+│  @upriver/cli (oclif, ~65 commands)   @upriver/dashboard (Astro) │
 │                  @upriver/worker (Inngest)                       │
 ├─────────────────────────────────────────────────────────────────┤
 │  Domain                                                          │
@@ -56,6 +56,10 @@ The oclif CLI (`upriver`). Commands live in `src/commands/` (one file or topic d
 - `src/generate/` — the gated generation engine for the intake & profile engine (DAG batching, Continue gates, token-ceiling preflight, provisioning readiness).
 - `src/deep-audit/` — orchestration + preflight for the LLM and tooling audit passes.
 - `src/profile/` — profile engine services (merge, conflicts, coverage).
+- `src/pitch/` — the pitch engine's orchestration helpers: state machine (`state.ts`), spend ledger (`ledger.ts` — also the generic estimate/ceiling API the rest of the CLI reuses), email assembly, teaser specs, prospect interview guide, answer→profile mapping, suppression check.
+- `src/spend/` — full-pipeline spend control (Spec 17b): per-stage estimates, the pure over-ceiling decision, `run-ledger.json` read/write, and estimate↔actual reconciliation against `token-and-credit-usage.log` / `usage_events`. Ceilings are always checked *before* the costed step; actuals are reporting-time only.
+- `src/clone/hardening.ts` — prompt-size preflight, the single fresh no-file retry, the fail-closed `fidelityGate`, and `evaluateFidelityPolicy` (per-page bar, `CLONE_FIDELITY_BAR` = 70).
+- `src/diversity/` + `src/harvest/` — the site-registry loader (single source of registry semantics; the matrix shell driver calls into it) and the `upriver harvest` corpus builder + report/calibration renderer.
 - Agent prompts are inline in the command files; agent-driven commands (`clone`, `fixes apply`, `improve`, `generate`, `admin-process`, …) spawn headless Claude Code (`CLAUDE_BIN`, default `claude`) and use **git worktrees** for safe concurrency.
 - `src/util/b2.ts` — Backblaze B2 (S3-compatible) client for `archive`/`restore`.
 
@@ -78,6 +82,7 @@ Astro + React (islands) + Tailwind web app with two audiences:
 
 - **Operator** (`/clients/<slug>/*`, auth-gated): audit scorecard, design brief, fixes, QA, profile coverage, clone fidelity, pipeline Run buttons, share-token minting.
 - **Client** (`/deliverables/<slug>/*`, share-token-gated): read-only deliverable views.
+- **Prospect** (`/pitch/<slug>?token=…`, file-backed share-token-gated, outside the operator middleware block): the pitch engine's homepage preview + teaser portal. Every response carries noindex headers + meta; the first valid view writes the dashboard-owned, write-once `pitch/views.json`. `/api/unsubscribe` is the HMAC-verified one-click suppression endpoint (writes to `outreach_suppression`).
 
 Key lib modules: `data-source.ts` (local-vs-supabase switch; defaults to `local`), `auth.ts` (Supabase Auth + operator role check), `run-cli.ts` (spawns the CLI as a subprocess — local mode only; Phase 3 replaces this with a worker enqueue), `share-token.ts`, `rate-limit.ts` (Supabase RPC token bucket guarding the intake-chat profile writes), `dashboard-events.ts` (operator action audit log). Middleware handles PKCE auth callbacks, the operator gate, and share-token validation.
 
@@ -140,6 +145,7 @@ Migrations in `supabase/migrations/` (auto-applied on merge to main by `.github/
 - `share_tokens` — anonymous client access to `/deliverables/<slug>/*`; minted/revoked by operators, validated by dashboard middleware.
 - `dashboard_events` — audit log of operator actions (token mints, stage runs).
 - `rate_limit_counters` + `rate_limit_hit()` / `rate_limit_sweep()` RPCs — distributed fixed-window rate limiting for the intake chat's profile-write endpoint.
+- `outreach_suppression` — pitch-engine unsubscribe list (email, slug, timestamp). Checked by `pitch approve` before any send; written by the dashboard's `/api/unsubscribe`. Suppression PII lives only here, never in the repo.
 - Token expiry sweep — GC for expired share tokens.
 
 Auth: Supabase Auth with magic links (PKCE). Operators are users with `app_metadata.role = 'operator'`, set out-of-band — nothing in the codebase mints the role.
@@ -150,7 +156,8 @@ Three workflows in `.github/workflows/`:
 
 | Workflow | Trigger | Does |
 |---|---|---|
-| `test.yml` | PR, push to main | build → unit suites → CLI smoke matrix → website Tier A e2e → deploy dry-run e2e. **Keyless by construction** — no API secrets allowed. Uploads e2e logs as artifacts on failure. |
+| `test.yml` | PR, push to main | build → unit suites → CLI smoke matrix → website Tier A e2e → Tier C runtime e2e → deploy dry-run e2e. **Keyless by construction** — no API secrets allowed. Uploads e2e logs as artifacts on failure. |
+| `e2e-website-tier-b.yml` / `e2e-website-matrix.yml` / `e2e-pitch.yml` | `workflow_dispatch` only | Live, costed e2e with repo secrets: Tier B against the hosted fixture; the site-diversity matrix over `config/site-registry.json`; the pitch-engine live run. Never referenced by `test.yml`. |
 | `automigrations.yml` | main push touching `supabase/migrations/`, manual | Pushes migrations via the Supabase CLI (serialized, never cancelled). |
 | `worker-image.yml` | main push touching worker/cli/core/audit-passes, `v*` tags, manual | Builds + pushes the worker container to GHCR. |
 
@@ -163,5 +170,5 @@ The testing strategy (why subprocess-level smoke tests exist, what Tier A assert
 ## Where decisions live
 
 - `.planning/roadmap/PRODUCT-ROADMAP.md` — the original A–H workstreams (shipped; see `DRIFT-REPORT.md` for spec-vs-reality divergences).
-- `.planning/intake-profile-engine/` and `.planning/website-rebuild-engine/` — build specs 1–15 with plans and DoD verification.
-- `.planning/roadmap/2026-06-10-next-phase-handoff-prompt.md` — current direction: specs 16–19 (Tier B live e2e, clone hardening, site-diversity matrix, sales tool).
+- `.planning/intake-profile-engine/`, `.planning/website-rebuild-engine/`, and `.planning/sales-engine/` — build specs 1–19 with plans, DoD verification, and honest changelogs (deviations + findings recorded per spec).
+- Specs 16–19 (Tier B live e2e, clone hardening + spend ceilings, site-diversity matrix + harvest, pitch engine) are shipped; their remaining DoD items are operator-gated live workflow dispatches.
