@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process';
-import { mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, posix, relative } from 'node:path';
 import { promisify } from 'node:util';
 import { flagsToArgs } from '@upriver/core';
@@ -8,15 +8,32 @@ import { inngest } from '../client.js';
 import { STAGE_RUN_EVENT, stageRunPayloadSchema, type StageRunPayload } from '../events.js';
 import { ALLOWED_COMMANDS, commandToArgv } from './allowed-commands.js';
 import { scrubSecrets } from './scrub-secrets.js';
+import {
+  SYNC_LOCK_PATH,
+  SYNC_MANIFEST_PATH,
+  buildSyncLock,
+  buildSyncManifest,
+  diffForPush,
+  isSyncMetaPath,
+  lockBlocks,
+  parseSyncLock,
+  removeBucketObjects,
+  sha256Hex,
+  type FileHashes,
+} from './sync-state.js';
 
 /**
- * Where the worker stages a client tree on the local (ephemeral) filesystem
- * before running the CLI. The CLI reads from `<UPRIVER_CLIENTS_DIR>/<slug>/`
- * by convention; pointing it at `/tmp/upriver/clients` keeps the Docker image
- * unchanged between requests.
+ * Where the worker stages a client tree on the local filesystem before
+ * running the CLI. The CLI reads from `<UPRIVER_CLIENTS_DIR>/<slug>/` by
+ * convention. On Fly this points at the mounted volume (`/data/upriver` via
+ * `UPRIVER_WORK_DIR` in fly.toml) so files written by one Inngest step are
+ * still there when the next HTTP-delivered step runs — even across a machine
+ * stop/start. Falls back to /tmp for local dev.
  */
-const WORK_ROOT = '/tmp/upriver';
-const CLIENTS_ROOT = `${WORK_ROOT}/clients`;
+const WORK_ROOT = process.env['UPRIVER_WORK_DIR'] ?? '/tmp/upriver';
+const CLIENTS_ROOT = join(WORK_ROOT, 'clients');
+/** Per-run pull baselines (hash manifests) live here between steps. */
+const SYNC_META_ROOT = join(WORK_ROOT, '.sync-meta');
 
 /**
  * Hard wall-clock cap on a single CLI stage. A wedged stage (browser that
@@ -26,6 +43,12 @@ const CLIENTS_ROOT = `${WORK_ROOT}/clients`;
  * shrugging off TERM.
  */
 const STAGE_TIMEOUT_MS = 30 * 60_000;
+
+/**
+ * Object-key prefix inside the bucket. Mirrors `SupabaseClientDataSource`'s
+ * default — `createSupabaseClientDataSourceFromEnv` never overrides it.
+ */
+const BUCKET_PREFIX = 'clients';
 
 /**
  * Resolved path to the upriver CLI bin inside the container. The Dockerfile
@@ -38,6 +61,38 @@ function resolveCliBin(): string {
 }
 
 const execFileAsync = promisify(execFile);
+
+/** Supabase storage coordinates for raw REST calls (object deletes). */
+function storageEnv(): { supabaseUrl: string; serviceKey: string; bucket: string } {
+  const supabaseUrl = process.env['UPRIVER_SUPABASE_URL'];
+  const serviceKey =
+    process.env['UPRIVER_SUPABASE_SERVICE_KEY'] ?? process.env['UPRIVER_SUPABASE_PUBLISHABLE_KEY'];
+  if (!supabaseUrl || !serviceKey) {
+    throw new Error('UPRIVER_SUPABASE_URL and UPRIVER_SUPABASE_SERVICE_KEY must be set');
+  }
+  return {
+    supabaseUrl,
+    serviceKey,
+    bucket: process.env['UPRIVER_SUPABASE_BUCKET'] ?? 'upriver',
+  };
+}
+
+/** Filesystem-safe slice of an Inngest run id for temp-dir names. */
+function safeRunId(runId: string): string {
+  return runId.replace(/[^A-Za-z0-9_-]/g, '_');
+}
+
+function pullDirFor(runId: string): string {
+  return join(WORK_ROOT, `.pull-${safeRunId(runId)}`);
+}
+
+function staleDirFor(slug: string, runId: string): string {
+  return join(CLIENTS_ROOT, `.stale-${slug}-${safeRunId(runId)}`);
+}
+
+function baselinePathFor(runId: string): string {
+  return join(SYNC_META_ROOT, `${safeRunId(runId)}.json`);
+}
 
 /**
  * Recursively walk the bucket under `clients/<slug>/<dir>` and return POSIX
@@ -65,14 +120,11 @@ async function collectRemoteFiles(
 }
 
 /**
- * Walk a local tree and yield every file's path (relative to `root`) plus its
- * mtime. Used after the CLI run to identify outputs to push back to the
- * bucket.
+ * Walk a local tree and return every file's POSIX path relative to `root`.
+ * Used after the CLI run to hash the outputs for the push diff.
  */
-async function collectLocalFiles(
-  root: string,
-): Promise<Array<{ rel: string; mtimeMs: number }>> {
-  const out: Array<{ rel: string; mtimeMs: number }> = [];
+async function collectLocalFiles(root: string): Promise<string[]> {
+  const out: string[] = [];
   async function walk(dir: string): Promise<void> {
     let entries;
     try {
@@ -86,8 +138,7 @@ async function collectLocalFiles(
       if (entry.isDirectory()) {
         await walk(abs);
       } else if (entry.isFile()) {
-        const s = await stat(abs);
-        out.push({ rel: relative(root, abs).split(/[\\/]/).join('/'), mtimeMs: s.mtimeMs });
+        out.push(relative(root, abs).split(/[\\/]/).join('/'));
       }
     }
   }
@@ -96,51 +147,175 @@ async function collectLocalFiles(
 }
 
 /**
- * Pull every file under `clients/<slug>/` from Supabase Storage into the
- * worker's local stage directory. Returns the count + total bytes pulled so
- * Inngest's run history shows useful breadcrumbs.
+ * Pull `clients/<slug>/` from Supabase Storage into the local stage dir.
+ *
+ * Coherency:
+ * - Refuses to start while another run's non-expired `.sync/lock.json` is in
+ *   the bucket, then writes its own lock (cleared in the run's finally).
+ * - Downloads into a FRESH `<work>/.pull-<runId>` dir and atomically swaps it
+ *   into `<work>/clients/<slug>` (rename old → .stale, rename new → live, rm
+ *   stale). Files deleted in the bucket can no longer survive locally from a
+ *   previous run on the same machine and leak into this run's outputs.
+ * - Records {path → sha256} of everything pulled (the push step's diff
+ *   baseline) in `<work>/.sync-meta/<runId>.json`.
  */
-async function pullClient(payload: StageRunPayload): Promise<{ files: number; bytes: number }> {
+async function pullClient(
+  payload: StageRunPayload,
+  runId: string,
+): Promise<{ files: number; bytes: number }> {
   const ds = createSupabaseClientDataSourceFromEnv();
-  const remoteFiles = await collectRemoteFiles(ds, payload.slug, '');
-  const dest = join(CLIENTS_ROOT, payload.slug);
-  await mkdir(dest, { recursive: true });
 
+  // Same-slug concurrency guard. Inngest's per-slug concurrency key already
+  // serializes runs within this app; the bucket lock additionally protects
+  // against split-brain (two worker machines, a manual `upriver sync push`
+  // racing a run, an orphaned run on a replaced machine).
+  const existingLock = parseSyncLock(await ds.readClientFileText(payload.slug, SYNC_LOCK_PATH));
+  if (lockBlocks(existingLock, runId)) {
+    throw new Error(
+      `client "${payload.slug}" is locked by run ${existingLock?.runId} (started ${existingLock?.startedAt}, ` +
+        `expires 45 min after start) — refusing to start; Inngest will retry`,
+    );
+  }
+  await ds.writeClientFile(
+    payload.slug,
+    SYNC_LOCK_PATH,
+    JSON.stringify(buildSyncLock(runId), null, 2),
+  );
+
+  const remoteFiles = (await collectRemoteFiles(ds, payload.slug, '')).filter(
+    (rel) => !isSyncMetaPath(rel),
+  );
+
+  const pullDir = pullDirFor(runId);
+  await rm(pullDir, { recursive: true, force: true }); // leftovers from a retried attempt
+  await mkdir(pullDir, { recursive: true });
+
+  const pulledHashes: FileHashes = {};
   let bytes = 0;
   for (const rel of remoteFiles) {
     const data = await ds.readClientFile(payload.slug, rel);
     if (!data) continue;
-    const target = join(dest, rel);
+    const target = join(pullDir, rel);
     await mkdir(dirname(target), { recursive: true });
     await writeFile(target, data);
+    pulledHashes[rel] = sha256Hex(data);
     bytes += data.byteLength;
   }
-  return { files: remoteFiles.length, bytes };
+
+  // Atomic swap: the live dir is never a half-written mixture of old and new.
+  const liveDir = join(CLIENTS_ROOT, payload.slug);
+  const staleDir = staleDirFor(payload.slug, runId);
+  await mkdir(CLIENTS_ROOT, { recursive: true });
+  await rm(staleDir, { recursive: true, force: true });
+  try {
+    await rename(liveDir, staleDir);
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err; // ENOENT: first run on this machine
+  }
+  await rename(pullDir, liveDir);
+  await rm(staleDir, { recursive: true, force: true });
+
+  await mkdir(SYNC_META_ROOT, { recursive: true });
+  await writeFile(
+    baselinePathFor(runId),
+    JSON.stringify({ slug: payload.slug, pulledHashes }),
+    'utf8',
+  );
+
+  return { files: Object.keys(pulledHashes).length, bytes };
+}
+
+/** Pull-time hash baseline persisted by {@link pullClient}; null if lost. */
+async function readPullBaseline(runId: string, slug: string): Promise<FileHashes | null> {
+  try {
+    const raw = await readFile(baselinePathFor(runId), 'utf8');
+    const parsed = JSON.parse(raw) as { slug?: string; pulledHashes?: FileHashes };
+    if (parsed.slug !== slug || !parsed.pulledHashes || typeof parsed.pulledHashes !== 'object') {
+      return null;
+    }
+    return parsed.pulledHashes;
+  } catch {
+    return null;
+  }
 }
 
 /**
- * Push every file modified after `cutoffMs` back to the bucket. Avoids
- * re-uploading inputs that the CLI didn't touch — important on long pipelines
- * where the input tree is big and the deltas are small (e.g. `scrape` writes
- * ~MB of cached pages, `synthesize` only touches a handful).
+ * Push the post-run local tree back to the bucket, then write
+ * `clients/<slug>/.sync/manifest.json` as the FINAL upload.
+ *
+ * - Every file whose sha256 differs from the pull baseline (or that is new)
+ *   is uploaded — no mtime heuristics, so outputs with preserved mtimes are
+ *   never silently skipped.
+ * - Files that were pulled but no longer exist locally are deleted from the
+ *   bucket — only when the pull baseline is available; with no baseline the
+ *   plan degrades to upload-everything/delete-nothing.
+ * - Readers detect a torn push via the manifest: `status: 'complete'` is only
+ *   ever written after every upload/delete landed. On failure a
+ *   `status: 'failed'` manifest is uploaded best-effort before rethrowing.
  */
 async function pushClient(
   payload: StageRunPayload,
-  cutoffMs: number,
-): Promise<{ files: number; bytes: number }> {
+  runId: string,
+): Promise<{ uploaded: number; deleted: number; unchanged: number; bytes: number; baseline: 'pulled' | 'missing' }> {
   const ds = createSupabaseClientDataSourceFromEnv();
   const root = join(CLIENTS_ROOT, payload.slug);
-  const files = await collectLocalFiles(root);
-  let count = 0;
-  let bytes = 0;
-  for (const { rel, mtimeMs } of files) {
-    if (mtimeMs <= cutoffMs) continue;
-    const buf = await readFile(join(root, rel));
-    await ds.writeClientFile(payload.slug, rel, buf);
-    count += 1;
-    bytes += buf.byteLength;
+
+  const localHashes: FileHashes = {};
+  for (const rel of await collectLocalFiles(root)) {
+    if (isSyncMetaPath(rel)) continue;
+    localHashes[rel] = sha256Hex(await readFile(join(root, rel)));
   }
-  return { files: count, bytes };
+
+  const baseline = await readPullBaseline(runId, payload.slug);
+  const plan = diffForPush(baseline, localHashes);
+
+  try {
+    let bytes = 0;
+    for (const rel of plan.upload) {
+      const buf = await readFile(join(root, rel));
+      await ds.writeClientFile(payload.slug, rel, buf);
+      bytes += buf.byteLength;
+    }
+    if (plan.remove.length > 0) {
+      const env = storageEnv();
+      await removeBucketObjects({
+        ...env,
+        keys: plan.remove.map((rel) => `${BUCKET_PREFIX}/${payload.slug}/${rel}`),
+      });
+    }
+    await ds.writeClientFile(
+      payload.slug,
+      SYNC_MANIFEST_PATH,
+      JSON.stringify(
+        buildSyncManifest({ stage: payload.command, runId, status: 'complete', files: localHashes }),
+        null,
+        2,
+      ),
+    );
+    return {
+      uploaded: plan.upload.length,
+      deleted: plan.remove.length,
+      unchanged: plan.unchanged.length,
+      bytes,
+      baseline: baseline ? 'pulled' : 'missing',
+    };
+  } catch (err) {
+    // Mark the bucket as torn so readers don't trust a half-pushed tree.
+    try {
+      await ds.writeClientFile(
+        payload.slug,
+        SYNC_MANIFEST_PATH,
+        JSON.stringify(
+          buildSyncManifest({ stage: payload.command, runId, status: 'failed', files: localHashes }),
+          null,
+          2,
+        ),
+      );
+    } catch {
+      // best-effort — the original failure is what matters
+    }
+    throw err;
+  }
 }
 
 /**
@@ -148,8 +323,17 @@ async function pushClient(
  * own `step.run` so Inngest can retry independently and the run timeline
  * shows where time was spent.
  *
- * Concurrency: 3 globally, 1 per slug — two stages on the same client would
- * fight over `/tmp/upriver/clients/<slug>/` and the bucket-side write order.
+ * Steps arrive as separate HTTP deliveries, so consecutive steps share state
+ * only through the local disk — which is why production runs a SINGLE Fly
+ * machine with a volume at UPRIVER_WORK_DIR (see fly.toml + DEPLOY.md).
+ *
+ * Concurrency (verified against Inngest v3 semantics): the array combines
+ * both limits — at most 3 runs of this function across the app, AND at most
+ * 1 run per `event.data.slug` (the key is a CEL expression evaluated per
+ * event). Two stages on the same client would otherwise fight over
+ * `<work>/clients/<slug>/` and the bucket-side write order. The bucket-side
+ * `.sync/lock.json` (written at pull, cleared in the finally) backstops this
+ * across machines.
  */
 export const runStage = inngest.createFunction(
   {
@@ -162,7 +346,7 @@ export const runStage = inngest.createFunction(
     retries: 1,
   },
   { event: STAGE_RUN_EVENT },
-  async ({ event, step }) => {
+  async ({ event, step, runId }) => {
     const payload = await step.run('validate', () => {
       const parsed = stageRunPayloadSchema.parse(event.data);
       if (!ALLOWED_COMMANDS.has(parsed.command)) {
@@ -171,11 +355,10 @@ export const runStage = inngest.createFunction(
       return parsed;
     });
 
-    const pullResult = await step.run('pull', () => pullClient(payload));
-
     try {
+      const pullResult = await step.run('pull', () => pullClient(payload, runId));
+
       const spawnResult = await step.run('spawn', async () => {
-        const cutoffMs = Date.now();
         const argv = [
           resolveCliBin(),
           // oclif topic commands span multiple argv elements (space
@@ -200,7 +383,7 @@ export const runStage = inngest.createFunction(
             timeout: STAGE_TIMEOUT_MS,
             killSignal: 'SIGKILL',
           });
-          return { cutoffMs, stdoutTail: scrubSecrets(tail(stdout)), stderrTail: scrubSecrets(tail(stderr)) };
+          return { stdoutTail: scrubSecrets(tail(stdout)), stderrTail: scrubSecrets(tail(stderr)) };
         } catch (err) {
           // execFile failures carry the captured output and the full command
           // line; rebuild a scrubbed, tailed error so secrets can't ride into
@@ -212,9 +395,7 @@ export const runStage = inngest.createFunction(
         }
       });
 
-      const pushResult = await step.run('push', () =>
-        pushClient(payload, spawnResult.cutoffMs),
-      );
+      const pushResult = await step.run('push', () => pushClient(payload, runId));
 
       return {
         status: 'completed',
@@ -224,17 +405,36 @@ export const runStage = inngest.createFunction(
         stderrTail: spawnResult.stderrTail,
       };
     } finally {
-      // Best-effort disk reclaim whether the run succeeded or failed (the
-      // failure re-propagates after this). The machine's /tmp is ephemeral
-      // but long-lived across runs — without this, staged client trees
-      // accumulate until the disk fills. Per-slug concurrency is 1, so no
-      // sibling run can be using this directory.
+      // Best-effort lock release + disk reclaim whether the run succeeded or
+      // failed (the failure re-propagates after this). The work dir persists
+      // across runs (Fly volume) — without cleanup, staged client trees
+      // accumulate until the disk fills.
       await step.run('cleanup', async () => {
+        let lockCleared = false;
+        try {
+          const ds = createSupabaseClientDataSourceFromEnv();
+          const lock = parseSyncLock(await ds.readClientFileText(payload.slug, SYNC_LOCK_PATH));
+          // Only clear a lock THIS run wrote. If the pull was refused because
+          // another run holds the lock, that lock must survive our cleanup.
+          if (lock?.runId === runId) {
+            const env = storageEnv();
+            await removeBucketObjects({
+              ...env,
+              keys: [`${BUCKET_PREFIX}/${payload.slug}/${SYNC_LOCK_PATH}`],
+            });
+            lockCleared = true;
+          }
+        } catch {
+          // lock expires on its own after 45 min
+        }
         try {
           await rm(join(CLIENTS_ROOT, payload.slug), { recursive: true, force: true });
-          return { cleaned: true };
+          await rm(pullDirFor(runId), { recursive: true, force: true });
+          await rm(staleDirFor(payload.slug, runId), { recursive: true, force: true });
+          await rm(baselinePathFor(runId), { force: true });
+          return { cleaned: true, lockCleared };
         } catch {
-          return { cleaned: false };
+          return { cleaned: false, lockCleared };
         }
       });
     }

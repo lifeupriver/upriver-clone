@@ -2,6 +2,13 @@
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
+# SINGLE-MACHINE APP — deploy with `fly deploy --ha=false` and never scale
+# past count=1. Inngest delivers each step of a multi-step function as its
+# own HTTP request, and run-stage's steps (pull → spawn → push) share state
+# through the local work dir. With 2+ machines, Fly load-balances those
+# requests across machines and the spawn/push steps land on a machine that
+# never pulled. The volume below also pins the app to one machine (volumes
+# attach to exactly one machine). See packages/worker/DEPLOY.md.
 
 app = 'upriver-worker'
 primary_region = 'iad'
@@ -14,10 +21,31 @@ primary_region = 'iad'
 [env]
   NODE_ENV = 'production'
   PORT = '8288'
+  # Stage client trees + sync metadata on the mounted volume (see [mounts])
+  # so files written by one Inngest step survive until the next HTTP-delivered
+  # step — including across an auto_stop/auto_start cycle between steps.
+  # run-stage.ts falls back to /tmp/upriver when unset (local dev).
+  UPRIVER_WORK_DIR = '/data/upriver'
+  # Node heap cap. Must stay comfortably under the [[vm]] memory (4096 MB):
+  # the CLI's child processes (claude, Chromium, Lighthouse) need the rest.
+  # Overrides the Dockerfile's default.
+  NODE_OPTIONS = '--max-old-space-size=3072'
+
+# Persistent volume for UPRIVER_WORK_DIR. Create once before first deploy:
+#   fly volumes create upriver_data --region iad --size 10 --app upriver-worker
+# Mounting a volume requires every machine to have one — another reason this
+# app stays at exactly one machine.
+[mounts]
+  source = 'upriver_data'
+  destination = '/data'
 
 [http_service]
   internal_port = 8288
   force_https = true
+  # 'stop' (not 'suspend'): suspend has documented restrictions (memory
+  # snapshots, larger-RAM machines) and buys little here — all cross-step
+  # state lives on the volume, which survives a full stop/start. Cold start
+  # adds ~5-10s to the first request after idle, which Inngest absorbs.
   auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
@@ -33,6 +61,8 @@ primary_region = 'iad'
 
 [[vm]]
   size = 'shared-cpu-2x'
-  memory = '2gb'
+  # 4 GB: node (3 GB heap cap via NODE_OPTIONS) + Chromium/Lighthouse/claude
+  # child processes. 2 GB OOM'd on clone/audit stages of image-heavy sites.
+  memory = '4gb'
   cpus = 2
-  memory_mb = 2048
+  memory_mb = 4096

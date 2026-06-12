@@ -507,6 +507,20 @@ Notes:
 - The default app name `upriver-worker` is what `OPS.md` and
   `DEPLOY.md` assume. Keep it.
 
+Create the work-dir volume (required — `fly.toml` mounts it at `/data`
+and the deploy fails without one):
+
+```bash
+fly volumes create upriver_data --region iad --size 10 --app upriver-worker
+```
+
+The worker stages client files on this volume
+(`UPRIVER_WORK_DIR=/data/upriver`) so they survive between Inngest steps
+and across machine stop/start. This is also why the worker is a
+**single-machine app**: Inngest delivers each function step as its own
+HTTP request, and consecutive steps share state through that disk.
+Always deploy with `--ha=false` (below) and never scale past one machine.
+
 Set the secrets the worker needs:
 
 ```bash
@@ -528,6 +542,13 @@ server-side only. `UPRIVER_USE_API_KEY=1` + `ANTHROPIC_API_KEY` are required
 in the container — there is no logged-in Claude session there, so the CLI's
 `claude` calls must use the API-key path.
 
+`RESEND_API_KEY` is optional but enables the weekly monitor/followup
+crons to email their reports. Per-client recipients come from the
+`client_admins` table (`notify_email`); see "Cron schedules +
+notifications" in `packages/worker/DEPLOY.md` for the table, the
+`MONITOR_SLUGS`/`FOLLOWUP_SLUGS` env override lists, and the
+`UPRIVER_MONITOR_TO`/`UPRIVER_FOLLOWUP_TO` fallback recipients.
+
 ### 4.5 First container build + deploy
 
 The image is normally built and pushed by GitHub Actions (the workflow
@@ -542,15 +563,21 @@ file `.github/workflows/worker-image.yml` does it on every push to
 3. Then deploy to Fly with:
    ```bash
    fly deploy --image ghcr.io/lifeupriver/upriver-worker:latest \
-     --config packages/worker/fly.toml --app upriver-worker
+     --config packages/worker/fly.toml --app upriver-worker --ha=false
    ```
 
 **Option B — build locally and push** (if Actions isn't set up yet):
 
 ```bash
 fly deploy --config packages/worker/fly.toml \
-  --dockerfile packages/worker/Dockerfile --app upriver-worker
+  --dockerfile packages/worker/Dockerfile --app upriver-worker --ha=false
 ```
+
+`--ha=false` matters on EVERY deploy: Fly's default creates a second
+machine for high availability, which breaks the worker's step-to-step
+state sharing (and a second machine can't mount the volume anyway). If
+`fly machines list --app upriver-worker` ever shows two machines,
+destroy the extra: `fly machine destroy <id> --app upriver-worker`.
 
 Slow first time (Docker has to pull the Playwright base image and
 build the worker on Fly's builders), ~5–10 min.
@@ -615,9 +642,11 @@ consuming — check Fly logs and Inngest dashboard's **Runs** tab.
 
 - **Inngest Cloud**: free tier covers ~50K event/month. You won't hit
   it until many concurrent clients.
-- **Fly.io**: machine sleeps when idle. Wake-up adds ~5–10s to first
-  request. Worst case at low volume: $0–10/mo. If you make it
-  always-on, ~$5–15/mo for a `shared-cpu-1x` 256MB machine.
+- **Fly.io**: machine stops when idle (you pay compute only while runs
+  execute; wake-up adds ~5–10s to the first request). The worker VM is
+  `shared-cpu-2x` / 4 GB — roughly $20/mo IF it ran 24/7; at audit-tool
+  duty cycles expect a few dollars. The 10 GB `upriver_data` volume
+  bills ~$0.15/GB/mo (~$1.50/mo) whether the machine runs or not.
 - **GHCR**: free for public images.
 
 ---

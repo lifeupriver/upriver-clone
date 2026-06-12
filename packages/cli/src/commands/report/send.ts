@@ -7,11 +7,10 @@ import type { AuditPackage } from '@upriver/core';
 
 import { BaseCommand } from '../../base-command.js';
 import { extractSubject, renderEmailTemplate } from '../../report-helpers/email-template.js';
+import { DEFAULT_FROM, isEmailAddress, sendViaResend } from '../../report-helpers/resend.js';
 import { buildShareUrl, loadOrCreateShareInfo } from '../../report-helpers/share-token.js';
 
 const DEFAULT_BASE_URL = 'https://reports.upriverhudsonvalley.com';
-const DEFAULT_FROM = 'reports@upriverhudsonvalley.com';
-const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 /**
  * `upriver report send <slug>` — generate a per-client share token, populate
@@ -66,7 +65,7 @@ export default class ReportSend extends BaseCommand {
     const slug = args.slug;
     const to = flags.to;
 
-    if (!EMAIL_RE.test(to)) {
+    if (!isEmailAddress(to)) {
       this.error(`--to does not look like an email address: ${to}`);
     }
 
@@ -135,7 +134,7 @@ export default class ReportSend extends BaseCommand {
 
     if (apiKey && !flags['dry-run']) {
       try {
-        const result = await sendViaResend({ apiKey, from, to, subject, body });
+        const result = await sendViaResend({ apiKey, from, to, subject, text: body });
         sentAt = new Date().toISOString();
         providerId = result.id;
         this.log(`[report] Sent via Resend (id=${result.id}) from ${from} to ${to}.`);
@@ -166,46 +165,6 @@ export default class ReportSend extends BaseCommand {
     };
     writeFileSync(recordPath, `${JSON.stringify(record, null, 2)}\n`, 'utf8');
   }
-}
-
-/**
- * POST to the Resend API. Uses native `fetch` to avoid pulling in the
- * `resend` npm package — the API surface is small enough that the dep isn't
- * worth it. Throws with the upstream error message on non-2xx.
- *
- * Resend requires the `from` address to be on a domain you've verified in
- * the Resend dashboard. If `from` is unverified Resend returns a 403 with a
- * clear message — the caller surfaces that as `providerError` rather than
- * aborting the command.
- */
-async function sendViaResend(args: {
-  apiKey: string;
-  from: string;
-  to: string;
-  subject: string;
-  body: string;
-}): Promise<{ id: string }> {
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    signal: AbortSignal.timeout(30_000),
-    headers: {
-      authorization: `Bearer ${args.apiKey}`,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: args.from,
-      to: [args.to],
-      subject: args.subject,
-      text: args.body,
-    }),
-  });
-  if (!res.ok) {
-    const errBody = await res.text().catch(() => '');
-    throw new Error(`Resend ${res.status}: ${errBody.slice(0, 240) || res.statusText}`);
-  }
-  const json = (await res.json()) as { id?: string };
-  if (!json.id) throw new Error('Resend response missing `id`');
-  return { id: json.id };
 }
 
 /**

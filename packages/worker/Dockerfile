@@ -65,9 +65,12 @@ FROM mcr.microsoft.com/playwright:v1.59.1-jammy AS runtime
 
 ENV NODE_ENV=production \
     PORT=8288 \
-    # Inngest sends step state through the serve handler — keep the body cap
-    # generous so large pipeline outputs round-trip cleanly.
-    NODE_OPTIONS="--max-old-space-size=2048" \
+    # Node heap cap. fly.toml overrides this to 3072 to pair with its 4 GB VM
+    # ([[vm]] memory) while leaving headroom for the CLI's child processes
+    # (claude, Chromium, Lighthouse). This default only applies when the image
+    # runs outside Fly. Never set it equal to the VM size — the heap would
+    # starve the subprocess tree.
+    NODE_OPTIONS="--max-old-space-size=3072" \
     # `pnpm deploy` places workspace deps under node_modules, not packages/ —
     # point run-stage's CLI resolution at the deployed location.
     UPRIVER_CLI_BIN=/app/node_modules/@upriver/cli/bin/run.js
